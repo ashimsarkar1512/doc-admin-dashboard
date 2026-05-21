@@ -1,8 +1,3 @@
-import React from 'react';
-
-interface DummyPageProps {
-  title: string;
-}
 
 export default function DummyPage({ title }: { title: string }) {
   return (
