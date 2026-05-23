@@ -266,9 +266,8 @@ export default function DashboardLayout() {
         </header>
 
         {/* Scrollable Content */}
-        <main className="flex-1 overflow-y-auto p-4 md:p-8 relative">
+        <main className="flex-1 overflow-y-auto w-full bg-[#FAFAFA]">
           <Outlet />
-          <img src="/images/Vector 7.png" alt="decorative blur" className="absolute bottom-0 left-0 w-48 h-48 opacity-30 blur-lg pointer-events-none" />
         </main>
       </div>
     </div>

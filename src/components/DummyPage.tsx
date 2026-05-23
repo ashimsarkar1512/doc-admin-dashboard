@@ -1,7 +1,7 @@
 
 export default function DummyPage({ title }: { title: string }) {
   return (
-    <div className="w-full">
+    <div className="w-full p-4 md:p-8">
       <div className="mb-8">
         <h1 className="text-2xl sm:text-3xl font-bold text-slate-800 tracking-tight">
           {title}

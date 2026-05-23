@@ -1,9 +1,9 @@
-import { MetricCard } from './components/MetricCard';
+import MetricCard from '@/components/shared/cards/MetricCard';
 import { PatientTable } from './components/PatientTable';
 
 export default function DashboardPage() {
   return (
-    <div className="w-full">
+    <div className="w-full p-4 md:p-8">
       {/* Page heading */}
       <div className="mb-8">
         <h1 className="text-2xl sm:text-3xl font-bold text-slate-800 tracking-tight">
@@ -16,10 +16,10 @@ export default function DashboardPage() {
 
       {/* ---- Metric cards (already built) ---- */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 w-full">
-        <MetricCard title="Total Patients" value="1,234" />
-        <MetricCard title="Active Providers" value="45" />
-        <MetricCard title="Active Services" value="28" />
-        <MetricCard title="Assessments Taken" value="1250" />
+        <MetricCard label="Total Patients" value="1,234" />
+        <MetricCard label="Active Providers" value="45" />
+        <MetricCard label="Active Services" value="28" />
+        <MetricCard label="Assessments Taken" value="1250" />
       </div>
 
       {/* ---- Table under the metrics ---- */}

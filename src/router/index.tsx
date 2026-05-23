@@ -30,23 +30,29 @@ const dashboardIndexRoute = createRoute({
   component: DashboardPage,
 });
 
+import CategoriesPage from '@/features/dashboard/CategoriesPage';
+
 // Dummy routes for the sidebar sections
 const categoriesRoute = createRoute({
   getParentRoute: () => dashboardLayoutRoute,
   path: '/categories',
-  component: () => <DummyPage title="Categories" />,
+  component: CategoriesPage,
 });
+
+import AssessmentsPage from '@/features/dashboard/AssessmentsPage';
 
 const assessmentsRoute = createRoute({
   getParentRoute: () => dashboardLayoutRoute,
   path: '/assessments',
-  component: () => <DummyPage title="Assessments" />,
+  component: AssessmentsPage,
 });
+
+import ProductsPage from '@/features/dashboard/ProductsPage';
 
 const productsRoute = createRoute({
   getParentRoute: () => dashboardLayoutRoute,
   path: '/products',
-  component: () => <DummyPage title="Products" />,
+  component: ProductsPage,
 });
 
 const providersRoute = createRoute({
