@@ -17,6 +17,21 @@ import {
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { toggleSidebar, setPageHeader } from '@/store/uiSlice';
 
+// Route to title mapping for cleaner code
+const routeTitleMap: Record<string, { title: string; subtitle: string }> = {
+  '/dashboard': { title: 'Dashboard', subtitle: 'Overview of your medical practice metrics' },
+  '/dashboard/': { title: 'Dashboard', subtitle: 'Overview of your medical practice metrics' },
+  '/dashboard/categories': { title: 'Categories', subtitle: 'Manage assessment and product categories' },
+  '/dashboard/assessments': { title: 'Assessments', subtitle: 'Create and manage user assessments for services' },
+  '/dashboard/products': { title: 'Products', subtitle: 'Manage inventory, pricing, and details' },
+  '/dashboard/providers': { title: 'Providers/Doctors', subtitle: 'Manage doctors, schedules, and clinical staff' },
+  '/dashboard/patients': { title: 'Patients', subtitle: 'View patient records, profiles, and history' },
+  '/dashboard/website-management': { title: 'Website Management', subtitle: 'Configure website layout, pages, and components' },
+  '/dashboard/pages': { title: 'Pages', subtitle: 'Manage website pages and static content' },
+  '/dashboard/site-settings': { title: 'Site Settings', subtitle: 'Configure global site parameters and variables' },
+  '/dashboard/user-management': { title: 'User Management', subtitle: 'Manage system administrators, roles, and permissions' },
+};
+
 export default function DashboardLayout() {
   const collapsed = useAppSelector((state) => state.ui.sidebarCollapsed);
   const pageTitle = useAppSelector((state) => state.ui.pageTitle);
@@ -32,42 +47,9 @@ export default function DashboardLayout() {
   // Synchronize route changes to Redux Page Header State
   useEffect(() => {
     const path = location.pathname;
-    let title = 'Dashboard';
-    let subtitle = 'Overview of your medical practice metrics';
-
-    if (path.endsWith('/categories')) {
-      title = 'Categories';
-      subtitle = 'Manage assessment and product categories';
-    } else if (path.endsWith('/assessments')) {
-      title = 'Assessments';
-      subtitle = 'Create and manage user assessments for services';
-    } else if (path.endsWith('/products')) {
-      title = 'Products';
-      subtitle = 'Manage inventory, pricing, and details';
-    } else if (path.endsWith('/providers')) {
-      title = 'Providers/Doctors';
-      subtitle = 'Manage doctors, schedules, and clinical staff';
-    } else if (path.endsWith('/patients')) {
-      title = 'Patients';
-      subtitle = 'View patient records, profiles, and history';
-    } else if (path.endsWith('/website-management')) {
-      title = 'Website Management';
-      subtitle = 'Configure website layout, pages, and components';
-    } else if (path.endsWith('/pages')) {
-      title = 'Pages';
-      subtitle = 'Manage website pages and static content';
-    } else if (path.endsWith('/site-settings')) {
-      title = 'Site Settings';
-      subtitle = 'Configure global site parameters and variables';
-    } else if (path.endsWith('/user-management')) {
-      title = 'User Management';
-      subtitle = 'Manage system administrators, roles, and permissions';
-    } else if (path === '/dashboard' || path === '/dashboard/') {
-      title = 'Dashboard';
-      subtitle = 'Overview of your medical practice metrics';
-    }
-
-    dispatch(setPageHeader({ title, subtitle }));
+    const routeInfo = routeTitleMap[path] || routeTitleMap['/dashboard'];
+    
+    dispatch(setPageHeader(routeInfo));
   }, [location.pathname, dispatch]);
 
   return (

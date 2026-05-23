@@ -4,7 +4,6 @@ import DashboardLayout from '@/components/layout/DashboardLayout';
 import DashboardPage from '@/features/dashboard/DashboardPage';
 import DummyPage from '@/components/DummyPage';
 
-// The root layout
 const rootRoute = createRootRoute({
   component: () => <Outlet />,
 });
