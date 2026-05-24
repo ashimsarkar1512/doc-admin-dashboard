@@ -7,6 +7,13 @@ interface QuestionListProps {
   onDelete: (index: number) => void;
 }
 
+const TYPE_LABEL_MAP: Record<string, string> = {
+  INFORMATION_ONLY: 'Info Only',
+  SINGLE_CHOICE: 'Single Choice',
+  MULTIPLE_CHOICE: 'Multiple Choice',
+  INPUT: 'Input',
+};
+
 export default function QuestionList({ questions, onEdit, onDelete }: QuestionListProps) {
   if (questions.length === 0) return null;
 
@@ -24,9 +31,11 @@ export default function QuestionList({ questions, onEdit, onDelete }: QuestionLi
           <div className="flex-1 ml-3 min-w-0">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <span className="text-xs font-semibold text-slate-500 tracking-wider">Q{i + 1}</span>
+                <span className="text-xs font-semibold text-slate-500 tracking-wider">
+                  Q{i + 1}
+                </span>
                 <span className="bg-slate-100 text-slate-600 px-2 py-0.5 rounded-md text-[10px] uppercase font-bold tracking-wider">
-                  {q.type}
+                  {TYPE_LABEL_MAP[q.type] ?? q.type}
                 </span>
               </div>
               <div className="flex items-center gap-2.5">
@@ -50,30 +59,24 @@ export default function QuestionList({ questions, onEdit, onDelete }: QuestionLi
             </div>
 
             <h4 className="font-semibold text-slate-800 text-[13px] sm:text-sm mt-1.5 leading-snug">
-              {q.heading || q.question}
+              {q.heading || q.questionText || '—'}
             </h4>
 
-            {q.type === 'Information only' ? (
-              q.description && (
-                <p className="text-xs text-slate-500 mt-1 line-clamp-2 leading-relaxed">{q.description}</p>
-              )
-            ) : q.type === 'Single choice' || q.type === 'Multiple choice' ? (
-              <div className="mt-2">
-                <span className="bg-slate-100/60 text-slate-600 text-[11px] px-2.5 py-1 rounded-md font-medium border border-slate-200/60 inline-block">
-                  {q.options?.length || 0} options available
-                </span>
-              </div>
-            ) : q.type === 'Input' ? (
-              <div className="mt-2">
-                <span className="bg-slate-100/60 text-slate-600 text-[11px] px-2.5 py-1 rounded-md font-medium border border-slate-200/60 inline-block">
-                  {q.inputFields?.length || 0} input fields
-                </span>
-              </div>
-            ) : (
-              q.description && (
-                <p className="text-xs text-slate-500 mt-1 line-clamp-1 leading-relaxed">{q.description}</p>
-              )
+            {q.description && (
+              <p className="text-xs text-slate-500 mt-1 line-clamp-2 leading-relaxed">
+                {q.description}
+              </p>
             )}
+
+            {(q.type === 'SINGLE_CHOICE' || q.type === 'MULTIPLE_CHOICE') &&
+              Array.isArray(q.options) &&
+              q.options.length > 0 && (
+                <div className="mt-2">
+                  <span className="bg-slate-100/60 text-slate-600 text-[11px] px-2.5 py-1 rounded-md font-medium border border-slate-200/60 inline-block">
+                    {q.options.length} options
+                  </span>
+                </div>
+              )}
           </div>
         </div>
       ))}

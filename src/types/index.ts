@@ -1,10 +1,12 @@
 export interface Category {
-  id: number;
+  id: number | string;
   name: string;
   description: string;
-  status: 'Active' | 'Inactive';
+  status: 'Active' | 'Inactive' | 'ACTIVE' | 'DISABLED';
   activeAssessments: number;
   totalPatients: number;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface InputField {
@@ -14,31 +16,46 @@ export interface InputField {
   placeholder: string;
 }
 
+export interface QuestionOption {
+  id: string;
+  label: string;
+  placeholder?: string | null;
+  inputType?: string | null;
+}
+
 export interface AssessmentQuestion {
-  id: number;
-  type: string;
-  // For Information only
-  heading?: string;
-  description?: string;
-  contentAlignment?: string;
-  mediaImage?: string;
-  // For Single / Multiple choice & Input
-  question?: string;
-  options?: string[];
-  inputFields?: InputField[];
-  isRequired?: boolean;
+  id: string;
+  type: 'INFORMATION_ONLY' | 'INPUT' | 'SINGLE_CHOICE' | 'MULTIPLE_CHOICE';
+  heading?: string | null;
+  media?: string | null;
+  questionText?: string | null;
+  description?: string | null;
+  contentAlignment?: 'LEFT' | 'CENTER' | 'RIGHT' | string | null;
+  isRequired: boolean;
+  assessmentId: string;
+  parentOptionId?: string | null;
+  createdAt?: string;
+  updatedAt?: string;
+  options?: QuestionOption[];
+  parentOption?: QuestionOption | null;
 }
 
 export interface Assessment {
-  id: number;
+  id: string;
   title: string;
-  category: string;
+  thumbnail?: string | null;
   description: string;
-  image: string;
-  status: 'Active' | 'Draft';
-  publishedDate: string;
+  status: 'ACTIVE' | 'DRAFT' | 'DISABLED';
+  categoryId: string;
+  createdAt?: string;
+  publishedAt?: string | null;
+  updatedAt?: string;
+  category?: {
+    id: string;
+    name: string;
+  };
+  totalQuestions: number;
   totalAssessments: number;
-  questions: AssessmentQuestion[];
 }
 
 export interface Product {

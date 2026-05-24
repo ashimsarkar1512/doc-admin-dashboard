@@ -5,7 +5,7 @@ import type { Category } from '@/types';
 export interface CategoryCardProps {
   category: Category;
   onEdit: (category: Category) => void;
-  onDelete: (id: number) => void;
+  onDelete: (id: number | string) => void;
 }
 
 export const CategoryCard: React.FC<CategoryCardProps> = ({ category, onEdit, onDelete }) => {

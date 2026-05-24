@@ -1,4 +1,17 @@
+# =========================
+# Environment & Secrets
+# =========================
+.env
+.env.*
+*.env
+*.local
+
+# Keep example env files
+!.env.example
+
+# =========================
 # Logs
+# =========================
 logs
 *.log
 npm-debug.log*
@@ -7,18 +20,43 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# =========================
+# Dependencies
+# =========================
 node_modules
+
+# =========================
+# Build / Production
+# =========================
 dist
 dist-ssr
-*.local
+build
+coverage
 
-# Editor directories and files
+# =========================
+# Cache
+# =========================
+.cache
+.parcel-cache
+.vite
+.turbo
+
+# =========================
+# Editor & IDE
+# =========================
 .vscode/*
 !.vscode/extensions.json
+
 .idea
 .DS_Store
+
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
+
+# =========================
+# OS generated files
+# =========================
+Thumbs.db
