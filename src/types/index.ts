@@ -59,12 +59,18 @@ export interface Assessment {
 }
 
 export interface Product {
-  id: number;
+  id: string;
   name: string;
-  category: string;
-  price: number;
+  images?: string[];
+  price: string;
+  stockQuantity: number;
   description: string;
-  image: string;
-  stock: number;
-  status: 'Active' | 'Inactive';
+  categoryId: string;
+  category?: {
+    id: string;
+    name: string;
+  };
+  createdAt?: string;
+  updatedAt?: string;
+  status?: 'Active' | 'Inactive'; // Keep if used in frontend, else omit
 }
