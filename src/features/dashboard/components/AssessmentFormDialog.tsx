@@ -4,7 +4,7 @@ import { toast } from 'sonner';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import type { Assessment, AssessmentQuestion } from '@/types';
 import { getCategories } from '@/api/endpoints/categories.api';
-import { createAssessment, getQuestions } from '@/api/endpoints/assessments.api';
+import { createAssessment, updateAssessment, getQuestions, deleteQuestion } from '@/api/endpoints/assessments.api';
 import Dialog from '@/components/shared/Dialog';
 import QuestionList from './QuestionList';
 import QuestionFormDialog from './QuestionFormDialog';
@@ -33,10 +33,12 @@ export default function AssessmentFormDialog({ isOpen, onClose, editingAssessmen
   const queryClient = useQueryClient();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // If editing, we already have an assessmentId — jump straight to Step 2
+  // If editing, we already have an assessmentId
   const [createdAssessmentId, setCreatedAssessmentId] = useState<string | null>(
     editingAssessment?.id ?? null
   );
+
+  const [activeTab, setActiveTab] = useState<'DETAILS' | 'QUESTIONS'>('DETAILS');
 
   // Step 1 form state (only used when creating)
   const [title, setTitle] = useState(editingAssessment?.title ?? '');
@@ -53,8 +55,7 @@ export default function AssessmentFormDialog({ isOpen, onClose, editingAssessmen
   // Step 2 question sub-modal state
   const [isQuestionOpen, setIsQuestionOpen] = useState(false);
   const [editingQuestion, setEditingQuestion] = useState<AssessmentQuestion | null>(null);
-  // Local list of newly added questions in this session
-  const [newQuestions, setNewQuestions] = useState<AssessmentQuestion[]>([]);
+  // Local question state is removed in favor of React Query optimistic updates
 
   // Fetch existing questions when we have an assessmentId (editing mode)
   const { data: existingQuestionsData, isLoading: questionsLoading } = useQuery({
@@ -63,12 +64,7 @@ export default function AssessmentFormDialog({ isOpen, onClose, editingAssessmen
     enabled: !!createdAssessmentId,
   });
 
-  const existingQuestions = existingQuestionsData?.data ?? [];
-  // Merge existing (from API) + newly added this session, deduplicating by id
-  const allQuestions = [
-    ...existingQuestions,
-    ...newQuestions.filter((nq) => !existingQuestions.find((eq) => eq.id === nq.id)),
-  ];
+  const allQuestions = existingQuestionsData?.data ?? [];
 
   // Fetch real categories for the dropdown
   const { data: categoriesData } = useQuery({
@@ -80,16 +76,59 @@ export default function AssessmentFormDialog({ isOpen, onClose, editingAssessmen
 
   // Create assessment mutation
   const createMutation = useMutation({
-    mutationFn: createAssessment,
-    onSuccess: (newAssessment) => {
+    mutationFn: (data: any) => {
+      if (createdAssessmentId) {
+        return updateAssessment(createdAssessmentId, data);
+      }
+      return createAssessment(data);
+    },
+    onSuccess: (savedAssessment) => {
       queryClient.invalidateQueries({ queryKey: ['assessments'] });
-      setCreatedAssessmentId(newAssessment.id);
-      toast.success('Assessment created! Now add questions below.');
+      if (!createdAssessmentId) {
+        setCreatedAssessmentId(savedAssessment.id);
+        setActiveTab('QUESTIONS');
+        toast.success('Assessment created! Now add questions below.');
+      } else {
+        toast.success('Assessment details updated successfully!');
+      }
     },
     onError: (error: Error) => {
-      toast.error(error.message || 'Failed to create assessment.');
+      toast.error(error.message || 'Failed to save assessment.');
     },
   });
+
+  const deleteQuestionMutation = useMutation({
+    mutationFn: deleteQuestion,
+    onMutate: async (idToDelete) => {
+      await queryClient.cancelQueries({ queryKey: ['questions', createdAssessmentId] });
+      const previous = queryClient.getQueryData(['questions', createdAssessmentId]);
+      queryClient.setQueryData(['questions', createdAssessmentId], (old: any) => {
+        if (!old?.data) return old;
+        return {
+          ...old,
+          data: old.data.filter((q: AssessmentQuestion) => q.id !== idToDelete),
+        };
+      });
+      return { previous };
+    },
+    onError: (error: Error, _, context) => {
+      if (context?.previous) {
+        queryClient.setQueryData(['questions', createdAssessmentId], context.previous);
+      }
+      toast.error(error.message || 'Failed to delete question.');
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['questions', createdAssessmentId] });
+    },
+    onSuccess: () => {
+      toast.success('Question deleted.');
+    },
+  });
+
+  const handleDeleteQuestion = (questionToDelete: AssessmentQuestion) => {
+    if (!window.confirm('Are you sure you want to delete this question?')) return;
+    deleteQuestionMutation.mutate(questionToDelete.id);
+  };
 
   const handleThumbnailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -110,12 +149,19 @@ export default function AssessmentFormDialog({ isOpen, onClose, editingAssessmen
   };
 
   const handleQuestionSaved = (question: AssessmentQuestion) => {
-    setNewQuestions((prev) =>
-      editingQuestion
-        ? prev.map((q) => (q.id === editingQuestion.id ? question : q))
-        : [...prev, question]
-    );
-    // Also invalidate so fresh data is shown next time this assessment is opened
+    // Optimistically update the list
+    queryClient.setQueryData(['questions', createdAssessmentId], (old: any) => {
+      if (!old?.data) return old;
+      const exists = old.data.find((q: AssessmentQuestion) => q.id === question.id);
+      return {
+        ...old,
+        data: exists
+          ? old.data.map((q: AssessmentQuestion) => (q.id === question.id ? question : q))
+          : [...old.data, question],
+      };
+    });
+    
+    // Invalidate to ensure consistency
     queryClient.invalidateQueries({ queryKey: ['questions', createdAssessmentId] });
     toast.success(editingQuestion ? 'Question updated.' : 'Question added.');
     setIsQuestionOpen(false);
@@ -130,24 +176,48 @@ export default function AssessmentFormDialog({ isOpen, onClose, editingAssessmen
     onClose();
   };
 
-  const isStep2 = !!createdAssessmentId;
-
   return (
     <>
       <Dialog
         isOpen={isOpen}
         onClose={handleClose}
         title={
-          isStep2
-            ? editingAssessment
-              ? `Questions — ${editingAssessment.title}`
-              : 'Add Questions to Assessment'
+          editingAssessment
+            ? `Edit Assessment`
             : 'Create New Assessment'
         }
-        maxWidthClass="max-w-[560px]"
+        maxWidthClass="max-w-[600px]"
       >
-        {!isStep2 ? (
-          /* ── Step 1: Assessment creation form ── */
+        <div className="flex border-b border-gray-200 mb-5">
+          <button
+            type="button"
+            className={`flex-1 py-3 text-sm font-medium border-b-2 transition-colors ${
+              activeTab === 'DETAILS'
+                ? 'border-blue-600 text-blue-600'
+                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+            }`}
+            onClick={() => setActiveTab('DETAILS')}
+          >
+            Assessment Details
+          </button>
+          <button
+            type="button"
+            disabled={!createdAssessmentId}
+            className={`flex-1 py-3 text-sm font-medium border-b-2 transition-colors ${
+              !createdAssessmentId
+                ? 'opacity-50 cursor-not-allowed border-transparent text-gray-400'
+                : activeTab === 'QUESTIONS'
+                ? 'border-blue-600 text-blue-600'
+                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+            }`}
+            onClick={() => setActiveTab('QUESTIONS')}
+          >
+            Questions
+          </button>
+        </div>
+
+        {activeTab === 'DETAILS' ? (
+          /* ── Tab 1: Assessment details form ── */
           <form onSubmit={handleAssessmentSubmit} className="flex flex-col space-y-4">
             {/* Thumbnail */}
             <div className="space-y-1.5">
@@ -197,7 +267,13 @@ export default function AssessmentFormDialog({ isOpen, onClose, editingAssessmen
                 Select Category: <span className="text-red-500">*</span>
               </label>
               <div className="relative">
-                <select value={categoryId} onChange={(e) => setCategoryId(e.target.value)} required className={SELECT_CLS}>
+                <select 
+                  value={categoryId} 
+                  onChange={(e) => setCategoryId(e.target.value)} 
+                  required 
+                  disabled={!!createdAssessmentId}
+                  className={`${SELECT_CLS} ${createdAssessmentId ? 'bg-gray-100 opacity-70 cursor-not-allowed' : ''}`}
+                >
                   <option value="" disabled>Select a category</option>
                   {categoryOptions.map((c) => (
                     <option key={c.id} value={String(c.id)}>{c.name}</option>
@@ -241,12 +317,12 @@ export default function AssessmentFormDialog({ isOpen, onClose, editingAssessmen
                 Cancel
               </button>
               <button type="submit" disabled={createMutation.isPending} className="flex-1 py-2.5 bg-[#2563EB] hover:bg-blue-700 disabled:bg-blue-400 text-white rounded-[10px] text-sm font-medium transition-colors">
-                {createMutation.isPending ? 'Creating...' : 'Create & Add Questions →'}
+                {createMutation.isPending ? 'Saving...' : createdAssessmentId ? 'Save Changes' : 'Create & Add Questions →'}
               </button>
             </div>
           </form>
         ) : (
-          /* ── Step 2: Questions management ── */
+          /* ── Tab 2: Questions management ── */
           <div className="flex flex-col space-y-4">
             {/* Only show success banner when freshly created (not when editing) */}
             {!editingAssessment && (
@@ -278,7 +354,7 @@ export default function AssessmentFormDialog({ isOpen, onClose, editingAssessmen
               <QuestionList
                 questions={allQuestions}
                 onEdit={(q) => { setEditingQuestion(q); setIsQuestionOpen(true); }}
-                onDelete={(i) => setNewQuestions((prev) => prev.filter((_, idx) => idx !== i))}
+                onDelete={(i) => handleDeleteQuestion(allQuestions[i])}
               />
             )}
 
@@ -297,7 +373,7 @@ export default function AssessmentFormDialog({ isOpen, onClose, editingAssessmen
         )}
       </Dialog>
 
-      {isStep2 && (
+      {createdAssessmentId && (
         <QuestionFormDialog
           key={editingQuestion?.id ?? 'new-question'}
           isOpen={isQuestionOpen}

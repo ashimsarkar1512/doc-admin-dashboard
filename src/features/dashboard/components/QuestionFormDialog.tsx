@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import type { AssessmentQuestion } from '@/types';
 // Backend-expected values for content alignment
 const CONTENT_ALIGNMENT_OPTIONS = [
@@ -10,11 +10,11 @@ const CONTENT_ALIGNMENT_OPTIONS = [
 ] as const;
 import Dialog from '@/components/shared/Dialog';
 import { useForm, type SubmitHandler, useWatch } from 'react-hook-form';
-import { Upload } from 'lucide-react';
+import { Upload, Trash2 } from 'lucide-react';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation } from '@tanstack/react-query';
-import { createQuestion } from '@/api/endpoints/assessments.api';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { createQuestion, updateQuestion, getQuestionOptions, createQuestionOption, deleteQuestionOption } from '@/api/endpoints/assessments.api';
 import { toast } from 'sonner';
 
 // Backend question type values
@@ -42,6 +42,97 @@ const questionSchema = z.object({
 type QuestionFormValues = z.infer<typeof questionSchema>;
 
 // ── Component ────────────────────────────────────────────────────────────────
+
+function OptionsManager({ questionId, assessmentId }: { questionId: string; assessmentId: string }) {
+  const queryClient = useQueryClient();
+  const [newLabel, setNewLabel] = useState('');
+  
+  const { data, isLoading } = useQuery({
+    queryKey: ['questionOptions', questionId],
+    queryFn: () => getQuestionOptions({ questionId, limit: 100 }),
+  });
+  
+  const options = data?.data ?? [];
+
+  const addMutation = useMutation({
+    mutationFn: (label: string) => createQuestionOption({ label, questionId }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['questionOptions', questionId] });
+      queryClient.invalidateQueries({ queryKey: ['questions', assessmentId] });
+      setNewLabel('');
+      toast.success('Option added');
+    },
+    onError: (e: any) => toast.error(e.message || 'Failed to add option')
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: deleteQuestionOption,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['questionOptions', questionId] });
+      queryClient.invalidateQueries({ queryKey: ['questions', assessmentId] });
+      toast.success('Option deleted');
+    },
+    onError: (e: any) => toast.error(e.message || 'Failed to delete option')
+  });
+
+  return (
+    <div className="border-t border-gray-100 pt-5 mt-5">
+      <label className="block text-sm font-medium text-slate-800 mb-3">
+        Options Management
+      </label>
+      
+      <div className="space-y-2 mb-3">
+        {isLoading ? (
+          <div className="text-sm text-gray-500">Loading options...</div>
+        ) : options.length === 0 ? (
+          <div className="text-sm text-gray-400">No options yet.</div>
+        ) : (
+          options.map((opt) => (
+            <div key={opt.id} className="flex items-center justify-between bg-slate-50 border border-gray-200 px-3 py-2 rounded-lg">
+              <span className="text-sm text-slate-800">{opt.label}</span>
+              <button 
+                type="button" 
+                onClick={() => {
+                  if (window.confirm('Are you sure you want to delete this option?')) {
+                    deleteMutation.mutate(opt.id);
+                  }
+                }}
+                disabled={deleteMutation.isPending}
+                className="text-red-500 hover:text-red-700 p-1 transition-colors"
+              >
+                <Trash2 className="w-4 h-4" />
+              </button>
+            </div>
+          ))
+        )}
+      </div>
+
+      <div className="flex gap-2">
+        <input 
+          type="text" 
+          value={newLabel}
+          onChange={(e) => setNewLabel(e.target.value)}
+          placeholder="Add new option (e.g. Yes)"
+          className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-sm text-slate-900 placeholder-gray-500"
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              if (newLabel.trim()) addMutation.mutate(newLabel.trim());
+            }
+          }}
+        />
+        <button 
+          type="button"
+          onClick={() => { if (newLabel.trim()) addMutation.mutate(newLabel.trim()); }}
+          disabled={!newLabel.trim() || addMutation.isPending}
+          className="bg-[#2563EB] hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
+        >
+          Add
+        </button>
+      </div>
+    </div>
+  );
+}
 
 export default function QuestionFormDialog({
   isOpen,
@@ -74,7 +165,12 @@ export default function QuestionFormDialog({
   const questionType = useWatch({ control: form.control, name: 'type' });
 
   const mutation = useMutation({
-    mutationFn: createQuestion,
+    mutationFn: async (data: any) => {
+      if (editingQuestion) {
+        return updateQuestion(editingQuestion.id, data);
+      }
+      return createQuestion(data);
+    },
     onSuccess: (savedQuestion) => {
       onSave(savedQuestion);
     },
@@ -87,17 +183,17 @@ export default function QuestionFormDialog({
     mutation.mutate({
       type: data.type,
       assessmentId,
-      heading: data.heading || undefined,
-      questionText: data.questionText || undefined,
+      heading: data.type === 'INFORMATION_ONLY' ? (data.heading || undefined) : undefined,
+      questionText: data.type !== 'INFORMATION_ONLY' ? (data.questionText || undefined) : undefined,
       description: data.description || undefined,
-      contentAlignment: data.contentAlignment || undefined,
-      isRequired: data.isRequired,
+      contentAlignment: data.type === 'INFORMATION_ONLY' ? (data.contentAlignment || 'LEFT') : undefined,
+      isRequired: data.type !== 'INFORMATION_ONLY' ? data.isRequired : false,
       media: data.mediaFile ?? null,
     });
   };
 
   const inputCls =
-    'w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-sm';
+    'w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-sm text-slate-900 placeholder-gray-500';
 
   return (
     <Dialog isOpen={isOpen} onClose={onClose} title={editingQuestion ? 'Edit Question' : 'Add Question'}>
@@ -223,6 +319,20 @@ export default function QuestionFormDialog({
               </label>
             </div>
           </>
+        )}
+
+        {/* Options Management */}
+        {(questionType === 'SINGLE_CHOICE' || questionType === 'MULTIPLE_CHOICE') && (
+          editingQuestion ? (
+            <OptionsManager questionId={editingQuestion.id} assessmentId={assessmentId} />
+          ) : (
+            <div className="border-t border-gray-100 pt-5 mt-5">
+              <label className="block text-sm font-medium text-slate-800 mb-2">Options Management</label>
+              <div className="bg-blue-50 text-blue-800 text-sm p-3 rounded-lg border border-blue-200">
+                You can add choices to this question after saving it for the first time.
+              </div>
+            </div>
+          )
         )}
 
         {/* Actions */}

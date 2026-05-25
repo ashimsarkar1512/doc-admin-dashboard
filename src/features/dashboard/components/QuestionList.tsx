@@ -59,7 +59,9 @@ export default function QuestionList({ questions, onEdit, onDelete }: QuestionLi
             </div>
 
             <h4 className="font-semibold text-slate-800 text-[13px] sm:text-sm mt-1.5 leading-snug">
-              {q.heading || q.questionText || '—'}
+              {q.type === 'INFORMATION_ONLY' 
+                ? (q.heading || '—') 
+                : (q.questionText || q.heading || '—')}
             </h4>
 
             {q.description && (

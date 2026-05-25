@@ -7,6 +7,7 @@ import MetricCard from '@/components/shared/cards/MetricCard';
 import AssessmentCard from '@/components/shared/cards/AssessmentCard';
 import AssessmentFormDialog from './components/AssessmentFormDialog';
 import { getAssessments } from '@/api/endpoints/assessments.api';
+import { getCategories } from '@/api/endpoints/categories.api';
 import { API_BASE_URL } from '@/api/config';
 
 async function deleteAssessment(id: string): Promise<void> {
@@ -23,11 +24,17 @@ export default function AssessmentsPage() {
   const queryClient = useQueryClient();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingAssessment, setEditingAssessment] = useState<Assessment | null>(null);
-  const [statusFilter, setStatusFilter] = useState<string>('');
+  const [categoryNameFilter, setCategoryNameFilter] = useState<string>('');
+
+  const { data: categoriesData } = useQuery({
+    queryKey: ['categories'],
+    queryFn: () => getCategories({ limit: 100 }),
+  });
+  const categories = categoriesData?.data ?? [];
 
   const { data, isLoading, isError } = useQuery({
-    queryKey: ['assessments', { status: statusFilter }],
-    queryFn: () => getAssessments({ status: statusFilter || undefined, limit: 50 }),
+    queryKey: ['assessments', { categoryName: categoryNameFilter }],
+    queryFn: () => getAssessments({ categoryName: categoryNameFilter || undefined, limit: 50 }),
   });
 
   const assessments = data?.data ?? [];
@@ -68,13 +75,6 @@ export default function AssessmentsPage() {
   const activeCount = assessments.filter((a) => a.status === 'ACTIVE').length;
   const totalQuestions = assessments.reduce((acc, a) => acc + (a.totalQuestions ?? 0), 0);
 
-  const STATUS_FILTERS = [
-    { label: 'All', value: '' },
-    { label: 'Active', value: 'ACTIVE' },
-    { label: 'Draft', value: 'DRAFT' },
-    { label: 'Disabled', value: 'DISABLED' },
-  ];
-
   return (
     <div className="p-6 md:p-10 w-full space-y-10 font-sans">
 
@@ -90,19 +90,29 @@ export default function AssessmentsPage() {
         ))}
       </div>
 
-      {/* Status Filter */}
-      <div className="flex flex-wrap items-center gap-2 bg-white p-5 rounded-2xl border border-gray-150 shadow-sm">
-        {STATUS_FILTERS.map((f) => (
+      {/* Category Filter */}
+      <div className="flex flex-wrap items-center gap-2 bg-white p-5 rounded-2xl border border-gray-150 shadow-sm overflow-x-auto whitespace-nowrap scrollbar-hide">
+        <button
+          onClick={() => setCategoryNameFilter('')}
+          className={`px-4 py-2 rounded-full text-xs font-medium transition-all duration-150 cursor-pointer ${
+            categoryNameFilter === ''
+              ? 'bg-blue-600 text-white shadow-sm font-bold'
+              : 'bg-gray-100 text-gray-600 hover:bg-gray-200 hover:text-gray-900'
+          }`}
+        >
+          All
+        </button>
+        {categories.map((c) => (
           <button
-            key={f.value}
-            onClick={() => setStatusFilter(f.value)}
+            key={c.id}
+            onClick={() => setCategoryNameFilter(c.name)}
             className={`px-4 py-2 rounded-full text-xs font-medium transition-all duration-150 cursor-pointer ${
-              statusFilter === f.value
+              categoryNameFilter === c.name
                 ? 'bg-blue-600 text-white shadow-sm font-bold'
                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200 hover:text-gray-900'
             }`}
           >
-            {f.label}
+            {c.name}
           </button>
         ))}
       </div>
@@ -156,12 +166,12 @@ export default function AssessmentsPage() {
           <div className="space-y-1">
             <h3 className="font-semibold text-gray-900 text-base">No assessments found</h3>
             <p className="text-gray-400 text-sm max-w-sm">
-              {statusFilter ? `No assessments with status "${statusFilter}".` : 'No assessments yet. Create one to get started.'}
+              {categoryNameFilter ? 'No assessments found for this category.' : 'No assessments yet. Create one to get started.'}
             </p>
           </div>
-          {statusFilter && (
+          {categoryNameFilter && (
             <button
-              onClick={() => setStatusFilter('')}
+              onClick={() => setCategoryNameFilter('')}
               className="text-blue-600 hover:text-blue-700 font-semibold text-sm underline underline-offset-4"
             >
               Clear filter
