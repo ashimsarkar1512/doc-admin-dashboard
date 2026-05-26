@@ -85,7 +85,7 @@ export default function CategoriesPage() {
     // Map existing status gracefully, including DISABLED
     const s = category.status?.toUpperCase();
     const mappedStatus = s === 'DISABLED' ? 'DISABLED' : 'ACTIVE';
-    setFormStatus(mappedStatus as any);
+    setFormStatus(mappedStatus);
     setIsModalOpen(true);
   };
 
@@ -111,14 +111,14 @@ export default function CategoriesPage() {
         payload: {
           name: formName,
           description: formDescription,
-          status: formStatus as any,
+          status: formStatus,
         }
       });
     } else {
       createMutation.mutate({
         name: formName,
         description: formDescription,
-        status: formStatus as any,
+        status: formStatus,
       });
     }
   };
@@ -227,7 +227,7 @@ export default function CategoriesPage() {
               <label className="text-sm font-normal text-gray-800">Category status:</label>
               <select
                 value={formStatus}
-                onChange={(e) => setFormStatus(e.target.value as any)}
+                onChange={(e) => setFormStatus(e.target.value as 'ACTIVE' | 'DISABLED')}
                 className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-sm text-black cursor-pointer"
               >
                 <option value="ACTIVE">Active</option>

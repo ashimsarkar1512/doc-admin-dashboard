@@ -6,6 +6,7 @@ import type { Product } from '@/types';
 import ProductCard from '@/components/shared/cards/ProductCard';
 import Dialog from '@/components/shared/Dialog';
 import { getProducts, createProduct, updateProduct, deleteProduct } from '@/api/endpoints/products.api';
+import type { CreateProductPayload, UpdateProductPayload } from '@/api/endpoints/products.api';
 import { getCategories } from '@/api/endpoints/categories.api';
 
 export default function ProductsPage() {
@@ -41,11 +42,11 @@ export default function ProductsPage() {
 
   // Mutations
   const saveMutation = useMutation({
-    mutationFn: (data: any) => {
+    mutationFn: (data: CreateProductPayload | UpdateProductPayload) => {
       if (editingProduct) {
-        return updateProduct(editingProduct.id, data);
+        return updateProduct(editingProduct.id, data as UpdateProductPayload);
       }
-      return createProduct(data);
+      return createProduct(data as CreateProductPayload);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['products'] });

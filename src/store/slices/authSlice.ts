@@ -1,9 +1,9 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { login as loginApi } from '@/api/endpoints/auth.api';
-import type { LoginResponse, LoginCredentials } from '@/types/auth.types';
+import { verifyLoginOtp, logout as apiLogout } from '@/api/endpoints/auth.api';
+import type { LoginResponse, VerifyOtpPayload } from '@/types/auth.types';
 
 interface AuthState {
-  user: LoginResponse | null;
+  user: LoginResponse['user'] | null;
   isLoading: boolean;
   error: string | null;
   isAuthenticated: boolean;
@@ -13,41 +13,51 @@ const initialState: AuthState = {
   user: null,
   isLoading: false,
   error: null,
-  isAuthenticated: false,
+  isAuthenticated: !!localStorage.getItem('token'),
 };
 
-// Async thunk for login
+// Async thunk for login via OTP
 export const login = createAsyncThunk<
   LoginResponse,
-  LoginCredentials,
+  VerifyOtpPayload,
   { rejectValue: string }
->('auth/login', async (credentials, { rejectWithValue }) => {
+>('auth/login', async (payload, { rejectWithValue }) => {
   try {
-    const response = await loginApi(credentials);
+    const response = await verifyLoginOtp(payload);
+    
+    const role = response.user.role;
+    if (role !== 'ADMIN') {
+      return rejectWithValue('Access denied: Admins only');
+    }
+
     return response;
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const err = error as import('axios').AxiosError<{ message: string }>;
     return rejectWithValue(
-      error.response?.data?.message || error.message || 'Login failed'
+      err.response?.data?.message || err.message || 'Login failed'
     );
   }
 });
 
 // Async thunk for logout
 export const logout = createAsyncThunk('auth/logout', async () => {
-  // Clear local storage, cookies, etc.
-  localStorage.removeItem('token');
-  // Add any additional cleanup logic here
+  try {
+    await apiLogout();
+  } catch (error) {
+    console.error('Failed to logout from backend', error);
+    // Even if backend fails, we want to clear local state
+  } finally {
+    localStorage.removeItem('token');
+  }
 });
 
 const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    // Clear error
     clearError: (state) => {
       state.error = null;
     },
-    // Reset auth state (useful for logout)
     resetAuthState: () => initialState,
   },
   extraReducers: (builder) => {
@@ -59,11 +69,10 @@ const authSlice = createSlice({
       })
       .addCase(login.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.user = action.payload;
+        state.user = action.payload.user;
         state.isAuthenticated = true;
-        // Store token or user data if needed
-        if (action.payload.token) {
-          localStorage.setItem('token', action.payload.token);
+        if (action.payload.accessToken) {
+          localStorage.setItem('token', action.payload.accessToken);
         }
       })
       .addCase(login.rejected, (state, action) => {

@@ -15,6 +15,7 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { createQuestion, updateQuestion, getQuestionOptions, createQuestionOption, deleteQuestionOption } from '@/api/endpoints/assessments.api';
+import type { CreateQuestionPayload, UpdateQuestionPayload } from '@/api/endpoints/assessments.api';
 import { toast } from 'sonner';
 
 // Backend question type values
@@ -62,7 +63,7 @@ function OptionsManager({ questionId, assessmentId }: { questionId: string; asse
       setNewLabel('');
       toast.success('Option added');
     },
-    onError: (e: any) => toast.error(e.message || 'Failed to add option')
+    onError: (e: Error) => toast.error(e.message || 'Failed to add option')
   });
 
   const deleteMutation = useMutation({
@@ -72,7 +73,7 @@ function OptionsManager({ questionId, assessmentId }: { questionId: string; asse
       queryClient.invalidateQueries({ queryKey: ['questions', assessmentId] });
       toast.success('Option deleted');
     },
-    onError: (e: any) => toast.error(e.message || 'Failed to delete option')
+    onError: (e: Error) => toast.error(e.message || 'Failed to delete option')
   });
 
   return (
@@ -165,11 +166,11 @@ export default function QuestionFormDialog({
   const questionType = useWatch({ control: form.control, name: 'type' });
 
   const mutation = useMutation({
-    mutationFn: async (data: any) => {
+    mutationFn: async (data: CreateQuestionPayload | UpdateQuestionPayload) => {
       if (editingQuestion) {
-        return updateQuestion(editingQuestion.id, data);
+        return updateQuestion(editingQuestion.id, data as UpdateQuestionPayload);
       }
-      return createQuestion(data);
+      return createQuestion(data as CreateQuestionPayload);
     },
     onSuccess: (savedQuestion) => {
       onSave(savedQuestion);
@@ -198,7 +199,7 @@ export default function QuestionFormDialog({
   return (
     <Dialog isOpen={isOpen} onClose={onClose} title={editingQuestion ? 'Edit Question' : 'Add Question'}>
       <form
-        onSubmit={form.handleSubmit(handleSubmit as any)}
+        onSubmit={form.handleSubmit(handleSubmit)}
         className="space-y-5"
       >
         {/* Question Type */}

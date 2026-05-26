@@ -5,6 +5,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import type { Assessment, AssessmentQuestion } from '@/types';
 import { getCategories } from '@/api/endpoints/categories.api';
 import { createAssessment, updateAssessment, getQuestions, deleteQuestion } from '@/api/endpoints/assessments.api';
+import type { CreateAssessmentPayload, UpdateAssessmentPayload } from '@/api/endpoints/assessments.api';
 import Dialog from '@/components/shared/Dialog';
 import QuestionList from './QuestionList';
 import QuestionFormDialog from './QuestionFormDialog';
@@ -76,11 +77,11 @@ export default function AssessmentFormDialog({ isOpen, onClose, editingAssessmen
 
   // Create assessment mutation
   const createMutation = useMutation({
-    mutationFn: (data: any) => {
+    mutationFn: (data: CreateAssessmentPayload | UpdateAssessmentPayload) => {
       if (createdAssessmentId) {
-        return updateAssessment(createdAssessmentId, data);
+        return updateAssessment(createdAssessmentId, data as UpdateAssessmentPayload);
       }
-      return createAssessment(data);
+      return createAssessment(data as CreateAssessmentPayload);
     },
     onSuccess: (savedAssessment) => {
       queryClient.invalidateQueries({ queryKey: ['assessments'] });
@@ -102,7 +103,7 @@ export default function AssessmentFormDialog({ isOpen, onClose, editingAssessmen
     onMutate: async (idToDelete) => {
       await queryClient.cancelQueries({ queryKey: ['questions', createdAssessmentId] });
       const previous = queryClient.getQueryData(['questions', createdAssessmentId]);
-      queryClient.setQueryData(['questions', createdAssessmentId], (old: any) => {
+      queryClient.setQueryData(['questions', createdAssessmentId], (old: { data: AssessmentQuestion[] } | undefined) => {
         if (!old?.data) return old;
         return {
           ...old,
@@ -150,7 +151,7 @@ export default function AssessmentFormDialog({ isOpen, onClose, editingAssessmen
 
   const handleQuestionSaved = (question: AssessmentQuestion) => {
     // Optimistically update the list
-    queryClient.setQueryData(['questions', createdAssessmentId], (old: any) => {
+    queryClient.setQueryData(['questions', createdAssessmentId], (old: { data: AssessmentQuestion[] } | undefined) => {
       if (!old?.data) return old;
       const exists = old.data.find((q: AssessmentQuestion) => q.id === question.id);
       return {
@@ -327,7 +328,7 @@ export default function AssessmentFormDialog({ isOpen, onClose, editingAssessmen
             {/* Only show success banner when freshly created (not when editing) */}
             {!editingAssessment && (
               <div className="bg-green-50 border border-green-200 rounded-xl p-3 text-sm text-green-700 font-medium">
-                ✅ Assessment created! Add questions below, then click Done.
+                 Assessment created! Add questions below, then click Done.
               </div>
             )}
 

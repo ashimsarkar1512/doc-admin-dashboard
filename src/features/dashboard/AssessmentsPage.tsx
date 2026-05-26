@@ -25,6 +25,7 @@ export default function AssessmentsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingAssessment, setEditingAssessment] = useState<Assessment | null>(null);
   const [categoryNameFilter, setCategoryNameFilter] = useState<string>('');
+  const [modalKey, setModalKey] = useState(0);
 
   const { data: categoriesData } = useQuery({
     queryKey: ['categories'],
@@ -52,6 +53,7 @@ export default function AssessmentsPage() {
 
   const handleOpenCreate = () => {
     setEditingAssessment(null);
+    setModalKey((prev) => prev + 1);
     setIsModalOpen(true);
   };
 
@@ -182,7 +184,7 @@ export default function AssessmentsPage() {
 
       {/* Assessment Form Dialog */}
       <AssessmentFormDialog
-        key={editingAssessment?.id ?? 'create'}
+        key={editingAssessment?.id ?? `create-${modalKey}`}
         isOpen={isModalOpen}
         onClose={handleClose}
         editingAssessment={editingAssessment}
