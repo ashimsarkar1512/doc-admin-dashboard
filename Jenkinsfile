@@ -1,5 +1,11 @@
 pipeline {
-    agent any
+    agent {
+        docker {
+            image "node:22-bookworm"
+            args "-u root"
+            reuseNode true
+        }
+    }
 
     environment {
         DOCKER_IMAGE = "softvence/doc-dashboard"
@@ -12,6 +18,12 @@ pipeline {
     }
 
     stages {
+        stage("Prepare Agent") {
+            steps {
+                sh "apt-get update && apt-get install -y --no-install-recommends openssh-client rsync && rm -rf /var/lib/apt/lists/*"
+            }
+        }
+
         stage("Install Dependencies") {
             steps {
                 sh "npm ci"
