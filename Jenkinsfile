@@ -20,7 +20,7 @@ pipeline {
     stages {
         stage("Prepare Agent") {
             steps {
-                sh "apt-get update && apt-get install -y --no-install-recommends openssh-client rsync && rm -rf /var/lib/apt/lists/*"
+                sh "apt-get update && apt-get install -y --no-install-recommends openssh-client && rm -rf /var/lib/apt/lists/*"
             }
         }
 
@@ -40,8 +40,8 @@ pipeline {
             steps {
                 sshagent(credentials: ["${SSH_CREDENTIALS_ID}"]) {
                     sh """
-                        ssh -o StrictHostKeyChecking=no root@${SSH_HOST} "mkdir -p ${SERVER_PATH}"
-                        rsync -az --delete -e "ssh -o StrictHostKeyChecking=no" dist/ root@${SSH_HOST}:${SERVER_PATH}/
+                        ssh -o StrictHostKeyChecking=no root@${SSH_HOST} "mkdir -p ${SERVER_PATH} && find ${SERVER_PATH} -mindepth 1 -delete"
+                        tar -C dist -czf - . | ssh -o StrictHostKeyChecking=no root@${SSH_HOST} "tar -xzf - -C ${SERVER_PATH}"
                     """
                 }
             }
