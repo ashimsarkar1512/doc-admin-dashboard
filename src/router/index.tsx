@@ -30,8 +30,6 @@ const dashboardIndexRoute = createRoute({
 });
 
 import CategoriesPage from '@/features/dashboard/CategoriesPage';
-
-// Dummy routes for the sidebar sections
 const categoriesRoute = createRoute({
   getParentRoute: () => dashboardLayoutRoute,
   path: '/categories',
@@ -39,7 +37,6 @@ const categoriesRoute = createRoute({
 });
 
 import AssessmentsPage from '@/features/dashboard/AssessmentsPage';
-
 const assessmentsRoute = createRoute({
   getParentRoute: () => dashboardLayoutRoute,
   path: '/assessments',
@@ -47,23 +44,65 @@ const assessmentsRoute = createRoute({
 });
 
 import ProductsPage from '@/features/dashboard/ProductsPage';
-
 const productsRoute = createRoute({
   getParentRoute: () => dashboardLayoutRoute,
   path: '/products',
   component: ProductsPage,
 });
 
+import ProvidersPage from '@/features/dashboard/ProvidersPage';
 const providersRoute = createRoute({
   getParentRoute: () => dashboardLayoutRoute,
   path: '/providers',
-  component: () => <DummyPage title="Providers/Doctors" />,
+  component: ProvidersPage,
 });
 
 const patientsRoute = createRoute({
   getParentRoute: () => dashboardLayoutRoute,
   path: '/patients',
   component: () => <DummyPage title="Patients" />,
+});
+
+import OrdersPage from '@/features/dashboard/OrdersPage';
+const ordersRoute = createRoute({
+  getParentRoute: () => dashboardLayoutRoute,
+  path: '/orders',
+  component: OrdersPage,
+});
+
+import ContactLeadsPage from '@/features/dashboard/ContactLeadsPage';
+const contactLeadsRoute = createRoute({
+  getParentRoute: () => dashboardLayoutRoute,
+  path: '/contact-leads',
+  component: ContactLeadsPage,
+});
+
+import PaymentsPage from '@/features/dashboard/PaymentsPage';
+const paymentsRoute = createRoute({
+  getParentRoute: () => dashboardLayoutRoute,
+  path: '/payments',
+  component: PaymentsPage,
+});
+
+import TestimonialsPage from '@/features/dashboard/TestimonialsPage';
+const testimonialsRoute = createRoute({
+  getParentRoute: () => dashboardLayoutRoute,
+  path: '/testimonials',
+  component: TestimonialsPage,
+});
+
+import DiscountsPage from '@/features/dashboard/DiscountsPage';
+const discountsRoute = createRoute({
+  getParentRoute: () => dashboardLayoutRoute,
+  path: '/discounts',
+  component: DiscountsPage,
+});
+
+import EmployeePermissionsPage from '@/features/dashboard/EmployeePermissionsPage';
+const employeePermissionsRoute = createRoute({
+  getParentRoute: () => dashboardLayoutRoute,
+  path: '/employee-permissions',
+  component: EmployeePermissionsPage,
 });
 
 const websiteManagementRoute = createRoute({
@@ -84,12 +123,6 @@ const siteSettingsRoute = createRoute({
   component: () => <DummyPage title="Site Settings" />,
 });
 
-const userManagementRoute = createRoute({
-  getParentRoute: () => dashboardLayoutRoute,
-  path: '/user-management',
-  component: () => <DummyPage title="User Management" />,
-});
-
 // Build the route tree
 const routeTree = rootRoute.addChildren([
   indexRoute,
@@ -100,10 +133,15 @@ const routeTree = rootRoute.addChildren([
     productsRoute,
     providersRoute,
     patientsRoute,
+    ordersRoute,
+    contactLeadsRoute,
+    paymentsRoute,
+    testimonialsRoute,
+    discountsRoute,
+    employeePermissionsRoute,
     websiteManagementRoute,
     pagesRoute,
     siteSettingsRoute,
-    userManagementRoute,
   ]),
 ]);
 

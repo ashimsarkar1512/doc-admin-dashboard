@@ -3,7 +3,6 @@ import { Outlet, Link, useLocation } from '@tanstack/react-router';
 import {
   LayoutGrid,
   Folders,
-  FileQuestion,
   ShoppingBag,
   Stethoscope,
   Users,
@@ -13,6 +12,11 @@ import {
   ChevronLeft,
   ChevronRight,
   ChevronDown,
+  Package,
+  MessageSquare,
+  BadgeDollarSign,
+  Star,
+  Tag,
 } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { toggleSidebar, setPageHeader } from '@/store/uiSlice';
@@ -21,15 +25,20 @@ import { toggleSidebar, setPageHeader } from '@/store/uiSlice';
 const routeTitleMap: Record<string, { title: string; subtitle: string }> = {
   '/dashboard': { title: 'Dashboard', subtitle: 'Overview of your medical practice metrics' },
   '/dashboard/': { title: 'Dashboard', subtitle: 'Overview of your medical practice metrics' },
+  '/dashboard/providers': { title: 'Doctor Management', subtitle: 'Manage doctors, schedules, and clinical staff' },
+  '/dashboard/patients': { title: 'Patient Management', subtitle: 'View patient records, profiles, and history' },
+  '/dashboard/orders': { title: 'Orders', subtitle: 'Manage patient orders and prescriptions' },
+  '/dashboard/contact-leads': { title: 'Contact Leads', subtitle: 'Manage contact inquiries and leads' },
+  '/dashboard/payments': { title: 'Payments', subtitle: 'Manage transactions and billing' },
   '/dashboard/categories': { title: 'Categories', subtitle: 'Manage assessment and product categories' },
   '/dashboard/assessments': { title: 'Assessments', subtitle: 'Create and manage user assessments for services' },
   '/dashboard/products': { title: 'Products', subtitle: 'Manage inventory, pricing, and details' },
-  '/dashboard/providers': { title: 'Providers/Doctors', subtitle: 'Manage doctors, schedules, and clinical staff' },
-  '/dashboard/patients': { title: 'Patients', subtitle: 'View patient records, profiles, and history' },
+  '/dashboard/testimonials': { title: 'Testimonials', subtitle: 'Manage patient testimonials and reviews' },
+  '/dashboard/discounts': { title: 'Discounts & Marketing', subtitle: 'Manage promotional campaigns and discounts' },
   '/dashboard/website-management': { title: 'Website Management', subtitle: 'Configure website layout, pages, and components' },
   '/dashboard/pages': { title: 'Pages', subtitle: 'Manage website pages and static content' },
   '/dashboard/site-settings': { title: 'Site Settings', subtitle: 'Configure global site parameters and variables' },
-  '/dashboard/user-management': { title: 'User Management', subtitle: 'Manage system administrators, roles, and permissions' },
+  '/dashboard/user-management': { title: 'Employee Permissions', subtitle: 'Manage system administrators, roles, and permissions' },
 };
 
 export default function DashboardLayout() {
@@ -41,6 +50,7 @@ export default function DashboardLayout() {
   const location = useLocation();
 
   // Local state for submenus
+  const [patientMenuOpen, setPatientMenuOpen] = useState(false);
   const [websiteMenuOpen, setWebsiteMenuOpen] = useState(true);
   const [pagesMenuOpen, setPagesMenuOpen] = useState(true);
 
@@ -78,7 +88,7 @@ export default function DashboardLayout() {
         </div>
 
         {/* Nav links */}
-        <nav className={`flex-1 overflow-y-auto py-6 space-y-1.5 ${collapsed ? 'px-2' : 'px-4'}`}>
+        <nav className={`flex-1 overflow-y-auto py-6 space-y-1.5 ${collapsed ? 'px-2' : 'px-4'} custom-scrollbar`}>
           {/* Dashboard */}
           <Link
             to="/dashboard"
@@ -87,6 +97,103 @@ export default function DashboardLayout() {
           >
             <LayoutGrid size={20} className="text-slate-500 shrink-0" />
             {!collapsed && <span>Dashboard</span>}
+          </Link>
+
+          {/* Doctor Management */}
+          <Link
+            to="/dashboard/providers"
+            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold [&.active_svg]:text-[#1447E6]"
+          >
+            <Stethoscope size={20} className="text-slate-500 shrink-0" />
+            {!collapsed && <span>Doctor Management</span>}
+          </Link>
+
+          {/* Patient Management */}
+          {collapsed ? (
+            <Link
+              to="/dashboard/patients"
+              className="flex items-center justify-center p-2.5 rounded-lg text-slate-700 hover:bg-slate-50 [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active_svg]:text-[#1447E6]"
+              title="Patient Management"
+            >
+              <Users size={20} className="text-slate-500 shrink-0" />
+            </Link>
+          ) : (
+            <div>
+              <button
+                onClick={() => setPatientMenuOpen(!patientMenuOpen)}
+                className="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors group"
+              >
+                <div className="flex items-center gap-3">
+                  <Users size={20} className="text-slate-500 group-hover:text-slate-700 shrink-0" />
+                  <span>Patient Management</span>
+                </div>
+                <ChevronDown
+                  size={16}
+                  className={`text-slate-400 transition-transform duration-200 ${
+                    patientMenuOpen ? 'rotate-180' : ''
+                  }`}
+                />
+              </button>
+
+              {/* Submenus */}
+              {patientMenuOpen && (
+                <div className="pl-6 mt-1 space-y-1">
+                  <Link
+                    to="/dashboard/patients"
+                    className="flex items-center gap-3 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold"
+                  >
+                    All Patients
+                  </Link>
+                  <Link
+                    to="/dashboard/assessments"
+                    className="flex items-center gap-3 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold"
+                  >
+                    Assessments
+                  </Link>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Orders */}
+          <Link
+            to="/dashboard/orders"
+            className="flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold [&.active_svg]:text-[#1447E6]"
+          >
+            <div className="flex items-center gap-3">
+              <Package size={20} className="text-slate-500 shrink-0" />
+              {!collapsed && <span>Orders</span>}
+            </div>
+            {!collapsed && (
+              <span className="flex items-center justify-center w-5 h-5 rounded-full bg-[#E88319] text-white text-[10px] font-bold">
+                3
+              </span>
+            )}
+          </Link>
+
+          {/* Contact Leads */}
+          <Link
+            to="/dashboard/contact-leads"
+            className="flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold [&.active_svg]:text-[#1447E6]"
+          >
+            <div className="flex items-center gap-3">
+              <MessageSquare size={20} className="text-slate-500 shrink-0" />
+              {!collapsed && <span>Contact Leads</span>}
+            </div>
+            {!collapsed && (
+              <span className="flex items-center justify-center w-5 h-5 rounded-full bg-[#E88319] text-white text-[10px] font-bold">
+                3
+              </span>
+            )}
+          </Link>
+
+          {/* Payments */}
+          <Link
+            to="/dashboard/payments"
+            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold [&.active_svg]:text-[#1447E6]"
+          >
+            <BadgeDollarSign size={20} className="text-slate-500 shrink-0" />
+            {!collapsed && <span>Payments</span>}
           </Link>
 
           {/* Categories */}
@@ -98,14 +205,7 @@ export default function DashboardLayout() {
             {!collapsed && <span>Categories</span>}
           </Link>
 
-          {/* Assessments */}
-          <Link
-            to="/dashboard/assessments"
-            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold [&.active_svg]:text-[#1447E6]"
-          >
-            <FileQuestion size={20} className="text-slate-500 shrink-0" />
-            {!collapsed && <span>Assessments</span>}
-          </Link>
+
 
           {/* Products */}
           <Link
@@ -115,23 +215,23 @@ export default function DashboardLayout() {
             <ShoppingBag size={20} className="text-slate-500 shrink-0" />
             {!collapsed && <span>Products</span>}
           </Link>
-
-          {/* Providers/Doctors */}
+          
+          {/* Testimonials */}
           <Link
-            to="/dashboard/providers"
+            to="/dashboard/testimonials"
             className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold [&.active_svg]:text-[#1447E6]"
           >
-            <Stethoscope size={20} className="text-slate-500 shrink-0" />
-            {!collapsed && <span>Providers/Doctors</span>}
+            <Star size={20} className="text-slate-500 shrink-0" />
+            {!collapsed && <span>Testimonials</span>}
           </Link>
 
-          {/* Patients */}
+          {/* Discounts & Marketing */}
           <Link
-            to="/dashboard/patients"
+            to="/dashboard/discounts"
             className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold [&.active_svg]:text-[#1447E6]"
           >
-            <Users size={20} className="text-slate-500 shrink-0" />
-            {!collapsed && <span>Patients</span>}
+            <Tag size={20} className="text-slate-500 shrink-0" />
+            {!collapsed && <span>Discounts & Marketing</span>}
           </Link>
 
           {/* Website Management (with expandable submenu when expanded) */}
@@ -203,13 +303,13 @@ export default function DashboardLayout() {
             </div>
           )}
 
-          {/* User Management */}
+          {/* Employee Permissions */}
           <Link
-            to="/dashboard/user-management"
+            to="/dashboard/employee-permissions"
             className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold [&.active_svg]:text-[#1447E6]"
           >
             <UserCog size={20} className="text-slate-500 shrink-0" />
-            {!collapsed && <span>User Management</span>}
+            {!collapsed && <span>Employee Permissions</span>}
           </Link>
         </nav>
 
