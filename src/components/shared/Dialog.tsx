@@ -54,7 +54,7 @@ export default function Dialog({ isOpen, onClose, title, children, maxWidthClass
             <X className="w-5 h-5" />
           </button>
         </div>
-        <div className="p-6 overflow-y-auto">
+        <div className="p-6 overflow-y-auto flex-1 scrollbar-hide">
           {children}
         </div>
       </div>

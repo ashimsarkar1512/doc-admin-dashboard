@@ -43,6 +43,13 @@ const assessmentsRoute = createRoute({
   component: AssessmentsPage,
 });
 
+import AssessmentTablePage from '@/features/dashboard/AssessmentTablePage';
+const assessmentTableRoute = createRoute({
+  getParentRoute: () => dashboardLayoutRoute,
+  path: '/assessment-table',
+  component: AssessmentTablePage,
+});
+
 import ProductsPage from '@/features/dashboard/ProductsPage';
 const productsRoute = createRoute({
   getParentRoute: () => dashboardLayoutRoute,
@@ -130,6 +137,7 @@ const routeTree = rootRoute.addChildren([
     dashboardIndexRoute,
     categoriesRoute,
     assessmentsRoute,
+    assessmentTableRoute,
     productsRoute,
     providersRoute,
     patientsRoute,
