@@ -2,7 +2,7 @@ import { axiosInstance } from '@/api/axiosInstance';
 import type { LoginCredentials, LoginResponse, VerifyOtpPayload } from "@/types/auth.types";
 
 export const requestLoginOtp = async (credentials: LoginCredentials): Promise<{ message: string }> => {
-  const response = await axiosInstance.post<{ message: string }>('/auth/login/request-otp', credentials);
+  const response = await axiosInstance.post<{ message: string }>('/auth/login', credentials);
   return response.data;
 };
 
