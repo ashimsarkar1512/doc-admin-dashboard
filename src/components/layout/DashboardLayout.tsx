@@ -60,12 +60,14 @@ const routeTitleMap: Record<string, { title: string; subtitle: string }> = {
   '/dashboard/communication-center': { title: 'Communication Center', subtitle: 'Manage patient messages, internal communications, and notifications' },
   '/dashboard/document-center': { title: 'Document Center', subtitle: 'Centralized storage for policies, forms, reports, and compliance documents' },
   '/dashboard/system-health': { title: 'System Health', subtitle: 'Real-time status and performance monitoring for all platform services' },
+  '/dashboard/profile': { title: 'Profile', subtitle: 'Manage your profile and settings' },
 };
 
 export default function DashboardLayout() {
   const collapsed = useAppSelector((state) => state.ui.sidebarCollapsed);
   const pageTitle = useAppSelector((state) => state.ui.pageTitle);
   const pageSubtitle = useAppSelector((state) => state.ui.pageSubtitle);
+  const user = useAppSelector((state) => state.auth.user);
   
   const dispatch = useAppDispatch();
   const location = useLocation();
@@ -471,12 +473,17 @@ export default function DashboardLayout() {
           {/* User Profile Section */}
           <div className="flex items-center gap-4">
             <div className="hidden sm:flex flex-col text-right">
-              <span className="text-sm font-bold text-slate-700 leading-none mb-1">Admin User</span>
-              <span className="text-xs font-medium text-slate-400 leading-none">admin@ektahealth.com</span>
+              <span className="text-sm font-bold text-slate-700 leading-none mb-1">{user?.name || 'Admin User'}</span>
+              <span className="text-xs font-medium text-slate-400 leading-none">{user?.email || 'admin@example.com'}</span>
             </div>
-            <div className="w-10 h-10 rounded-full bg-[#1447E6] flex items-center justify-center shadow-sm">
-              <span className="text-sm font-bold text-white tracking-wide">AU</span>
-            </div>
+            <Link 
+              to="/dashboard/profile"
+              className="w-10 h-10 rounded-full bg-[#1447E6] flex items-center justify-center shadow-sm hover:opacity-90 transition-opacity"
+            >
+              <span className="text-sm font-bold text-white tracking-wide">
+                {user?.name ? user.name.substring(0, 2).toUpperCase() : 'AU'}
+              </span>
+            </Link>
           </div>
         </header>
 

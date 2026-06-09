@@ -200,6 +200,12 @@ const systemHealthRoute = createRoute({
   component: SystemHealthPage,
 });
 
+const profileRoute = createRoute({
+  getParentRoute: () => dashboardLayoutRoute,
+  path: '/profile',
+  component: () => <DummyPage title="Profile" />,
+});
+
 // Build the route tree
 const routeTree = rootRoute.addChildren([
   indexRoute,
@@ -230,6 +236,7 @@ const routeTree = rootRoute.addChildren([
     communicationCenterRoute,
     documentCenterRoute,
     systemHealthRoute,
+    profileRoute,
   ]),
 ]);
 

@@ -1,13 +1,31 @@
 import { axiosInstance } from '@/api/axiosInstance';
-import type { LoginCredentials, LoginResponse, VerifyOtpPayload } from "@/types/auth.types";
+import type { 
+  LoginCredentials, 
+  LoginResponse, 
+  SendOtpPayload, 
+  SendOtpResponse, 
+  VerifyOtpPayload, 
+  VerifyOtpResponse,
+  ResendOtpPayload
+} from "@/types/auth.types";
 
-export const requestLoginOtp = async (credentials: LoginCredentials): Promise<{ message: string }> => {
-  const response = await axiosInstance.post<{ message: string }>('/auth/login', credentials);
+export const requestLogin = async (credentials: LoginCredentials): Promise<LoginResponse> => {
+  const response = await axiosInstance.post<LoginResponse>('/auth/login', credentials);
   return response.data;
 };
 
-export const verifyLoginOtp = async (payload: VerifyOtpPayload): Promise<LoginResponse> => {
-  const response = await axiosInstance.post<LoginResponse>('/auth/login/verify-otp', payload);
+export const requestSendOtp = async (payload: SendOtpPayload): Promise<SendOtpResponse> => {
+  const response = await axiosInstance.post<SendOtpResponse>('/auth/send-otp', payload);
+  return response.data;
+};
+
+export const requestResendOtp = async (payload: ResendOtpPayload): Promise<{ message: string }> => {
+  const response = await axiosInstance.post<{ message: string }>('/auth/resend-otp', payload);
+  return response.data;
+};
+
+export const verifyLoginOtp = async (payload: VerifyOtpPayload): Promise<VerifyOtpResponse> => {
+  const response = await axiosInstance.post<VerifyOtpResponse>('/auth/verify-otp', payload);
   return response.data;
 };
 
