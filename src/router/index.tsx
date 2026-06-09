@@ -130,6 +130,82 @@ const siteSettingsRoute = createRoute({
   component: () => <DummyPage title="Site Settings" />,
 });
 
+import ComplianceCenterPage from '@/features/dashboard/ComplianceCenterPage';
+const complianceCenterRoute = createRoute({
+  getParentRoute: () => dashboardLayoutRoute,
+  path: '/compliance-center',
+  component: ComplianceCenterPage,
+});
+
+import AuditLogsPage from '@/features/dashboard/AuditLogsPage';
+const auditLogsRoute = createRoute({
+  getParentRoute: () => dashboardLayoutRoute,
+  path: '/audit-logs',
+  component: AuditLogsPage,
+});
+
+import ConsentManagementPage from '@/features/dashboard/ConsentManagementPage';
+const consentManagementRoute = createRoute({
+  getParentRoute: () => dashboardLayoutRoute,
+  path: '/consent-management',
+  component: ConsentManagementPage,
+});
+
+import IncidentManagementPage from '@/features/dashboard/IncidentManagementPage';
+const incidentManagementRoute = createRoute({
+  getParentRoute: () => dashboardLayoutRoute,
+  path: '/incident-management',
+  component: IncidentManagementPage,
+});
+
+import StateCoveragePage from '@/features/dashboard/StateCoveragePage';
+const stateCoverageRoute = createRoute({
+  getParentRoute: () => dashboardLayoutRoute,
+  path: '/state-coverage',
+  component: StateCoveragePage,
+});
+
+import PrescriptionOversightPage from '@/features/dashboard/PrescriptionOversightPage';
+const prescriptionOversightRoute = createRoute({
+  getParentRoute: () => dashboardLayoutRoute,
+  path: '/prescription-oversight',
+  component: PrescriptionOversightPage,
+});
+
+import BusinessIntelligencePage from '@/features/dashboard/BusinessIntelligencePage';
+const businessIntelligenceRoute = createRoute({
+  getParentRoute: () => dashboardLayoutRoute,
+  path: '/business-intelligence',
+  component: BusinessIntelligencePage,
+});
+
+import CommunicationCenterPage from '@/features/dashboard/CommunicationCenterPage';
+const communicationCenterRoute = createRoute({
+  getParentRoute: () => dashboardLayoutRoute,
+  path: '/communication-center',
+  component: CommunicationCenterPage,
+});
+
+import DocumentCenterPage from '@/features/dashboard/DocumentCenterPage';
+const documentCenterRoute = createRoute({
+  getParentRoute: () => dashboardLayoutRoute,
+  path: '/document-center',
+  component: DocumentCenterPage,
+});
+
+import SystemHealthPage from '@/features/dashboard/SystemHealthPage';
+const systemHealthRoute = createRoute({
+  getParentRoute: () => dashboardLayoutRoute,
+  path: '/system-health',
+  component: SystemHealthPage,
+});
+
+const profileRoute = createRoute({
+  getParentRoute: () => dashboardLayoutRoute,
+  path: '/profile',
+  component: () => <DummyPage title="Profile" />,
+});
+
 // Build the route tree
 const routeTree = rootRoute.addChildren([
   indexRoute,
@@ -150,6 +226,17 @@ const routeTree = rootRoute.addChildren([
     websiteManagementRoute,
     pagesRoute,
     siteSettingsRoute,
+    complianceCenterRoute,
+    auditLogsRoute,
+    consentManagementRoute,
+    incidentManagementRoute,
+    stateCoverageRoute,
+    prescriptionOversightRoute,
+    businessIntelligenceRoute,
+    communicationCenterRoute,
+    documentCenterRoute,
+    systemHealthRoute,
+    profileRoute,
   ]),
 ]);
 

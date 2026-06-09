@@ -18,6 +18,15 @@ import {
   Star,
   Tag,
   ClipboardList,
+  ShieldCheck,
+  ScrollText,
+  FileText,
+  AlertTriangle,
+  Map,
+  Pill,
+  BarChart2,
+  Folder,
+  Activity,
 } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { toggleSidebar, setPageHeader } from '@/store/uiSlice';
@@ -40,13 +49,25 @@ const routeTitleMap: Record<string, { title: string; subtitle: string }> = {
   '/dashboard/website-management': { title: 'Website Management', subtitle: 'Configure website layout, pages, and components' },
   '/dashboard/pages': { title: 'Pages', subtitle: 'Manage website pages and static content' },
   '/dashboard/site-settings': { title: 'Site Settings', subtitle: 'Configure global site parameters and variables' },
-  '/dashboard/user-management': { title: 'Employee Permissions', subtitle: 'Manage system administrators, roles, and permissions' },
+  '/dashboard/employee-permissions': { title: 'Employee Permissions', subtitle: 'Manage system administrators, roles, and permissions' },
+  '/dashboard/compliance-center': { title: 'Compliance Center', subtitle: 'Monitor regulatory compliance checks and audit results' },
+  '/dashboard/audit-logs': { title: 'Audit Logs', subtitle: 'Track all system activity and user actions for compliance' },
+  '/dashboard/consent-management': { title: 'Consent Management', subtitle: 'Manage and track patient consent forms and authorizations' },
+  '/dashboard/incident-management': { title: 'Incident Management', subtitle: 'Track, investigate and resolve compliance and system incidents' },
+  '/dashboard/state-coverage': { title: 'State Coverage', subtitle: 'Overview of service coverage and provider availability by state' },
+  '/dashboard/prescription-oversight': { title: 'Prescription Oversight', subtitle: 'Monitor and manage active patient prescriptions and medications' },
+  '/dashboard/business-intelligence': { title: 'Business Intelligence', subtitle: 'Key performance metrics and data-driven insights for decision making' },
+  '/dashboard/communication-center': { title: 'Communication Center', subtitle: 'Manage patient messages, internal communications, and notifications' },
+  '/dashboard/document-center': { title: 'Document Center', subtitle: 'Centralized storage for policies, forms, reports, and compliance documents' },
+  '/dashboard/system-health': { title: 'System Health', subtitle: 'Real-time status and performance monitoring for all platform services' },
+  '/dashboard/profile': { title: 'Profile', subtitle: 'Manage your profile and settings' },
 };
 
 export default function DashboardLayout() {
   const collapsed = useAppSelector((state) => state.ui.sidebarCollapsed);
   const pageTitle = useAppSelector((state) => state.ui.pageTitle);
   const pageSubtitle = useAppSelector((state) => state.ui.pageSubtitle);
+  const user = useAppSelector((state) => state.auth.user);
   
   const dispatch = useAppDispatch();
   const location = useLocation();
@@ -55,6 +76,7 @@ export default function DashboardLayout() {
   const [patientMenuOpen, setPatientMenuOpen] = useState(false);
   const [websiteMenuOpen, setWebsiteMenuOpen] = useState(true);
   const [pagesMenuOpen, setPagesMenuOpen] = useState(true);
+  const [complianceMenuOpen, setComplianceMenuOpen] = useState(true);
 
   // Synchronize route changes to Redux Page Header State
   useEffect(() => {
@@ -314,14 +336,116 @@ export default function DashboardLayout() {
             </div>
           )}
 
-          {/* Employee Permissions */}
-          <Link
-            to="/dashboard/employee-permissions"
-            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold [&.active_svg]:text-[#1447E6]"
-          >
-            <UserCog size={20} className="text-slate-500 shrink-0" />
-            {!collapsed && <span>Employee Permissions</span>}
-          </Link>
+          <hr className="my-2 border-slate-200" />
+
+          {/* Compliance & Access */}
+          {collapsed ? (
+            <Link
+              to="/dashboard/employee-permissions"
+              className="flex items-center justify-center p-2.5 rounded-lg text-slate-700 hover:bg-slate-50 [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active_svg]:text-[#1447E6]"
+              title="Compliance & Access"
+            >
+              <ShieldCheck size={20} className="text-slate-500 shrink-0" />
+            </Link>
+          ) : (
+            <div>
+              <button
+                onClick={() => setComplianceMenuOpen(!complianceMenuOpen)}
+                className="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:bg-slate-50 transition-colors group"
+              >
+                <span>Compliance & Access</span>
+                <ChevronDown
+                  size={16}
+                  className={`text-slate-400 transition-transform duration-200 ${
+                    complianceMenuOpen ? 'rotate-180' : ''
+                  }`}
+                />
+              </button>
+
+              {/* Submenus */}
+              {complianceMenuOpen && (
+                <div className="pl-3 mt-1 space-y-1">
+                  <Link
+                    to="/dashboard/employee-permissions"
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold [&.active_svg]:text-[#1447E6]"
+                  >
+                    <UserCog size={20} className="text-slate-500 shrink-0" />
+                    <span>Employee Permissions</span>
+                  </Link>
+                  <Link
+                    to="/dashboard/compliance-center"
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold [&.active_svg]:text-[#1447E6]"
+                  >
+                    <ShieldCheck size={20} className="text-slate-500 shrink-0" />
+                    <span>Compliance Center</span>
+                  </Link>
+                  <Link
+                    to="/dashboard/audit-logs"
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold [&.active_svg]:text-[#1447E6]"
+                  >
+                    <ScrollText size={20} className="text-slate-500 shrink-0" />
+                    <span>Audit Logs</span>
+                  </Link>
+                  <Link
+                    to="/dashboard/consent-management"
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold [&.active_svg]:text-[#1447E6]"
+                  >
+                    <FileText size={20} className="text-slate-500 shrink-0" />
+                    <span>Consent Management</span>
+                  </Link>
+                  <Link
+                    to="/dashboard/incident-management"
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold [&.active_svg]:text-[#1447E6]"
+                  >
+                    <AlertTriangle size={20} className="text-slate-500 shrink-0" />
+                    <span>Incident Management</span>
+                  </Link>
+                  <Link
+                    to="/dashboard/state-coverage"
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold [&.active_svg]:text-[#1447E6]"
+                  >
+                    <Map size={20} className="text-slate-500 shrink-0" />
+                    <span>State Coverage</span>
+                  </Link>
+                  <Link
+                    to="/dashboard/prescription-oversight"
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold [&.active_svg]:text-[#1447E6]"
+                  >
+                    <Pill size={20} className="text-slate-500 shrink-0" />
+                    <span>Prescription Oversight</span>
+                  </Link>
+                  <Link
+                    to="/dashboard/business-intelligence"
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold [&.active_svg]:text-[#1447E6]"
+                  >
+                    <BarChart2 size={20} className="text-slate-500 shrink-0" />
+                    <span>Business Intelligence</span>
+                  </Link>
+                  <Link
+                    to="/dashboard/communication-center"
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold [&.active_svg]:text-[#1447E6]"
+                  >
+                    <MessageSquare size={20} className="text-slate-500 shrink-0" />
+                    <span>Communication Center</span>
+                  </Link>
+                  <Link
+                    to="/dashboard/document-center"
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold [&.active_svg]:text-[#1447E6]"
+                  >
+                    <Folder size={20} className="text-slate-500 shrink-0" />
+                    <span>Document Center</span>
+                  </Link>
+                  <Link
+                    to="/dashboard/system-health"
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold [&.active_svg]:text-[#1447E6]"
+                  >
+                    <Activity size={20} className="text-slate-500 shrink-0" />
+                    <span>System Health</span>
+                  </Link>
+                </div>
+              )}
+            </div>
+          )}
         </nav>
 
         {/* Logout */}
@@ -349,12 +473,17 @@ export default function DashboardLayout() {
           {/* User Profile Section */}
           <div className="flex items-center gap-4">
             <div className="hidden sm:flex flex-col text-right">
-              <span className="text-sm font-bold text-slate-700 leading-none mb-1">Admin User</span>
-              <span className="text-xs font-medium text-slate-400 leading-none">admin@ektahealth.com</span>
+              <span className="text-sm font-bold text-slate-700 leading-none mb-1">{user?.name || 'Admin User'}</span>
+              <span className="text-xs font-medium text-slate-400 leading-none">{user?.email || 'admin@example.com'}</span>
             </div>
-            <div className="w-10 h-10 rounded-full bg-[#1447E6] flex items-center justify-center shadow-sm">
-              <span className="text-sm font-bold text-white tracking-wide">AU</span>
-            </div>
+            <Link 
+              to="/dashboard/profile"
+              className="w-10 h-10 rounded-full bg-[#1447E6] flex items-center justify-center shadow-sm hover:opacity-90 transition-opacity"
+            >
+              <span className="text-sm font-bold text-white tracking-wide">
+                {user?.name ? user.name.substring(0, 2).toUpperCase() : 'AU'}
+              </span>
+            </Link>
           </div>
         </header>
 

@@ -1,9 +1,9 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { verifyLoginOtp, logout as apiLogout } from '@/api/endpoints/auth.api';
-import type { LoginResponse, VerifyOtpPayload } from '@/types/auth.types';
+import type { VerifyOtpResponseData, VerifyOtpPayload } from '@/types/auth.types';
 
 interface AuthState {
-  user: LoginResponse['user'] | null;
+  user: VerifyOtpResponseData['user'] | null;
   isLoading: boolean;
   error: string | null;
   isAuthenticated: boolean;
@@ -18,19 +18,21 @@ const initialState: AuthState = {
 
 // Async thunk for login via OTP
 export const login = createAsyncThunk<
-  LoginResponse,
+  VerifyOtpResponseData,
   VerifyOtpPayload,
   { rejectValue: string }
 >('auth/login', async (payload, { rejectWithValue }) => {
   try {
     const response = await verifyLoginOtp(payload);
     
-    const role = response.user.role;
-    if (role !== 'ADMIN') {
+    const roles = response.data.user.roles;
+    const role = response.data.user.role;
+    
+    if ((!roles || !roles.includes('ADMIN')) && role !== 'ADMIN') {
       return rejectWithValue('Access denied: Admins only');
     }
 
-    return response;
+    return response.data;
   } catch (error: unknown) {
     const err = error as import('axios').AxiosError<{ message: string }>;
     return rejectWithValue(
