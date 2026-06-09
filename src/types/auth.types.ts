@@ -5,7 +5,10 @@ export interface LoginCredentials {
 
 export interface LoginResponseData {
   userId: string;
-  status: string;
+  status?: string;
+  challengeId?: string;
+  method?: string;
+  purpose?: string;
 }
 
 export interface LoginResponse {
@@ -17,7 +20,7 @@ export interface LoginResponse {
 export interface SendOtpPayload {
   userId: string;
   purpose: "LOGIN" | "REGISTRATION";
-  method: "EMAIL" | "PHONE";
+  method: "EMAIL" | "SMS";
 }
 
 export interface SendOtpResponseData {

@@ -29,7 +29,7 @@ export default function LoginPage() {
   const [requestError, setRequestError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   
-  type LoginFormInputs = LoginCredentials & { method: 'EMAIL' | 'PHONE' };
+  type LoginFormInputs = LoginCredentials & { method: 'EMAIL' | 'SMS' };
 
   const formStep1 = useForm<LoginFormInputs>({
     defaultValues: {
@@ -51,20 +51,35 @@ export default function LoginPage() {
     setIsRequesting(true);
     try {
       const loginRes = await requestLogin({ email: data.email, password: data.password });
-      if (loginRes.data.status === 'OTP_REQUIRED') {
-        setUserId(loginRes.data.userId);
+      
+      const userId = loginRes.data?.userId;
+      
+      if (loginRes.data?.challengeId || loginRes.data?.status === 'OTP_REQUIRED') {
+        setUserId(userId);
         
-        const otpRes = await requestSendOtp({
-          userId: loginRes.data.userId,
-          purpose: 'LOGIN',
-          method: data.method
-        });
+        // The login endpoint already sends an OTP via EMAIL and returns a challengeId.
+        // Only call send-otp separately if:
+        // 1. Login didn't return a challengeId (old API format), OR
+        // 2. User selected SMS (login endpoint defaults to EMAIL)
+        const loginChallengeId = loginRes.data?.challengeId;
         
-        setChallengeId(otpRes.data.challengeId);
+        if (loginChallengeId && data.method === 'EMAIL') {
+          // Happy path: login already sent the OTP via email, use its challengeId
+          setChallengeId(loginChallengeId);
+        } else {
+          // Need to call send-otp separately (no challengeId from login, or user wants SMS)
+          const otpRes = await requestSendOtp({
+            userId,
+            purpose: 'LOGIN',
+            method: data.method
+          });
+          setChallengeId(otpRes.data.challengeId);
+        }
+        
         setStep(2);
-        toast.success(`OTP sent successfully to your ${data.method.toLowerCase()}`);
+        toast.success(`OTP sent successfully to your ${data.method === 'SMS' ? 'phone' : 'email'}`);
       } else {
-        toast.error('Unexpected login status: ' + loginRes.data.status);
+        toast.error('Unexpected login status: ' + (loginRes.data?.status || 'Unknown'));
       }
     } catch (err: unknown) {
       const error = err as import('axios').AxiosError<{ message: string }>;
