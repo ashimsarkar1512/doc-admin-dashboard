@@ -1,51 +1,170 @@
-import { useQuery } from '@tanstack/react-query';
+import React, { useState } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { getContactLeads, respondContactLead, deleteContactLead } from '@/api/endpoints/contact-leads.api';
+import type { ContactLead } from '@/api/endpoints/contact-leads.api';
+import ContactLeadsTable from './components/ContactLeadsTable';
+import ViewMessageModal from './components/ViewMessageModal';
+import ResponseQuoteModal from './components/ResponseQuoteModal';
+import { Download, ChevronLeft, ChevronRight } from 'lucide-react';
 
 export default function ContactLeadsPage() {
-  const { data, isLoading } = useQuery({
-    queryKey: ['contact-leads'],
-    queryFn: async () => {
-      await new Promise((resolve) => setTimeout(resolve, 800));
-      return [
-        { id: 1, name: 'Alice Williams', email: 'alice@example.com', status: 'New' },
-        { id: 2, name: 'Michael Brown', email: 'michael@example.com', status: 'Contacted' },
-      ];
+  const [page, setPage] = useState(1);
+  const [limit] = useState(10);
+  
+  const [viewLeadId, setViewLeadId] = useState<string | null>(null);
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+  
+  const [respondLead, setRespondLead] = useState<ContactLead | null>(null);
+  const [isRespondModalOpen, setIsRespondModalOpen] = useState(false);
+
+  const queryClient = useQueryClient();
+
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ['contact-leads', page, limit],
+    queryFn: () => getContactLeads({ page, limit }),
+  });
+
+
+console.log(data,"contact data")
+
+
+
+  const deleteMutation = useMutation({
+    mutationFn: deleteContactLead,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['contact-leads'] });
+      setIsViewModalOpen(false);
+      setViewLeadId(null);
     },
   });
 
+  const respondMutation = useMutation({
+    mutationFn: ({ id, formData }: { id: string; formData: FormData }) => respondContactLead(id, formData),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['contact-leads'] });
+      setIsRespondModalOpen(false);
+      setRespondLead(null);
+    },
+  });
+
+  const handleView = (lead: ContactLead) => {
+    setViewLeadId(lead.id);
+    setIsViewModalOpen(true);
+  };
+
+  const handleRespond = (lead: ContactLead) => {
+    setRespondLead(lead);
+    setIsRespondModalOpen(true);
+  };
+
+  const handleDelete = (id: string) => {
+    if (window.confirm('Are you sure you want to delete this contact lead?')) {
+      deleteMutation.mutate(id);
+    }
+  };
+
+  const handleSendResponse = (id: string, formData: FormData) => {
+    respondMutation.mutate({ id, formData });
+  };
+
+  const handleExport = () => {
+    // Add logic to export data to CSV if needed
+    console.log('Exporting data...');
+  };
+
   return (
     <div className="w-full p-4 md:p-8">
-      <div className="mb-8">
-        <h1 className="text-2xl sm:text-3xl font-bold text-slate-800 tracking-tight">Contact Leads</h1>
-        <p className="text-sm text-slate-500 font-medium mt-1">Manage contact inquiries and leads</p>
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-bold text-slate-800 tracking-tight">Contact Leads</h1>
+          <p className="text-sm text-slate-500 font-medium mt-1">Manage your administrative role</p>
+        </div>
+        <div className="flex items-center gap-3 w-full sm:w-auto">
+          <select className="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm text-slate-700 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20">
+            <option>All services</option>
+          </select>
+          <select className="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm text-slate-700 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20">
+            <option>Today</option>
+          </select>
+          <button 
+            onClick={handleExport}
+            className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors ml-auto sm:ml-0"
+          >
+            <Download className="w-4 h-4" />
+            Export Data
+          </button>
+        </div>
       </div>
-      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
-        {isLoading ? (
-          <div className="p-8 flex justify-center items-center"><p className="text-slate-500">Loading leads...</p></div>
+
+      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm flex flex-col">
+        {isError ? (
+          <div className="p-8 text-center text-red-500">Failed to load contact leads.</div>
         ) : (
-          <table className="w-full text-left text-sm text-slate-600">
-            <thead className="bg-slate-50 border-b border-slate-200 text-slate-700 font-semibold">
-              <tr>
-                <th className="px-6 py-4">Name</th>
-                <th className="px-6 py-4">Email</th>
-                <th className="px-6 py-4">Status</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
-              {data?.map((item) => (
-                <tr key={item.id} className="hover:bg-slate-50 transition-colors">
-                  <td className="px-6 py-4 font-medium">{item.name}</td>
-                  <td className="px-6 py-4">{item.email}</td>
-                  <td className="px-6 py-4">
-                    <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${
-                      item.status === 'New' ? 'bg-blue-100 text-blue-700' : 'bg-slate-100 text-slate-700'
-                    }`}>{item.status}</span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <>
+            <ContactLeadsTable
+              leads={data?.data || []}
+              isLoading={isLoading}
+              onView={handleView}
+              onRespond={handleRespond}
+              onDelete={handleDelete}
+            />
+
+            {!isLoading && data?.meta && data.meta.totalPages > 1 && (
+              <div className="flex items-center justify-between px-6 py-4 border-t border-slate-200 bg-slate-50">
+                <span className="text-sm text-slate-500">
+                  Showing {((data.meta.page - 1) * data.meta.limit) + 1} to {Math.min(data.meta.page * data.meta.limit, data.meta.total)} of {data.meta.total} results
+                </span>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setPage((p) => Math.max(1, p - 1))}
+                    disabled={page === 1}
+                    className="p-1.5 rounded-md border border-slate-200 text-slate-600 hover:bg-slate-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                  </button>
+                  <span className="text-sm font-medium text-slate-700">
+                    Page {page} of {data.meta.totalPages}
+                  </span>
+                  <button
+                    onClick={() => setPage((p) => Math.min(data.meta.totalPages, p + 1))}
+                    disabled={page === data.meta.totalPages}
+                    className="p-1.5 rounded-md border border-slate-200 text-slate-600 hover:bg-slate-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  >
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            )}
+          </>
         )}
       </div>
+
+      <ViewMessageModal
+        isOpen={isViewModalOpen}
+        onClose={() => {
+          setIsViewModalOpen(false);
+          setViewLeadId(null);
+        }}
+        leadId={viewLeadId}
+        onDelete={(id) => {
+          handleDelete(id);
+        }}
+        onRespond={(lead) => {
+          setIsViewModalOpen(false);
+          handleRespond(lead);
+        }}
+      />
+
+      <ResponseQuoteModal
+        isOpen={isRespondModalOpen}
+        onClose={() => {
+          setIsRespondModalOpen(false);
+          setRespondLead(null);
+        }}
+        lead={respondLead}
+        onSend={handleSendResponse}
+        isSending={respondMutation.isPending}
+      />
     </div>
   );
 }
