@@ -22,6 +22,8 @@ export interface ContactLead {
 export interface GetContactLeadsParams {
   page?: number;
   limit?: number;
+  read?: boolean;
+  responded?: boolean;
 }
 
 export const getContactLeads = async (

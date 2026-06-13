@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Outlet, Link, useLocation } from '@tanstack/react-router';
 import { useQuery } from '@tanstack/react-query';
-import { getContactLeads } from '@/api/endpoints/contactLeads.api';
+
 import {
   LayoutGrid,
   Folders,
@@ -32,6 +32,7 @@ import {
 } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { toggleSidebar, setPageHeader } from '@/store/uiSlice';
+import { getContactLeads } from '@/api/endpoints/contact-leads.api';
 
 // Route to title mapping for cleaner code
 const routeTitleMap: Record<string, { title: string; subtitle: string }> = {
