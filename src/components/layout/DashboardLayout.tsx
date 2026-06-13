@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Outlet, Link, useLocation } from '@tanstack/react-router';
+import { useQuery } from '@tanstack/react-query';
+
 import {
   LayoutGrid,
   Folders,
@@ -30,6 +32,7 @@ import {
 } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { toggleSidebar, setPageHeader } from '@/store/uiSlice';
+import { getContactLeads } from '@/api/endpoints/contact-leads.api';
 
 // Route to title mapping for cleaner code
 const routeTitleMap: Record<string, { title: string; subtitle: string }> = {
@@ -68,6 +71,18 @@ export default function DashboardLayout() {
   const pageTitle = useAppSelector((state) => state.ui.pageTitle);
   const pageSubtitle = useAppSelector((state) => state.ui.pageSubtitle);
   const user = useAppSelector((state) => state.auth.user);
+  const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
+
+  // Fetch unread contact leads count for sidebar badge
+  const { data: unreadData } = useQuery({
+    queryKey: ['contact-leads-unread-count'],
+    queryFn: () => getContactLeads({ read: false, limit: 1 }),
+    enabled: isAuthenticated,
+    refetchInterval: 5000, // refresh every 5 seconds to match leads table
+    staleTime: 0,
+    refetchOnWindowFocus: true,
+  });
+  const unreadCount = unreadData?.meta?.total ?? 0;
   
   const dispatch = useAppDispatch();
   const location = useLocation();
@@ -213,9 +228,9 @@ export default function DashboardLayout() {
               <MessageSquare size={20} className="text-slate-500 shrink-0" />
               {!collapsed && <span>Contact Leads</span>}
             </div>
-            {!collapsed && (
-              <span className="flex items-center justify-center w-5 h-5 rounded-full bg-[#E88319] text-white text-[10px] font-bold">
-                3
+            {!collapsed && unreadCount > 0 && (
+              <span className="flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full bg-[#E88319] text-white text-[10px] font-bold">
+                {unreadCount > 99 ? '99+' : unreadCount}
               </span>
             )}
           </Link>

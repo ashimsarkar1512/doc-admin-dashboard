@@ -1,4 +1,4 @@
-import React from 'react';
+
 import Dialog from '@/components/shared/Dialog';
 import { Mail, Trash2 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';

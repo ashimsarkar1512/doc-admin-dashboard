@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { Eye, Mail, Trash2 } from 'lucide-react';
 import type { ContactLead } from '@/api/endpoints/contact-leads.api';
 
