@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { getContactLeads, respondContactLead, deleteContactLead } from '@/api/endpoints/contact-leads.api';
+import { getContactLeads, respondContactLead, deleteContactLead, exportContactLeads } from '@/api/endpoints/contact-leads.api';
 import type { ContactLead } from '@/api/endpoints/contact-leads.api';
 import ContactLeadsTable from './components/ContactLeadsTable';
 import ViewMessageModal from './components/ViewMessageModal';
@@ -67,10 +67,22 @@ console.log(data,"contact data")
     respondMutation.mutate({ id, formData });
   };
 
-  const handleExport = () => {
-    // Add logic to export data to CSV if needed
-    console.log('Exporting data...');
-  };
+const handleExport = async () => {
+  try {
+    const blob = await exportContactLeads();
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `contact-leads-${new Date().toISOString().split('T')[0]}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.URL.revokeObjectURL(url);
+  } catch (error) {
+    console.error('Export failed:', error);
+    alert('Failed to export data. Please try again.');
+  }
+};
 
   return (
     <div className="w-full p-4 md:p-8">

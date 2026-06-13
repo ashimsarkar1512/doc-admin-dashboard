@@ -52,6 +52,18 @@ export const respondContactLead = async (
   return response.data;
 };
 
+
+
+export const exportContactLeads = async (): Promise<Blob> => {
+  const response = await axiosInstance.get('/admin/contact-leads/export', {
+    responseType: 'blob',
+  });
+  return response.data;
+};
+
+
+
+
 export const deleteContactLead = async (id: string): Promise<void> => {
   await axiosInstance.delete(`/admin/contact-leads/${id}`);
 };
