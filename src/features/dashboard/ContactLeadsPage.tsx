@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getContactLeads, respondContactLead, deleteContactLead } from '@/api/endpoints/contact-leads.api';
 import type { ContactLead } from '@/api/endpoints/contact-leads.api';
