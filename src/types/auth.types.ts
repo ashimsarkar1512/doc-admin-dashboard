@@ -19,7 +19,7 @@ export interface LoginResponse {
 
 export interface SendOtpPayload {
   userId: string;
-  purpose: "LOGIN" | "REGISTRATION";
+  purpose: "LOGIN" | "REGISTRATION" | "FORGOT_PASSWORD";
   method: "EMAIL" | "SMS";
 }
 
@@ -40,7 +40,7 @@ export interface SendOtpResponse {
 export interface ResendOtpPayload {
   challengeId: string;
   userId: string;
-  purpose: "LOGIN" | "REGISTRATION";
+  purpose: "LOGIN" | "REGISTRATION" | "FORGOT_PASSWORD";
 }
 
 export interface User {
@@ -78,6 +78,27 @@ export interface VerifyOtpResponse {
 export interface VerifyOtpPayload {
   challengeId: string;
   otp: string;
+}
+
+export interface ResetPasswordPayload {
+  challengeId: string;
+  newPassword: string;
+  confirmPassword: string;
+}
+
+export interface ResetPasswordResponse {
+  success: boolean;
+  message: string;
+}
+
+export interface VerifyForgotPasswordOtpResponseData {
+  challengeId: string;
+}
+
+export interface VerifyForgotPasswordOtpResponse {
+  success: boolean;
+  message: string;
+  data: VerifyForgotPasswordOtpResponseData;
 }
 
 export interface ForgotPasswordPayload {

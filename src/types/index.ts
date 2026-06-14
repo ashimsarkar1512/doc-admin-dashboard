@@ -3,6 +3,16 @@ export interface Category {
   name: string;
   description: string;
   status: 'Active' | 'Inactive' | 'ACTIVE' | 'DISABLED';
+  paymentPlan?: {
+    id?: string;
+    price: number | string;
+    billingCycle: string;
+  } | null;
+  icon?: {
+    id: string;
+    fileUrl: string;
+    fileName?: string;
+  } | null;
   activeAssessments: number;
   totalPatients: number;
   createdAt?: string;
