@@ -1,10 +1,15 @@
 import type { Category } from '@/types';
-import { API_BASE_URL } from '@/api/config';
+import { axiosInstance } from '@/api/axiosInstance';
 
 export interface CreateCategoryPayload {
   name: string;
   description: string;
   status: 'ACTIVE' | 'DISABLED';
+  paymentPlan?: {
+    price: number;
+    billingCycle: string;
+  } | null;
+  iconId?: string;
 }
 
 export interface GetCategoriesParams {
@@ -32,91 +37,28 @@ const mapCategoryResponse = (data: Omit<Category, 'activeAssessments' | 'totalPa
 });
 
 export const getCategories = async (params?: GetCategoriesParams): Promise<PaginatedResponse<Category>> => {
-  const url = new URL(`${API_BASE_URL}/admin/categories`);
-  if (params) {
-    Object.entries(params).forEach(([key, value]) => {
-      if (value !== undefined && value !== '') {
-        url.searchParams.append(key, String(value));
-      }
-    });
-  }
-
-  const response = await fetch(url.toString(), {
-    method: 'GET',
-    headers: { 'Content-Type': 'application/json' },
-  });
-
-  if (!response.ok) throw new Error('Failed to fetch categories');
-  
-  const result = await response.json();
-  
+  const { data } = await axiosInstance.get('/admin/categories', { params });
   return {
-    ...result,
-    data: result.data.map(mapCategoryResponse),
+    ...data,
+    data: data.data.map(mapCategoryResponse),
   };
 };
 
 export const getCategoryById = async (id: string | number): Promise<Category> => {
-  const response = await fetch(`${API_BASE_URL}/admin/categories/${id}`, {
-    method: 'GET',
-    headers: { 'Content-Type': 'application/json' },
-  });
-
-  if (!response.ok) throw new Error('Failed to fetch category');
-  
-  const data = await response.json();
-  return mapCategoryResponse(data);
+  const { data } = await axiosInstance.get(`/admin/categories/${id}`);
+  return mapCategoryResponse(data.data || data); // handle standard wrapper if present
 };
 
 export const createCategory = async (payload: CreateCategoryPayload): Promise<Category> => {
-  const response = await fetch(`${API_BASE_URL}/admin/categories`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload),
-  });
-
-  if (!response.ok) {
-    let errorData;
-    try {
-      errorData = await response.json();
-    } catch {
-      errorData = { message: 'An unexpected error occurred while creating the category.' };
-    }
-    throw new Error(errorData.message || 'Failed to create category');
-  }
-
-  const data = await response.json();
-  return mapCategoryResponse(data);
+  const { data } = await axiosInstance.post('/admin/categories', payload);
+  return mapCategoryResponse(data.data || data);
 };
 
 export const updateCategory = async ({ id, payload }: { id: string | number; payload: Partial<CreateCategoryPayload> }): Promise<Category> => {
-  const response = await fetch(`${API_BASE_URL}/admin/categories/${id}`, {
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload),
-  });
-
-  if (!response.ok) {
-    let errorData;
-    try {
-      errorData = await response.json();
-    } catch {
-      errorData = { message: 'An unexpected error occurred while updating the category.' };
-    }
-    throw new Error(errorData.message || 'Failed to update category');
-  }
-
-  const data = await response.json();
-  return mapCategoryResponse(data);
+  const { data } = await axiosInstance.patch(`/admin/categories/${id}`, payload);
+  return mapCategoryResponse(data.data || data);
 };
 
 export const deleteCategory = async (id: string | number): Promise<void> => {
-  const response = await fetch(`${API_BASE_URL}/admin/categories/${id}`, {
-    method: 'DELETE',
-    headers: { 'Content-Type': 'application/json' },
-  });
-
-  if (!response.ok) {
-    throw new Error('Failed to delete category');
-  }
+  await axiosInstance.delete(`/admin/categories/${id}`);
 };

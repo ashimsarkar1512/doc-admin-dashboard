@@ -33,6 +33,16 @@ axiosInstance.interceptors.response.use(
       // localStorage.removeItem('token');
       // window.location.href = '/login';
     }
+
+    // Properly format error for better error handling downstream
+    if (error.response && error.response.data) {
+      const errorData = error.response.data;
+      // Ensure error has a proper message property
+      if (errorData.message && !error.message) {
+        error.message = errorData.message;
+      }
+    }
+
     return Promise.reject(error);
   }
 );

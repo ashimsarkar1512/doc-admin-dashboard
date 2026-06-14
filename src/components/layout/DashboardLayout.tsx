@@ -44,7 +44,7 @@ const routeTitleMap: Record<string, { title: string; subtitle: string }> = {
   '/dashboard/orders': { title: 'Orders', subtitle: 'Manage patient orders and prescriptions' },
   '/dashboard/contact-leads': { title: 'Contact Leads', subtitle: 'Manage contact inquiries and leads' },
   '/dashboard/payments': { title: 'Payments', subtitle: 'Manage transactions and billing' },
-  '/dashboard/categories': { title: 'Categories', subtitle: 'Manage assessment and product categories' },
+  '/dashboard/categories': { title: 'Service Categories', subtitle: 'Manage your categories' },
   '/dashboard/assessments': { title: 'Assessments', subtitle: 'Create and manage user assessments for services' },
   '/dashboard/assessment-table': { title: 'Assessment Table', subtitle: 'Manage patient assessments and records' },
   '/dashboard/assessment-table/$assessmentId/preview': { title: 'Preview Details', subtitle: 'Review consultation details before submitting for medical review' },
@@ -109,7 +109,7 @@ export default function DashboardLayout() {
       {/* Sidebar – full height, includes logo */}
       <aside
         className={`${
-          collapsed ? 'w-[68px]' : 'w-64'
+          collapsed ? 'w-[68px]' : 'w-68'
         } h-full border-r border-slate-200 bg-white flex flex-col shrink-0 z-20 transition-all duration-300 relative`}
       >
         {/* Toggle arrow button */}
@@ -130,7 +130,7 @@ export default function DashboardLayout() {
         </div>
 
         {/* Nav links */}
-        <nav className={`flex-1 overflow-y-auto py-6 space-y-1.5 ${collapsed ? 'px-2' : 'px-4'} custom-scrollbar`}>
+        <nav className={`flex-1 overflow-y-auto py-6 space-y-1.5 ${collapsed ? 'px-2' : 'px-2'} custom-scrollbar`}>
           {/* Dashboard */}
           <Link
             to="/dashboard"
@@ -262,7 +262,7 @@ export default function DashboardLayout() {
             className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold [&.active_svg]:text-[#1447E6]"
           >
             <Folders size={20} className="text-slate-500 shrink-0" />
-            {!collapsed && <span>Categories</span>}
+            {!collapsed && <span>Service Category & Plan</span>}
           </Link>
 
 

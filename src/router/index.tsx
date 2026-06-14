@@ -1,6 +1,8 @@
 import { createRouter, createRootRoute, createRoute, Outlet } from '@tanstack/react-router';
 import LoginPage from '@/features/auth/LoginPage';
 import ForgotPasswordPage from '@/features/auth/ForgotPasswordPage';
+import ReceiveOtpPage from '@/features/auth/ReceiveOtpPage';
+import VerifyOtpPage from '@/features/auth/VerifyOtpPage';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import DashboardPage from '@/features/dashboard/DashboardPage';
 import DummyPage from '@/components/DummyPage';
@@ -21,6 +23,28 @@ const forgotPasswordRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/forgot-password',
   component: ForgotPasswordPage,
+});
+
+// Receive OTP route
+const receiveOtpRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/receive-otp',
+  component: ReceiveOtpPage,
+});
+
+// Verify OTP route
+const verifyOtpRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/verify-otp',
+  component: VerifyOtpPage,
+});
+
+// Reset password route
+import ResetPasswordPage from '@/features/auth/ResetPasswordPage';
+const resetPasswordRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/reset-password',
+  component: ResetPasswordPage,
 });
 
 // The protected dashboard layout
@@ -232,6 +256,9 @@ const profileRoute = createRoute({
 const routeTree = rootRoute.addChildren([
   indexRoute,
   forgotPasswordRoute,
+  receiveOtpRoute,
+  verifyOtpRoute,
+  resetPasswordRoute,
   dashboardLayoutRoute.addChildren([
     dashboardIndexRoute,
     categoriesRoute,
