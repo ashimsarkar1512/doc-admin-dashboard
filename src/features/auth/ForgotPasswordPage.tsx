@@ -2,10 +2,13 @@ import { useState } from 'react';
 import { useNavigate } from '@tanstack/react-router';
 import { ArrowLeft, Mail, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { useAppDispatch } from '@/store/hooks';
+import { setOtpPending } from '@/store/slices/authSlice';
 import { requestForgotPassword } from '@/api/endpoints/auth.api';
 
 export default function ForgotPasswordPage() {
   const routerNavigate = useNavigate();
+  const dispatch = useAppDispatch();
   const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
@@ -14,8 +17,14 @@ export default function ForgotPasswordPage() {
     setIsLoading(true);
     try {
       const res = await requestForgotPassword({ email });
+      dispatch(setOtpPending({
+        userId: res.data.userId,
+        challengeId: null,
+        method: 'EMAIL',
+        purpose: 'FORGOT_PASSWORD',
+      }));
       toast.success(res.message || 'Verification code sent to your email');
-      routerNavigate({ to: '/' });
+      routerNavigate({ to: '/receive-otp' });
     } catch (err: unknown) {
       const e = err as import('axios').AxiosError<{ message: string }>;
       toast.error(e.response?.data?.message || e.message || 'Something went wrong. Please try again.');
