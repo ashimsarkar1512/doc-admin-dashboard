@@ -47,6 +47,8 @@ const routeTitleMap: Record<string, { title: string; subtitle: string }> = {
   '/dashboard/categories': { title: 'Categories', subtitle: 'Manage assessment and product categories' },
   '/dashboard/assessments': { title: 'Assessments', subtitle: 'Create and manage user assessments for services' },
   '/dashboard/assessment-table': { title: 'Assessment Table', subtitle: 'Manage patient assessments and records' },
+  '/dashboard/assessment-table/$assessmentId/preview': { title: 'Preview Details', subtitle: 'Review consultation details before submitting for medical review' },
+  '/dashboard/checkout': { title: 'Checkout', subtitle: 'Review your order and complete your purchase' },
   '/dashboard/products': { title: 'Products', subtitle: 'Manage inventory, pricing, and details' },
   '/dashboard/testimonials': { title: 'Testimonials', subtitle: 'Manage patient testimonials and reviews' },
   '/dashboard/discounts': { title: 'Discounts & Marketing', subtitle: 'Manage promotional campaigns and discounts' },
@@ -218,6 +220,15 @@ export default function DashboardLayout() {
                 3
               </span>
             )}
+          </Link>
+
+          {/* Checkout */}
+          <Link
+            to="/dashboard/checkout"
+            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold [&.active_svg]:text-[#1447E6]"
+          >
+            <ShoppingBag size={20} className="text-slate-500 shrink-0" />
+            {!collapsed && <span>Checkout</span>}
           </Link>
 
           {/* Contact Leads */}
