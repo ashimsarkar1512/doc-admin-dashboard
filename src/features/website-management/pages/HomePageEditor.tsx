@@ -2,6 +2,8 @@ import React from 'react';
 import { Save } from 'lucide-react';
 import { HeroSection } from '../components/home/HeroSection';
 import { AboutUsSection } from '../components/home/AboutUsSection';
+import { AssessmentSection } from '../components/home/AssessmentSection';
+import { ProvidersSection } from '../components/home/ProvidersSection';
 import { HowItWorksSection } from '../components/home/HowItWorksSection';
 import { TestimonialSection } from '../components/home/TestimonialSection';
 import { FaqSection } from '../components/home/FaqSection';
@@ -20,7 +22,9 @@ export default function HomePageEditor() {
 
       <div className="space-y-6">
         <HeroSection />
+        <AssessmentSection />
         <AboutUsSection />
+        <ProvidersSection />
         <HowItWorksSection />
         <TestimonialSection />
         <FaqSection />

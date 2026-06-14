@@ -1,6 +1,5 @@
 import React from 'react';
 import { FormInput } from './FormInput';
-import { ToggleSwitch } from './ToggleSwitch';
 
 interface CtaFormGroupProps {
   defaultText?: string;
@@ -12,14 +11,21 @@ export function CtaFormGroup({ defaultText = '', defaultUrl = '', defaultOpenInN
   return (
     <div className="flex flex-wrap items-end gap-4">
       <div className="flex-1 min-w-[160px]">
-        <FormInput label="CTA Button Text" defaultValue={defaultText} />
+        <FormInput label="CTA Button Text:" defaultValue={defaultText} />
       </div>
       <div className="flex-1 min-w-[160px]">
-        <FormInput label="URL" defaultValue={defaultUrl} />
+        <FormInput label="URL:" defaultValue={defaultUrl} />
       </div>
-      <div className="flex items-center gap-2 pb-2.5 shrink-0">
-        <ToggleSwitch defaultChecked={defaultOpenInNewTab} />
-        <span className="text-sm font-medium text-slate-700 whitespace-nowrap">Open in new tab</span>
+      <div className="flex flex-col gap-1.5 shrink-0">
+        <label className="block text-sm font-medium text-slate-700">Button target:</label>
+        <label className="flex items-center gap-2 pb-1.5 cursor-pointer">
+          <input
+            type="checkbox"
+            className="w-4 h-4 rounded text-[#1447E6] focus:ring-[#1447E6] border-slate-300"
+            defaultChecked={defaultOpenInNewTab}
+          />
+          <span className="text-sm font-medium text-slate-700 whitespace-nowrap">Blank (open in new tab)</span>
+        </label>
       </div>
     </div>
   );

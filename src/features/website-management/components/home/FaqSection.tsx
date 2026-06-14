@@ -4,6 +4,7 @@ import { SectionCard } from '../shared/SectionCard';
 import { FormInput } from '../shared/FormInput';
 import { FormTextarea } from '../shared/FormTextarea';
 import { CtaFormGroup } from '../shared/CtaFormGroup';
+import { ToggleSwitch } from '../shared/ToggleSwitch';
 
 export function FaqSection() {
   const questions = [
@@ -22,12 +23,14 @@ export function FaqSection() {
         <FormInput label="CTA Description" defaultValue="If you have any questions, please feel free to reach out to us." />
         <CtaFormGroup defaultText="Contact us" defaultUrl="https://weightlossmd.com/contact" defaultOpenInNewTab={true} />
 
-        <div className="flex items-center gap-4 pt-2 pb-2">
-          <button className="flex items-center gap-1.5 px-4 py-2 bg-[#1447E6] text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors">
-            <Plus size={16} /> Add field
-          </button>
+        <div className="flex items-center justify-between pt-2">
+          <div className="flex items-center gap-2">
+            <ToggleSwitch defaultChecked={true} />
+            <span className="text-sm font-medium text-slate-700">Show section on website</span>
+          </div>
+          
           <button className="flex items-center gap-1.5 text-sm font-medium text-red-500 hover:text-red-600 transition-colors">
-             <X size={16} /> Remove section
+            <X size={16} /> Remove section
           </button>
         </div>
 
@@ -39,6 +42,12 @@ export function FaqSection() {
               <FormTextarea label="Description" className="h-16" defaultValue={q.desc} />
             </div>
           ))}
+        </div>
+        
+        <div className="pt-2">
+          <button className="flex items-center gap-1.5 px-4 py-2 bg-[#1447E6] text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors">
+            <Plus size={16} /> Add Question
+          </button>
         </div>
       </div>
     </SectionCard>

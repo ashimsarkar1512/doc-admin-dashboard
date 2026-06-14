@@ -1,37 +1,15 @@
 import React from 'react';
-import { Plus, X, Upload } from 'lucide-react';
+import { X } from 'lucide-react';
 import { SectionCard } from '../shared/SectionCard';
 import { FormInput } from '../shared/FormInput';
 import { FormTextarea } from '../shared/FormTextarea';
 import { CtaFormGroup } from '../shared/CtaFormGroup';
+import { ToggleSwitch } from '../shared/ToggleSwitch';
 
 export function AboutUsSection() {
   return (
     <SectionCard title="About Us Section">
       <div className="space-y-5">
-        {/* Image Upload */}
-        <div>
-          <label className="block text-sm font-medium text-slate-700 mb-2">Subtitle</label>
-          <FormInput label="" defaultValue="About Us" containerClassName="hidden" />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-slate-700 mb-2">Image</label>
-          <div className="flex items-end gap-4">
-            <div className="w-48 h-28 rounded-lg overflow-hidden border border-slate-200 bg-slate-50 flex items-center justify-center">
-              <div className="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center">
-                <Upload size={16} className="text-slate-400" />
-              </div>
-            </div>
-            <div className="flex items-center gap-4">
-              <div className="text-[11px] text-slate-500 max-w-[150px]">Recommended size: 1920x1080px (16:9 ratio)</div>
-              <button className="flex items-center gap-2 px-4 py-2 bg-[#1447E6] text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors">
-                <Upload size={16} /> Upload
-              </button>
-            </div>
-          </div>
-        </div>
-
         <FormInput label="Section Title" defaultValue="About Us" />
         <FormTextarea
           label="Subtitle / Description"
@@ -47,12 +25,14 @@ export function AboutUsSection() {
 
         <CtaFormGroup defaultText="Apply Now" defaultUrl="https://weightlossmd.com" defaultOpenInNewTab={true} />
 
-        <div className="flex items-center gap-4 pt-2">
-          <button className="flex items-center gap-1.5 px-4 py-2 bg-[#1447E6] text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors">
-            <Plus size={16} /> Add field
-          </button>
+        <div className="flex items-center justify-between pt-2">
+          <div className="flex items-center gap-2">
+            <ToggleSwitch defaultChecked={true} />
+            <span className="text-sm font-medium text-slate-700">Show section on website</span>
+          </div>
+          
           <button className="flex items-center gap-1.5 text-sm font-medium text-red-500 hover:text-red-600 transition-colors">
-             <X size={16} /> Remove image
+            <X size={16} /> Remove section
           </button>
         </div>
       </div>
