@@ -137,19 +137,21 @@ const employeePermissionsRoute = createRoute({
 const websiteManagementRoute = createRoute({
   getParentRoute: () => dashboardLayoutRoute,
   path: '/website-management',
-  component: () => <DummyPage title="Website Management" />,
+  component: SiteSettingsPage,
 });
 
+import HomePageEditor from '@/features/website-management/pages/HomePageEditor';
 const pagesRoute = createRoute({
   getParentRoute: () => dashboardLayoutRoute,
   path: '/pages',
-  component: () => <DummyPage title="Pages" />,
+  component: HomePageEditor,
 });
 
+import SiteSettingsPage from '@/features/website-management/pages/SiteSettingsPage';
 const siteSettingsRoute = createRoute({
   getParentRoute: () => dashboardLayoutRoute,
   path: '/site-settings',
-  component: () => <DummyPage title="Site Settings" />,
+  component: SiteSettingsPage,
 });
 
 import ComplianceCenterPage from '@/features/dashboard/ComplianceCenterPage';
@@ -222,6 +224,13 @@ const systemHealthRoute = createRoute({
   component: SystemHealthPage,
 });
 
+import AccountSettingsPage from '@/features/account-settings/pages/AccountSettingsPage';
+const accountSettingsRoute = createRoute({
+  getParentRoute: () => dashboardLayoutRoute,
+  path: '/account-settings',
+  component: AccountSettingsPage,
+});
+
 const profileRoute = createRoute({
   getParentRoute: () => dashboardLayoutRoute,
   path: '/profile',
@@ -261,7 +270,7 @@ const routeTree = rootRoute.addChildren([
     communicationCenterRoute,
     documentCenterRoute,
     systemHealthRoute,
-    profileRoute,
+    accountSettingsRoute,
   ]),
 ]);
 

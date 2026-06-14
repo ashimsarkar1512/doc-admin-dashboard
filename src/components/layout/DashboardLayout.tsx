@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Outlet, Link, useLocation } from '@tanstack/react-router';
 import { useQuery } from '@tanstack/react-query';
+import { ProfileDropdown } from './ProfileDropdown';
 import { getContactLeads } from '@/api/endpoints/contact-leads.api';
 import {
   LayoutGrid,
@@ -52,9 +53,8 @@ const routeTitleMap: Record<string, { title: string; subtitle: string }> = {
   '/dashboard/products': { title: 'Products', subtitle: 'Manage inventory, pricing, and details' },
   '/dashboard/testimonials': { title: 'Testimonials', subtitle: 'Manage patient testimonials and reviews' },
   '/dashboard/discounts': { title: 'Discounts & Marketing', subtitle: 'Manage promotional campaigns and discounts' },
-  '/dashboard/website-management': { title: 'Website Management', subtitle: 'Configure website layout, pages, and components' },
-  '/dashboard/pages': { title: 'Pages', subtitle: 'Manage website pages and static content' },
-  '/dashboard/site-settings': { title: 'Site Settings', subtitle: 'Configure global site parameters and variables' },
+  '/dashboard/website-management': { title: 'Website Management', subtitle: 'Manage your website' },
+  '/dashboard/pages': { title: 'Website Management', subtitle: 'Manage your website' },
   '/dashboard/employee-permissions': { title: 'Employee Permissions', subtitle: 'Manage system administrators, roles, and permissions' },
   '/dashboard/compliance-center': { title: 'Compliance Center', subtitle: 'Monitor regulatory compliance checks and audit results' },
   '/dashboard/audit-logs': { title: 'Audit Logs', subtitle: 'Track all system activity and user actions for compliance' },
@@ -92,8 +92,6 @@ export default function DashboardLayout() {
 
   // Local state for submenus
   const [patientMenuOpen, setPatientMenuOpen] = useState(false);
-  const [websiteMenuOpen, setWebsiteMenuOpen] = useState(true);
-  const [pagesMenuOpen, setPagesMenuOpen] = useState(true);
   const [complianceMenuOpen, setComplianceMenuOpen] = useState(true);
 
   // Synchronize route changes to Redux Page Header State
@@ -294,72 +292,25 @@ export default function DashboardLayout() {
             {!collapsed && <span>Discounts & Marketing</span>}
           </Link>
 
-          {/* Website Management (with expandable submenu when expanded) */}
-          {collapsed ? (
-            <Link
-              to="/dashboard/website-management"
-              className="flex items-center justify-center p-2.5 rounded-lg text-slate-700 hover:bg-slate-50 [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active_svg]:text-[#1447E6]"
-              title="Website Management"
-            >
-              <Globe size={20} className="text-slate-500 shrink-0" />
-            </Link>
-          ) : (
-            <div>
-              <button
-                onClick={() => setWebsiteMenuOpen(!websiteMenuOpen)}
-                className="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors group"
+          {/* Website Management – direct link, no dropdown */}
+          <Link
+            to="/dashboard/website-management"
+            className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold [&.active_svg]:text-[#1447E6] ${collapsed ? 'justify-center' : ''}`}
+            title={collapsed ? 'Website Management' : undefined}
+          >
+            <Globe size={20} className="text-slate-500 shrink-0" />
+            {!collapsed && <span>Website Management</span>}
+          </Link>
+
+          {/* Pages – single Home Page entry (no dropdown) */}
+          {!collapsed && (
+            <div className="pl-6">
+              <Link
+                to="/dashboard/pages"
+                className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold"
               >
-                <div className="flex items-center gap-3">
-                  <Globe size={20} className="text-slate-500 group-hover:text-slate-700 shrink-0" />
-                  <span>Website Management</span>
-                </div>
-                <ChevronDown
-                  size={16}
-                  className={`text-slate-400 transition-transform duration-200 ${
-                    websiteMenuOpen ? 'rotate-180' : ''
-                  }`}
-                />
-              </button>
-
-              {/* Submenus */}
-              {websiteMenuOpen && (
-                <div className="pl-6 mt-1 space-y-1">
-                  {/* Pages sub-category */}
-                  <div>
-                    <button
-                      onClick={() => setPagesMenuOpen(!pagesMenuOpen)}
-                      className="w-full flex items-center justify-between px-3 py-1.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50 transition-colors group"
-                    >
-                      <span>Pages</span>
-                      <ChevronDown
-                        size={14}
-                        className={`text-slate-400 transition-transform duration-200 ${
-                          pagesMenuOpen ? 'rotate-180' : ''
-                        }`}
-                      />
-                    </button>
-
-                    {pagesMenuOpen && (
-                      <div className="pl-4 mt-1 space-y-1">
-                        <Link
-                          to="/dashboard/pages"
-                          className="flex items-center gap-3 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold"
-                        >
-                          All Pages
-                        </Link>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Site Settings */}
-                  <Link
-                    to="/dashboard/site-settings"
-                    className="flex items-center gap-3 px-3 py-1.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold"
-                  >
-                    <span>Site Settings</span>
-                  </Link>
-                </div>
-              )}
+                Home Page
+              </Link>
             </div>
           )}
 
@@ -500,17 +451,10 @@ export default function DashboardLayout() {
           {/* User Profile Section */}
           <div className="flex items-center gap-4">
             <div className="hidden sm:flex flex-col text-right">
-              <span className="text-sm font-bold text-slate-700 leading-none mb-1">{user?.name || 'Admin User'}</span>
-              <span className="text-xs font-medium text-slate-400 leading-none">{user?.email || 'admin@example.com'}</span>
+              <span className="text-sm font-bold text-slate-700 leading-none mb-1">{user?.name || 'Admin Darren'}</span>
+              <span className="text-xs font-medium text-slate-400 leading-none">{user?.email || 'admin@telemed.com'}</span>
             </div>
-            <Link 
-              to="/dashboard/profile"
-              className="w-10 h-10 rounded-full bg-[#1447E6] flex items-center justify-center shadow-sm hover:opacity-90 transition-opacity"
-            >
-              <span className="text-sm font-bold text-white tracking-wide">
-                {user?.name ? user.name.substring(0, 2).toUpperCase() : 'AU'}
-              </span>
-            </Link>
+            <ProfileDropdown user={user ?? undefined} />
           </div>
         </header>
 
