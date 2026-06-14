@@ -8,7 +8,7 @@ import { FaqSection } from '../components/home/FaqSection';
 
 export default function HomePageEditor() {
   return (
-    <div className="p-6 max-w-5xl mx-auto space-y-8 bg-white min-h-full font-sans pb-20">
+    <div className="p-7 max-w-7xl mx-auto space-y-8 min-h-full font-sans pb-20">
       {/* Header with Save Button */}
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-xl font-bold text-slate-800">Home Page's Content</h2>

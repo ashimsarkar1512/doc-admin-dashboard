@@ -16,24 +16,22 @@ export function FaqSection() {
 
   return (
     <SectionCard title="FAQ Section">
-      <div className="space-y-6">
-        <div className="space-y-4">
-          <FormInput label="Section Title" defaultValue="Frequently Asked Questions" />
-          <FormInput label="Sub Title" defaultValue="Still have questions?" />
-          <FormInput label="CTA Description" defaultValue="If you have any questions, please feel free to reach out to us." />
-          <CtaFormGroup defaultText="Contact us" defaultUrl="https://weightlossmd.com/contact" defaultOpenInNewTab={true} />
+      <div className="space-y-5">
+        <FormInput label="Section Title" defaultValue="Frequently Asked Questions" />
+        <FormInput label="Sub Title" defaultValue="Still have questions?" />
+        <FormInput label="CTA Description" defaultValue="If you have any questions, please feel free to reach out to us." />
+        <CtaFormGroup defaultText="Contact us" defaultUrl="https://weightlossmd.com/contact" defaultOpenInNewTab={true} />
 
-          <div className="flex items-center gap-4 pt-2 pb-4">
-            <button className="flex items-center gap-1.5 px-4 py-2 bg-[#1447E6] text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors">
-              <Plus size={16} /> Add field
-            </button>
-            <button className="flex items-center gap-1.5 text-sm font-medium text-red-500 hover:text-red-600 transition-colors">
-               <X size={16} /> Remove section
-            </button>
-          </div>
+        <div className="flex items-center gap-4 pt-2 pb-2">
+          <button className="flex items-center gap-1.5 px-4 py-2 bg-[#1447E6] text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors">
+            <Plus size={16} /> Add field
+          </button>
+          <button className="flex items-center gap-1.5 text-sm font-medium text-red-500 hover:text-red-600 transition-colors">
+             <X size={16} /> Remove section
+          </button>
         </div>
 
-        <div className="space-y-4 pt-4 border-t border-slate-100">
+        <div className="space-y-4 pt-2 border-t border-slate-100">
           {questions.map(q => (
             <div key={q.id} className="border border-slate-100 rounded-lg p-4 bg-slate-50 space-y-4">
               <div className="text-sm font-bold text-slate-600">Question {q.id}</div>
