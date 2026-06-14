@@ -1,5 +1,6 @@
 import { createRouter, createRootRoute, createRoute, Outlet } from '@tanstack/react-router';
 import LoginPage from '@/features/auth/LoginPage';
+import ForgotPasswordPage from '@/features/auth/ForgotPasswordPage';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import DashboardPage from '@/features/dashboard/DashboardPage';
 import DummyPage from '@/components/DummyPage';
@@ -13,6 +14,13 @@ const indexRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/',
   component: LoginPage,
+});
+
+// Forgot password route
+const forgotPasswordRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/forgot-password',
+  component: ForgotPasswordPage,
 });
 
 // The protected dashboard layout
@@ -48,6 +56,20 @@ const assessmentTableRoute = createRoute({
   getParentRoute: () => dashboardLayoutRoute,
   path: '/assessment-table',
   component: AssessmentTablePage,
+});
+
+import PreviewDetailsPage from '@/features/dashboard/PreviewDetailsPage';
+const previewDetailsRoute = createRoute({
+  getParentRoute: () => dashboardLayoutRoute,
+  path: '/assessment-table/$assessmentId/preview',
+  component: PreviewDetailsPage,
+});
+
+import CheckoutPage from '@/features/dashboard/CheckoutPage';
+const checkoutRoute = createRoute({
+  getParentRoute: () => dashboardLayoutRoute,
+  path: '/checkout',
+  component: CheckoutPage,
 });
 
 import ProductsPage from '@/features/dashboard/ProductsPage';
@@ -209,11 +231,14 @@ const profileRoute = createRoute({
 // Build the route tree
 const routeTree = rootRoute.addChildren([
   indexRoute,
+  forgotPasswordRoute,
   dashboardLayoutRoute.addChildren([
     dashboardIndexRoute,
     categoriesRoute,
     assessmentsRoute,
     assessmentTableRoute,
+    previewDetailsRoute,
+    checkoutRoute,
     productsRoute,
     providersRoute,
     patientsRoute,
