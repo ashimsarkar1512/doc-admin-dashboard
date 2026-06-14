@@ -6,7 +6,9 @@ import type {
   SendOtpResponse, 
   VerifyOtpPayload, 
   VerifyOtpResponse,
-  ResendOtpPayload
+  ResendOtpPayload,
+  ForgotPasswordPayload,
+  ForgotPasswordResponse,
 } from "@/types/auth.types";
 
 export const requestLogin = async (credentials: LoginCredentials): Promise<LoginResponse> => {
@@ -31,5 +33,10 @@ export const verifyLoginOtp = async (payload: VerifyOtpPayload): Promise<VerifyO
 
 export const logout = async (): Promise<{ message: string }> => {
   const response = await axiosInstance.post<{ message: string }>('/auth/logout');
+  return response.data;
+};
+
+export const requestForgotPassword = async (payload: ForgotPasswordPayload): Promise<ForgotPasswordResponse> => {
+  const response = await axiosInstance.post<ForgotPasswordResponse>('/auth/forgot-password', payload);
   return response.data;
 };

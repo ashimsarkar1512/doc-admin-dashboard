@@ -79,3 +79,18 @@ export interface VerifyOtpPayload {
   challengeId: string;
   otp: string;
 }
+
+export interface ForgotPasswordPayload {
+  email: string;
+}
+
+export interface ForgotPasswordResponseData {
+  userId: string;
+  challengeId?: string | null;
+}
+
+export interface ForgotPasswordResponse {
+  success: boolean;
+  message: string;
+  data: ForgotPasswordResponseData;
+}

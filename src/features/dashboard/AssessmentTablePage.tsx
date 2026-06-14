@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { useNavigate } from '@tanstack/react-router';
 import { Search, ChevronDown, Eye, Trash2, RefreshCw } from 'lucide-react';
 import {
   dummyAssessments,
@@ -82,6 +83,7 @@ const FILTER_OPTIONS = ['Category', 'Patient Type', 'Assessment Status', "Today'
 
 export default function AssessmentTablePage() {
   const [searchTerm, setSearchTerm] = useState('');
+  const navigate = useNavigate();
 
   const { data: rows = [] } = useQuery<AssessmentRow[]>({
     queryKey: ['assessment-table'],
@@ -181,7 +183,11 @@ export default function AssessmentTablePage() {
                 {/* Action */}
                 <td className="px-5 py-3.5">
                   <div className="flex items-center gap-2">
-                    <button className="p-1.5 text-slate-400 hover:text-slate-700 transition-colors">
+                    <button
+                      onClick={() => navigate({ to: '/dashboard/assessment-table/$assessmentId/preview', params: { assessmentId: row.id } })}
+                      className="p-1.5 text-slate-400 hover:text-slate-700 transition-colors"
+                      title="Preview details"
+                    >
                       <Eye size={16} />
                     </button>
                     <AssignButton assigned={row.assignStatus === 'Assigned'} />
