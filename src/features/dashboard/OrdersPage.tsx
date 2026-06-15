@@ -14,8 +14,8 @@ export default function OrdersPage() {
   });
 
   return (
-    <div className="w-full p-4 md:p-8">
-      <div className="mb-8">
+    <div className="w-full px-4 py-5 md:px-10 md:py-6">
+      <div className="mb-5">
         <h1 className="text-2xl sm:text-3xl font-bold text-slate-800 tracking-tight">Orders</h1>
         <p className="text-sm text-slate-500 font-medium mt-1">Manage patient orders and prescriptions</p>
       </div>

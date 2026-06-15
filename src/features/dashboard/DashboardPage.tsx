@@ -3,13 +3,13 @@ import { PatientTable } from './components/PatientTable';
 
 export default function DashboardPage() {
   return (
-    <div className="w-full p-4 md:p-8">
+    <div className="w-full p-4 md:px-6">
       {/* Page heading */}
-      <div className="mb-8">
+      <div className="mb-6">
         <h1 className="text-2xl sm:text-3xl font-bold text-slate-800 tracking-tight">
           Welcome to your Dashboard!
         </h1>
-        <p className="text-sm text-slate-500 font-medium mt-1">
+        <p className="text-sm text-slate-500 font-medium ">
           Latest patient assessments and their statuses
         </p>
       </div>

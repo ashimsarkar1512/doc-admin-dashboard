@@ -86,7 +86,7 @@ export default function DashboardLayout() {
     refetchOnWindowFocus: true,
   });
   const unreadCount = unreadData?.meta?.total ?? 0;
-  
+
   const dispatch = useAppDispatch();
   const location = useLocation();
 
@@ -99,7 +99,7 @@ export default function DashboardLayout() {
   useEffect(() => {
     const path = location.pathname;
     const routeInfo = routeTitleMap[path] || routeTitleMap['/dashboard'];
-    
+
     dispatch(setPageHeader(routeInfo));
   }, [location.pathname, dispatch]);
 
@@ -107,9 +107,8 @@ export default function DashboardLayout() {
     <div className="flex h-screen w-full overflow-hidden bg-primaryBg font-sans">
       {/* Sidebar – full height, includes logo */}
       <aside
-        className={`${
-          collapsed ? 'w-[68px]' : 'w-68'
-        } h-full border-r border-slate-200 bg-white flex flex-col shrink-0 z-20 transition-all duration-300 relative`}
+        className={`${collapsed ? 'w-[68px]' : 'w-68'
+          } h-full border-r border-slate-200 bg-white flex flex-col shrink-0 z-20 transition-all duration-300 relative`}
       >
         {/* Toggle arrow button */}
         <button
@@ -170,9 +169,8 @@ export default function DashboardLayout() {
                 </div>
                 <ChevronDown
                   size={16}
-                  className={`text-slate-400 transition-transform duration-200 ${
-                    patientMenuOpen ? 'rotate-180' : ''
-                  }`}
+                  className={`text-slate-400 transition-transform duration-200 ${patientMenuOpen ? 'rotate-180' : ''
+                    }`}
                 />
               </button>
 
@@ -274,7 +272,7 @@ export default function DashboardLayout() {
             <ShoppingBag size={20} className="text-slate-500 shrink-0" />
             {!collapsed && <span>Products</span>}
           </Link>
-          
+
           {/* Testimonials */}
           <Link
             to="/dashboard/testimonials"
@@ -318,9 +316,8 @@ export default function DashboardLayout() {
                 </Link>
                 <ChevronDown
                   size={16}
-                  className={`text-slate-400 transition-transform duration-200 ${
-                    websiteMenuOpen ? 'rotate-180' : ''
-                  }`}
+                  className={`text-slate-400 transition-transform duration-200 ${websiteMenuOpen ? 'rotate-180' : ''
+                    }`}
                 />
               </button>
 
@@ -358,9 +355,8 @@ export default function DashboardLayout() {
                 <span>Compliance & Access</span>
                 <ChevronDown
                   size={16}
-                  className={`text-slate-400 transition-transform duration-200 ${
-                    complianceMenuOpen ? 'rotate-180' : ''
-                  }`}
+                  className={`text-slate-400 transition-transform duration-200 ${complianceMenuOpen ? 'rotate-180' : ''
+                    }`}
                 />
               </button>
 
