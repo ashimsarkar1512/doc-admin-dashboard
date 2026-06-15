@@ -1,29 +1,55 @@
 import React from 'react';
-import { X } from 'lucide-react';
 import { SectionCard } from '../shared/SectionCard';
 import { FormInput } from '../shared/FormInput';
-import { CtaFormGroup } from '../shared/CtaFormGroup';
-import { ToggleSwitch } from '../shared/ToggleSwitch';
+import { useHomepage } from '../../context/HomepageContext';
 
 export function TestimonialSection() {
+  const { form, setField } = useHomepage();
+
   return (
     <SectionCard title="Testimonial Section">
       <div className="space-y-5">
-        <FormInput label="Section Title" defaultValue="Don't just take our word for it" />
-        <FormInput label="Sub Title" defaultValue="Real stories. Real results." />
-        <FormInput label="CTA Description" defaultValue="Ready to start your journey to a healthier you? Contact us today." />
-        <CtaFormGroup defaultText="Contact us" defaultUrl="https://weightlossmd.com/contact" defaultOpenInNewTab={true} />
+        <FormInput
+          label="Section Title"
+          value={form.testimonialTitle}
+          onChange={(e) => setField('testimonialTitle', e.target.value)}
+          placeholder="Don't just take our word for it"
+        />
+        <FormInput
+          label="Sub Title"
+          value={form.testimonialSubtitle}
+          onChange={(e) => setField('testimonialSubtitle', e.target.value)}
+          placeholder="Real stories. Real results."
+        />
+        <FormInput
+          label="CTA Description"
+          value={form.testimonialDescription}
+          onChange={(e) => setField('testimonialDescription', e.target.value)}
+          placeholder="Ready to start your journey…"
+        />
 
-        {/* Toggle for section visibility */}
-        <div className="flex items-center justify-between pt-2">
-          <div className="flex items-center gap-2">
-            <ToggleSwitch defaultChecked={true} />
-            <span className="text-sm font-medium text-slate-700">Show section on website</span>
+        {/* CTA */}
+        <div className="flex flex-wrap items-end gap-4">
+          <div className="flex-1 min-w-[160px]">
+            <FormInput
+              label="CTA URL:"
+              value={form.testimonialButtonLink}
+              onChange={(e) => setField('testimonialButtonLink', e.target.value)}
+              placeholder="https://..."
+            />
           </div>
-          
-          <button className="flex items-center gap-1.5 text-sm font-medium text-red-500 hover:text-red-600 transition-colors">
-            <X size={16} /> Remove section
-          </button>
+          <div className="flex flex-col gap-1.5 shrink-0">
+            <label className="block text-sm font-medium text-slate-700">Button target:</label>
+            <label className="flex items-center gap-2 pb-1.5 cursor-pointer">
+              <input
+                type="checkbox"
+                className="w-4 h-4 rounded text-[#1447E6] border-slate-300"
+                checked={form.testimonialButtonNewTab}
+                onChange={(e) => setField('testimonialButtonNewTab', e.target.checked)}
+              />
+              <span className="text-sm font-medium text-slate-700 whitespace-nowrap">Open in new tab</span>
+            </label>
+          </div>
         </div>
       </div>
     </SectionCard>

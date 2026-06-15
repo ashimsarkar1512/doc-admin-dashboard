@@ -93,6 +93,7 @@ export default function DashboardLayout() {
   // Local state for submenus
   const [patientMenuOpen, setPatientMenuOpen] = useState(false);
   const [complianceMenuOpen, setComplianceMenuOpen] = useState(true);
+  const [websiteMenuOpen, setWebsiteMenuOpen] = useState(false);
 
   // Synchronize route changes to Redux Page Header State
   useEffect(() => {
@@ -292,25 +293,48 @@ export default function DashboardLayout() {
             {!collapsed && <span>Discounts & Marketing</span>}
           </Link>
 
-          {/* Website Management – direct link, no dropdown */}
-          <Link
-            to="/dashboard/website-management"
-            className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold [&.active_svg]:text-[#1447E6] ${collapsed ? 'justify-center' : ''}`}
-            title={collapsed ? 'Website Management' : undefined}
-          >
-            <Globe size={20} className="text-slate-500 shrink-0" />
-            {!collapsed && <span>Website Management</span>}
-          </Link>
-
-          {/* Pages – single Home Page entry (no dropdown) */}
-          {!collapsed && (
-            <div className="pl-6">
-              <Link
-                to="/dashboard/pages"
-                className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold"
+          {/* Website Management – dropdown */}
+          {collapsed ? (
+            <Link
+              to="/dashboard/website-management"
+              className="flex items-center justify-center p-2.5 rounded-lg text-slate-700 hover:bg-slate-50 [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active_svg]:text-[#1447E6]"
+              title="Website Management"
+            >
+              <Globe size={20} className="text-slate-500 shrink-0" />
+            </Link>
+          ) : (
+            <div>
+              <button
+                onClick={() => setWebsiteMenuOpen(!websiteMenuOpen)}
+                className="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors group"
               >
-                Home Page
-              </Link>
+                <Link
+                  to="/dashboard/website-management"
+                  className="flex items-center gap-3 flex-1 [&.active]:text-[#1447E6] [&.active]:font-semibold"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <Globe size={20} className="text-slate-500 group-hover:text-slate-700 shrink-0" />
+                  <span>Website Management</span>
+                </Link>
+                <ChevronDown
+                  size={16}
+                  className={`text-slate-400 transition-transform duration-200 ${
+                    websiteMenuOpen ? 'rotate-180' : ''
+                  }`}
+                />
+              </button>
+
+              {/* Submenus */}
+              {websiteMenuOpen && (
+                <div className="pl-6 mt-1 space-y-1">
+                  <Link
+                    to="/dashboard/pages"
+                    className="flex items-center gap-3 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold"
+                  >
+                    Home Page
+                  </Link>
+                </div>
+              )}
             </div>
           )}
 
