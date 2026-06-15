@@ -201,3 +201,75 @@ code {
 .scrollbar-hide::-webkit-scrollbar {
   display: none;             /* Chrome, Safari, Opera */
 }
+
+/* Professional custom scrollbar for sidebar - subtle and minimal */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(148, 163, 184, 0.4) transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.4);
+  border-radius: 4px;
+  transition: background 0.3s ease;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(100, 116, 139, 0.6);
+}
+
+/* Sidebar section divider */
+.sidebar-divider {
+  @apply my-3 border-t border-slate-200 hover:border-slate-300 transition-colors duration-200;
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  /* Tablet: Collapse by default */
+  aside:not(.expanded) {
+    width: 64px;
+  }
+}
+
+@media (min-width: 1025px) {
+  /* Desktop: Full width */
+  aside {
+    width: 256px;
+  }
+  
+  aside.collapsed {
+    width: 64px;
+  }
+}
+
+/* Smooth sidebar transitions */
+aside {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Professional sidebar shadow for depth */
+aside {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+/* Scrollbar hide - invisible but functional (modern design) */
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;     /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;             /* Chrome, Safari, Opera */
+}
+
+/* Nav link professional hover state */
+nav a:hover, nav button:hover {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
