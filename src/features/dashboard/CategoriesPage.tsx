@@ -16,8 +16,8 @@ export default function CategoriesPage() {
   const queryClient = useQueryClient();
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<'ACTIVE' | 'DISABLED'>('ACTIVE');
-  const [page] = useState(1);
-  const limit = 10;
+  const [page, setPage] = useState(1);
+  const limit = 8;
 
   // Modals state
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -88,6 +88,7 @@ export default function CategoriesPage() {
   });
 
   const allCategories = categoriesData?.data || [];
+  const totalPages = categoriesData?.meta?.totalPages ?? 1;
 
   // Client-side filter by status dropdown
   const filteredCategories = allCategories.filter((cat) => {
@@ -239,7 +240,7 @@ export default function CategoriesPage() {
   };
 
   return (
-    <div className="p-6 md:p-8 w-full space-y-6 font-sans bg-gray-50 min-h-full">
+    <div className="p-6 md:p-8 w-full font-sans bg-gray-50 flex flex-col gap-6" style={{ minHeight: 'calc(100vh - 64px)' }}>
 
       {/* ── Top Control Bar ─────────────────────────────────────────── */}
       <div className="flex flex-col sm:flex-row sm:items-center gap-3">
@@ -251,7 +252,7 @@ export default function CategoriesPage() {
             type="text"
             placeholder="Search categories..."
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={(e) => { setSearchQuery(e.target.value); setPage(1); }}
             className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 text-sm text-gray-800 placeholder-gray-400 shadow-sm"
           />
         </div>
@@ -283,6 +284,7 @@ export default function CategoriesPage() {
       </div>
 
       {/* ── Categories Cards Grid ──────────────────────────────────── */}
+      <div className="flex-1">
       {isLoading ? (
         <div className="flex justify-center items-center py-24 text-gray-400">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mr-3" />
@@ -325,6 +327,80 @@ export default function CategoriesPage() {
               Clear filter
             </button>
           )}
+        </div>
+      )}
+      </div>
+
+      {/* ── Pagination ────────────────────────────────────────────────── */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between pt-2">
+          <p className="text-sm text-gray-500">
+            Page <span className="font-medium text-gray-700">{page}</span> of{' '}
+            <span className="font-medium text-gray-700">{totalPages}</span>
+            {categoriesData?.meta?.total && (
+              <> &mdash; <span className="font-medium text-gray-700">{categoriesData.meta.total}</span> total</>
+            )}
+          </p>
+          <div className="flex items-center gap-1">
+            <button
+              onClick={() => setPage(1)}
+              disabled={page === 1}
+              className="px-2.5 py-1.5 rounded-lg border border-gray-200 text-xs font-medium text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            >
+              «
+            </button>
+            <button
+              onClick={() => setPage((p) => p - 1)}
+              disabled={page === 1}
+              className="px-3 py-1.5 rounded-lg border border-gray-200 text-xs font-medium text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            >
+              ‹ Prev
+            </button>
+
+            {Array.from({ length: totalPages }, (_, i) => i + 1)
+              .filter((p) => p === 1 || p === totalPages || Math.abs(p - page) <= 1)
+              .reduce<(number | '...')[]>((acc, p, idx, arr) => {
+                if (idx > 0 && typeof arr[idx - 1] === 'number' && (p as number) - (arr[idx - 1] as number) > 1) {
+                  acc.push('...');
+                }
+                acc.push(p);
+                return acc;
+              }, [])
+              .map((item, idx) =>
+                item === '...' ? (
+                  <span key={`ellipsis-${idx}`} className="px-2 py-1.5 text-xs text-gray-400">
+                    …
+                  </span>
+                ) : (
+                  <button
+                    key={item}
+                    onClick={() => setPage(item as number)}
+                    className={`w-8 h-8 rounded-lg border text-xs font-semibold transition-colors ${
+                      page === item
+                        ? 'bg-[#2563EB] border-[#2563EB] text-white shadow-sm shadow-blue-600/20'
+                        : 'border-gray-200 text-gray-600 hover:bg-gray-50'
+                    }`}
+                  >
+                    {item}
+                  </button>
+                )
+              )}
+
+            <button
+              onClick={() => setPage((p) => p + 1)}
+              disabled={page === totalPages}
+              className="px-3 py-1.5 rounded-lg border border-gray-200 text-xs font-medium text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            >
+              Next ›
+            </button>
+            <button
+              onClick={() => setPage(totalPages)}
+              disabled={page === totalPages}
+              className="px-2.5 py-1.5 rounded-lg border border-gray-200 text-xs font-medium text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            >
+              »
+            </button>
+          </div>
         </div>
       )}
 
