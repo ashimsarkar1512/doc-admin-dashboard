@@ -9,6 +9,7 @@ import AssessmentFormDialog from './components/AssessmentFormDialog';
 import { getAssessments } from '@/api/endpoints/assessments.api';
 import { getCategories } from '@/api/endpoints/categories.api';
 import { API_BASE_URL } from '@/api/config';
+import Swal from 'sweetalert2';
 
 async function deleteAssessment(id: string): Promise<void> {
   const response = await fetch(`${API_BASE_URL}/admin/assessments/${id}`, {
@@ -63,9 +64,19 @@ export default function AssessmentsPage() {
   };
 
   const handleDelete = (id: string) => {
-    if (confirm('Are you sure you want to delete this assessment?')) {
-      deleteMutation.mutate(id);
-    }
+    Swal.fire({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Yes, delete it!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        deleteMutation.mutate(id);
+      }
+    });
   };
 
   const handleClose = () => {
