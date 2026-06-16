@@ -30,6 +30,9 @@ import {
   BarChart2,
   Folder,
   Activity,
+  Bell,
+  Menu,
+  X,
 } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { toggleSidebar, setPageHeader } from '@/store/uiSlice';
@@ -61,7 +64,7 @@ const routeTitleMap: Record<string, { title: string; subtitle: string }> = {
   '/dashboard/consent-management': { title: 'Consent Management', subtitle: 'Manage and track patient consent forms and authorizations' },
   '/dashboard/incident-management': { title: 'Incident Management', subtitle: 'Track, investigate and resolve compliance and system incidents' },
   '/dashboard/state-coverage': { title: 'State Coverage', subtitle: 'Overview of service coverage and provider availability by state' },
-  '/dashboard/prescription-oversight': { title: 'Side effect report', subtitle: 'Medical director prescription review and approval' },
+  '/dashboard/prescription-oversight': { title: 'Prescription Oversight', subtitle: 'Monitor and manage active patient prescriptions and medications' },
   '/dashboard/business-intelligence': { title: 'Business Intelligence', subtitle: 'Key performance metrics and data-driven insights for decision making' },
   '/dashboard/communication-center': { title: 'Communication Center', subtitle: 'Manage patient messages, internal communications, and notifications' },
   '/dashboard/document-center': { title: 'Document Center', subtitle: 'Centralized storage for policies, forms, reports, and compliance documents' },
@@ -93,7 +96,7 @@ export default function DashboardLayout() {
   // Local state for submenus
   const [patientMenuOpen, setPatientMenuOpen] = useState(false);
   const [complianceMenuOpen, setComplianceMenuOpen] = useState(true);
-  const [websiteMenuOpen, setWebsiteMenuOpen] = useState(false);
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
   // Synchronize route changes to Redux Page Header State
   useEffect(() => {
@@ -105,67 +108,175 @@ export default function DashboardLayout() {
 
   return (
     <div className="flex h-screen w-full overflow-hidden bg-primaryBg font-sans">
-      {/* Sidebar – full height, includes logo */}
-      <aside
-        className={`${collapsed ? 'w-[68px]' : 'w-68'
-          } h-full border-r border-slate-200 bg-white flex flex-col shrink-0 z-20 transition-all duration-300 relative`}
+      {/* Mobile sidebar overlay backdrop */}
+      {mobileSidebarOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm md:hidden"
+          onClick={() => setMobileSidebarOpen(false)}
+        />
+      )}
+
+      {/* Mobile Sidebar - fixed overlay, never affects layout */}
+      <div
+        className={`fixed inset-y-0 left-0 z-50 w-72 bg-white shadow-2xl flex flex-col transform transition-transform duration-300 ease-in-out md:hidden ${
+          mobileSidebarOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}
       >
-        {/* Toggle arrow button */}
+        {/* Mobile sidebar header */}
+        <div className="flex items-center justify-between px-5 h-20 border-b border-slate-100 shrink-0">
+          <img src="/images/AdminLogo.png" alt="WeightLoss MD Logo" className="w-32 h-14 object-contain" />
+          <button
+            onClick={() => setMobileSidebarOpen(false)}
+            className="flex items-center justify-center w-8 h-8 rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-700 transition-all"
+          >
+            <X size={18} />
+          </button>
+        </div>
+
+        {/* Mobile sidebar nav - reuse same nav content */}
+        <nav className="flex-1 overflow-y-auto py-4 px-3 space-y-0.5 scrollbar-hide">
+          <Link to="/dashboard" activeOptions={{ exact: true }} onClick={() => setMobileSidebarOpen(false)}
+            className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-500 text-[#272628] hover:bg-slate-100 transition-all [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-600 [&.active_svg]:text-[#1447E6]">
+            <LayoutGrid size={20} className="shrink-0" /><span>Dashboard</span>
+          </Link>
+          <Link to="/dashboard/providers" onClick={() => setMobileSidebarOpen(false)}
+            className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-500 text-[#272628] hover:bg-slate-100 transition-all [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-600 [&.active_svg]:text-[#1447E6]">
+            <Stethoscope size={20} className="shrink-0" /><span>Doctor Management</span>
+          </Link>
+          <Link to="/dashboard/patients" onClick={() => setMobileSidebarOpen(false)}
+            className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-500 text-[#272628] hover:bg-slate-100 transition-all [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-600 [&.active_svg]:text-[#1447E6]">
+            <Users size={20} className="shrink-0" /><span>Patient Management</span>
+          </Link>
+          <Link to="/dashboard/assessments" onClick={() => setMobileSidebarOpen(false)}
+            className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-500 text-[#272628] hover:bg-slate-100 transition-all [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-600 [&.active_svg]:text-[#1447E6]">
+            <ClipboardList size={20} className="shrink-0" /><span>Assessments</span>
+          </Link>
+          <Link to="/dashboard/orders" onClick={() => setMobileSidebarOpen(false)}
+            className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-500 text-[#272628] hover:bg-slate-100 transition-all [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-600 [&.active_svg]:text-[#1447E6]">
+            <Package size={20} className="shrink-0" /><span>Orders</span>
+          </Link>
+          <Link to="/dashboard/checkout" onClick={() => setMobileSidebarOpen(false)}
+            className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-500 text-[#272628] hover:bg-slate-100 transition-all [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-600 [&.active_svg]:text-[#1447E6]">
+            <ShoppingBag size={20} className="shrink-0" /><span>Checkout</span>
+          </Link>
+          <Link to="/dashboard/contact-leads" onClick={() => setMobileSidebarOpen(false)}
+            className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-500 text-[#272628] hover:bg-slate-100 transition-all [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-600 [&.active_svg]:text-[#1447E6]">
+            <MessageSquare size={20} className="shrink-0" /><span>Contact Leads</span>
+          </Link>
+          <Link to="/dashboard/payments" onClick={() => setMobileSidebarOpen(false)}
+            className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-500 text-[#272628] hover:bg-slate-100 transition-all [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-600 [&.active_svg]:text-[#1447E6]">
+            <BadgeDollarSign size={20} className="shrink-0" /><span>Payments</span>
+          </Link>
+          <Link to="/dashboard/categories" onClick={() => setMobileSidebarOpen(false)}
+            className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-500 text-[#272628] hover:bg-slate-100 transition-all [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-600 [&.active_svg]:text-[#1447E6]">
+            <Folders size={20} className="shrink-0" /><span>Service Category & Plan</span>
+          </Link>
+          <Link to="/dashboard/products" onClick={() => setMobileSidebarOpen(false)}
+            className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-500 text-[#272628] hover:bg-slate-100 transition-all [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-600 [&.active_svg]:text-[#1447E6]">
+            <ShoppingBag size={20} className="shrink-0" /><span>Products</span>
+          </Link>
+          <Link to="/dashboard/testimonials" onClick={() => setMobileSidebarOpen(false)}
+            className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-500 text-[#272628] hover:bg-slate-100 transition-all [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-600 [&.active_svg]:text-[#1447E6]">
+            <Star size={20} className="shrink-0" /><span>Testimonials</span>
+          </Link>
+          <Link to="/dashboard/discounts" onClick={() => setMobileSidebarOpen(false)}
+            className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-500 text-[#272628] hover:bg-slate-100 transition-all [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-600 [&.active_svg]:text-[#1447E6]">
+            <Tag size={20} className="shrink-0" /><span>Discounts & Marketing</span>
+          </Link>
+          <Link to="/dashboard/website-management" onClick={() => setMobileSidebarOpen(false)}
+            className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-500 text-[#272628] hover:bg-slate-100 transition-all [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-600 [&.active_svg]:text-[#1447E6]">
+            <Globe size={20} className="shrink-0" /><span>Website Management</span>
+          </Link>
+          <hr className="my-2 border-slate-100" />
+          <Link to="/dashboard/employee-permissions" onClick={() => setMobileSidebarOpen(false)}
+            className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-500 text-[#272628] hover:bg-slate-100 transition-all [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-600 [&.active_svg]:text-[#1447E6]">
+            <UserCog size={20} className="shrink-0" /><span>Employee Permissions</span>
+          </Link>
+          <Link to="/dashboard/compliance-center" onClick={() => setMobileSidebarOpen(false)}
+            className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-500 text-[#272628] hover:bg-slate-100 transition-all [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-600 [&.active_svg]:text-[#1447E6]">
+            <ShieldCheck size={20} className="shrink-0" /><span>Compliance Center</span>
+          </Link>
+          <Link to="/dashboard/audit-logs" onClick={() => setMobileSidebarOpen(false)}
+            className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-500 text-[#272628] hover:bg-slate-100 transition-all [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-600 [&.active_svg]:text-[#1447E6]">
+            <ScrollText size={20} className="shrink-0" /><span>Audit Logs</span>
+          </Link>
+          <Link to="/dashboard/system-health" onClick={() => setMobileSidebarOpen(false)}
+            className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-500 text-[#272628] hover:bg-slate-100 transition-all [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-600 [&.active_svg]:text-[#1447E6]">
+            <Activity size={20} className="shrink-0" /><span>System Health</span>
+          </Link>
+        </nav>
+
+        {/* Mobile logout */}
+        <div className="border-t border-slate-100 p-4">
+          <Link to="/" className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-bold text-red-600 hover:bg-red-50 transition-all">
+            <LogOut size={18} className="shrink-0" /><span>Logout</span>
+          </Link>
+        </div>
+      </div>
+
+      {/* Sidebar – desktop only */}
+      <aside
+        className={`hidden md:flex ${
+          collapsed ? 'md:w-16' : 'md:w-64'
+        } h-full border-r border-slate-200 bg-white flex-col shrink-0 transition-all duration-300 relative`}
+      >
+        {/* Floating collapse toggle */}
         <button
           onClick={() => dispatch(toggleSidebar())}
-          className="absolute -right-3 top-20 w-6 h-6 bg-white border border-slate-200 rounded-full flex items-center justify-center shadow-sm hover:bg-slate-50 transition-colors z-30 text-slate-500"
+          title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+          className="absolute -right-3 top-[30px] z-30 bg-white text-slate-300 hover:text-[#1447E6] transition-colors duration-200"
         >
-          {collapsed ? <ChevronRight size={13} /> : <ChevronLeft size={13} />}
+          {collapsed ? <ChevronRight size={18} strokeWidth={2} /> : <ChevronLeft size={18} strokeWidth={2} />}
         </button>
 
         {/* Logo at top of sidebar */}
-        <div className={`flex items-center border-b border-slate-100 h-20 shrink-0 ${collapsed ? 'justify-center px-3' : 'px-6'}`}>
+        <div className={`flex items-center border-b border-slate-100 h-20 shrink-0 ${collapsed ? 'justify-center px-2' : 'px-5'} transition-all duration-200`}>
           <img
             src="/images/AdminLogo.png"
             alt="WeightLoss MD Logo"
-            className={`object-contain transition-all duration-300 ${collapsed ? 'w-[40px] h-[40px]' : 'w-[12rem] h-[68px]'}`}
+            className={`object-contain transition-all duration-300 ${collapsed ? 'w-10 h-10' : 'w-32 h-14'}`}
           />
         </div>
 
         {/* Nav links */}
-        <nav className={`flex-1 overflow-y-auto py-6 space-y-1.5 ${collapsed ? 'px-2' : 'px-2'} custom-scrollbar`}>
+        <nav className={`flex-1 overflow-y-auto py-6 space-y-0.5 ${collapsed ? 'px-2' : 'px-3'} scrollbar-hide`}>
           {/* Dashboard */}
           <Link
             to="/dashboard"
             activeOptions={{ exact: true }}
-            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold [&.active_svg]:text-[#1447E6]"
+            className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-500 text-[#272628] hover:bg-slate-100 hover:text-slate-900 transition-all duration-150 [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-600 [&.active]:shadow-sm [&.active_svg]:text-[#1447E6] group"
           >
-            <LayoutGrid size={20} className="text-slate-500 shrink-0" />
-            {!collapsed && <span>Dashboard</span>}
+            <LayoutGrid size={20} className="text-[#272628] group-hover:text-slate-600 shrink-0 transition-colors" />
+            {!collapsed && <span className="tracking-wide">Dashboard</span>}
           </Link>
 
           {/* Doctor Management */}
           <Link
             to="/dashboard/providers"
-            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold [&.active_svg]:text-[#1447E6]"
+            className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-500 text-[#272628] hover:bg-slate-100 hover:text-slate-900 transition-all duration-150 [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-600 [&.active]:shadow-sm [&.active_svg]:text-[#1447E6] group"
           >
-            <Stethoscope size={20} className="text-slate-500 shrink-0" />
-            {!collapsed && <span>Doctor Management</span>}
+            <Stethoscope size={20} className="text-[#272628] group-hover:text-slate-600 shrink-0 transition-colors" />
+            {!collapsed && <span className="tracking-wide">Doctor Management</span>}
           </Link>
 
           {/* Patient Management */}
           {collapsed ? (
             <Link
               to="/dashboard/patients"
-              className="flex items-center justify-center p-2.5 rounded-lg text-slate-700 hover:bg-slate-50 [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active_svg]:text-[#1447E6]"
+              className="flex items-center justify-center p-2.5 rounded-md text-slate-600 hover:bg-slate-100 [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active_svg]:text-[#1447E6]"
               title="Patient Management"
             >
-              <Users size={20} className="text-slate-500 shrink-0" />
+              <Users size={20} className="text-slate-400 shrink-0" />
             </Link>
           ) : (
             <div>
               <button
                 onClick={() => setPatientMenuOpen(!patientMenuOpen)}
-                className="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors group"
+                className="w-full flex items-center justify-between px-3 py-2.5 rounded-md text-sm font-500 text-[#272628] hover:bg-slate-100 transition-colors group"
               >
                 <div className="flex items-center gap-3">
-                  <Users size={20} className="text-slate-500 group-hover:text-slate-700 shrink-0" />
-                  <span>Patient Management</span>
+                  <Users size={20} className="text-[#272628] group-hover:text-slate-600 shrink-0" />
+                  <span className="tracking-wide">Patient Management</span>
                 </div>
                 <ChevronDown
                   size={16}
@@ -197,20 +308,20 @@ export default function DashboardLayout() {
           {/* Assessments */}
           <Link
             to="/dashboard/assessments"
-            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold [&.active_svg]:text-[#1447E6]"
+            className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-500 text-[#272628] hover:bg-slate-100 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-600 [&.active_svg]:text-[#1447E6]"
           >
-            <ClipboardList size={20} className="text-slate-500 shrink-0" />
-            {!collapsed && <span>Assessments</span>}
+            <ClipboardList size={20} className="text-[#272628] shrink-0" />
+            {!collapsed && <span className="tracking-wide">Assessments</span>}
           </Link>
 
           {/* Orders */}
           <Link
             to="/dashboard/orders"
-            className="flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold [&.active_svg]:text-[#1447E6]"
+            className="flex items-center justify-between px-3 py-2.5 rounded-md text-sm font-500 text-[#272628] hover:bg-slate-100 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-600 [&.active_svg]:text-[#1447E6]"
           >
             <div className="flex items-center gap-3">
-              <Package size={20} className="text-slate-500 shrink-0" />
-              {!collapsed && <span>Orders</span>}
+              <Package size={20} className="text-[#272628] shrink-0" />
+              {!collapsed && <span className="tracking-wide">Orders</span>}
             </div>
             {!collapsed && (
               <span className="flex items-center justify-center w-5 h-5 rounded-full bg-[#E88319] text-white text-[10px] font-bold">
@@ -222,20 +333,20 @@ export default function DashboardLayout() {
           {/* Checkout */}
           <Link
             to="/dashboard/checkout"
-            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold [&.active_svg]:text-[#1447E6]"
+            className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-500 text-[#272628] hover:bg-slate-100 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-600 [&.active_svg]:text-[#1447E6]"
           >
-            <ShoppingBag size={20} className="text-slate-500 shrink-0" />
-            {!collapsed && <span>Checkout</span>}
+            <ShoppingBag size={20} className="text-[#272628] shrink-0" />
+            {!collapsed && <span className="tracking-wide">Checkout</span>}
           </Link>
 
           {/* Contact Leads */}
           <Link
             to="/dashboard/contact-leads"
-            className="flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold [&.active_svg]:text-[#1447E6]"
+            className="flex items-center justify-between px-3 py-2.5 rounded-md text-sm font-500 text-[#272628] hover:bg-slate-100 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-600 [&.active_svg]:text-[#1447E6]"
           >
             <div className="flex items-center gap-3">
-              <MessageSquare size={20} className="text-slate-500 shrink-0" />
-              {!collapsed && <span>Contact Leads</span>}
+              <MessageSquare size={20} className="text-[#272628] shrink-0" />
+              {!collapsed && <span className="tracking-wide">Contact Leads</span>}
             </div>
             {!collapsed && unreadCount > 0 && (
               <span className="flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full bg-[#E88319] text-white text-[10px] font-bold">
@@ -247,19 +358,19 @@ export default function DashboardLayout() {
           {/* Payments */}
           <Link
             to="/dashboard/payments"
-            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold [&.active_svg]:text-[#1447E6]"
+            className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-500 text-[#272628] hover:bg-slate-100 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-600 [&.active_svg]:text-[#1447E6]"
           >
-            <BadgeDollarSign size={20} className="text-slate-500 shrink-0" />
-            {!collapsed && <span>Payments</span>}
+            <BadgeDollarSign size={20} className="text-[#272628] shrink-0" />
+            {!collapsed && <span className="tracking-wide">Payments</span>}
           </Link>
 
           {/* Categories */}
           <Link
             to="/dashboard/categories"
-            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold [&.active_svg]:text-[#1447E6]"
+            className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-500 text-[#272628] hover:bg-slate-100 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-600 [&.active_svg]:text-[#1447E6]"
           >
-            <Folders size={20} className="text-slate-500 shrink-0" />
-            {!collapsed && <span>Service Category & Plan</span>}
+            <Folders size={20} className="text-[#272628] shrink-0" />
+            {!collapsed && <span className="tracking-wide">Service Category & Plan</span>}
           </Link>
 
 
@@ -267,90 +378,68 @@ export default function DashboardLayout() {
           {/* Products */}
           <Link
             to="/dashboard/products"
-            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold [&.active_svg]:text-[#1447E6]"
+            className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-500 text-[#272628] hover:bg-slate-100 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-600 [&.active_svg]:text-[#1447E6]"
           >
-            <ShoppingBag size={20} className="text-slate-500 shrink-0" />
-            {!collapsed && <span>Products</span>}
+            <ShoppingBag size={20} className="text-[#272628] shrink-0" />
+            {!collapsed && <span className="tracking-wide">Products</span>}
           </Link>
 
           {/* Testimonials */}
           <Link
             to="/dashboard/testimonials"
-            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold [&.active_svg]:text-[#1447E6]"
+            className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-500 text-[#272628] hover:bg-slate-100 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-600 [&.active_svg]:text-[#1447E6]"
           >
-            <Star size={20} className="text-slate-500 shrink-0" />
-            {!collapsed && <span>Testimonials</span>}
+            <Star size={20} className="text-[#272628] shrink-0" />
+            {!collapsed && <span className="tracking-wide">Testimonials</span>}
           </Link>
 
           {/* Discounts & Marketing */}
           <Link
             to="/dashboard/discounts"
-            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold [&.active_svg]:text-[#1447E6]"
+            className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-500 text-[#272628] hover:bg-slate-100 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-600 [&.active_svg]:text-[#1447E6]"
           >
-            <Tag size={20} className="text-slate-500 shrink-0" />
-            {!collapsed && <span>Discounts & Marketing</span>}
+            <Tag size={20} className="text-[#272628] shrink-0" />
+            {!collapsed && <span className="tracking-wide">Discounts & Marketing</span>}
           </Link>
 
-          {/* Website Management – dropdown */}
-          {collapsed ? (
-            <Link
-              to="/dashboard/website-management"
-              className="flex items-center justify-center p-2.5 rounded-lg text-slate-700 hover:bg-slate-50 [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active_svg]:text-[#1447E6]"
-              title="Website Management"
-            >
-              <Globe size={20} className="text-slate-500 shrink-0" />
-            </Link>
-          ) : (
-            <div>
-              <button
-                onClick={() => setWebsiteMenuOpen(!websiteMenuOpen)}
-                className="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors group"
-              >
-                <Link
-                  to="/dashboard/website-management"
-                  className="flex items-center gap-3 flex-1 [&.active]:text-[#1447E6] [&.active]:font-semibold"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <Globe size={20} className="text-slate-500 group-hover:text-slate-700 shrink-0" />
-                  <span>Website Management</span>
-                </Link>
-                <ChevronDown
-                  size={16}
-                  className={`text-slate-400 transition-transform duration-200 ${websiteMenuOpen ? 'rotate-180' : ''
-                    }`}
-                />
-              </button>
+          {/* Website Management – direct link, no dropdown */}
+          <Link
+            to="/dashboard/website-management"
+            className={`flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-500 text-[#272628] hover:bg-slate-100 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-600 [&.active_svg]:text-[#1447E6] ${collapsed ? 'justify-center' : ''}`}
+            title={collapsed ? 'Website Management' : undefined}
+          >
+            <Globe size={20} className="text-[#272628] shrink-0" />
+            {!collapsed && <span className="tracking-wide">Website Management</span>}
+          </Link>
 
-              {/* Submenus */}
-              {websiteMenuOpen && (
-                <div className="pl-6 mt-1 space-y-1">
-                  <Link
-                    to="/dashboard/pages"
-                    className="flex items-center gap-3 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold"
-                  >
-                    Home Page
-                  </Link>
-                </div>
-              )}
+          {/* Pages – single Home Page entry (no dropdown) */}
+          {!collapsed && (
+            <div className="pl-6">
+              <Link
+                to="/dashboard/pages"
+                className="flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold"
+              >
+                Home Page
+              </Link>
             </div>
           )}
 
-          <hr className="my-2 border-slate-200" />
+          <hr className="sidebar-divider" />
 
           {/* Compliance & Access */}
           {collapsed ? (
             <Link
               to="/dashboard/employee-permissions"
-              className="flex items-center justify-center p-2.5 rounded-lg text-slate-700 hover:bg-slate-50 [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active_svg]:text-[#1447E6]"
+              className="flex items-center justify-center p-2.5 rounded-md text-slate-600 hover:bg-slate-100 [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active_svg]:text-[#1447E6]"
               title="Compliance & Access"
             >
-              <ShieldCheck size={20} className="text-slate-500 shrink-0" />
+              <ShieldCheck size={20} className="text-slate-400 shrink-0" />
             </Link>
           ) : (
             <div>
               <button
                 onClick={() => setComplianceMenuOpen(!complianceMenuOpen)}
-                className="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:bg-slate-50 transition-colors group"
+                className="w-full flex items-center justify-between px-3 py-2.5 rounded-md text-sm font-500 text-[#272628] hover:bg-slate-100 transition-colors group"
               >
                 <span>Compliance & Access</span>
                 <ChevronDown
@@ -365,79 +454,79 @@ export default function DashboardLayout() {
                 <div className="pl-3 mt-1 space-y-1">
                   <Link
                     to="/dashboard/employee-permissions"
-                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold [&.active_svg]:text-[#1447E6]"
+                    className="flex items-center gap-3 px-3 py-2 rounded-md text-xs font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold [&.active_svg]:text-[#1447E6]"
                   >
-                    <UserCog size={20} className="text-slate-500 shrink-0" />
+                    <UserCog size={18} className="text-slate-500 shrink-0" />
                     <span>Employee Permissions</span>
                   </Link>
                   <Link
                     to="/dashboard/compliance-center"
-                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold [&.active_svg]:text-[#1447E6]"
+                    className="flex items-center gap-3 px-3 py-2 rounded-md text-xs font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold [&.active_svg]:text-[#1447E6]"
                   >
-                    <ShieldCheck size={20} className="text-slate-500 shrink-0" />
+                    <ShieldCheck size={18} className="text-slate-500 shrink-0" />
                     <span>Compliance Center</span>
                   </Link>
                   <Link
                     to="/dashboard/audit-logs"
-                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold [&.active_svg]:text-[#1447E6]"
+                    className="flex items-center gap-3 px-3 py-2 rounded-md text-xs font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold [&.active_svg]:text-[#1447E6]"
                   >
-                    <ScrollText size={20} className="text-slate-500 shrink-0" />
+                    <ScrollText size={18} className="text-slate-500 shrink-0" />
                     <span>Audit Logs</span>
                   </Link>
                   <Link
                     to="/dashboard/consent-management"
-                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold [&.active_svg]:text-[#1447E6]"
+                    className="flex items-center gap-3 px-3 py-2 rounded-md text-xs font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold [&.active_svg]:text-[#1447E6]"
                   >
-                    <FileText size={20} className="text-slate-500 shrink-0" />
+                    <FileText size={18} className="text-slate-500 shrink-0" />
                     <span>Consent Management</span>
                   </Link>
                   <Link
                     to="/dashboard/incident-management"
-                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold [&.active_svg]:text-[#1447E6]"
+                    className="flex items-center gap-3 px-3 py-2 rounded-md text-xs font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold [&.active_svg]:text-[#1447E6]"
                   >
-                    <AlertTriangle size={20} className="text-slate-500 shrink-0" />
+                    <AlertTriangle size={18} className="text-slate-500 shrink-0" />
                     <span>Incident Management</span>
                   </Link>
                   <Link
                     to="/dashboard/state-coverage"
-                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold [&.active_svg]:text-[#1447E6]"
+                    className="flex items-center gap-3 px-3 py-2 rounded-md text-xs font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold [&.active_svg]:text-[#1447E6]"
                   >
-                    <Map size={20} className="text-slate-500 shrink-0" />
+                    <Map size={18} className="text-slate-500 shrink-0" />
                     <span>State Coverage</span>
                   </Link>
                   <Link
                     to="/dashboard/prescription-oversight"
-                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold [&.active_svg]:text-[#1447E6]"
+                    className="flex items-center gap-3 px-3 py-2 rounded-md text-xs font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold [&.active_svg]:text-[#1447E6]"
                   >
-                    <Pill size={20} className="text-slate-500 shrink-0" />
-                    <span>Side effect report</span>
+                    <Pill size={18} className="text-slate-500 shrink-0" />
+                    <span>Prescription Oversight</span>
                   </Link>
                   <Link
                     to="/dashboard/business-intelligence"
-                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold [&.active_svg]:text-[#1447E6]"
+                    className="flex items-center gap-3 px-3 py-2 rounded-md text-xs font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold [&.active_svg]:text-[#1447E6]"
                   >
-                    <BarChart2 size={20} className="text-slate-500 shrink-0" />
+                    <BarChart2 size={18} className="text-slate-500 shrink-0" />
                     <span>Business Intelligence</span>
                   </Link>
                   <Link
                     to="/dashboard/communication-center"
-                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold [&.active_svg]:text-[#1447E6]"
+                    className="flex items-center gap-3 px-3 py-2 rounded-md text-xs font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold [&.active_svg]:text-[#1447E6]"
                   >
-                    <MessageSquare size={20} className="text-slate-500 shrink-0" />
+                    <MessageSquare size={18} className="text-slate-500 shrink-0" />
                     <span>Communication Center</span>
                   </Link>
                   <Link
                     to="/dashboard/document-center"
-                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold [&.active_svg]:text-[#1447E6]"
+                    className="flex items-center gap-3 px-3 py-2 rounded-md text-xs font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold [&.active_svg]:text-[#1447E6]"
                   >
-                    <Folder size={20} className="text-slate-500 shrink-0" />
+                    <Folder size={18} className="text-slate-500 shrink-0" />
                     <span>Document Center</span>
                   </Link>
                   <Link
                     to="/dashboard/system-health"
-                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold [&.active_svg]:text-[#1447E6]"
+                    className="flex items-center gap-3 px-3 py-2 rounded-md text-xs font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold [&.active_svg]:text-[#1447E6]"
                   >
-                    <Activity size={20} className="text-slate-500 shrink-0" />
+                    <Activity size={18} className="text-slate-500 shrink-0" />
                     <span>System Health</span>
                   </Link>
                 </div>
@@ -447,12 +536,12 @@ export default function DashboardLayout() {
         </nav>
 
         {/* Logout */}
-        <div className={`border-t border-slate-100 ${collapsed ? 'p-2' : 'p-4'}`}>
+        <div className={`border-t border-slate-100 ${collapsed ? 'p-2' : 'p-4'} hover:bg-red-50 transition-colors duration-200`}>
           <Link
             to="/"
-            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-bold text-red-600 hover:text-red-700 hover:bg-red-50 transition-colors"
+            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-bold text-red-600 hover:text-red-700 hover:bg-red-100 transition-all duration-200 group"
           >
-            <LogOut size={18} className="shrink-0" />
+            <LogOut size={18} className="shrink-0 group-hover:scale-110 transition-transform" />
             {!collapsed && <span>Logout</span>}
           </Link>
         </div>
@@ -460,21 +549,43 @@ export default function DashboardLayout() {
 
       {/* Right side: header + content */}
       <div className="flex flex-col flex-1 overflow-hidden">
-        {/* Top Header with dynamic title and subtitle from Redux */}
-        <header className="h-20 border-b border-slate-200 bg-white flex items-center justify-between px-6 z-10 shrink-0 shadow-sm">
-          {/* Dynamic Page Title & Subtitle */}
-          <div className="flex flex-col justify-center">
-            <h1 className="text-xl font-bold text-slate-800 tracking-tight leading-none mb-1.5">{pageTitle}</h1>
-            <p className="text-sm font-medium text-slate-400 leading-none">{pageSubtitle}</p>
+        {/* Top Navbar - Professional */}
+        <header className="border-b border-slate-100 bg-white flex items-center justify-between px-4 md:px-6 z-10 shrink-0 h-20">
+          {/* Hamburger for mobile */}
+          <button
+            className="md:hidden flex items-center justify-center w-9 h-9 rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-50 hover:text-slate-800 transition-all duration-150 mr-3 shrink-0"
+            onClick={() => setMobileSidebarOpen(true)}
+          >
+            <Menu size={18} strokeWidth={2} />
+          </button>
+
+          {/* Page Title */}
+          <div className="flex flex-col justify-center h-20 flex-1 min-w-0">
+            <h1 className="text-[14px] md:text-[20px] font-semibold text-slate-900 tracking-[-0.2px] truncate" style={{ margin: 0, lineHeight: '1.2' }}>{pageTitle}</h1>
+            <p className="text-[11px] md:text-[13px] text-slate-400 truncate" style={{ margin: 0, marginTop: '4px', lineHeight: '1.2' }}>{pageSubtitle}</p>
           </div>
 
-          {/* User Profile Section */}
-          <div className="flex items-center gap-4">
-            <div className="hidden sm:flex flex-col text-right">
-              <span className="text-sm font-bold text-slate-700 leading-none mb-1">{user?.name || 'Admin Darren'}</span>
-              <span className="text-xs font-medium text-slate-400 leading-none">{user?.email || 'admin@telemed.com'}</span>
+          {/* Right section */}
+          <div className="flex items-center gap-2">
+            {/* Notification Bell */}
+            <button className="relative flex items-center justify-center w-9 h-9 rounded-xl text-slate-500 hover:bg-slate-100 hover:text-slate-700 transition-all duration-200">
+              <Bell size={18} strokeWidth={1.8} />
+              {unreadCount > 0 && (
+                <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-red-500" />
+              )}
+            </button>
+
+            {/* Divider */}
+            <div className="w-px h-7 bg-slate-200 mx-1" />
+
+            {/* User info + avatar */}
+            <div className="flex items-center gap-2.5">
+              <div className="hidden sm:flex flex-col text-right">
+                <span className="text-[13px] font-semibold text-slate-800 leading-none">{user?.name || 'Dr. Darren'}</span>
+                <span className="text-[11px] text-slate-400 leading-none mt-0.5 font-medium">Admin</span>
+              </div>
+              <ProfileDropdown user={user ?? undefined} />
             </div>
-            <ProfileDropdown user={user ?? undefined} />
           </div>
         </header>
 
