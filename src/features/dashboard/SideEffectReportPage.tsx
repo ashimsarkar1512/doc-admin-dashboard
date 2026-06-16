@@ -21,6 +21,7 @@ import {
   Paperclip,
   AlertCircle,
   Loader2,
+  Calendar,
 } from 'lucide-react';
 import Swal from 'sweetalert2';
 
@@ -216,28 +217,34 @@ export default function SideEffectReportPage() {
       {/* ── Filters row ─────────────────────────────────────── */}
       <form
         onSubmit={handleSearch}
-        className="flex flex-col sm:flex-row gap-3 mb-6"
+        className="flex flex-col sm:flex-row flex-wrap gap-3 mb-6"
       >
         {/* Search */}
-        <div className="relative flex-1 min-w-0">
+        <div className="relative flex-1 min-w-0 md:max-w-7xl">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search by name, email..."
+            placeholder="Search by name, email,"
             className="w-full pl-9 pr-4 py-2.5 bg-white border border-slate-200 rounded-lg text-sm text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition"
           />
         </div>
 
-        {/* Severity filter */}
+        <select
+          className="px-3 py-2.5 bg-white border border-slate-200 rounded-lg text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition min-w-[110px]"
+        >
+          <option value="">All Role</option>
+        </select>
+
+        {/* Severity filter (mapped to All Type visually) */}
         <select
           value={severity}
           onChange={(e) => {
             setSeverity(e.target.value as SeverityLevel | '');
             handleFilterChange();
           }}
-          className="px-3 py-2.5 bg-white border border-slate-200 rounded-lg text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition min-w-[130px]"
+          className="px-3 py-2.5 bg-white border border-slate-200 rounded-lg text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition min-w-[110px]"
         >
           <option value="">All Type</option>
           <option value="MILD">Mild</option>
@@ -253,7 +260,7 @@ export default function SideEffectReportPage() {
             setStatus(e.target.value as ReportStatus | '');
             handleFilterChange();
           }}
-          className="px-3 py-2.5 bg-white border border-slate-200 rounded-lg text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition min-w-[130px]"
+          className="px-3 py-2.5 bg-white border border-slate-200 rounded-lg text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition min-w-[120px]"
         >
           <option value="">All Status</option>
           <option value="PENDING">Pending</option>
@@ -261,6 +268,25 @@ export default function SideEffectReportPage() {
           <option value="ESCALATED">Escalated</option>
           <option value="DISMISSED">Dismissed</option>
         </select>
+
+        {/* Dates */}
+        <div className="relative">
+          <input
+            type="text"
+            defaultValue="2026-06-01"
+            className="w-[140px] pl-3 pr-10 py-2.5 bg-white border border-slate-200 rounded-lg text-sm text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition"
+          />
+          <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+        </div>
+
+        <div className="relative">
+          <input
+            type="text"
+            placeholder="//-//-//"
+            className="w-[140px] pl-3 pr-10 py-2.5 bg-white border border-slate-200 rounded-lg text-sm text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition"
+          />
+          <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+        </div>
       </form>
 
       {/* ── Table ───────────────────────────────────────────── */}
