@@ -1,41 +1,53 @@
-import React, { useState } from 'react';
-import { Plus, Search, AlertCircle, Upload } from 'lucide-react';
-import { toast } from 'sonner';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import type { Product } from '@/types';
-import ProductCard from '@/components/shared/cards/ProductCard';
-import Dialog from '@/components/shared/Dialog';
-import { getProducts, createProduct, updateProduct, deleteProduct } from '@/api/endpoints/products.api';
-import type { CreateProductPayload, UpdateProductPayload } from '@/api/endpoints/products.api';
-import { getCategories } from '@/api/endpoints/categories.api';
+import React, { useState } from "react";
+import { Plus, Search, AlertCircle, Upload } from "lucide-react";
+import { toast } from "sonner";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import type { Product } from "@/types";
+import ProductCard from "@/components/shared/cards/ProductCard";
+import Dialog from "@/components/shared/Dialog";
+import {
+  getProducts,
+  createProduct,
+  updateProduct,
+  deleteProduct,
+} from "@/api/endpoints/products.api";
+import type {
+  CreateProductPayload,
+  UpdateProductPayload,
+} from "@/api/endpoints/products.api";
+import { getCategories } from "@/api/endpoints/categories.api";
 
 export default function ProductsPage() {
   const queryClient = useQueryClient();
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
 
   // Modals state
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
 
   // Form State
-  const [formName, setFormName] = useState('');
-  const [formCategory, setFormCategory] = useState('');
-  const [formPrice, setFormPrice] = useState('');
-  const [formDescription, setFormDescription] = useState('');
+  const [formName, setFormName] = useState("");
+  const [formCategory, setFormCategory] = useState("");
+  const [formPrice, setFormPrice] = useState("");
+  const [formDescription, setFormDescription] = useState("");
   const [formImageFile, setFormImageFile] = useState<File | null>(null);
-  const [formImagePreview, setFormImagePreview] = useState<string>('');
-  const [formStock, setFormStock] = useState<number | ''>('');
+  const [formImagePreview, setFormImagePreview] = useState<string>("");
+  const [formStock, setFormStock] = useState<number | "">("");
 
   // Fetch categories
   const { data: categoriesData } = useQuery({
-    queryKey: ['categories'],
+    queryKey: ["categories"],
     queryFn: () => getCategories({ limit: 100 }),
   });
   const categories = categoriesData?.data ?? [];
 
   // Fetch products
-  const { data: productsData, isLoading, isError } = useQuery({
-    queryKey: ['products', { search: searchQuery }],
+  const {
+    data: productsData,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ["products", { search: searchQuery }],
     queryFn: () => getProducts({ search: searchQuery || undefined, limit: 50 }),
   });
   const products = productsData?.data ?? [];
@@ -49,36 +61,40 @@ export default function ProductsPage() {
       return createProduct(data as CreateProductPayload);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['products'] });
-      toast.success(editingProduct ? 'Product updated successfully.' : 'Product created successfully.');
+      queryClient.invalidateQueries({ queryKey: ["products"] });
+      toast.success(
+        editingProduct
+          ? "Product updated successfully."
+          : "Product created successfully.",
+      );
       setIsModalOpen(false);
     },
     onError: (error: Error) => {
-      toast.error(error.message || 'Failed to save product.');
+      toast.error(error.message || "Failed to save product.");
     },
   });
 
   const deleteMutation = useMutation({
     mutationFn: deleteProduct,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['products'] });
-      toast.success('Product deleted successfully.');
+      queryClient.invalidateQueries({ queryKey: ["products"] });
+      toast.success("Product deleted successfully.");
     },
     onError: (error: Error) => {
-      toast.error(error.message || 'Failed to delete product.');
+      toast.error(error.message || "Failed to delete product.");
     },
   });
 
   // Open modal for Create
   const handleOpenCreate = () => {
     setEditingProduct(null);
-    setFormName('');
-    setFormCategory(categories.length > 0 ? String(categories[0].id) : '');
-    setFormPrice('');
-    setFormDescription('');
+    setFormName("");
+    setFormCategory(categories.length > 0 ? String(categories[0].id) : "");
+    setFormPrice("");
+    setFormDescription("");
     setFormImageFile(null);
-    setFormImagePreview('');
-    setFormStock('');
+    setFormImagePreview("");
+    setFormStock("");
     setIsModalOpen(true);
   };
 
@@ -88,16 +104,16 @@ export default function ProductsPage() {
     setFormName(product.name);
     setFormCategory(product.categoryId);
     setFormPrice(product.price);
-    setFormDescription(product.description || '');
+    setFormDescription(product.description || "");
     setFormImageFile(null);
-    setFormImagePreview(product.images?.[0] || '');
+    setFormImagePreview(product.images?.[0] || "");
     setFormStock(product.stockQuantity);
     setIsModalOpen(true);
   };
 
   // Handle Delete
   const handleDelete = (id: string) => {
-    if (confirm('Are you sure you want to delete this product?')) {
+    if (confirm("Are you sure you want to delete this product?")) {
       deleteMutation.mutate(id);
     }
   };
@@ -107,17 +123,17 @@ export default function ProductsPage() {
     e.preventDefault();
 
     if (!formName.trim()) {
-      toast.error('Please enter a product name.');
+      toast.error("Please enter a product name.");
       return;
     }
 
     if (!editingProduct && !formImageFile) {
-      toast.error('Please upload a product image.');
+      toast.error("Please upload a product image.");
       return;
     }
-    
+
     if (!formCategory) {
-      toast.error('Please select a category.');
+      toast.error("Please select a category.");
       return;
     }
 
@@ -166,7 +182,9 @@ export default function ProductsPage() {
       ) : isError ? (
         <div className="flex justify-center items-center py-20 text-red-500">
           <AlertCircle className="h-6 w-6 mr-2" />
-          <span className="font-medium">Failed to load products. Please try again.</span>
+          <span className="font-medium">
+            Failed to load products. Please try again.
+          </span>
         </div>
       ) : products.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -185,13 +203,15 @@ export default function ProductsPage() {
             <AlertCircle className="h-6 w-6" />
           </div>
           <div className="space-y-1">
-            <h3 className="font-semibold text-gray-900 text-base">No products found</h3>
+            <h3 className="font-semibold text-gray-900 text-base">
+              No products found
+            </h3>
             <p className="text-gray-400 text-sm max-w-sm">
               We couldn't find any products matching search "{searchQuery}".
             </p>
           </div>
           <button
-            onClick={() => setSearchQuery('')}
+            onClick={() => setSearchQuery("")}
             className="text-blue-600 hover:text-blue-700 font-semibold text-sm underline underline-offset-4"
           >
             Clear search
@@ -203,14 +223,16 @@ export default function ProductsPage() {
       <Dialog
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        title={editingProduct ? 'Edit Product' : 'Add New Product'}
+        title={editingProduct ? "Edit Product" : "Add New Product"}
         maxWidthClass="max-w-[700px]"
       >
         <form onSubmit={handleSubmit} className="flex flex-col space-y-4">
           <div className="space-y-3">
             {/* Product Image */}
             <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-800">Product image: {!editingProduct && '(required)'}</label>
+              <label className="text-sm font-medium text-gray-800">
+                Product image: {!editingProduct && "(required)"}
+              </label>
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
                 <div className="relative w-[120px] h-[120px] bg-[#2A2D31] rounded-[16px] flex items-center justify-center overflow-hidden shrink-0">
                   {formImagePreview ? (
@@ -243,7 +265,9 @@ export default function ProductsPage() {
                   />
                   <button
                     type="button"
-                    onClick={() => document.getElementById('product-image-upload')?.click()}
+                    onClick={() =>
+                      document.getElementById("product-image-upload")?.click()
+                    }
                     className="inline-flex items-center gap-2 bg-[#2563EB] hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl font-medium text-sm transition-all shadow-sm cursor-pointer"
                   >
                     <Upload className="h-4.5 w-4.5" />
@@ -255,7 +279,9 @@ export default function ProductsPage() {
 
             {/* Product Name */}
             <div className="space-y-1.5">
-              <label className="text-sm font-medium text-gray-800">Product Name: (required)</label>
+              <label className="text-sm font-medium text-gray-800">
+                Product Name: (required)
+              </label>
               <input
                 type="text"
                 required
@@ -269,7 +295,9 @@ export default function ProductsPage() {
             {/* Price & Stock side-by-side */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <label className="text-sm font-medium text-gray-800">Price ($): (required)</label>
+                <label className="text-sm font-medium text-gray-800">
+                  Price ($): (required)
+                </label>
                 <input
                   type="number"
                   required
@@ -283,13 +311,19 @@ export default function ProductsPage() {
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-sm font-medium text-gray-800">Stock Quantity: (required)</label>
+                <label className="text-sm font-medium text-gray-800">
+                  Stock Quantity: (required)
+                </label>
                 <input
                   type="number"
                   required
                   min={0}
                   value={formStock}
-                  onChange={(e) => setFormStock(e.target.value === '' ? '' : parseInt(e.target.value))}
+                  onChange={(e) =>
+                    setFormStock(
+                      e.target.value === "" ? "" : parseInt(e.target.value),
+                    )
+                  }
                   placeholder="0"
                   className="w-full px-4 py-3 rounded-[10px] border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-sm text-black placeholder-gray-400"
                 />
@@ -298,7 +332,9 @@ export default function ProductsPage() {
 
             {/* Description */}
             <div className="space-y-1.5">
-              <label className="text-sm font-medium text-gray-800">Description:</label>
+              <label className="text-sm font-medium text-gray-800">
+                Description:
+              </label>
               <textarea
                 value={formDescription}
                 onChange={(e) => setFormDescription(e.target.value)}
@@ -310,7 +346,9 @@ export default function ProductsPage() {
 
             {/* Category selection */}
             <div className="space-y-1.5">
-              <label className="text-sm font-medium text-gray-800">Category: (required)</label>
+              <label className="text-sm font-medium text-gray-800">
+                Category: (required)
+              </label>
               <div className="relative">
                 <select
                   value={formCategory}
@@ -318,7 +356,9 @@ export default function ProductsPage() {
                   required
                   className="w-full px-4 py-2.5 rounded-[10px] border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-sm text-black cursor-pointer appearance-none pr-10"
                 >
-                  <option value="" disabled>Select a category</option>
+                  <option value="" disabled>
+                    Select a category
+                  </option>
                   {categories.map((cat) => (
                     <option key={cat.id} value={String(cat.id)}>
                       {cat.name}
@@ -326,8 +366,18 @@ export default function ProductsPage() {
                   ))}
                 </select>
                 <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-500">
-                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  <svg
+                    className="h-4 w-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
                   </svg>
                 </div>
               </div>
@@ -348,7 +398,11 @@ export default function ProductsPage() {
               disabled={saveMutation.isPending}
               className="flex-1 py-2.5 bg-[#2563EB] hover:bg-blue-700 disabled:bg-blue-400 text-white rounded-[10px] text-sm font-medium transition-colors"
             >
-              {saveMutation.isPending ? 'Saving...' : editingProduct ? 'Save Changes' : 'Add Product'}
+              {saveMutation.isPending
+                ? "Saving..."
+                : editingProduct
+                  ? "Save Changes"
+                  : "Add Product"}
             </button>
           </div>
         </form>

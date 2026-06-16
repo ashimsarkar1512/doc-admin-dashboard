@@ -213,11 +213,11 @@ const stateCoverageRoute = createRoute({
   component: StateCoveragePage,
 });
 
-import PrescriptionOversightPage from '@/features/dashboard/PrescriptionOversightPage';
+import SideEffectReportPage from '@/features/dashboard/SideEffectReportPage';
 const prescriptionOversightRoute = createRoute({
   getParentRoute: () => dashboardLayoutRoute,
   path: '/prescription-oversight',
-  component: PrescriptionOversightPage,
+  component: SideEffectReportPage,
 });
 
 import BusinessIntelligencePage from '@/features/dashboard/BusinessIntelligencePage';

@@ -61,7 +61,7 @@ const routeTitleMap: Record<string, { title: string; subtitle: string }> = {
   '/dashboard/consent-management': { title: 'Consent Management', subtitle: 'Manage and track patient consent forms and authorizations' },
   '/dashboard/incident-management': { title: 'Incident Management', subtitle: 'Track, investigate and resolve compliance and system incidents' },
   '/dashboard/state-coverage': { title: 'State Coverage', subtitle: 'Overview of service coverage and provider availability by state' },
-  '/dashboard/prescription-oversight': { title: 'Prescription Oversight', subtitle: 'Monitor and manage active patient prescriptions and medications' },
+  '/dashboard/prescription-oversight': { title: 'Side effect report', subtitle: 'Medical director prescription review and approval' },
   '/dashboard/business-intelligence': { title: 'Business Intelligence', subtitle: 'Key performance metrics and data-driven insights for decision making' },
   '/dashboard/communication-center': { title: 'Communication Center', subtitle: 'Manage patient messages, internal communications, and notifications' },
   '/dashboard/document-center': { title: 'Document Center', subtitle: 'Centralized storage for policies, forms, reports, and compliance documents' },
@@ -410,7 +410,7 @@ export default function DashboardLayout() {
                     className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold [&.active_svg]:text-[#1447E6]"
                   >
                     <Pill size={20} className="text-slate-500 shrink-0" />
-                    <span>Prescription Oversight</span>
+                    <span>Side effect report</span>
                   </Link>
                   <Link
                     to="/dashboard/business-intelligence"

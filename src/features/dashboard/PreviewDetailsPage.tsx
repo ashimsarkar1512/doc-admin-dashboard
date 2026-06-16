@@ -1,54 +1,81 @@
-import { useState } from 'react';
-import { useParams, useNavigate } from '@tanstack/react-router';
-import { ArrowLeft, CheckCircle2 } from 'lucide-react';
-import { dummyAssessments } from './data/assessmentTable';
+import { useState } from "react";
+import { useParams, useNavigate } from "@tanstack/react-router";
+import { ArrowLeft, CheckCircle2 } from "lucide-react";
+import { dummyAssessments } from "./data/assessmentTable";
 
 // ── Dummy consultation data keyed by assessment id ─────────────────────────
 const consultationData: Record<string, ConsultationData> = {
   asmnt_1: {
-    patientName: 'Alan Cattach',
-    consultationId: '#001237',
-    avatar: 'AC',
-    heroImage: '/images/ff0ed5953d764599150e436aa467be8281ce6ecc.png',
+    patientName: "Alan Cattach",
+    consultationId: "#001237",
+    avatar: "AC",
+    heroImage: "/images/ff0ed5953d764599150e436aa467be8281ce6ecc.png",
     heroCaption:
-      'Weight loss is about more than diet and exercise alone. Weight Loss MD provides medical support to help you overcome these challenges.',
-    weightGoal: '< 20 lbs',
-    age: '26 years',
-    height: '6 feet',
-    weight: '220 lbs',
-    bmi: '29.8 (Overweight)',
-    bmiColor: 'text-[#C0392B]',
-    bmiBg: 'bg-[#FAF0EE]',
-    goals: ['Lose weight', 'Improve my general physical health', 'Increase confidence about my appearance'],
+      "Weight loss is about more than diet and exercise alone. Weight Loss MD provides medical support to help you overcome these challenges.",
+    weightGoal: "< 20 lbs",
+    age: "26 years",
+    height: "6 feet",
+    weight: "220 lbs",
+    bmi: "29.8 (Overweight)",
+    bmiColor: "text-[#C0392B]",
+    bmiBg: "bg-[#FAF0EE]",
+    goals: [
+      "Lose weight",
+      "Improve my general physical health",
+      "Increase confidence about my appearance",
+    ],
     heartConditions: [
-      'Atrial fibrillation or flutter',
-      'Heart failure',
-      'Heart disease, stroke, or peripheral vascular disease',
-      'Hypertension (high blood pressure)',
+      "Atrial fibrillation or flutter",
+      "Heart failure",
+      "Heart disease, stroke, or peripheral vascular disease",
+      "Hypertension (high blood pressure)",
     ],
     hormoneConditions: [
-      'Multiple Endocrine Neoplasia syndrome type 2 (MEN2)',
-      'Family history of thyroid cancer',
-      'Type 2 Diabetes',
+      "Multiple Endocrine Neoplasia syndrome type 2 (MEN2)",
+      "Family history of thyroid cancer",
+      "Type 2 Diabetes",
     ],
-    gastrointestinalConditions: ['Pancreatitis', 'GERD / Acid Reflux requiring insulin'],
-    additionalConditions: ['Chronic candidiasis (fungal infection)', 'Eating disorder', 'Metabolic syndrome'],
-    glp1Allergy: 'No, I do not have an allergy to GLP-1 medication',
-    glp1Recent: 'No, I am not currently taking a GLP-1 medication in the past 30 days.',
-    currentMedications: ['Insulin', 'Diuretics such as (but not limited to) furosemide (Lasix), bumetanide (Bumex) Hydrochlorothiazide/HCTZ'],
+    gastrointestinalConditions: [
+      "Pancreatitis",
+      "GERD / Acid Reflux requiring insulin",
+    ],
+    additionalConditions: [
+      "Chronic candidiasis (fungal infection)",
+      "Eating disorder",
+      "Metabolic syndrome",
+    ],
+    glp1Allergy: "No, I do not have an allergy to GLP-1 medication",
+    glp1Recent:
+      "No, I am not currently taking a GLP-1 medication in the past 30 days.",
+    currentMedications: [
+      "Insulin",
+      "Diuretics such as (but not limited to) furosemide (Lasix), bumetanide (Bumex) Hydrochlorothiazide/HCTZ",
+    ],
     otherMedications: "I don't take any medications",
-    additionalInfo1: 'No',
-    additionalInfo2: 'No',
+    additionalInfo1: "No",
+    additionalInfo2: "No",
     products: [
-      { name: 'Phentermine', detail: 'Medium, Rare, Bone Marrow Butter', size: 'Intro', price: '$48', image: '/images/a2224651025069a6bda773c9a4c36bb3ce2cc1d1.png' },
-      { name: 'Vitamin C Ascorbic Acid', detail: 'Medium, Rare, Bone Marrow Butter', size: '2lb', price: '$48', image: '/images/a2224651025069a6bda773c9a4c36bb3ce2cc1d1.png' },
+      {
+        name: "Phentermine",
+        detail: "Medium, Rare, Bone Marrow Butter",
+        size: "Intro",
+        price: "$48",
+        image: "/images/a2224651025069a6bda773c9a4c36bb3ce2cc1d1.png",
+      },
+      {
+        name: "Vitamin C Ascorbic Acid",
+        detail: "Medium, Rare, Bone Marrow Butter",
+        size: "2lb",
+        price: "$48",
+        image: "/images/a2224651025069a6bda773c9a4c36bb3ce2cc1d1.png",
+      },
     ],
-    subtotal: '$96.00',
-    serviceDuration: '1 month',
-    serviceFees: '$50.00',
-    shippingCharge: '$20.00',
-    discount: '- $15.00',
-    total: '$151.00',
+    subtotal: "$96.00",
+    serviceDuration: "1 month",
+    serviceFees: "$50.00",
+    shippingCharge: "$20.00",
+    discount: "- $15.00",
+    total: "$151.00",
   },
 };
 
@@ -56,38 +83,45 @@ const consultationData: Record<string, ConsultationData> = {
 function buildFallback(id: string): ConsultationData {
   const row = dummyAssessments.find((r) => r.id === id);
   return {
-    patientName: row?.patientName ?? 'Unknown Patient',
-    consultationId: `#${id.replace('asmnt_', '').padStart(6, '0')}`,
-    avatar: row?.patientInitials ?? '??',
-    heroImage: '/images/ff0ed5953d764599150e436aa467be8281ce6ecc.png',
-    heroCaption: 'Weight loss is about more than diet and exercise alone.',
-    weightGoal: '< 20 lbs',
-    age: '30 years',
-    height: '5 feet 10 inches',
-    weight: '200 lbs',
-    bmi: '28.7 (Overweight)',
-    bmiColor: 'text-[#C0392B]',
-    bmiBg: 'bg-[#FAF0EE]',
-    goals: ['Lose weight', 'Improve overall health'],
+    patientName: row?.patientName ?? "Unknown Patient",
+    consultationId: `#${id.replace("asmnt_", "").padStart(6, "0")}`,
+    avatar: row?.patientInitials ?? "??",
+    heroImage: "/images/ff0ed5953d764599150e436aa467be8281ce6ecc.png",
+    heroCaption: "Weight loss is about more than diet and exercise alone.",
+    weightGoal: "< 20 lbs",
+    age: "30 years",
+    height: "5 feet 10 inches",
+    weight: "200 lbs",
+    bmi: "28.7 (Overweight)",
+    bmiColor: "text-[#C0392B]",
+    bmiBg: "bg-[#FAF0EE]",
+    goals: ["Lose weight", "Improve overall health"],
     heartConditions: [],
     hormoneConditions: [],
     gastrointestinalConditions: [],
     additionalConditions: [],
-    glp1Allergy: 'No, I do not have an allergy to GLP-1 medication',
-    glp1Recent: 'No, I am not currently taking a GLP-1 medication in the past 30 days.',
+    glp1Allergy: "No, I do not have an allergy to GLP-1 medication",
+    glp1Recent:
+      "No, I am not currently taking a GLP-1 medication in the past 30 days.",
     currentMedications: [],
     otherMedications: "I don't take any medications",
-    additionalInfo1: 'No',
-    additionalInfo2: 'No',
+    additionalInfo1: "No",
+    additionalInfo2: "No",
     products: [
-      { name: 'Phentermine', detail: 'Medium, Rare, Bone Marrow Butter', size: 'Intro', price: '$48', image: '/images/a2224651025069a6bda773c9a4c36bb3ce2cc1d1.png' },
+      {
+        name: "Phentermine",
+        detail: "Medium, Rare, Bone Marrow Butter",
+        size: "Intro",
+        price: "$48",
+        image: "/images/a2224651025069a6bda773c9a4c36bb3ce2cc1d1.png",
+      },
     ],
-    subtotal: '$48.00',
-    serviceDuration: '1 month',
-    serviceFees: '$50.00',
-    shippingCharge: '$20.00',
-    discount: '- $0.00',
-    total: '$118.00',
+    subtotal: "$48.00",
+    serviceDuration: "1 month",
+    serviceFees: "$50.00",
+    shippingCharge: "$20.00",
+    discount: "- $0.00",
+    total: "$118.00",
   };
 }
 
@@ -162,7 +196,13 @@ function CheckboxAnswer({ text }: { text: string }) {
     <div className="flex items-center gap-2.5">
       <div className="w-4 h-4 rounded bg-[#1447E6] flex items-center justify-center shrink-0">
         <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
-          <path d="M1 4L3.5 6.5L9 1" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          <path
+            d="M1 4L3.5 6.5L9 1"
+            stroke="white"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
         </svg>
       </div>
       <span className="text-sm text-slate-600">{text}</span>
@@ -182,7 +222,9 @@ function GrayCheckbox({ text }: { text: string }) {
 // ── Main Page ───────────────────────────────────────────────────────────────
 
 export default function PreviewDetailsPage() {
-  const { assessmentId } = useParams({ from: '/dashboard/assessment-table/$assessmentId/preview' });
+  const { assessmentId } = useParams({
+    from: "/dashboard/assessment-table/$assessmentId/preview",
+  });
   const navigate = useNavigate();
   const [submitted, setSubmitted] = useState(false);
 
@@ -192,24 +234,28 @@ export default function PreviewDetailsPage() {
     setSubmitted(true);
     // Navigate back to assessment table after a brief success flash
     setTimeout(() => {
-      navigate({ to: '/dashboard/assessment-table' });
+      navigate({ to: "/dashboard/assessment-table" });
     }, 1800);
   };
 
   const handleCancel = () => {
-    navigate({ to: '/dashboard/assessment-table' });
+    navigate({ to: "/dashboard/assessment-table" });
   };
 
   const handleEdit = () => {
-    navigate({ to: '/dashboard/assessment-table' });
+    navigate({ to: "/dashboard/assessment-table" });
   };
 
   if (submitted) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
         <CheckCircle2 size={56} className="text-green-500" />
-        <h2 className="text-xl font-bold text-slate-800">Submitted for Medical Review</h2>
-        <p className="text-sm text-slate-500">Redirecting back to assessments…</p>
+        <h2 className="text-xl font-bold text-slate-800">
+          Submitted for Medical Review
+        </h2>
+        <p className="text-sm text-slate-500">
+          Redirecting back to assessments…
+        </p>
       </div>
     );
   }
@@ -218,7 +264,7 @@ export default function PreviewDetailsPage() {
     <div className="w-full max-w-3xl mx-auto px-4 py-8">
       {/* Back button */}
       <button
-        onClick={() => navigate({ to: '/dashboard/assessment-table' })}
+        onClick={() => navigate({ to: "/dashboard/assessment-table" })}
         className="flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-700 mb-6 transition-colors"
       >
         <ArrowLeft size={16} />
@@ -233,16 +279,26 @@ export default function PreviewDetailsPage() {
           <div className="flex items-center gap-3 mb-3">
             {/* Avatar */}
             <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-400 to-blue-500 flex items-center justify-center shrink-0">
-              <span className="text-xs font-bold text-white">{data.avatar}</span>
+              <span className="text-xs font-bold text-white">
+                {data.avatar}
+              </span>
             </div>
             <div>
-              <p className="font-semibold text-slate-800 text-sm">Patient: {data.patientName}</p>
-              <p className="text-xs text-slate-400">Consultation id: {data.consultationId}</p>
+              <p className="font-semibold text-slate-800 text-sm">
+                Patient: {data.patientName}
+              </p>
+              <p className="text-xs text-slate-400">
+                Consultation id: {data.consultationId}
+              </p>
             </div>
           </div>
           {/* Hero Image */}
           <div className="w-full h-44 rounded-xl overflow-hidden bg-slate-100">
-            <img src={data.heroImage} alt="Hero" className="w-full h-full object-cover" />
+            <img
+              src={data.heroImage}
+              alt="Hero"
+              className="w-full h-full object-cover"
+            />
           </div>
           <p className="text-xs text-slate-500 mt-2">{data.heroCaption}</p>
         </SectionCard>
@@ -257,13 +313,26 @@ export default function PreviewDetailsPage() {
         <SectionCard>
           <Question text="What is your age, current weight & height?" />
           <div className="space-y-1 text-sm text-slate-600">
-            <div className="flex gap-2"><span className="text-slate-400 w-16">Age</span><span>{data.age}</span></div>
-            <div className="flex gap-2"><span className="text-slate-400 w-16">Height:</span><span>{data.height}</span></div>
-            <div className="flex gap-2"><span className="text-slate-400 w-16">Weight:</span><span>{data.weight}</span></div>
+            <div className="flex gap-2">
+              <span className="text-slate-400 w-16">Age</span>
+              <span>{data.age}</span>
+            </div>
+            <div className="flex gap-2">
+              <span className="text-slate-400 w-16">Height:</span>
+              <span>{data.height}</span>
+            </div>
+            <div className="flex gap-2">
+              <span className="text-slate-400 w-16">Weight:</span>
+              <span>{data.weight}</span>
+            </div>
           </div>
           <div className={`${data.bmiBg} rounded-lg px-4 py-2.5 mt-1`}>
-            <p className="text-xs font-semibold text-slate-700">Health Snapshot:</p>
-            <p className={`text-sm font-semibold ${data.bmiColor}`}>BMI: {data.bmi}</p>
+            <p className="text-xs font-semibold text-slate-700">
+              Health Snapshot:
+            </p>
+            <p className={`text-sm font-semibold ${data.bmiColor}`}>
+              BMI: {data.bmi}
+            </p>
           </div>
         </SectionCard>
 
@@ -272,7 +341,9 @@ export default function PreviewDetailsPage() {
           <SectionCard>
             <Question text="What do you want to accomplish with the Weight Loss MD Body Program I want to…" />
             <div className="space-y-2">
-              {data.goals.map((g) => <CheckboxAnswer key={g} text={g} />)}
+              {data.goals.map((g) => (
+                <CheckboxAnswer key={g} text={g} />
+              ))}
             </div>
           </SectionCard>
         )}
@@ -282,7 +353,9 @@ export default function PreviewDetailsPage() {
           <SectionCard>
             <Question text="Do you currently have, or have you ever been diagnosed with, any of the following heart or heart-related conditions?" />
             <div className="space-y-2">
-              {data.heartConditions.map((c) => <CheckboxAnswer key={c} text={c} />)}
+              {data.heartConditions.map((c) => (
+                <CheckboxAnswer key={c} text={c} />
+              ))}
             </div>
           </SectionCard>
         )}
@@ -292,7 +365,9 @@ export default function PreviewDetailsPage() {
           <SectionCard>
             <Question text="Do you currently have, or have you ever been diagnosed with, any of these hormone, kidney, or liver conditions?" />
             <div className="space-y-2">
-              {data.hormoneConditions.map((c) => <CheckboxAnswer key={c} text={c} />)}
+              {data.hormoneConditions.map((c) => (
+                <CheckboxAnswer key={c} text={c} />
+              ))}
             </div>
           </SectionCard>
         )}
@@ -302,7 +377,9 @@ export default function PreviewDetailsPage() {
           <SectionCard>
             <Question text="Do you currently have, or have history of, any of these gastrointestinal conditions or procedures?" />
             <div className="space-y-2">
-              {data.gastrointestinalConditions.map((c) => <CheckboxAnswer key={c} text={c} />)}
+              {data.gastrointestinalConditions.map((c) => (
+                <CheckboxAnswer key={c} text={c} />
+              ))}
             </div>
           </SectionCard>
         )}
@@ -312,7 +389,9 @@ export default function PreviewDetailsPage() {
           <SectionCard>
             <Question text="Do you currently have, or have you ever been diagnosed with, any of these additional following conditions?" />
             <div className="space-y-2">
-              {data.additionalConditions.map((c) => <CheckboxAnswer key={c} text={c} />)}
+              {data.additionalConditions.map((c) => (
+                <CheckboxAnswer key={c} text={c} />
+              ))}
             </div>
           </SectionCard>
         )}
@@ -334,7 +413,9 @@ export default function PreviewDetailsPage() {
           <SectionCard>
             <Question text="Do you currently take any of the following medications?" />
             <div className="space-y-2">
-              {data.currentMedications.map((m) => <CheckboxAnswer key={m} text={m} />)}
+              {data.currentMedications.map((m) => (
+                <CheckboxAnswer key={m} text={m} />
+              ))}
             </div>
           </SectionCard>
         )}
@@ -361,7 +442,9 @@ export default function PreviewDetailsPage() {
         <div className="bg-white border border-[#E5E7EB] rounded-xl p-5 space-y-3">
           <div className="flex items-center gap-2 mb-1">
             <div className="w-4 h-4 rounded-full border-2 border-gray-300 shrink-0" />
-            <p className="text-sm font-semibold text-slate-800">Compliance Confirmation:</p>
+            <p className="text-sm font-semibold text-slate-800">
+              Compliance Confirmation:
+            </p>
           </div>
           <GrayCheckbox text="I have reviewed and agree to the Terms of Service and Privacy Policy." />
           <GrayCheckbox text="I certify that all information provided is accurate and complete." />
@@ -373,7 +456,10 @@ export default function PreviewDetailsPage() {
         {/* Payment Summary */}
         <div className="bg-white border border-[#E5E7EB] rounded-xl p-5">
           <p className="font-semibold text-slate-800 mb-1">Payment Summery</p>
-          <p className="text-xs text-slate-500 mb-4">Patient selected {data.products.length === 1 ? 'one product' : 'two products'}:</p>
+          <p className="text-xs text-slate-500 mb-4">
+            Patient selected{" "}
+            {data.products.length === 1 ? "one product" : "two products"}:
+          </p>
 
           <div className="flex flex-col sm:flex-row gap-6">
             {/* Product list */}
@@ -381,16 +467,24 @@ export default function PreviewDetailsPage() {
               {data.products.map((p) => (
                 <div key={p.name} className="flex items-center gap-3">
                   <div className="w-12 h-12 bg-[#2A2D31] rounded-lg overflow-hidden shrink-0 flex items-center justify-center">
-                    <img src={p.image} alt={p.name} className="w-full h-full object-contain p-1" />
+                    <img
+                      src={p.image}
+                      alt={p.name}
+                      className="w-full h-full object-contain p-1"
+                    />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-slate-800">{p.name}</p>
+                    <p className="text-sm font-semibold text-slate-800">
+                      {p.name}
+                    </p>
                     <p className="text-[11px] text-slate-400">{p.detail}</p>
                     <span className="inline-block mt-1 px-2 py-0.5 bg-[#1447E6] text-white text-[10px] rounded-full font-medium">
                       {p.size}
                     </span>
                   </div>
-                  <span className="text-sm font-semibold text-[#1447E6] shrink-0">{p.price}</span>
+                  <span className="text-sm font-semibold text-[#1447E6] shrink-0">
+                    {p.price}
+                  </span>
                 </div>
               ))}
             </div>
@@ -398,22 +492,28 @@ export default function PreviewDetailsPage() {
             {/* Price breakdown */}
             <div className="sm:w-52 space-y-2 text-sm border-t sm:border-t-0 sm:border-l border-[#E5E7EB] sm:pl-6 pt-4 sm:pt-0">
               <div className="flex justify-between text-slate-600">
-                <span>Subtotal</span><span>{data.subtotal}</span>
+                <span>Subtotal</span>
+                <span>{data.subtotal}</span>
               </div>
               <div className="flex justify-between text-slate-600">
-                <span>Service Duration</span><span>{data.serviceDuration}</span>
+                <span>Service Duration</span>
+                <span>{data.serviceDuration}</span>
               </div>
               <div className="flex justify-between text-slate-600">
-                <span>Service Fees</span><span>{data.serviceFees}</span>
+                <span>Service Fees</span>
+                <span>{data.serviceFees}</span>
               </div>
               <div className="flex justify-between text-slate-600">
-                <span>Shipping charge</span><span>{data.shippingCharge}</span>
+                <span>Shipping charge</span>
+                <span>{data.shippingCharge}</span>
               </div>
               <div className="flex justify-between text-slate-600">
-                <span>Discount</span><span className="text-red-500">{data.discount}</span>
+                <span>Discount</span>
+                <span className="text-red-500">{data.discount}</span>
               </div>
               <div className="flex justify-between font-bold text-slate-800 border-t border-[#E5E7EB] pt-2 mt-1">
-                <span>Total</span><span className="text-[#1447E6]">{data.total}</span>
+                <span>Total</span>
+                <span className="text-[#1447E6]">{data.total}</span>
               </div>
             </div>
           </div>
