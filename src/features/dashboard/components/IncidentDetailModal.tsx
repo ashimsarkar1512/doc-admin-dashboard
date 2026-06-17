@@ -5,7 +5,7 @@ import {
   deleteIncident,
 } from "@/api/endpoints/incidentManagement.api";
 import type {
-  Incident,
+
   IncidentStatus,
 } from "@/api/endpoints/incidentManagement.api";
 import Dialog from "@/components/shared/Dialog";
@@ -45,24 +45,24 @@ const SEVERITY_STYLES: Record<string, { label: string; className: string }> = {
   },
 };
 
-const STATUS_STYLES: Record<string, { label: string; className: string }> = {
-  OPEN: {
-    label: "Open",
-    className: "bg-green-100 text-green-700 border border-green-200",
-  },
-  INVESTIGATING: {
-    label: "Investigating",
-    className: "bg-amber-50 text-amber-700 border border-amber-200",
-  },
-  RESOLVED: {
-    label: "Resolved",
-    className: "bg-green-50 text-green-700 border border-green-200",
-  },
-  CLOSED: {
-    label: "Closed",
-    className: "bg-red-100  text-red-600 border border-red-200",
-  },
-};
+// const STATUS_STYLES: Record<string, { label: string; className: string }> = {
+//   OPEN: {
+//     label: "Open",
+//     className: "bg-green-100 text-green-700 border border-green-200",
+//   },
+//   INVESTIGATING: {
+//     label: "Investigating",
+//     className: "bg-amber-50 text-amber-700 border border-amber-200",
+//   },
+//   RESOLVED: {
+//     label: "Resolved",
+//     className: "bg-green-50 text-green-700 border border-green-200",
+//   },
+//   CLOSED: {
+//     label: "Closed",
+//     className: "bg-red-100  text-red-600 border border-red-200",
+//   },
+// };
 
 const SOURCE_LABELS: Record<string, string> = {
   SECURITY_SCAN: "Security Scan",

@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { MonitorSmartphone, Laptop, Smartphone, ChevronDown, ChevronRight } from 'lucide-react';
 import { ToggleSwitch } from '../../website-management/components/shared/ToggleSwitch';
 

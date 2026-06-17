@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { LogOut } from 'lucide-react';
 import { AccountInformation } from '../components/AccountInformation';
 import { PasswordManagement } from '../components/PasswordManagement';
