@@ -255,11 +255,11 @@ const accountSettingsRoute = createRoute({
   component: AccountSettingsPage,
 });
 
-const profileRoute = createRoute({
-  getParentRoute: () => dashboardLayoutRoute,
-  path: '/profile',
-  component: () => <DummyPage title="Profile" />,
-});
+// const profileRoute = createRoute({
+//   getParentRoute: () => dashboardLayoutRoute,
+//   path: '/profile',
+//   component: () => <DummyPage title="Profile" />,
+// });
 
 // Build the route tree
 const routeTree = rootRoute.addChildren([
