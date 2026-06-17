@@ -1,6 +1,6 @@
-import React from 'react';
-import { Trash2 } from 'lucide-react';
-import type { Product } from '@/types';
+import React from "react";
+import { Trash2 } from "lucide-react";
+import type { Product } from "@/types";
 
 export interface ProductCardProps {
   product: Product;
@@ -8,19 +8,25 @@ export interface ProductCardProps {
   onDelete: (id: string) => void;
 }
 
-export const ProductCard: React.FC<ProductCardProps> = ({ product, onEdit, onDelete }) => {
+export const ProductCard: React.FC<ProductCardProps> = ({
+  product,
+  onEdit,
+  onDelete,
+}) => {
   return (
-    <div className="group bg-white rounded-2xl border border-gray-150 shadow-sm hover:shadow-md transition-all duration-200 flex flex-col justify-between overflow-hidden h-full">
+    <div className="group bg-white rounded-2xl   transition-all duration-200 flex flex-col justify-between overflow-hidden h-full">
       <div>
         {/* Dark Charcoal Image Header */}
         <div className="relative h-[200px] w-full bg-[#2A2D31] flex items-center justify-center overflow-hidden rounded-t-2xl">
-          {product.images && product.images.length > 0 && product.images[0]?.fileUrl && (
-            <img
-              src={product.images[0].fileUrl}
-              alt={product.name}
-              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-            />
-          )}
+          {product.images &&
+            product.images.length > 0 &&
+            product.images[0]?.fileUrl && (
+              <img
+                src={product.images[0].fileUrl}
+                alt={product.name}
+                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+              />
+            )}
         </div>
 
         {/* Card Details Body */}
@@ -28,7 +34,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onEdit, onDel
           {/* Category Badge */}
           <div className="flex">
             <span className="bg-[#f4f4f5] text-gray-600 px-3 py-1 rounded-full text-[11px] font-medium border border-gray-100/50">
-              {product.category?.name || 'Uncategorized'}
+              {product.category?.name || "Uncategorized"}
             </span>
           </div>
 
@@ -47,7 +53,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onEdit, onDel
             <div className="flex flex-col">
               <span className="text-gray-500 font-medium">Price:</span>
               <span className="text-[#2563EB] font-semibold text-sm mt-0.5">
-                ${parseFloat(product.price).toFixed(2)}
+                ${Number(product.price).toFixed(2)}
               </span>
             </div>
             <div className="flex flex-col items-end">
