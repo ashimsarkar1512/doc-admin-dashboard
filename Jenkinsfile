@@ -1,57 +1,90 @@
 pipeline {
     agent {
         docker {
-            image "node:22-bookworm"
-            args "-u root"
+            image 'node:22-bookworm'
+            args '-u root'
             reuseNode true
         }
     }
 
     environment {
-        DOCKER_IMAGE = "softvence/doc-dashboard"
-        DOCKER_TAG = "latest"
-        CONTAINER_NAME = "doc-dashboard"
-        SSH_HOST = "187.77.23.79"
-        SSH_CREDENTIALS_ID = "doc-ssh-creds"
-        SERVER_PATH = "/var/projects/doc-dashboard"
-        CADDY_CONTAINER = "doc-backend-caddy"
+        SSH_HOST           = '187.77.23.79'
+        SSH_CREDENTIALS_ID = 'doc-ssh-creds'
+        SERVER_PATH        = '/var/projects/doc-dashboard'
+        CADDY_CONTAINER    = 'doc-backend-caddy'
+    }
+
+    options {
+        skipDefaultCheckout(true)
     }
 
     stages {
-        stage("Prepare Agent") {
+        stage('Clean Workspace') {
             steps {
-                sh "apt-get update && apt-get install -y --no-install-recommends openssh-client && rm -rf /var/lib/apt/lists/*"
+                cleanWs(
+                    deleteDirs: true,
+                    disableDeferredWipeout: true
+                )
             }
         }
 
-        stage("Install Dependencies") {
+        stage('Checkout') {
             steps {
-                sh "npm ci"
+                checkout scm
             }
         }
 
-        stage("Build") {
+        stage('Prepare Agent') {
             steps {
-                sh "npm run build"
+                sh '''
+                    apt-get update
+                    apt-get install -y --no-install-recommends openssh-client
+                    rm -rf /var/lib/apt/lists/*
+                '''
             }
         }
 
-        stage("Deploy") {
+        stage('Install Dependencies') {
             steps {
-                sshagent(credentials: ["${SSH_CREDENTIALS_ID}"]) {
+                sh 'npm ci'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                sh 'npm run build'
+            }
+        }
+
+        stage('Fix Permissions') {
+            steps {
+                sh '''
+                    chmod -R u+rwX,go+rX dist || true
+                '''
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                sshagent(credentials: [env.SSH_CREDENTIALS_ID]) {
                     sh """
-                        ssh -o StrictHostKeyChecking=no root@${SSH_HOST} "mkdir -p ${SERVER_PATH} && find ${SERVER_PATH} -mindepth 1 -delete"
-                        tar -C dist -czf - . | ssh -o StrictHostKeyChecking=no root@${SSH_HOST} "tar -xzf - -C ${SERVER_PATH}"
+                        ssh -o StrictHostKeyChecking=no root@${SSH_HOST} \
+                        "mkdir -p ${SERVER_PATH} && find ${SERVER_PATH} -mindepth 1 -delete"
+
+                        tar -C dist -czf - . | \
+                        ssh -o StrictHostKeyChecking=no root@${SSH_HOST} \
+                        "tar -xzf - -C ${SERVER_PATH}"
                     """
                 }
             }
         }
 
-        stage("Restart Caddy") {
+        stage('Restart Caddy') {
             steps {
-                sshagent(credentials: ["${SSH_CREDENTIALS_ID}"]) {
+                sshagent(credentials: [env.SSH_CREDENTIALS_ID]) {
                     sh """
-                        ssh -o StrictHostKeyChecking=no root@${SSH_HOST} "docker restart ${CADDY_CONTAINER}"
+                        ssh -o StrictHostKeyChecking=no root@${SSH_HOST} \
+                        "docker restart ${CADDY_CONTAINER}"
                     """
                 }
             }
@@ -59,8 +92,19 @@ pipeline {
     }
 
     post {
+        always {
+            cleanWs(
+                deleteDirs: true,
+                disableDeferredWipeout: true
+            )
+        }
+
         success {
-            echo "Frontend deployed to ${SERVER_PATH} and ${CADDY_CONTAINER} restarted."
+            echo 'Frontend deployed successfully.'
+        }
+
+        failure {
+            echo 'Deployment failed.'
         }
     }
 }
