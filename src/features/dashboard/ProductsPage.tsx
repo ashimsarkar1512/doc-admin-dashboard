@@ -222,9 +222,9 @@ export default function ProductsPage() {
   };
 
   return (
-    <div className="p-6 md:p-10 w-full space-y-10 font-sans">
+    <div className="p-6 md:p-6 w-full space-y-10 font-sans">
       {/* Control Panel */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-gray-150 shadow-sm">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-5 ">
         <div className="relative flex-1 max-w-md">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
           <input
