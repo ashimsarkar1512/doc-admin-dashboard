@@ -68,19 +68,43 @@ export interface Assessment {
   totalAssessments: number;
 }
 
+export interface ProductImage {
+  id: string;
+  fileName?: string;
+  fileUrl: string;
+  fileType?: string;
+  fileSize?: number;
+  context?: string;
+  uploadedById?: any;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface ProductVariant {
+  id?: string;
+  size: string;
+  price: string | number;
+  stockQuantity: number;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
 export interface Product {
   id: string;
   name: string;
-  images?: string[];
-  price: string;
+  slug?: string;
+  images?: ProductImage[];
+  price: string | number;
   stockQuantity: number;
+  variants?: ProductVariant[];
   description: string;
   categoryId: string;
   category?: {
     id: string;
     name: string;
+    slug?: string;
   };
   createdAt?: string;
   updatedAt?: string;
-  status?: 'Active' | 'Inactive'; // Keep if used in frontend, else omit
+  status?: 'Active' | 'Inactive';
 }
