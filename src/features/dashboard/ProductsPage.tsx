@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Plus, Search, AlertCircle, Upload } from "lucide-react";
+import { Plus, Search, AlertCircle, Upload, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import type { Product } from "@/types";
@@ -16,6 +16,7 @@ import type {
   UpdateProductPayload,
 } from "@/api/endpoints/products.api";
 import { getCategories } from "@/api/endpoints/categories.api";
+import { axiosInstance } from "@/api/axiosInstance";
 
 export default function ProductsPage() {
   const queryClient = useQueryClient();
@@ -32,7 +33,10 @@ export default function ProductsPage() {
   const [formDescription, setFormDescription] = useState("");
   const [formImageFile, setFormImageFile] = useState<File | null>(null);
   const [formImagePreview, setFormImagePreview] = useState<string>("");
+  const [formImageId, setFormImageId] = useState<string>("");
   const [formStock, setFormStock] = useState<number | "">("");
+  const [variants, setVariants] = useState<{ size: string; price: string; stockQuantity: number | "" }[]>([]);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
 
   // Fetch categories
   const { data: categoriesData } = useQuery({
@@ -85,6 +89,20 @@ export default function ProductsPage() {
     },
   });
 
+  const handleAddVariant = () => {
+    setVariants([...variants, { size: "ml", price: "", stockQuantity: "" }]);
+  };
+
+  const handleRemoveVariant = (index: number) => {
+    setVariants(variants.filter((_, i) => i !== index));
+  };
+
+  const handleVariantChange = (index: number, field: string, value: string | number) => {
+    const newVariants = [...variants];
+    newVariants[index] = { ...newVariants[index], [field]: value };
+    setVariants(newVariants);
+  };
+
   // Open modal for Create
   const handleOpenCreate = () => {
     setEditingProduct(null);
@@ -94,7 +112,9 @@ export default function ProductsPage() {
     setFormDescription("");
     setFormImageFile(null);
     setFormImagePreview("");
+    setFormImageId("");
     setFormStock("");
+    setVariants([]);
     setIsModalOpen(true);
   };
 
@@ -103,11 +123,25 @@ export default function ProductsPage() {
     setEditingProduct(product);
     setFormName(product.name);
     setFormCategory(product.categoryId);
-    setFormPrice(product.price);
+    setFormPrice(String(product.price));
     setFormDescription(product.description || "");
     setFormImageFile(null);
-    setFormImagePreview(product.images?.[0] || "");
+    setFormImagePreview(product.images?.[0]?.fileUrl || "");
+    setFormImageId(product.images?.[0]?.id || "");
     setFormStock(product.stockQuantity);
+    
+    if (product.variants && product.variants.length > 0) {
+      setVariants(
+        product.variants.map(v => ({
+          size: v.size,
+          price: String(v.price),
+          stockQuantity: v.stockQuantity
+        }))
+      );
+    } else {
+      setVariants([]);
+    }
+
     setIsModalOpen(true);
   };
 
@@ -119,7 +153,7 @@ export default function ProductsPage() {
   };
 
   // Handle Form Submit
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!formName.trim()) {
@@ -127,7 +161,7 @@ export default function ProductsPage() {
       return;
     }
 
-    if (!editingProduct && !formImageFile) {
+    if (!editingProduct && !formImageId && !formImageFile) {
       toast.error("Please upload a product image.");
       return;
     }
@@ -137,13 +171,51 @@ export default function ProductsPage() {
       return;
     }
 
-    const payload = {
+    for (let i = 0; i < variants.length; i++) {
+      if (!variants[i].price || variants[i].stockQuantity === "") {
+        toast.error("Please fill all variant fields completely.");
+        return;
+      }
+    }
+
+    let finalImageId = formImageId;
+    if (formImageFile) {
+      setIsUploadingImage(true);
+      try {
+        const formData = new FormData();
+        formData.append('context', 'PRODUCT_IMAGE');
+        formData.append('files', formImageFile);
+
+        const response = await axiosInstance.post('/attachments/upload', formData, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        });
+
+        if (response.data?.success) {
+          finalImageId = response.data.data.id;
+          setFormImageId(finalImageId);
+        } else {
+          throw new Error(response.data?.message || 'Failed to upload image');
+        }
+      } catch (error: any) {
+        toast.error(error.message || "Image upload failed");
+        setIsUploadingImage(false);
+        return;
+      }
+      setIsUploadingImage(false);
+    }
+
+    const payload: CreateProductPayload | UpdateProductPayload = {
       name: formName,
-      price: String(formPrice),
+      price: Number(formPrice),
       stockQuantity: Number(formStock),
       description: formDescription,
       categoryId: formCategory,
-      images: formImageFile ? [formImageFile] : undefined,
+      images: finalImageId ? [finalImageId] : undefined,
+      variants: variants.length > 0 ? variants.map(v => ({
+        size: v.size,
+        price: Number(v.price),
+        stockQuantity: Number(v.stockQuantity)
+      })) : undefined,
     };
 
     saveMutation.mutate(payload);
@@ -330,6 +402,85 @@ export default function ProductsPage() {
               </div>
             </div>
 
+            {/* Variants Section */}
+            <div className="space-y-3 pt-2">
+              <label className="text-sm font-medium text-gray-800">
+                Variables:
+              </label>
+              {variants.map((variant, index) => (
+                <div key={index} className="grid grid-cols-12 gap-3 items-end bg-gray-50 p-3 rounded-xl border border-gray-100">
+                  <div className="col-span-4 space-y-1.5">
+                    <label className="text-xs text-gray-600 font-medium">Size Variable:</label>
+                    <div className="flex bg-white rounded-[10px] border border-gray-200 overflow-hidden">
+                      <input
+                        type="text"
+                        placeholder="e.g., 10"
+                        value={variant.size.split(' ')[0] || ''}
+                        onChange={(e) => handleVariantChange(index, "size", `${e.target.value} ${variant.size.split(' ')[1] || 'ml'}`)}
+                        className="w-full px-3 py-2 text-sm focus:outline-none text-black"
+                      />
+                      <select
+                        value={variant.size.split(' ')[1] || 'ml'}
+                        onChange={(e) => handleVariantChange(index, "size", `${variant.size.split(' ')[0] || ''} ${e.target.value}`)}
+                        className="bg-gray-50 border-l border-gray-200 px-2 py-2 text-sm text-gray-700 outline-none cursor-pointer"
+                      >
+                        <option value="ml">ml</option>
+                        <option value="mg">mg</option>
+                        <option value="g">g</option>
+                        <option value="oz">oz</option>
+                      </select>
+                    </div>
+                  </div>
+                  
+                  <div className="col-span-3 space-y-1.5">
+                    <label className="text-xs text-gray-600 font-medium">Price ($): (required)</label>
+                    <input
+                      type="number"
+                      required
+                      min={0}
+                      step={0.01}
+                      value={variant.price}
+                      onChange={(e) => handleVariantChange(index, "price", e.target.value)}
+                      placeholder="0.00"
+                      className="w-full px-3 py-2 rounded-[10px] border border-gray-200 bg-white focus:outline-none focus:border-blue-500 text-sm text-black"
+                    />
+                  </div>
+
+                  <div className="col-span-4 space-y-1.5">
+                    <label className="text-xs text-gray-600 font-medium">Stock Quantity: (required)</label>
+                    <input
+                      type="number"
+                      required
+                      min={0}
+                      value={variant.stockQuantity}
+                      onChange={(e) => handleVariantChange(index, "stockQuantity", e.target.value === "" ? "" : parseInt(e.target.value))}
+                      placeholder="0"
+                      className="w-full px-3 py-2 rounded-[10px] border border-gray-200 bg-white focus:outline-none focus:border-blue-500 text-sm text-black"
+                    />
+                  </div>
+
+                  <div className="col-span-1 flex justify-center pb-1">
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveVariant(index)}
+                      className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                      title="Remove Variable"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              ))}
+              
+              <button
+                type="button"
+                onClick={handleAddVariant}
+                className="text-sm text-blue-600 hover:text-blue-700 font-medium inline-flex items-center gap-1.5"
+              >
+                + Add Variable
+              </button>
+            </div>
+
             {/* Description */}
             <div className="space-y-1.5">
               <label className="text-sm font-medium text-gray-800">
@@ -395,10 +546,10 @@ export default function ProductsPage() {
             </button>
             <button
               type="submit"
-              disabled={saveMutation.isPending}
+              disabled={saveMutation.isPending || isUploadingImage}
               className="flex-1 py-2.5 bg-[#2563EB] hover:bg-blue-700 disabled:bg-blue-400 text-white rounded-[10px] text-sm font-medium transition-colors"
             >
-              {saveMutation.isPending
+              {saveMutation.isPending || isUploadingImage
                 ? "Saving..."
                 : editingProduct
                   ? "Save Changes"

@@ -14,9 +14,9 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onEdit, onDel
       <div>
         {/* Dark Charcoal Image Header */}
         <div className="relative h-[200px] w-full bg-[#2A2D31] flex items-center justify-center overflow-hidden rounded-t-2xl">
-          {product.images && product.images.length > 0 && (
+          {product.images && product.images.length > 0 && product.images[0]?.fileUrl && (
             <img
-              src={product.images[0]}
+              src={product.images[0].fileUrl}
               alt={product.name}
               className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
             />
