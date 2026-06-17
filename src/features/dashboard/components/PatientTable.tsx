@@ -44,7 +44,7 @@ export function PatientTable() {
 
                   {/* Patient Type badge */}
                   <td className="px-6 py-4">
-                    {row.patientType === 'New Patient' ? (
+                    {row.userType === 'New Patient' ? (
                       <span className="inline-flex items-center gap-1 rounded-lg bg-[#DBEAFE] px-3 py-1 text-xs font-medium text-[#2563EB] whitespace-nowrap">
                         New Patient
                       </span>
