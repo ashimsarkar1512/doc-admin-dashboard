@@ -147,7 +147,10 @@ export default function AssessmentFormDialog({ isOpen, onClose, editingAssessmen
       showCancelButton: true,
       confirmButtonColor: '#d33',
       cancelButtonColor: '#3085d6',
-      confirmButtonText: 'Yes, delete it!'
+      confirmButtonText: 'Yes, delete it!',
+      customClass: {
+        container: 'z-[99999]'
+      }
     }).then((result) => {
       if (result.isConfirmed) {
         deleteQuestionMutation.mutate(q.id);

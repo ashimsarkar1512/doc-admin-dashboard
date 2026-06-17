@@ -31,6 +31,7 @@ export interface QuestionOption {
   label: string;
   placeholder?: string | null;
   inputType?: string | null;
+  subQuestions?: AssessmentQuestion[];
 }
 
 export interface AssessmentQuestion {
