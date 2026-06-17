@@ -67,7 +67,7 @@ type QuestionFormValues = z.infer<typeof questionSchema>;
 // ── Input/Select class ───────────────────────────────────────────────────────
 
 const inputCls =
-  'w-full px-4 py-2.5 border border-gray-200 rounded-[10px] focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 bg-white text-sm text-slate-900 placeholder-gray-400';
+  'w-full px-4 py-2.5 border border-gray-200 rounded-[10px] focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 bg-white text-sm text-black placeholder-gray-400';
 
 // ── Main Component ───────────────────────────────────────────────────────────
 
@@ -291,7 +291,7 @@ export default function QuestionFormDialog({
   };
 
   const handleSubQuestionSaved = () => {
-    toast.success('Question saved successfully!');
+    toast.success('Sub-question saved successfully!');
     setSubQuestionParentId(null);
     setEditingSubQuestion(null);
     queryClient.invalidateQueries({ queryKey: ['questionOptions', editingQuestion?.id] });
@@ -304,7 +304,7 @@ export default function QuestionFormDialog({
       <Dialog
         isOpen={isOpen && !subQuestionParentId && !editingSubQuestion}
         onClose={onClose}
-        title={editingQuestion ? "Edit Question" : "Add Question"}
+        title={parentOptionId ? (editingQuestion ? "Edit Sub-Question" : "Add Sub-Question") : (editingQuestion ? "Edit Question" : "Add Question")}
         maxWidthClass="max-w-[500px]"
       >
         <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
@@ -509,7 +509,7 @@ export default function QuestionFormDialog({
                               <label className="block text-xs font-medium text-slate-800">Input type:</label>
                               <div className="relative">
                                 <select
-                                  className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white appearance-none cursor-pointer focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/20"
+                                  className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm text-black bg-white appearance-none cursor-pointer focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/20"
                                   value={opt.inputType || 'text'}
                                   onChange={e => handleUpdateOption(opt.originalIndex, { inputType: e.target.value })}
                                 >
@@ -528,22 +528,24 @@ export default function QuestionFormDialog({
                             <div className="space-y-1.5">
                               <label className="block text-xs font-medium text-slate-800">Label: (required)</label>
                               <input
-                                className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/20"
+                                className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm text-black bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/20"
                                 placeholder="e.g. Age (year)"
                                 value={opt.label}
                                 onChange={e => handleUpdateOption(opt.originalIndex, { label: e.target.value })}
                               />
                             </div>
 
-                            <div className="space-y-1.5">
-                              <label className="block text-xs font-medium text-slate-800">Placeholder text:</label>
-                              <input
-                                className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/20"
-                                placeholder="Enter your placeholder"
-                                value={opt.placeholder || ''}
-                                onChange={e => handleUpdateOption(opt.originalIndex, { placeholder: e.target.value })}
-                              />
-                            </div>
+                            {opt.inputType !== 'file upload' && (
+                              <div className="space-y-1.5">
+                                <label className="block text-xs font-medium text-slate-800">Placeholder text:</label>
+                                <input
+                                  className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm text-black bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/20"
+                                  placeholder="Enter your placeholder"
+                                  value={opt.placeholder || ''}
+                                  onChange={e => handleUpdateOption(opt.originalIndex, { placeholder: e.target.value })}
+                                />
+                              </div>
+                            )}
                           </div>
                         </div>
                       );
@@ -555,7 +557,7 @@ export default function QuestionFormDialog({
                         <div className="flex items-center gap-3">
                           <div className="relative flex-1">
                             <input
-                              className={`w-full px-4 py-2.5 border border-gray-200 rounded-[10px] text-sm bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/20 ${questionType === 'SINGLE_CHOICE' ? 'pr-28' : ''}`}
+                              className={`w-full px-4 py-2.5 border border-gray-200 rounded-[10px] text-sm text-black bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/20 ${questionType === 'SINGLE_CHOICE' ? 'pr-28' : ''}`}
                               placeholder="Option value"
                               value={opt.label}
                               onChange={e => handleUpdateOption(opt.originalIndex, { label: e.target.value })}
@@ -567,12 +569,12 @@ export default function QuestionFormDialog({
                                   if (opt.id) {
                                     setSubQuestionParentId(opt.id);
                                   } else {
-                                    toast.info('Please save this question first to add follow-up questions to its options.');
+                                    toast.info('Please save this question first to add sub-questions to its options.');
                                   }
                                 }}
                                 className="absolute right-3 top-1/2 -translate-y-1/2 text-[#2563EB] hover:text-blue-700 text-sm font-medium transition-colors"
                               >
-                                + Add Question
+                                + Add Sub-Question
                               </button>
                             )}
                           </div>
