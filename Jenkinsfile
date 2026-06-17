@@ -2,7 +2,6 @@ pipeline {
     agent {
         docker {
             image 'node:22-bookworm'
-            args '-u root'
             reuseNode true
         }
     }
@@ -16,9 +15,11 @@ pipeline {
 
     options {
         skipDefaultCheckout(true)
+        disableConcurrentBuilds()
     }
 
     stages {
+
         stage('Clean Workspace') {
             steps {
                 cleanWs(
@@ -28,13 +29,13 @@ pipeline {
             }
         }
 
-        stage('Checkout') {
+        stage('Checkout Code') {
             steps {
                 checkout scm
             }
         }
 
-        stage('Prepare Agent') {
+        stage('Prepare Environment') {
             steps {
                 sh '''
                     apt-get update
@@ -50,7 +51,7 @@ pipeline {
             }
         }
 
-        stage('Build') {
+        stage('Build Project') {
             steps {
                 sh 'npm run build'
             }
@@ -64,16 +65,18 @@ pipeline {
             }
         }
 
-        stage('Deploy') {
+        stage('Deploy to Server') {
             steps {
                 sshagent(credentials: [env.SSH_CREDENTIALS_ID]) {
                     sh """
-                        ssh -o StrictHostKeyChecking=no root@${SSH_HOST} \
-                        "mkdir -p ${SERVER_PATH} && find ${SERVER_PATH} -mindepth 1 -delete"
+                        ssh -o StrictHostKeyChecking=no root@${SSH_HOST} '
+                            mkdir -p ${SERVER_PATH} &&
+                            find ${SERVER_PATH} -mindepth 1 -delete
+                        '
 
-                        tar -C dist -czf - . | \
-                        ssh -o StrictHostKeyChecking=no root@${SSH_HOST} \
-                        "tar -xzf - -C ${SERVER_PATH}"
+                        tar -C dist -czf - . | ssh -o StrictHostKeyChecking=no root@${SSH_HOST} "
+                            tar -xzf - -C ${SERVER_PATH}
+                        "
                     """
                 }
             }
@@ -83,8 +86,9 @@ pipeline {
             steps {
                 sshagent(credentials: [env.SSH_CREDENTIALS_ID]) {
                     sh """
-                        ssh -o StrictHostKeyChecking=no root@${SSH_HOST} \
-                        "docker restart ${CADDY_CONTAINER}"
+                        ssh -o StrictHostKeyChecking=no root@${SSH_HOST} "
+                            docker restart ${CADDY_CONTAINER}
+                        "
                     """
                 }
             }
@@ -100,11 +104,11 @@ pipeline {
         }
 
         success {
-            echo 'Frontend deployed successfully.'
+            echo '✅ Deployment successful'
         }
 
         failure {
-            echo 'Deployment failed.'
+            echo '❌ Deployment failed'
         }
     }
 }
