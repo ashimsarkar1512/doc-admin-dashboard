@@ -1,54 +1,947 @@
-import { useQuery } from '@tanstack/react-query';
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
+// import { useState } from "react";
+// import { useQuery } from "@tanstack/react-query";
+// import {
+//   getAuditLogs,
+//   getAuditLogsStats,
+//   exportAuditLogs,
+// } from "@/api/endpoints/auditLogs.api";
+// import type {
+//   AuditLog,
+//   AuditLogStatus,
+//   GetAuditLogsParams,
+// } from "@/api/endpoints/auditLogs.api";
+
+// import {
+//   Search,
+//   ChevronLeft,
+//   ChevronRight,
+//   Loader2,
+//   AlertCircle,
+//   Calendar,
+//   Download,
+// } from "lucide-react";
+// import Swal from "sweetalert2";
+// // import { getAuditLogsStats } from "@/api/endpoints/auditLogs.api";
+
+// // ─── Display Maps ─────────────────────────────────────────────────────────────
+
+// const STATUS_STYLES: Record<AuditLogStatus, { label: string; className: string }> = {
+//   SUCCESS: {
+//     label: "Success",
+//     className: "bg-green-50 text-green-600 border border-green-200",
+//   },
+//   FAILED: {
+//     label: "Failed",
+//     className: "bg-red-50 text-red-600 border border-red-200",
+//   },
+// };
+
+// const FALLBACK_STATUS_STYLE = {
+//   label: "Unknown",
+//   className: "bg-slate-100 text-slate-500 border border-slate-200",
+// };
+
+// // Static dropdown options — swagger has no dedicated "options" endpoint,
+// // so these are derived from the values seen in the audit log data.
+// const ROLE_OPTIONS = ["Admin", "ADMIN"];
+// const ACTIVITY_TYPE_OPTIONS = ["Login", "Record Edit"];
+
+// // ─── Stat Card ────────────────────────────────────────────────────────────────
+
+// interface StatCardProps {
+//   label: string;
+//   value: number | undefined;
+// }
+
+// function StatCard({ label, value }: StatCardProps) {
+//   return (
+//     <div className="bg-slate-900 text-white rounded-xl px-6 py-5 flex flex-col gap-2">
+//       <p className="text-xs font-medium text-slate-400 uppercase tracking-wider">
+//         {label}
+//       </p>
+//       <p className="text-3xl font-bold">
+//         {value === undefined ? (
+//           <span className="text-slate-600 text-xl animate-pulse">—</span>
+//         ) : (
+//           value
+//         )}
+//       </p>
+//     </div>
+//   );
+// }
+
+// // ─── Page Component ───────────────────────────────────────────────────────────
+
+// export default function AuditLogsPage() {
+//   // Filter state
+//   const [search, setSearch] = useState("");
+//   const [role, setRole] = useState<string>("");
+//   const [activityType, setActivityType] = useState<string>("");
+//   const [status, setStatus] = useState<AuditLogStatus | "">("");
+//   const [startDate, setStartDate] = useState<string>("");
+//   const [endDate, setEndDate] = useState<string>("");
+//   const [page, setPage] = useState(1);
+//   const [isExporting, setIsExporting] = useState(false);
+//   const limit = 10;
+
+//   // Build query params — only include truthy filter values
+//   const queryParams: GetAuditLogsParams = {
+//     page,
+//     limit,
+//     ...(search.trim() && { search: search.trim() }),
+//     ...(role && { role }),
+//     ...(activityType && { activityType }),
+//     ...(status && { status }),
+//     ...(startDate && { startDate }),
+//     ...(endDate && { endDate }),
+//   };
+
+//   // ── Data fetching ──────────────────────────────────────────────────────────
+
+//   const { data: statsData, isLoading: statsLoading } = useQuery({
+//     queryKey: ["audit-logs-stats"],
+//     queryFn: getAuditLogsStats,
+//   });
+
+//   const { data, isLoading, isError } = useQuery({
+//     queryKey: ["audit-logs", queryParams],
+//     queryFn: () => getAuditLogs(queryParams),
+//     placeholderData: (prev) => prev,
+//   });
+
+//   console.log(data)
+//   // ── Handlers ──────────────────────────────────────────────────────────────
+
+//   const handleSearchSubmit = (e: React.FormEvent) => {
+//     e.preventDefault();
+//     setPage(1);
+//   };
+
+//   const handleFilterChange = () => setPage(1);
+
+//   const handleExport = async () => {
+//     setIsExporting(true);
+//     try {
+//       const exportParams = {
+//         ...(search.trim() && { search: search.trim() }),
+//         ...(role && { role }),
+//         ...(activityType && { activityType }),
+//         ...(status && { status }),
+//         ...(startDate && { startDate }),
+//         ...(endDate && { endDate }),
+//       };
+//       const blob = await exportAuditLogs(exportParams);
+//       const url = window.URL.createObjectURL(blob);
+//       const link = document.createElement("a");
+//       link.href = url;
+//       link.download = `audit-logs-${new Date().toISOString().slice(0, 10)}.csv`;
+//       document.body.appendChild(link);
+//       link.click();
+//       link.remove();
+//       window.URL.revokeObjectURL(url);
+//     } catch (error) {
+//       Swal.fire({
+//         icon: "error",
+//         title: "Export failed",
+//         text: "Could not export audit logs. Please try again.",
+//       });
+//     } finally {
+//       setIsExporting(false);
+//     }
+//   };
+
+//   // ── Derived values ─────────────────────────────────────────────────────────
+
+//   const stats = statsData;
+//   const auditLog = data?.data ?? [];
+//   const meta = data?.meta;
+//   console.log(meta)
+
+//   // ── Render ─────────────────────────────────────────────────────────────────
+
+//   return (
+//     <div className="w-full p-4 md:p-8">
+//       {/* ── Overview Stat Cards ───────────────────────────────────────────── */}
+//       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-8">
+//         <StatCard
+//           label="Total Activities"
+//           value={statsLoading ? undefined : stats?.totalActivities}
+//         />
+//         <StatCard
+//           label="Failed Logins"
+//           value={statsLoading ? undefined : stats?.failedLogins}
+//         />
+//         <StatCard
+//           label="Active Sessions"
+//           value={statsLoading ? undefined : stats?.activeSessions}
+//         />
+//         <StatCard
+//           label="Data Exports"
+//           value={statsLoading ? undefined : stats?.dataExports}
+//         />
+//       </div>
+
+//       {/* ── Filter Row ────────────────────────────────────────────────────── */}
+//       <form
+//         onSubmit={handleSearchSubmit}
+//         className="flex flex-col sm:flex-row flex-wrap gap-3 mb-6"
+//       >
+//         <div className="relative flex-1 min-w-0 md:max-w-7xl">
+//           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+//           <input
+//             type="text"
+//             value={search}
+//             onChange={(e) => setSearch(e.target.value)}
+//             placeholder="Search by name, email,"
+//             className="w-full pl-9 pr-4 py-2.5 bg-white border border-slate-200 rounded-lg text-sm placeholder-slate-400 text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition"
+//           />
+//         </div>
+
+//         <select
+//           value={role}
+//           onChange={(e) => {
+//             setRole(e.target.value);
+//             handleFilterChange();
+//           }}
+//           className="px-3 py-2.5 bg-white border border-slate-200 rounded-lg text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition min-w-[110px]"
+//         >
+//           <option value="">All Role</option>
+//           {ROLE_OPTIONS.map((r) => (
+//             <option key={r} value={r}>
+//               {r}
+//             </option>
+//           ))}
+//         </select>
+
+//         <select
+//           value={activityType}
+//           onChange={(e) => {
+//             setActivityType(e.target.value);
+//             handleFilterChange();
+//           }}
+//           className="px-3 py-2.5 bg-white border border-slate-200 rounded-lg text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition min-w-[110px]"
+//         >
+//           <option value="">All Type</option>
+//           {ACTIVITY_TYPE_OPTIONS.map((t) => (
+//             <option key={t} value={t}>
+//               {t}
+//             </option>
+//           ))}
+//         </select>
+
+//         <select
+//           value={status}
+//           onChange={(e) => {
+//             setStatus(e.target.value as AuditLogStatus | "");
+//             handleFilterChange();
+//           }}
+//           className="px-3 py-2.5 bg-white border border-slate-200 rounded-lg text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition min-w-[120px]"
+//         >
+//           <option value="">All Status</option>
+//           <option value="SUCCESS">Success</option>
+//           <option value="FAILED">Failed</option>
+//         </select>
+
+//         <div className="relative">
+//           <input
+//             type="text"
+//             value={startDate}
+//             onChange={(e) => {
+//               setStartDate(e.target.value);
+//               handleFilterChange();
+//             }}
+//             placeholder="2026-06-01"
+//             className="w-[140px] pl-3 pr-10 py-2.5 bg-white border border-slate-200 rounded-lg text-sm text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition"
+//           />
+//           <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+//         </div>
+
+//         <div className="relative">
+//           <input
+//             type="text"
+//             value={endDate}
+//             onChange={(e) => {
+//               setEndDate(e.target.value);
+//               handleFilterChange();
+//             }}
+//             placeholder="//-//-//"
+//             className="w-[140px] pl-3 pr-10 py-2.5 bg-white border border-slate-200 rounded-lg text-sm text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition"
+//           />
+//           <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+//         </div>
+
+//         <button
+//           type="button"
+//           onClick={handleExport}
+//           disabled={isExporting}
+//           className="flex items-center gap-2 px-4 py-2.5 bg-slate-900 text-white rounded-lg text-sm font-medium hover:bg-slate-800 disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
+//         >
+//           {isExporting ? (
+//             <Loader2 className="w-4 h-4 animate-spin" />
+//           ) : (
+//             <Download className="w-4 h-4" />
+//           )}
+//           Export
+//         </button>
+//       </form>
+
+//       {/* ── Table ─────────────────────────────────────────────────────────── */}
+//       <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
+//         {isLoading ? (
+//           <div className="flex justify-center items-center py-16">
+//             <Loader2 className="w-6 h-6 text-blue-500 animate-spin" />
+//           </div>
+//         ) : isError ? (
+//           <div className="flex flex-col items-center justify-center py-16 gap-3 text-slate-400">
+//             <AlertCircle className="w-8 h-8 text-red-400" />
+//             <p className="text-sm">
+//               Failed to load audit logs. Please try again.
+//             </p>
+//           </div>
+//         ) : auditLog.length === 0 ? (
+//           <div className="flex justify-center items-center py-16">
+//             <p className="text-sm text-slate-400">
+//               No audit logs match your filters.
+//             </p>
+//           </div>
+//         ) : (
+//           <>
+//             <div className="overflow-x-auto">
+//               <table className="w-full text-left text-sm text-slate-600">
+//                 <thead className="bg-slate-50 border-b border-slate-200">
+//                   <tr>
+//                     {[
+//                       "User",
+//                       "Role",
+//                       "Activity Type",
+//                       "Event",
+//                       "IP Address",
+//                       "Status",
+//                       "Timestamp",
+//                     ].map((h) => (
+//                       <th
+//                         key={h}
+//                         className="px-5 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider whitespace-nowrap"
+//                       >
+//                         {h}
+//                       </th>
+//                     ))}
+//                   </tr>
+//                 </thead>
+//                 <tbody className="divide-y divide-slate-100">
+//                   {auditLog.map((item: AuditLog) => {
+//                     const statusStyle =
+//                       STATUS_STYLES[item.status] ?? FALLBACK_STATUS_STYLE;
+
+//                     return (
+//                       <tr
+//                         key={item.id}
+//                         className="hover:bg-slate-50 transition-colors"
+//                       >
+//                         {/* User */}
+//                         <td className="px-5 py-4 whitespace-nowrap">
+//                           <span className="font-mono text-xs font-bold text-[#1447E6]">
+//                             {item.userName}
+//                           </span>
+//                         </td>
+
+//                         {/* Role */}
+//                         <td className="px-5 py-4 text-slate-800 font-medium max-w-[200px] truncate">
+//                           {item.userRole}
+//                         </td>
+
+//                         {/* Activity Type */}
+//                         <td className="px-5 py-4 whitespace-nowrap">
+//                           {item.activityType}
+//                         </td>
+
+//                         {/* Event */}
+//                         <td className="px-5 py-4 whitespace-nowrap text-slate-600 max-w-[180px] truncate">
+//                           {item.event}
+//                         </td>
+
+//                         {/* IP Address */}
+//                         <td className="px-5 py-4 whitespace-nowrap text-slate-500">
+//                           {item.ipAddress ?? "—"}
+//                         </td>
+
+//                         {/* Status */}
+//                         <td className="px-5 py-4 whitespace-nowrap">
+//                           <span
+//                             className={`inline-flex px-2.5 py-1 rounded-full text-xs font-semibold ${statusStyle.className}`}
+//                           >
+//                             {statusStyle.label}
+//                           </span>
+//                         </td>
+
+//                         {/* Timestamp */}
+//                         <td className="px-5 py-4 whitespace-nowrap text-slate-600">
+//                           {new Date(item.createdAt).toLocaleString()}
+//                         </td>
+//                       </tr>
+//                     );
+//                   })}
+//                 </tbody>
+//               </table>
+//             </div>
+
+//             {/* Pagination */}
+//             {meta && meta.totalPages > 1 && (
+//               <div className="flex items-center justify-between px-6 py-4 border-t border-slate-200 bg-slate-50">
+//                 <span className="text-sm text-slate-500">
+//                   Showing {(meta.page - 1) * meta.limit + 1}–
+//                   {Math.min(meta.page * meta.limit, meta.total)} of {meta.total}{" "}
+//                   results
+//                 </span>
+//                 <div className="flex items-center gap-2">
+//                   <button
+//                     onClick={() => setPage((p) => Math.max(1, p - 1))}
+//                     disabled={page === 1}
+//                     className="p-1.5 rounded-md border border-slate-200 text-slate-600 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+//                   >
+//                     <ChevronLeft className="w-4 h-4" />
+//                   </button>
+//                   <span className="text-sm font-medium text-slate-700">
+//                     Page {page} of {meta.totalPages}
+//                   </span>
+//                   <button
+//                     onClick={() =>
+//                       setPage((p) => Math.min(meta.totalPages, p + 1))
+//                     }
+//                     disabled={page === meta.totalPages}
+//                     className="p-1.5 rounded-md border border-slate-200 text-slate-600 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+//                   >
+//                     <ChevronRight className="w-4 h-4" />
+//                   </button>
+//                 </div>
+//               </div>
+//             )}
+//           </>
+//         )}
+//       </div>
+//     </div>
+//   );
+// }
+
+// import {  useState,  } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useState, type ReactNode } from "react";
+import {
+  getAuditLogs,
+  getAuditLogsStats,
+  exportAuditLogs,
+} from "@/api/endpoints/auditLogs.api";
+import type {
+  AuditLog,
+  AuditLogStatus,
+  GetAuditLogsParams,
+} from "@/api/endpoints/auditLogs.api";
+// import AuditLogDetailModal from "./AuditLogDetailModal";
+
+import {
+  Search,
+  ChevronLeft,
+  ChevronRight,
+  Loader2,
+  AlertCircle,
+  Calendar,
+  Download,
+  RefreshCw,
+  Eye,
+  ShieldAlert,
+  ActivityIcon,
+  UsersRound,
+  Database,
+} from "lucide-react";
+
+import Swal from "sweetalert2";
+import Auditlogdetailmodal from "./components/auditLogPageComponent/Auditlogdetailmodal ";
+
+// ─── Display Maps ─────────────────────────────────────────────────────────────
+
+// const STATUS_STYLES: Record<
+//   AuditLogStatus,
+//   { label: string; className: string }
+// > = {
+//   SUCCESS: {
+//     label: "Success",
+//     className: "bg-green-50 text-green-600 border border-green-200",
+//   },
+//   FAILED: {
+//     label: "Failed",
+//     className: "bg-red-50 text-red-600 border border-red-200",
+//   },
+// };
+
+// const FALLBACK_STATUS_STYLE = {
+//   label: "Unknown",
+//   className: "bg-slate-100 text-slate-500 border border-slate-200",
+// };
+
+// Static dropdown options — swagger has no dedicated "options" endpoint,
+// so these are derived from the values seen in the audit log data.
+const ROLE_OPTIONS = ["Admin", "ADMIN"];
+const ACTIVITY_TYPE_OPTIONS = ["Login", "Record Edit"];
+
+// ─── Stat Card ────────────────────────────────────────────────────────────────
+
+interface StatCardProps {
+  label: string;
+  value?: number;
+  icon?: ReactNode;
+  className?: string;
+}
+function StatCard({ label, value, icon }: StatCardProps) {
+  return (
+    <div className="bg-slate-900 text-white rounded-xl px-6 py-5 flex flex-col gap-2">
+      <div className="flex justify-between">
+        <div>
+          <p className="text-xs font-medium text-slate-400 uppercase tracking-wider">
+            {label}
+          </p>
+          <p className="text-3xl font-bold">
+            {value === undefined ? (
+              <span className="text-slate-600 text-xl animate-pulse">—</span>
+            ) : (
+              value
+            )}
+          </p>
+        </div>
+        <div className="bg-gray-100 rounded-md h-8 w-8 flex items-center justify-center">
+          {icon}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Avatar ───────────────────────────────────────────────────────────────────
+
+function getInitials(name: string) {
+  const parts = name.trim().split(/\s+/);
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+  return (parts[0][0] + parts[1][0]).toUpperCase();
+}
+
+function Avatar({ name }: { name: string }) {
+  return (
+    <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xs font-semibold shrink-0">
+      {getInitials(name || "?")}
+    </div>
+  );
+}
+
+// ─── Page Component ───────────────────────────────────────────────────────────
 
 export default function AuditLogsPage() {
-  const { data, isLoading } = useQuery({
-    queryKey: ['audit-logs'],
-    queryFn: async () => {
-      await new Promise((resolve) => setTimeout(resolve, 800));
-      return [
-        { id: 1, user: 'admin@ektahealth.com', action: 'Updated patient record', resource: 'Patient #P-1042', timestamp: '2026-06-08 09:14:22', ipAddress: '192.168.1.10' },
-        { id: 2, user: 'dr.smith@ektahealth.com', action: 'Viewed prescription', resource: 'Prescription #RX-887', timestamp: '2026-06-08 08:55:01', ipAddress: '192.168.1.15' },
-        { id: 3, user: 'support1@ektahealth.com', action: 'Login successful', resource: 'Auth', timestamp: '2026-06-08 08:30:00', ipAddress: '10.0.0.5' },
-        { id: 4, user: 'admin@ektahealth.com', action: 'Deleted discount code', resource: 'Discount #DC-204', timestamp: '2026-06-07 17:45:12', ipAddress: '192.168.1.10' },
-        { id: 5, user: 'dr.jones@ektahealth.com', action: 'Created assessment', resource: 'Assessment #A-330', timestamp: '2026-06-07 16:20:09', ipAddress: '192.168.1.22' },
-      ];
-    },
+  // Filter state
+  const [search, setSearch] = useState("");
+  const [role, setRole] = useState<string>("");
+  const [activityType, setActivityType] = useState<string>("");
+  const [status, setStatus] = useState<AuditLogStatus | "">("");
+  const [startDate, setStartDate] = useState<string>("");
+  const [endDate, setEndDate] = useState<string>("");
+  const [page, setPage] = useState(1);
+  const [isExporting, setIsExporting] = useState(false);
+  const [selectedLog, setSelectedLog] = useState<AuditLog | null>(null);
+  const limit = 10;
+
+  // Build query params — only include truthy filter values
+  const queryParams: GetAuditLogsParams = {
+    page,
+    limit,
+    ...(search.trim() && { search: search.trim() }),
+    ...(role && { role }),
+    ...(activityType && { activityType }),
+    ...(status && { status }),
+    ...(startDate && { startDate }),
+    ...(endDate && { endDate }),
+  };
+
+  // ── Data fetching ──────────────────────────────────────────────────────────
+
+  const {
+    data: statsData,
+    isLoading: statsLoading,
+    refetch: refetchStats,
+  } = useQuery({
+    queryKey: ["audit-logs-stats"],
+    queryFn: getAuditLogsStats,
   });
+
+  const { data, isLoading, isError, refetch, isFetching } = useQuery({
+    queryKey: ["audit-logs", queryParams],
+    queryFn: () => getAuditLogs(queryParams),
+    placeholderData: (prev) => prev,
+  });
+
+  // ── Handlers ──────────────────────────────────────────────────────────────
+
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setPage(1);
+  };
+
+  const handleFilterChange = () => setPage(1);
+
+  const handleRefresh = () => {
+    refetch();
+    refetchStats();
+  };
+
+  const handleExport = async () => {
+    setIsExporting(true);
+    try {
+      const exportParams = {
+        ...(search.trim() && { search: search.trim() }),
+        ...(role && { role }),
+        ...(activityType && { activityType }),
+        ...(status && { status }),
+        ...(startDate && { startDate }),
+        ...(endDate && { endDate }),
+      };
+      const blob = await exportAuditLogs(exportParams);
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `audit-logs-${new Date().toISOString().slice(0, 10)}.csv`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Export failed",
+        text: "Could not export audit logs. Please try again.",
+      });
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
+  // ── Derived values ─────────────────────────────────────────────────────────
+
+  const stats = statsData;
+  const auditLog = data?.data ?? [];
+  const meta = data?.meta;
+
+  // ── Render ─────────────────────────────────────────────────────────────────
 
   return (
     <div className="w-full p-4 md:p-8">
-      <div className="mb-8">
-        <h1 className="text-2xl sm:text-3xl font-bold text-slate-800 tracking-tight">Audit Logs</h1>
-        <p className="text-sm text-slate-500 font-medium mt-1">Track all system activity and user actions for compliance</p>
+      {/* ── Overview Stat Cards ───────────────────────────────────────────── */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-8">
+        <StatCard
+          label="Total Activities"
+          value={statsLoading ? undefined : stats?.totalActivities}
+          icon={<ActivityIcon className="w-4 h-4 text-gray-600" />}
+        />
+        <StatCard
+          label="Failed Logins"
+          value={statsLoading ? undefined : stats?.failedLogins}
+          icon={<ShieldAlert className="w-4 h-4 text-gray-600" />}
+        />
+        <StatCard
+          label="Active Sessions"
+          value={statsLoading ? undefined : stats?.activeSessions}
+          icon={<UsersRound className="w-4 h-4 text-gray-600" />}
+        />
+        <StatCard
+          label="Data Exports"
+          value={statsLoading ? undefined : stats?.dataExports}
+          icon={<Database className="w-4 h-4 text-gray-600" />}
+        />
       </div>
+
+      {/* ── Section Header ───────────────────────────────────────────────── */}
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-base font-semibold text-slate-800">
+          All Activity Logs
+        </h2>
+        <div className="flex items-center gap-2">
+          {/* <button
+            type="button"
+            onClick={handleRefresh}
+            className="flex items-center gap-2 px-4 py-2.5 bg-white border border-slate-200 text-slate-700 rounded-lg text-sm font-medium hover:bg-slate-50 transition-colors"
+          >
+            <RefreshCw className="w-4 h-4" />
+            Refresh
+          </button> */}
+          <button
+            type="button"
+            onClick={handleRefresh}
+            className="flex items-center gap-2 px-4 py-2.5 bg-white border border-slate-200 text-slate-700 rounded-lg text-sm font-medium hover:bg-slate-50 transition-colors"
+          >
+            <RefreshCw
+              className={`w-4 h-4 ${isFetching ? "animate-spin" : ""}`}
+            />
+            {isFetching ? "Refreshing..." : "Refresh"}
+          </button>
+          <button
+            type="button"
+            onClick={handleExport}
+            disabled={isExporting}
+            className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
+          >
+            {isExporting ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <Download className="w-4 h-4" />
+            )}
+            Export CSV
+          </button>
+        </div>
+      </div>
+
+      {/* ── Filter Row ────────────────────────────────────────────────────── */}
+      <form
+        onSubmit={handleSearchSubmit}
+        className="flex flex-col sm:flex-row flex-wrap gap-3 mb-6"
+      >
+        <div className="relative flex-1 min-w-0 md:max-w-7xl">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search by name, email,"
+            className="w-full pl-9 pr-4 py-2.5 bg-white border border-slate-200 rounded-lg text-sm placeholder-slate-400 text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition"
+          />
+        </div>
+
+        <select
+          value={role}
+          onChange={(e) => {
+            setRole(e.target.value);
+            handleFilterChange();
+          }}
+          className="px-3 py-2.5 bg-white border border-slate-200 rounded-lg text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition min-w-[110px]"
+        >
+          <option value="">All Role</option>
+          {ROLE_OPTIONS.map((r) => (
+            <option key={r} value={r}>
+              {r}
+            </option>
+          ))}
+        </select>
+
+        <select
+          value={activityType}
+          onChange={(e) => {
+            setActivityType(e.target.value);
+            handleFilterChange();
+          }}
+          className="px-3 py-2.5 bg-white border border-slate-200 rounded-lg text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition min-w-[110px]"
+        >
+          <option value="">All Type</option>
+          {ACTIVITY_TYPE_OPTIONS.map((t) => (
+            <option key={t} value={t}>
+              {t}
+            </option>
+          ))}
+        </select>
+
+        <select
+          value={status}
+          onChange={(e) => {
+            setStatus(e.target.value as AuditLogStatus | "");
+            handleFilterChange();
+          }}
+          className="px-3 py-2.5 bg-white border border-slate-200 rounded-lg text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition min-w-[120px]"
+        >
+          <option value="">All Status</option>
+          <option value="SUCCESS">Success</option>
+          <option value="FAILED">Failed</option>
+        </select>
+
+        <div className="relative">
+          <input
+            type="text"
+            value={startDate}
+            onChange={(e) => {
+              setStartDate(e.target.value);
+              handleFilterChange();
+            }}
+            placeholder="2026-06-01"
+            className="w-[140px] pl-3 pr-10 py-2.5 bg-white border border-slate-200 rounded-lg text-sm text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition"
+          />
+          <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+        </div>
+
+        <div className="relative">
+          <input
+            type="text"
+            value={endDate}
+            onChange={(e) => {
+              setEndDate(e.target.value);
+              handleFilterChange();
+            }}
+            placeholder="//-//-//"
+            className="w-[140px] pl-3 pr-10 py-2.5 bg-white border border-slate-200 rounded-lg text-sm text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition"
+          />
+          <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+        </div>
+      </form>
+
+      {/* ── Table ─────────────────────────────────────────────────────────── */}
       <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
         {isLoading ? (
-          <div className="p-8 flex justify-center items-center"><p className="text-slate-500">Loading audit logs...</p></div>
+          <div className="flex justify-center items-center py-16">
+            <Loader2 className="w-6 h-6 text-blue-500 animate-spin" />
+          </div>
+        ) : isError ? (
+          <div className="flex flex-col items-center justify-center py-16 gap-3 text-slate-400">
+            <AlertCircle className="w-8 h-8 text-red-400" />
+            <p className="text-sm">
+              Failed to load audit logs. Please try again.
+            </p>
+          </div>
+        ) : auditLog.length === 0 ? (
+          <div className="flex justify-center items-center py-16">
+            <p className="text-sm text-slate-400">
+              No audit logs match your filters.
+            </p>
+          </div>
         ) : (
-          <table className="w-full text-left text-sm text-slate-600">
-            <thead className="bg-slate-50 border-b border-slate-200 text-slate-700 font-semibold">
-              <tr>
-                <th className="px-6 py-4">User</th>
-                <th className="px-6 py-4">Action</th>
-                <th className="px-6 py-4">Resource</th>
-                <th className="px-6 py-4">IP Address</th>
-                <th className="px-6 py-4">Timestamp</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
-              {data?.map((item) => (
-                <tr key={item.id} className="hover:bg-slate-50 transition-colors">
-                  <td className="px-6 py-4 font-medium text-slate-800">{item.user}</td>
-                  <td className="px-6 py-4">{item.action}</td>
-                  <td className="px-6 py-4 text-[#1447E6] font-medium">{item.resource}</td>
-                  <td className="px-6 py-4 font-mono text-xs">{item.ipAddress}</td>
-                  <td className="px-6 py-4 text-slate-400">{item.timestamp}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <>
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-sm text-slate-600">
+                <thead className="bg-slate-50 border-b border-slate-200">
+                  <tr>
+                    {[
+                      "User Name",
+                      "Role",
+                      "Timestamp",
+                      "Activity Type",
+                      "Event",
+                      "IP Address",
+                      "Action",
+                    ].map((h) => (
+                      <th
+                        key={h}
+                        className="px-5 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider whitespace-nowrap"
+                      >
+                        {h}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {auditLog.map((item: AuditLog) => {
+                    return (
+                      <tr
+                        key={item.id}
+                        className="hover:bg-slate-50 transition-colors"
+                      >
+                        {/* User Name */}
+                        <td className="px-5 py-4 whitespace-nowrap">
+                          <div className="flex items-center gap-2.5">
+                            <Avatar name={item.userName} />
+                            <span className="font-medium text-slate-800">
+                              {item.userName}
+                            </span>
+                          </div>
+                        </td>
+
+                        {/* Role */}
+                        <td className="px-5 py-4 whitespace-nowrap">
+                          <span
+                            className={`inline-flex px-2.5 py-1 rounded-full text-xs font-semibold uppercase ${
+                              {
+                                PATIENT: "bg-blue-50 text-blue-600",
+                                DOCTOR: "bg-purple-50 text-purple-600",
+                                EMPLOYEE: "bg-amber-50 text-amber-600",
+                                ADMIN: "bg-sky-100 text-sky-700",
+                              }[item.userRole?.toUpperCase()] ??
+                              "bg-slate-100 text-slate-600"
+                            }`}
+                          >
+                            {item.userRole}
+                          </span>
+                        </td>
+
+                        {/* Timestamp */}
+                        <td className="px-5 py-4 whitespace-nowrap text-slate-500">
+                          {new Date(item.createdAt).toLocaleString()}
+                        </td>
+
+                        {/* Activity Type */}
+                        <td className="px-5 py-4 whitespace-nowrap">
+                          {item.activityType}
+                        </td>
+
+                        {/* Event */}
+                        <td className="px-5 py-4 whitespace-nowrap text-slate-600 max-w-[180px] truncate">
+                          {item.event}
+                        </td>
+
+                        {/* IP Address */}
+                        <td className="px-5 py-4 whitespace-nowrap text-slate-500">
+                          {item.ipAddress ?? "—"}
+                        </td>
+
+                        {/* Action */}
+                        <td className="px-5 py-4 whitespace-nowrap">
+                          <button
+                            onClick={() => setSelectedLog(item)}
+                            title="View Details"
+                            className="p-1.5 text-blue-500 hover:text-blue-700 hover:bg-blue-50 rounded transition-colors"
+                          >
+                            <Eye className="w-4 h-4" />
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Pagination — always visible; buttons disabled when not applicable */}
+            <div className="flex items-center justify-between px-6 py-4 border-t border-slate-200 bg-slate-50">
+              <span className="text-sm text-slate-500">
+                {meta
+                  ? `Showing ${(meta.page - 1) * meta.limit + 1}–${Math.min(
+                      meta.page * meta.limit,
+                      meta.total,
+                    )} of ${meta.total} logs`
+                  : "Showing 0 of 0 logs"}
+              </span>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setPage((p) => Math.max(1, p - 1))}
+                  disabled={!meta || page === 1}
+                  className="p-1.5 rounded-md border border-slate-200 text-slate-600 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                </button>
+                <span className="text-sm font-medium text-slate-700">
+                  Page {meta?.page ?? page} of {meta?.totalPages ?? 1}
+                </span>
+                <button
+                  onClick={() =>
+                    setPage((p) => Math.min(meta?.totalPages ?? p, p + 1))
+                  }
+                  disabled={!meta || page === meta.totalPages}
+                  className="p-1.5 rounded-md border border-slate-200 text-slate-600 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                >
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          </>
         )}
       </div>
+
+      {/* ── Detail Modal ──────────────────────────────────────────────────── */}
+      <Auditlogdetailmodal
+        log={selectedLog}
+        onClose={() => setSelectedLog(null)}
+      />
     </div>
   );
 }
