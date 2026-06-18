@@ -12,6 +12,15 @@ import type {
   ResetPasswordPayload,
   ResetPasswordResponse,
   VerifyForgotPasswordOtpResponse,
+  GetUserProfileResponse,
+  UpdateUserProfilePayload,
+  UpdateUserProfileResponse,
+  UploadAvatarResponse,
+  ToggleMfaResponse,
+  GetUserPreferencesResponse,
+  UpdateUserPreferencesPayload,
+  UpdateUserPreferencesResponse,
+  GetSessionsResponse,
 } from "@/types/auth.types";
 
 export const requestLogin = async (credentials: LoginCredentials): Promise<LoginResponse> => {
@@ -51,5 +60,46 @@ export const requestForgotPassword = async (payload: ForgotPasswordPayload): Pro
 
 export const requestResetPassword = async (payload: ResetPasswordPayload): Promise<ResetPasswordResponse> => {
   const response = await axiosInstance.post<ResetPasswordResponse>('/auth/reset-password', payload);
+  return response.data;
+};
+
+export const getUserProfile = async (): Promise<GetUserProfileResponse> => {
+  const response = await axiosInstance.get<GetUserProfileResponse>('/auth/me');
+  return response.data;
+};
+
+export const updateUserProfile = async (payload: UpdateUserProfilePayload): Promise<UpdateUserProfileResponse> => {
+  const response = await axiosInstance.patch<UpdateUserProfileResponse>('/auth/me', payload);
+  return response.data;
+};
+
+export const uploadAvatar = async (file: File): Promise<UploadAvatarResponse> => {
+  const formData = new FormData();
+  formData.append('avatar', file);
+  const response = await axiosInstance.post<UploadAvatarResponse>('/auth/me', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+  return response.data;
+};
+
+export const toggleMfa = async (): Promise<ToggleMfaResponse> => {
+  const response = await axiosInstance.post<ToggleMfaResponse>('/auth/me/toggle-mfa');
+  return response.data;
+};
+
+export const getUserPreferences = async (): Promise<GetUserPreferencesResponse> => {
+  const response = await axiosInstance.get<GetUserPreferencesResponse>('/auth/me/preferences');
+  return response.data;
+};
+
+export const updateUserPreferences = async (payload: UpdateUserPreferencesPayload): Promise<UpdateUserPreferencesResponse> => {
+  const response = await axiosInstance.patch<UpdateUserPreferencesResponse>('/auth/me/preferences', payload);
+  return response.data;
+};
+
+export const getSessions = async (): Promise<GetSessionsResponse> => {
+  const response = await axiosInstance.get<GetSessionsResponse>('/auth/sessions');
   return response.data;
 };

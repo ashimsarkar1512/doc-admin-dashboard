@@ -115,3 +115,104 @@ export interface ForgotPasswordResponse {
   message: string;
   data: ForgotPasswordResponseData;
 }
+
+export interface UserProfile {
+  id: string;
+  name?: string;
+  email: string;
+  avatarId?: string;
+  bio?: string;
+  title?: string;
+  specialty?: string;
+  officeLocation?: string;
+  addressLine1?: string;
+  addressLine2?: string;
+  city?: string;
+  state?: string;
+  zipCode?: string;
+  phoneNumber?: string;
+  phone?: string;
+  mfaEnabled?: boolean;
+}
+
+export interface GetUserProfileResponse {
+  success: boolean;
+  message: string;
+  data: UserProfile;
+}
+
+export interface UpdateUserProfilePayload {
+  avatarId?: string;
+  name?: string;
+  bio?: string;
+  title?: string;
+  specialty?: string;
+  officeLocation?: string;
+  addressLine1?: string;
+  addressLine2?: string;
+  city?: string;
+  state?: string;
+  zipCode?: string;
+}
+
+export interface UpdateUserProfileResponse {
+  success: boolean;
+  message: string;
+  data: UserProfile;
+}
+
+export interface UploadAvatarResponse {
+  success: boolean;
+  message: string;
+  data: {
+    avatarId: string;
+  };
+}
+
+export interface ToggleMfaResponse {
+  success: boolean;
+  message: string;
+  data: {
+    mfaEnabled: boolean;
+  };
+}
+
+export interface UserPreferences {
+  emailNotifications: boolean;
+  smsNotifications: boolean;
+  pushNotifications: boolean;
+}
+
+export interface GetUserPreferencesResponse {
+  success: boolean;
+  message: string;
+  data: UserPreferences;
+}
+
+export interface UpdateUserPreferencesPayload {
+  emailNotifications: boolean;
+  smsNotifications: boolean;
+  pushNotifications: boolean;
+}
+
+export interface UpdateUserPreferencesResponse {
+  success: boolean;
+  message: string;
+  data: UserPreferences;
+}
+
+export interface Session {
+  id: string;
+  deviceType: string;
+  deviceName: string;
+  ipAddress: string;
+  lastLoginAt: string;
+  expiresAt: string;
+  isActive: boolean;
+}
+
+export interface GetSessionsResponse {
+  success: boolean;
+  message: string;
+  data: Session[];
+}

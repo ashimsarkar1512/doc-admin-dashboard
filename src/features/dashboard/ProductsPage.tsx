@@ -35,7 +35,9 @@ export default function ProductsPage() {
   const [formImagePreview, setFormImagePreview] = useState<string>("");
   const [formImageId, setFormImageId] = useState<string>("");
   const [formStock, setFormStock] = useState<number | "">("");
-  const [variants, setVariants] = useState<{ size: string; price: string; stockQuantity: number | "" }[]>([]);
+  const [variants, setVariants] = useState<
+    { size: string; price: string; stockQuantity: number | "" }[]
+  >([]);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
 
   // Fetch categories
@@ -97,7 +99,11 @@ export default function ProductsPage() {
     setVariants(variants.filter((_, i) => i !== index));
   };
 
-  const handleVariantChange = (index: number, field: string, value: string | number) => {
+  const handleVariantChange = (
+    index: number,
+    field: string,
+    value: string | number,
+  ) => {
     const newVariants = [...variants];
     newVariants[index] = { ...newVariants[index], [field]: value };
     setVariants(newVariants);
@@ -129,14 +135,14 @@ export default function ProductsPage() {
     setFormImagePreview(product.images?.[0]?.fileUrl || "");
     setFormImageId(product.images?.[0]?.id || "");
     setFormStock(product.stockQuantity);
-    
+
     if (product.variants && product.variants.length > 0) {
       setVariants(
-        product.variants.map(v => ({
+        product.variants.map((v) => ({
           size: v.size,
           price: String(v.price),
-          stockQuantity: v.stockQuantity
-        }))
+          stockQuantity: v.stockQuantity,
+        })),
       );
     } else {
       setVariants([]);
@@ -183,18 +189,22 @@ export default function ProductsPage() {
       setIsUploadingImage(true);
       try {
         const formData = new FormData();
-        formData.append('context', 'PRODUCT_IMAGE');
-        formData.append('files', formImageFile);
+        formData.append("context", "PRODUCT_IMAGE");
+        formData.append("files", formImageFile);
 
-        const response = await axiosInstance.post('/attachments/upload', formData, {
-          headers: { 'Content-Type': 'multipart/form-data' },
-        });
+        const response = await axiosInstance.post(
+          "/attachments/upload",
+          formData,
+          {
+            headers: { "Content-Type": "multipart/form-data" },
+          },
+        );
 
         if (response.data?.success) {
           finalImageId = response.data.data.id;
           setFormImageId(finalImageId);
         } else {
-          throw new Error(response.data?.message || 'Failed to upload image');
+          throw new Error(response.data?.message || "Failed to upload image");
         }
       } catch (error: any) {
         toast.error(error.message || "Image upload failed");
@@ -211,11 +221,14 @@ export default function ProductsPage() {
       description: formDescription,
       categoryId: formCategory,
       images: finalImageId ? [finalImageId] : undefined,
-      variants: variants.length > 0 ? variants.map(v => ({
-        size: v.size,
-        price: Number(v.price),
-        stockQuantity: Number(v.stockQuantity)
-      })) : undefined,
+      variants:
+        variants.length > 0
+          ? variants.map((v) => ({
+              size: v.size,
+              price: Number(v.price),
+              stockQuantity: Number(v.stockQuantity),
+            }))
+          : undefined,
     };
 
     saveMutation.mutate(payload);
@@ -365,7 +378,39 @@ export default function ProductsPage() {
             </div>
 
             {/* Price & Stock side-by-side */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="space-y-1.5">
+                <label className="text-xs text-gray-600 font-medium">
+                  Size Variable:
+                </label>
+                <div className="flex bg-white rounded-[10px] border border-gray-200 overflow-hidden">
+                  <input
+                    type="text"
+                    placeholder="e.g., 10"
+                    value={formPrice?.split(" ")[0] || ""}
+                    onChange={(e) =>
+                      setFormPrice(
+                        `${e.target.value} ${formPrice?.split(" ")[1] || "ml"}`,
+                      )
+                    }
+                    className="w-full px-3 py-2 text-sm focus:outline-none text-black"
+                  />
+                  <select
+                    value={formPrice?.split(" ")[1] || "ml"}
+                    onChange={(e) =>
+                      setFormPrice(
+                        `${formPrice?.split(" ")[0] || ""} ${e.target.value}`,
+                      )
+                    }
+                    className="bg-gray-50 border-l border-gray-200 px-2 py-2 text-sm text-gray-700 outline-none cursor-pointer"
+                  >
+                    <option value="ml">ml</option>
+                    <option value="mg">mg</option>
+                    <option value="g">g</option>
+                    <option value="oz">oz</option>
+                  </select>
+                </div>
+              </div>
               <div className="space-y-1.5">
                 <label className="text-sm font-medium text-gray-800">
                   Price ($): (required)
@@ -404,24 +449,38 @@ export default function ProductsPage() {
 
             {/* Variants Section */}
             <div className="space-y-3 pt-2">
-              <label className="text-sm font-medium text-gray-800">
-                Variables:
-              </label>
               {variants.map((variant, index) => (
-                <div key={index} className="grid grid-cols-12 gap-3 items-end bg-gray-50 p-3 rounded-xl border border-gray-100">
+                <div
+                  key={index}
+                  className="grid grid-cols-12 gap-3 items-end   rounded-xl "
+                >
                   <div className="col-span-4 space-y-1.5">
-                    <label className="text-xs text-gray-600 font-medium">Size Variable:</label>
+                    <label className="text-xs text-gray-600 font-medium">
+                      Size Variable:
+                    </label>
                     <div className="flex bg-white rounded-[10px] border border-gray-200 overflow-hidden">
                       <input
                         type="text"
                         placeholder="e.g., 10"
-                        value={variant.size.split(' ')[0] || ''}
-                        onChange={(e) => handleVariantChange(index, "size", `${e.target.value} ${variant.size.split(' ')[1] || 'ml'}`)}
+                        value={variant.size.split(" ")[0] || ""}
+                        onChange={(e) =>
+                          handleVariantChange(
+                            index,
+                            "size",
+                            `${e.target.value} ${variant.size.split(" ")[1] || "ml"}`,
+                          )
+                        }
                         className="w-full px-3 py-2 text-sm focus:outline-none text-black"
                       />
                       <select
-                        value={variant.size.split(' ')[1] || 'ml'}
-                        onChange={(e) => handleVariantChange(index, "size", `${variant.size.split(' ')[0] || ''} ${e.target.value}`)}
+                        value={variant.size.split(" ")[1] || "ml"}
+                        onChange={(e) =>
+                          handleVariantChange(
+                            index,
+                            "size",
+                            `${variant.size.split(" ")[0] || ""} ${e.target.value}`,
+                          )
+                        }
                         className="bg-gray-50 border-l border-gray-200 px-2 py-2 text-sm text-gray-700 outline-none cursor-pointer"
                       >
                         <option value="ml">ml</option>
@@ -431,29 +490,41 @@ export default function ProductsPage() {
                       </select>
                     </div>
                   </div>
-                  
+
                   <div className="col-span-3 space-y-1.5">
-                    <label className="text-xs text-gray-600 font-medium">Price ($): (required)</label>
+                    <label className="text-xs text-gray-600 font-medium">
+                      Price ($): (required)
+                    </label>
                     <input
                       type="number"
                       required
                       min={0}
                       step={0.01}
                       value={variant.price}
-                      onChange={(e) => handleVariantChange(index, "price", e.target.value)}
+                      onChange={(e) =>
+                        handleVariantChange(index, "price", e.target.value)
+                      }
                       placeholder="0.00"
                       className="w-full px-3 py-2 rounded-[10px] border border-gray-200 bg-white focus:outline-none focus:border-blue-500 text-sm text-black"
                     />
                   </div>
 
                   <div className="col-span-4 space-y-1.5">
-                    <label className="text-xs text-gray-600 font-medium">Stock Quantity: (required)</label>
+                    <label className="text-xs text-gray-600 font-medium">
+                      Stock Quantity: (required)
+                    </label>
                     <input
                       type="number"
                       required
                       min={0}
                       value={variant.stockQuantity}
-                      onChange={(e) => handleVariantChange(index, "stockQuantity", e.target.value === "" ? "" : parseInt(e.target.value))}
+                      onChange={(e) =>
+                        handleVariantChange(
+                          index,
+                          "stockQuantity",
+                          e.target.value === "" ? "" : parseInt(e.target.value),
+                        )
+                      }
                       placeholder="0"
                       className="w-full px-3 py-2 rounded-[10px] border border-gray-200 bg-white focus:outline-none focus:border-blue-500 text-sm text-black"
                     />
@@ -471,7 +542,7 @@ export default function ProductsPage() {
                   </div>
                 </div>
               ))}
-              
+
               <button
                 type="button"
                 onClick={handleAddVariant}

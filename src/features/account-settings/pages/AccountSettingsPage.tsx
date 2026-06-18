@@ -7,7 +7,7 @@ import { CommunicationPreferences } from '../components/CommunicationPreferences
 
 export default function AccountSettingsPage() {
   return (
-    <div className="p-6 max-w-4xl space-y-6 bg-[#FAFAFA] min-h-full font-sans pb-20">
+    <div className="p-6 max-w-7xl space-y-6 bg-[#FAFAFA] min-h-full font-sans pb-20">
       
       {/* Page Header */}
       <div className="mb-8">
