@@ -1,3 +1,4 @@
+
 import { createRouter, createRootRoute, createRoute, Outlet } from '@tanstack/react-router';
 import LoginPage from '@/features/auth/LoginPage';
 import ForgotPasswordPage from '@/features/auth/ForgotPasswordPage';
@@ -5,6 +6,7 @@ import ReceiveOtpPage from '@/features/auth/ReceiveOtpPage';
 import VerifyOtpPage from '@/features/auth/VerifyOtpPage';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import DashboardPage from '@/features/dashboard/DashboardPage';
+import { store } from '@/store';
 
 const rootRoute = createRootRoute({
   component: () => <Outlet />,
@@ -51,6 +53,18 @@ const dashboardLayoutRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/dashboard',
   component: DashboardLayout,
+  beforeLoad: () => {
+    const { isAuthenticated } = store.getState().auth;
+    if (!isAuthenticated) {
+      throw new Error('Not authenticated');
+    }
+  },
+  onError: (error) => {
+    if (error.message === 'Not authenticated') {
+      // Redirect to login
+      window.location.href = '/';
+    }
+  },
 });
 
 // The dashboard overview page (rendered inside DashboardLayout)

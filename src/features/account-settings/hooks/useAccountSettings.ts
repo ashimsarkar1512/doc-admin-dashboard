@@ -1,19 +1,20 @@
-
 import {
+  changePassword,
   getSessions,
   getUserPreferences,
   getUserProfile,
   toggleMfa,
   updateUserPreferences,
   updateUserProfile,
-  uploadAvatar,
+  uploadAvatar
 } from '@/api/endpoints/auth.api';
 import type {
-  Session,
+  ChangePasswordPayload,
+  DeviceSession,
   UpdateUserPreferencesPayload,
   UpdateUserProfilePayload,
   UserPreferences,
-  UserProfile,
+  UserProfile
 } from '@/types/auth.types';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
@@ -40,20 +41,26 @@ export const useUpdateUserProfile = () => {
       const res = await updateUserProfile(payload);
       return res.data;
     },
-    onMutate: async (newProfile) => {
+    onMutate: async (newProfileData) => {
       await queryClient.cancelQueries({ queryKey: ['userProfile'] });
       const previousProfile = queryClient.getQueryData<UserProfile>(['userProfile']);
+
       if (previousProfile) {
-        queryClient.setQueryData<UserProfile>(['userProfile'], {
-          ...previousProfile,
-          ...newProfile,
-        });
+        // Optimistically update
+        queryClient.setQueryData<UserProfile>(['userProfile'], (old) => ({
+          ...old!,
+          profile: {
+            ...old?.profile,
+            ...newProfileData,
+          },
+        }));
       }
+
       return { previousProfile };
     },
-    onError: (_err, _newProfile, context) => {
+    onError: (_error, _variables, context) => {
       if (context?.previousProfile) {
-        queryClient.setQueryData(['userProfile'], context.previousProfile);
+        queryClient.setQueryData<UserProfile>(['userProfile'], context.previousProfile);
       }
       toast.error('Failed to update profile');
     },
@@ -77,10 +84,13 @@ export const useUploadAvatar = () => {
       toast.success('Avatar uploaded successfully');
       const currentProfile = queryClient.getQueryData<UserProfile>(['userProfile']);
       if (currentProfile) {
-        queryClient.setQueryData<UserProfile>(['userProfile'], {
-          ...currentProfile,
-          avatarId: data.avatarId,
-        });
+        queryClient.setQueryData<UserProfile>(['userProfile'], (old) => ({
+          ...old!,
+          profile: {
+            ...old?.profile,
+            avatarId: data.avatarId,
+          },
+        }));
       }
     },
     onError: () => {
@@ -103,15 +113,17 @@ export const useToggleMfa = () => {
     onMutate: async () => {
       await queryClient.cancelQueries({ queryKey: ['userProfile'] });
       const previousProfile = queryClient.getQueryData<UserProfile>(['userProfile']);
+
       if (previousProfile) {
-        queryClient.setQueryData<UserProfile>(['userProfile'], {
-          ...previousProfile,
-          mfaEnabled: !previousProfile.mfaEnabled,
-        });
+        queryClient.setQueryData<UserProfile>(['userProfile'], (old) => ({
+          ...old!,
+          mfaEnabled: !old?.mfaEnabled,
+        }));
       }
+
       return { previousProfile };
     },
-    onError: (_err, _, context) => {
+    onError: (_error, _variables, context) => {
       if (context?.previousProfile) {
         queryClient.setQueryData(['userProfile'], context.previousProfile);
       }
@@ -151,17 +163,19 @@ export const useUpdateUserPreferences = () => {
     onMutate: async (newPrefs) => {
       await queryClient.cancelQueries({ queryKey: ['userPreferences'] });
       const previousPrefs = queryClient.getQueryData<UserPreferences>(['userPreferences']);
+
       if (previousPrefs) {
-        queryClient.setQueryData<UserPreferences>(['userPreferences'], {
-          ...previousPrefs,
+        queryClient.setQueryData<UserPreferences>(['userPreferences'], (old) => ({
+          ...old!,
           ...newPrefs,
-        });
+        }));
       }
+
       return { previousPrefs };
     },
-    onError: (_err, _, context) => {
+    onError: (_error, _variables, context) => {
       if (context?.previousPrefs) {
-        queryClient.setQueryData(['userPreferences'], context.previousPrefs);
+        queryClient.setQueryData<UserPreferences>(['userPreferences'], context.previousPrefs);
       }
       toast.error('Failed to update preferences');
     },
@@ -175,12 +189,27 @@ export const useUpdateUserPreferences = () => {
 };
 
 export const useSessions = () => {
-  return useQuery<Session[]>({
+  return useQuery<DeviceSession[]>({
     queryKey: ['sessions'],
     queryFn: async () => {
       const res = await getSessions();
       return res.data;
     },
     staleTime: 1000 * 60 * 5, // 5 minutes
+  });
+};
+
+export const useChangePassword = () => {
+  return useMutation<{ success: boolean; statusCode: number; message: string }, unknown, ChangePasswordPayload>({
+    mutationFn: async (payload) => {
+      const res = await changePassword(payload);
+      return res;
+    },
+    onError: () => {
+      toast.error('Failed to change password');
+    },
+    onSuccess: () => {
+      toast.success('Password changed successfully');
+    },
   });
 };

@@ -1,4 +1,5 @@
 import { getContactLeads } from "@/api/endpoints/contact-leads.api";
+import { useUserProfile } from "@/features/account-settings/hooks/useAccountSettings";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { setPageHeader, toggleSidebar } from "@/store/uiSlice";
 import { useQuery } from "@tanstack/react-query";
@@ -172,6 +173,7 @@ export default function DashboardLayout() {
   const pageSubtitle = useAppSelector((state) => state.ui.pageSubtitle);
   const user = useAppSelector((state) => state.auth.user);
   const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
+  const { data: profile } = useUserProfile();
 
   // Fetch unread contact leads count for sidebar badge
   const { data: unreadData } = useQuery({
@@ -819,10 +821,10 @@ export default function DashboardLayout() {
             <div className="flex items-center gap-2.5">
               <div className="hidden sm:flex flex-col text-right">
                 <span className="text-[13px] font-semibold text-slate-800 leading-none">
-                  {user?.name || "Dr. Darren"}
+                  {profile?.profile?.name || user?.name || "Dr. Darren"}
                 </span>
                 <span className="text-[11px] text-slate-400 leading-none mt-0.5 font-medium">
-                  Admin
+                  {profile?.role || user?.role || "Admin"}
                 </span>
               </div>
               <ProfileDropdown user={user ?? undefined} />

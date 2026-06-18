@@ -21,6 +21,8 @@ import type {
   UpdateUserPreferencesPayload,
   UpdateUserPreferencesResponse,
   GetSessionsResponse,
+  ChangePasswordPayload,
+  ChangePasswordResponse
 } from "@/types/auth.types";
 
 export const requestLogin = async (credentials: LoginCredentials): Promise<LoginResponse> => {
@@ -63,6 +65,10 @@ export const requestResetPassword = async (payload: ResetPasswordPayload): Promi
   return response.data;
 };
 
+// ===============================
+// ACCOUNT SETTINGS ENDPOINTS
+// ===============================
+
 export const getUserProfile = async (): Promise<GetUserProfileResponse> => {
   const response = await axiosInstance.get<GetUserProfileResponse>('/auth/me');
   return response.data;
@@ -101,5 +107,10 @@ export const updateUserPreferences = async (payload: UpdateUserPreferencesPayloa
 
 export const getSessions = async (): Promise<GetSessionsResponse> => {
   const response = await axiosInstance.get<GetSessionsResponse>('/auth/sessions');
+  return response.data;
+};
+
+export const changePassword = async (payload: ChangePasswordPayload): Promise<ChangePasswordResponse> => {
+  const response = await axiosInstance.post<ChangePasswordResponse>('/auth/change-password', payload);
   return response.data;
 };

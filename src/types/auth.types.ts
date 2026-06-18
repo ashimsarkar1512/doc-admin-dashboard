@@ -50,13 +50,7 @@ export interface User {
   role?: string;
   roles?: string[];
   status: string;
-  phoneNumber?: string | null;
-  phone?: string | null;
-  addressLine1?: string | null;
-  addressLine2?: string | null;
-  city?: string | null;
-  state?: string | null;
-  zip?: string | null;
+  phone?: string;
   emailVerifiedAt?: string | null;
   phoneVerifiedAt?: string | null;
   mfaEnabled?: boolean;
@@ -116,27 +110,41 @@ export interface ForgotPasswordResponse {
   data: ForgotPasswordResponseData;
 }
 
+// ============================================
+// ACCOUNT SETTINGS TYPES
+// ============================================
+
 export interface UserProfile {
   id: string;
-  name?: string;
   email: string;
-  avatarId?: string;
-  bio?: string;
-  title?: string;
-  specialty?: string;
-  officeLocation?: string;
-  addressLine1?: string;
-  addressLine2?: string;
-  city?: string;
-  state?: string;
-  zipCode?: string;
-  phoneNumber?: string;
-  phone?: string;
-  mfaEnabled?: boolean;
+  phone: string;
+  status: string;
+  role?: string;
+  roles?: string[];
+  emailVerifiedAt: string | null;
+  phoneVerifiedAt: string | null;
+  mfaEnabled: boolean;
+  lastLoginAt: string;
+  createdAt: string;
+  updatedAt: string;
+  profile: {
+    id?: string;
+    avatarId?: string;
+    name?: string;
+    bio?: string;
+    title?: string;
+    specialty?: string;
+    officeLocation?: string;
+    address?: string;
+    city?: string;
+    state?: string;
+    zipCode?: string;
+  } | null;
 }
 
 export interface GetUserProfileResponse {
   success: boolean;
+  statusCode: number;
   message: string;
   data: UserProfile;
 }
@@ -148,8 +156,7 @@ export interface UpdateUserProfilePayload {
   title?: string;
   specialty?: string;
   officeLocation?: string;
-  addressLine1?: string;
-  addressLine2?: string;
+  address?: string;
   city?: string;
   state?: string;
   zipCode?: string;
@@ -157,6 +164,7 @@ export interface UpdateUserProfilePayload {
 
 export interface UpdateUserProfileResponse {
   success: boolean;
+  statusCode: number;
   message: string;
   data: UserProfile;
 }
@@ -185,6 +193,7 @@ export interface UserPreferences {
 
 export interface GetUserPreferencesResponse {
   success: boolean;
+  statusCode: number;
   message: string;
   data: UserPreferences;
 }
@@ -197,22 +206,46 @@ export interface UpdateUserPreferencesPayload {
 
 export interface UpdateUserPreferencesResponse {
   success: boolean;
+  statusCode: number;
   message: string;
-  data: UserPreferences;
+  data: UserPreferences & {
+    id: string;
+    userId: string;
+    createdAt: string;
+    updatedAt: string;
+  };
 }
 
-export interface Session {
-  id: string;
-  deviceType: string;
-  deviceName: string;
+export interface SessionDetail {
+  sessionId: string;
+  isCurrentSession: boolean;
+  lastLogin: string;
   ipAddress: string;
-  lastLoginAt: string;
-  expiresAt: string;
-  isActive: boolean;
+  sessionDue: string;
+}
+
+export interface DeviceSession {
+  deviceName: string;
+  isActiveNow: boolean;
+  sessionCount: number;
+  sessions: SessionDetail[];
 }
 
 export interface GetSessionsResponse {
   success: boolean;
+  statusCode: number;
   message: string;
-  data: Session[];
+  data: DeviceSession[];
+}
+
+export interface ChangePasswordPayload {
+  currentPassword: string;
+  newPassword: string;
+  confirmPassword: string;
+}
+
+export interface ChangePasswordResponse {
+  success: boolean;
+  statusCode: number;
+  message: string;
 }

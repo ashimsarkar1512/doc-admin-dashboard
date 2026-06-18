@@ -1,21 +1,20 @@
-
-import { Bell, Loader2, Save } from 'lucide-react';
-import { useState } from 'react';
-import { ToggleSwitch } from '../../website-management/components/shared/ToggleSwitch';
-import { useUserPreferences, useUpdateUserPreferences } from '../hooks/useAccountSettings';
-import type { UpdateUserPreferencesPayload } from '@/types/auth.types';
+import { Bell, Loader2, Mail, MessageSquare, Smartphone } from "lucide-react";
+import { ToggleSwitch } from "../../website-management/components/shared/ToggleSwitch";
+import {
+  useUpdateUserPreferences,
+  useUserPreferences,
+} from "../hooks/useAccountSettings";
 
 export function CommunicationPreferences() {
   const { data: preferences, isLoading } = useUserPreferences();
   const updatePreferences = useUpdateUserPreferences();
-  const [localPrefs, setLocalPrefs] = useState<UpdateUserPreferencesPayload>({
-    emailNotifications: true,
-    smsNotifications: true,
-    pushNotifications: true,
-  });
 
-  const handleSave = () => {
-    updatePreferences.mutate(localPrefs);
+  const handleToggle = (
+    key: "emailNotifications" | "smsNotifications" | "pushNotifications",
+    value: boolean,
+  ) => {
+    if (!preferences) return;
+    updatePreferences.mutate({ ...preferences, [key]: value });
   };
 
   if (isLoading) {
@@ -26,8 +25,12 @@ export function CommunicationPreferences() {
             <Bell size={16} />
           </div>
           <div>
-            <h3 className="text-sm font-bold text-slate-800 leading-tight">Communication Preferences</h3>
-            <p className="text-[12px] text-slate-500 leading-tight mt-0.5">Manage your notification preferences</p>
+            <h3 className="text-sm font-bold text-slate-800 leading-tight">
+              Communication Preferences
+            </h3>
+            <p className="text-[12px] text-slate-500 leading-tight mt-0.5">
+              Manage your notification preferences
+            </p>
           </div>
         </div>
         <div className="p-6 flex items-center justify-center">
@@ -44,57 +47,80 @@ export function CommunicationPreferences() {
           <Bell size={16} />
         </div>
         <div>
-          <h3 className="text-sm font-bold text-slate-800 leading-tight">Communication Preferences</h3>
-          <p className="text-[12px] text-slate-500 leading-tight mt-0.5">Manage your notification preferences</p>
+          <h3 className="text-sm font-bold text-slate-800 leading-tight">
+            Communication Preferences
+          </h3>
+          <p className="text-[12px] text-slate-500 leading-tight mt-0.5">
+            Manage your notification preferences
+          </p>
         </div>
       </div>
-      
+
       <div className="p-6 space-y-4">
         {/* Email */}
-        <div className="flex items-center justify-between border border-slate-100 rounded-xl p-4 bg-slate-50/30">
-          <div>
-            <h4 className="text-[15px] font-bold text-slate-800 leading-tight">Email Notifications</h4>
-            <p className="text-sm text-slate-500 mt-0.5">Receive notifications via email</p>
+        <div className="flex items-center justify-between border border-slate-100 rounded-xl p-5 bg-slate-50/50">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center text-blue-500">
+              <Mail size={20} />
+            </div>
+            <div>
+              <h4 className="text-[15px] font-bold text-slate-800 leading-tight">
+                Email Notifications
+              </h4>
+              <p className="text-sm text-slate-500 mt-1">
+                Receive notifications via email
+              </p>
+            </div>
           </div>
-          <ToggleSwitch 
-            checked={preferences?.emailNotifications ?? localPrefs.emailNotifications} 
-            onChange={(checked) => setLocalPrefs(prev => ({ ...prev, emailNotifications: checked }))}
+          <ToggleSwitch
+            checked={preferences?.emailNotifications ?? true}
+            onChange={(checked) => handleToggle("emailNotifications", checked)}
+            disabled={updatePreferences.isPending}
           />
         </div>
 
         {/* SMS */}
-        <div className="flex items-center justify-between border border-slate-100 rounded-xl p-4 bg-slate-50/30">
-          <div>
-            <h4 className="text-[15px] font-bold text-slate-800 leading-tight">SMS Notifications</h4>
-            <p className="text-sm text-slate-500 mt-0.5">Receive notifications via SMS</p>
+        <div className="flex items-center justify-between border border-slate-100 rounded-xl p-5 bg-slate-50/50">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-lg bg-purple-50 flex items-center justify-center text-purple-500">
+              <Smartphone size={20} />
+            </div>
+            <div>
+              <h4 className="text-[15px] font-bold text-slate-800 leading-tight">
+                SMS Notifications
+              </h4>
+              <p className="text-sm text-slate-500 mt-1">
+                Receive notifications via SMS
+              </p>
+            </div>
           </div>
-          <ToggleSwitch 
-            checked={preferences?.smsNotifications ?? localPrefs.smsNotifications} 
-            onChange={(checked) => setLocalPrefs(prev => ({ ...prev, smsNotifications: checked }))}
+          <ToggleSwitch
+            checked={preferences?.smsNotifications ?? true}
+            onChange={(checked) => handleToggle("smsNotifications", checked)}
+            disabled={updatePreferences.isPending}
           />
         </div>
 
         {/* Push */}
-        <div className="flex items-center justify-between border border-slate-100 rounded-xl p-4 bg-slate-50/30">
-          <div>
-            <h4 className="text-[15px] font-bold text-slate-800 leading-tight">Push Notifications</h4>
-            <p className="text-sm text-slate-500 mt-0.5">Receive via push notification</p>
+        <div className="flex items-center justify-between border border-slate-100 rounded-xl p-5 bg-slate-50/50">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-lg bg-orange-50 flex items-center justify-center text-orange-500">
+              <MessageSquare size={20} />
+            </div>
+            <div>
+              <h4 className="text-[15px] font-bold text-slate-800 leading-tight">
+                Push Notifications
+              </h4>
+              <p className="text-sm text-slate-500 mt-1">
+                Receive via push notification
+              </p>
+            </div>
           </div>
-          <ToggleSwitch 
-            checked={preferences?.pushNotifications ?? localPrefs.pushNotifications} 
-            onChange={(checked) => setLocalPrefs(prev => ({ ...prev, pushNotifications: checked }))}
-          />
-        </div>
-
-        <div className="pt-2">
-          <button 
-            onClick={handleSave}
+          <ToggleSwitch
+            checked={preferences?.pushNotifications ?? true}
+            onChange={(checked) => handleToggle("pushNotifications", checked)}
             disabled={updatePreferences.isPending}
-            className="flex items-center gap-2 px-6 py-2 bg-[#1447E6] text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors shadow-sm disabled:opacity-50"
-          >
-            {updatePreferences.isPending ? <Loader2 className="animate-spin" size={16} /> : <Save size={16} />}
-            Save Settings
-          </button>
+          />
         </div>
       </div>
     </div>
