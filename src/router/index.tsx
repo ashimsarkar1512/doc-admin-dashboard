@@ -5,7 +5,6 @@ import ReceiveOtpPage from '@/features/auth/ReceiveOtpPage';
 import VerifyOtpPage from '@/features/auth/VerifyOtpPage';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import DashboardPage from '@/features/dashboard/DashboardPage';
-import DummyPage from '@/components/DummyPage';
 
 const rootRoute = createRootRoute({
   component: () => <Outlet />,
@@ -110,10 +109,11 @@ const providersRoute = createRoute({
   component: ProvidersPage,
 });
 
+import AllPatientsPage from '@/features/patient-management/pages/AllPatientsPage';
 const patientsRoute = createRoute({
   getParentRoute: () => dashboardLayoutRoute,
   path: '/patients',
-  component: () => <DummyPage title="Patients" />,
+  component: AllPatientsPage,
 });
 
 import OrdersPage from '@/features/dashboard/OrdersPage';
