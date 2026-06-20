@@ -86,6 +86,16 @@ export interface GetQuestionOptionsParams {
 
 // ─── Helpers ───────────────────────────────────────────────────────────────
 
+const customFetch = async (input: RequestInfo | URL, init?: RequestInit) => {
+  const token = localStorage.getItem('token');
+  const headers = new Headers(init?.headers);
+  headers.set('ngrok-skip-browser-warning', 'true');
+  if (token) {
+    headers.set('Authorization', `Bearer ${token}`);
+  }
+  return fetch(input, { ...init, headers });
+};
+
 async function handleResponse<T>(response: Response): Promise<T> {
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
@@ -109,7 +119,7 @@ export const getAssessments = async (
       }
     });
   }
-  const response = await fetch(url.toString());
+  const response = await customFetch(url.toString());
   return handleResponse<PaginatedResponse<Assessment>>(response);
 };
 
@@ -125,7 +135,7 @@ export const createAssessment = async (
     formData.append('thumbnail', payload.thumbnail);
   }
 
-  const response = await fetch(`${API_BASE_URL}/admin/assessments`, {
+  const response = await customFetch(`${API_BASE_URL}/admin/assessments`, {
     method: 'POST',
     body: formData,
   });
@@ -133,12 +143,12 @@ export const createAssessment = async (
 };
 
 export const getAssessmentStats = async (): Promise<AssessmentStats> => {
-  const response = await fetch(`${API_BASE_URL}/admin/assessments/stats`);
+  const response = await customFetch(`${API_BASE_URL}/admin/assessments/stats`);
   return handleResponse<AssessmentStats>(response);
 };
 
 export const getAssessmentById = async (id: string): Promise<Assessment> => {
-  const response = await fetch(`${API_BASE_URL}/admin/assessments/${id}`);
+  const response = await customFetch(`${API_BASE_URL}/admin/assessments/${id}`);
   return handleResponse<Assessment>(response);
 };
 
@@ -154,7 +164,7 @@ export const updateAssessment = async (
     formData.append('thumbnail', payload.thumbnail);
   }
 
-  const response = await fetch(`${API_BASE_URL}/admin/assessments/${id}`, {
+  const response = await customFetch(`${API_BASE_URL}/admin/assessments/${id}`, {
     method: 'PATCH',
     body: formData,
   });
@@ -162,7 +172,7 @@ export const updateAssessment = async (
 };
 
 export const deleteAssessment = async (id: string): Promise<void> => {
-  const response = await fetch(`${API_BASE_URL}/admin/assessments/${id}`, {
+  const response = await customFetch(`${API_BASE_URL}/admin/assessments/${id}`, {
     method: 'DELETE',
   });
   if (!response.ok) {
@@ -193,7 +203,7 @@ export const createQuestion = async (
     formData.append('parentOptionId', payload.parentOptionId);
   if (payload.media) formData.append('media', payload.media);
 
-  const response = await fetch(`${API_BASE_URL}/admin/questions`, {
+  const response = await customFetch(`${API_BASE_URL}/admin/questions`, {
     method: 'POST',
     body: formData,
   });
@@ -214,12 +224,12 @@ export const getQuestions = async (
   if (params.page) url.searchParams.append('page', String(params.page));
   if (params.limit) url.searchParams.append('limit', String(params.limit));
 
-  const response = await fetch(url.toString());
+  const response = await customFetch(url.toString());
   return handleResponse<PaginatedResponse<AssessmentQuestion>>(response);
 };
 
 export const getQuestionById = async (id: string): Promise<AssessmentQuestion> => {
-  const response = await fetch(`${API_BASE_URL}/admin/questions/${id}`);
+  const response = await customFetch(`${API_BASE_URL}/admin/questions/${id}`);
   return handleResponse<AssessmentQuestion>(response);
 };
 
@@ -241,7 +251,7 @@ export const updateQuestion = async (
     formData.append('parentOptionId', payload.parentOptionId);
   if (payload.media !== undefined && payload.media !== null) formData.append('media', payload.media);
 
-  const response = await fetch(`${API_BASE_URL}/admin/questions/${id}`, {
+  const response = await customFetch(`${API_BASE_URL}/admin/questions/${id}`, {
     method: 'PATCH',
     body: formData,
   });
@@ -249,7 +259,7 @@ export const updateQuestion = async (
 };
 
 export const deleteQuestion = async (id: string): Promise<void> => {
-  const response = await fetch(`${API_BASE_URL}/admin/questions/${id}`, {
+  const response = await customFetch(`${API_BASE_URL}/admin/questions/${id}`, {
     method: 'DELETE',
   });
   if (!response.ok) {
@@ -265,7 +275,7 @@ export const deleteQuestion = async (id: string): Promise<void> => {
 export const createQuestionOption = async (
   payload: CreateQuestionOptionPayload
 ): Promise<QuestionOption> => {
-  const response = await fetch(`${API_BASE_URL}/admin/question-options`, {
+  const response = await customFetch(`${API_BASE_URL}/admin/question-options`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -285,12 +295,12 @@ export const getQuestionOptions = async (
     if (params.limit) url.searchParams.append('limit', String(params.limit));
   }
 
-  const response = await fetch(url.toString());
+  const response = await customFetch(url.toString());
   return handleResponse<PaginatedResponse<QuestionOption>>(response);
 };
 
 export const getQuestionOptionById = async (id: string): Promise<QuestionOption> => {
-  const response = await fetch(`${API_BASE_URL}/admin/question-options/${id}`);
+  const response = await customFetch(`${API_BASE_URL}/admin/question-options/${id}`);
   return handleResponse<QuestionOption>(response);
 };
 
@@ -298,7 +308,7 @@ export const updateQuestionOption = async (
   id: string,
   payload: UpdateQuestionOptionPayload
 ): Promise<QuestionOption> => {
-  const response = await fetch(`${API_BASE_URL}/admin/question-options/${id}`, {
+  const response = await customFetch(`${API_BASE_URL}/admin/question-options/${id}`, {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',
@@ -309,7 +319,7 @@ export const updateQuestionOption = async (
 };
 
 export const deleteQuestionOption = async (id: string): Promise<void> => {
-  const response = await fetch(`${API_BASE_URL}/admin/question-options/${id}`, {
+  const response = await customFetch(`${API_BASE_URL}/admin/question-options/${id}`, {
     method: 'DELETE',
   });
   if (!response.ok) {
