@@ -1,8 +1,11 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { Search, Plus, Eye, Ban, Trash2, ChevronDown, UserCircle2, X } from 'lucide-react';
-import { getDoctors, getDoctorTitles } from '@/api/endpoints/dashboard/doctorManagement';
+import { Search, Plus, Eye, Ban, Trash2, ChevronDown, UserCircle2, X, SquarePen, CheckCircle2 } from 'lucide-react';
+import Swal from 'sweetalert2';
+import { getDoctors, getDoctorTitles, deleteDoctor, updateDoctorStatus } from '@/api/endpoints/dashboard/doctorManagement';
 import AddDoctorModal from './components/AddDoctorModal';
+import ViewDoctorModal from './components/ViewDoctorModal';
+import EditDoctorModal from './components/EditDoctorModal';
 
 const STATUS_OPTIONS = [
   { label: 'All Status', value: '' },
@@ -12,11 +15,18 @@ const STATUS_OPTIONS = [
 
 const PAGE_SIZE = 10;
 
-function StatusBadge({ status }: { status: 'ACTIVE' | 'INACTIVE' }) {
+function StatusBadge({ status }: { status: 'ACTIVE' | 'INACTIVE' | 'BLOCKED' | string }) {
   if (status === 'ACTIVE') {
     return (
       <span className="inline-flex items-center rounded-full bg-[#EEF2FF] px-3 py-1 text-[11px] font-medium text-[#1447E6]">
         Active
+      </span>
+    );
+  }
+  if (status === 'BLOCKED') {
+    return (
+      <span className="inline-flex items-center rounded-full bg-red-100 px-3 py-1 text-[11px] font-medium text-red-600">
+        Blocked
       </span>
     );
   }
@@ -35,7 +45,8 @@ export default function ProvidersPage() {
   const [statusOpen, setStatusOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-
+  const [viewDoctorId, setViewDoctorId] = useState<string | null>(null);
+  const [editDoctorId, setEditDoctorId] = useState<string | null>(null);
   // Title filter
   const [titleFilter, setTitleFilter] = useState('');
   const [titleSearchTerm, setTitleSearchTerm] = useState('');
@@ -79,8 +90,8 @@ export default function ProvidersPage() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // When there's no explicit title filter from dropdown, also send the general search term as title parameter
-  const effectiveTitle = titleFilter || (debouncedSearch || undefined);
+  // When there's no explicit title filter from dropdown, pass undefined so main search handles everything
+  const effectiveTitle = titleFilter || undefined;
 
   const { data, isLoading, isFetching } = useQuery({
     queryKey: ['doctors', currentPage, debouncedSearch, statusFilter, titleFilter],
@@ -99,39 +110,74 @@ export default function ProvidersPage() {
   const meta = data?.meta;
   const totalPages = meta?.totalPages ?? 1;
 
-  const getInitials = (name: string) =>
-    name
+  const getInitials = (name: string | null) =>
+    (name || '')
       .split(' ')
+      .filter(Boolean)
       .map((n) => n[0])
       .slice(0, 2)
       .join('')
-      .toUpperCase();
+      .toUpperCase() || '??';
 
   const handlePageChange = (page: number) => {
     if (page < 1 || page > totalPages) return;
     setCurrentPage(page);
   };
 
-  const renderPageNumbers = () => {
-    const pages: (number | '...')[] = [];
-    if (totalPages <= 7) {
-      for (let i = 1; i <= totalPages; i++) pages.push(i);
-    } else {
-      pages.push(1);
-      if (currentPage > 3) pages.push('...');
-      for (let i = Math.max(2, currentPage - 1); i <= Math.min(totalPages - 1, currentPage + 1); i++) {
-        pages.push(i);
-      }
-      if (currentPage < totalPages - 2) pages.push('...');
-      pages.push(totalPages);
-    }
-    return pages;
-  };
-
   const handleDoctorCreated = () => {
     queryClient.invalidateQueries({ queryKey: ['doctors'] });
     queryClient.invalidateQueries({ queryKey: ['doctorTitles'] });
     setIsAddModalOpen(false);
+  };
+
+  const handleDelete = (id: string, name: string) => {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: `Do you really want to delete ${name}? This action cannot be undone.`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#ef4444',
+      cancelButtonColor: '#64748b',
+      confirmButtonText: 'Yes, delete it!',
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          await deleteDoctor(id);
+          Swal.fire('Deleted!', `${name} has been deleted.`, 'success');
+          queryClient.invalidateQueries({ queryKey: ['doctors'] });
+          queryClient.invalidateQueries({ queryKey: ['doctorTitles'] });
+        } catch (error) {
+          const message = error instanceof Error ? error.message : 'Failed to delete doctor';
+          Swal.fire('Error!', message, 'error');
+        }
+      }
+    });
+  };
+
+  const handleToggleStatus = (id: string, currentStatus: string, name: string) => {
+    const newStatus = currentStatus === 'BLOCKED' ? 'ACTIVE' : 'BLOCKED';
+    const actionText = newStatus === 'BLOCKED' ? 'ban' : 'unban';
+    
+    Swal.fire({
+      title: 'Are you sure?',
+      text: `Do you want to ${actionText} ${name}?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: newStatus === 'BLOCKED' ? '#ef4444' : '#10b981',
+      cancelButtonColor: '#64748b',
+      confirmButtonText: `Yes, ${actionText}!`,
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          await updateDoctorStatus(id, newStatus);
+          Swal.fire('Success!', `${name} has been ${actionText}ned.`, 'success');
+          queryClient.invalidateQueries({ queryKey: ['doctors'] });
+        } catch (error) {
+          const message = error instanceof Error ? error.message : `Failed to ${actionText} doctor`;
+          Swal.fire('Error!', message, 'error');
+        }
+      }
+    });
   };
 
   return (
@@ -157,7 +203,7 @@ export default function ProvidersPage() {
               <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
               <input
                 type="text"
-                placeholder="Search by name, email, title, location..."
+                placeholder="Search by name, email,location..."
                 value={searchTerm}
                 onChange={(e) => handleSearchChange(e.target.value)}
                 className="pl-9 pr-4 py-2 text-sm border border-slate-200 rounded-lg bg-white text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-300 w-80"
@@ -332,7 +378,6 @@ export default function ProvidersPage() {
                               src={doctor.thumbnail}
                               alt={doctor.fullName}
                               className="w-9 h-9 rounded-full object-cover border border-slate-200 shadow-sm shrink-0"
-                              onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; (e.currentTarget.nextSibling as HTMLElement).style.display = 'flex'; }}
                             />
                           ) : null}
                           <div
@@ -378,22 +423,34 @@ export default function ProvidersPage() {
                             className="text-slate-500 hover:text-slate-800 transition-colors"
                             aria-label={`View ${doctor.fullName}`}
                             title="View"
+                            onClick={() => setViewDoctorId(doctor.id)}
                           >
                             <Eye size={16} />
                           </button>
                           <button
                             type="button"
-                            className="text-slate-500 hover:text-slate-800 transition-colors"
-                            aria-label={`Ban ${doctor.fullName}`}
-                            title="Ban"
+                            className="text-slate-500 hover:text-[#1447E6] transition-colors"
+                            aria-label={`Edit ${doctor.fullName}`}
+                            title="Edit"
+                            onClick={() => setEditDoctorId(doctor.id)}
                           >
-                            <Ban size={16} />
+                            <SquarePen size={15} />
+                          </button>
+                          <button
+                            type="button"
+                            className={`transition-colors ${doctor.status === 'BLOCKED' ? 'text-emerald-500 hover:text-emerald-700' : 'text-slate-500 hover:text-amber-600'}`}
+                            aria-label={`${doctor.status === 'BLOCKED' ? 'Unban' : 'Ban'} ${doctor.fullName}`}
+                            title={doctor.status === 'BLOCKED' ? 'Unban' : 'Ban'}
+                            onClick={() => handleToggleStatus(doctor.id, doctor.status, doctor.fullName)}
+                          >
+                            {doctor.status === 'BLOCKED' ? <CheckCircle2 size={16} /> : <Ban size={16} />}
                           </button>
                           <button
                             type="button"
                             className="text-red-500 hover:text-red-700 transition-colors"
                             aria-label={`Delete ${doctor.fullName}`}
                             title="Delete"
+                            onClick={() => handleDelete(doctor.id, doctor.fullName)}
                           >
                             <Trash2 size={16} />
                           </button>
@@ -407,24 +464,20 @@ export default function ProvidersPage() {
           </div>
 
           {/* Pagination */}
-          {meta && meta.totalPages > 1 && (
+          {totalPages > 1 && (
             <div className="flex items-center justify-between px-6 py-4 border-t border-slate-100 bg-white">
-              {/* Left: info */}
-              <p className="text-sm text-slate-500">
-                Showing{' '}
-                <span className="font-medium text-slate-700">
-                  {(meta.page - 1) * meta.limit + 1}–{Math.min(meta.page * meta.limit, meta.total)}
-                </span>{' '}
-                of <span className="font-medium text-slate-700">{meta.total}</span> doctors
+              <p className="text-sm text-gray-500">
+                Page <span className="font-medium text-gray-700">{currentPage}</span> of{' '}
+                <span className="font-medium text-gray-700">{totalPages}</span>
+                {meta?.total && (
+                  <> &mdash; <span className="font-medium text-gray-700">{meta.total}</span> total</>
+                )}
               </p>
-
-              {/* Right: page buttons */}
               <div className="flex items-center gap-1">
                 <button
                   onClick={() => handlePageChange(1)}
                   disabled={currentPage === 1}
                   className="px-2.5 py-1.5 rounded-lg border border-gray-200 text-xs font-medium text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-                  aria-label="First page"
                 >
                   «
                 </button>
@@ -432,36 +485,43 @@ export default function ProvidersPage() {
                   onClick={() => handlePageChange(currentPage - 1)}
                   disabled={currentPage === 1}
                   className="px-3 py-1.5 rounded-lg border border-gray-200 text-xs font-medium text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-                  aria-label="Previous page"
                 >
                   ‹ Prev
                 </button>
 
-                {renderPageNumbers().map((page, idx) =>
-                  page === '...' ? (
-                    <span key={`ellipsis-${idx}`} className="px-2 py-1.5 text-xs text-gray-400 select-none">
-                      …
-                    </span>
-                  ) : (
-                    <button
-                      key={page}
-                      onClick={() => handlePageChange(page as number)}
-                      className={`w-8 h-8 rounded-lg border text-xs font-semibold transition-colors ${
-                        currentPage === page
-                          ? 'bg-[#1447E6] border-[#1447E6] text-white shadow-sm'
-                          : 'border-gray-200 text-gray-600 hover:bg-gray-50'
-                      }`}
-                    >
-                      {page}
-                    </button>
-                  )
-                )}
+                {Array.from({ length: totalPages }, (_, i) => i + 1)
+                  .filter((p) => p === 1 || p === totalPages || Math.abs(p - currentPage) <= 1)
+                  .reduce<(number | '...')[]>((acc, p, idx, arr) => {
+                    if (idx > 0 && typeof arr[idx - 1] === 'number' && (p as number) - (arr[idx - 1] as number) > 1) {
+                      acc.push('...');
+                    }
+                    acc.push(p);
+                    return acc;
+                  }, [])
+                  .map((item, idx) =>
+                    item === '...' ? (
+                      <span key={`ellipsis-${idx}`} className="px-2 py-1.5 text-xs text-gray-400">
+                        …
+                      </span>
+                    ) : (
+                      <button
+                        key={item}
+                        onClick={() => handlePageChange(item as number)}
+                        className={`w-8 h-8 rounded-lg border text-xs font-semibold transition-colors ${
+                          currentPage === item
+                            ? 'bg-[#2563EB] border-[#2563EB] text-white shadow-sm shadow-blue-600/20'
+                            : 'border-gray-200 text-gray-600 hover:bg-gray-50'
+                        }`}
+                      >
+                        {item}
+                      </button>
+                    )
+                  )}
 
                 <button
                   onClick={() => handlePageChange(currentPage + 1)}
                   disabled={currentPage === totalPages}
                   className="px-3 py-1.5 rounded-lg border border-gray-200 text-xs font-medium text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-                  aria-label="Next page"
                 >
                   Next ›
                 </button>
@@ -469,7 +529,6 @@ export default function ProvidersPage() {
                   onClick={() => handlePageChange(totalPages)}
                   disabled={currentPage === totalPages}
                   className="px-2.5 py-1.5 rounded-lg border border-gray-200 text-xs font-medium text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-                  aria-label="Last page"
                 >
                   »
                 </button>
@@ -483,6 +542,18 @@ export default function ProvidersPage() {
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
         onSuccess={handleDoctorCreated}
+      />
+
+      <ViewDoctorModal
+        isOpen={!!viewDoctorId}
+        onClose={() => setViewDoctorId(null)}
+        doctorId={viewDoctorId}
+      />
+
+      <EditDoctorModal
+        isOpen={!!editDoctorId}
+        onClose={() => setEditDoctorId(null)}
+        doctorId={editDoctorId}
       />
     </>
   );
