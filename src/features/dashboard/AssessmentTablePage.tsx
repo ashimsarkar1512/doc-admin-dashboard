@@ -8,7 +8,6 @@ import {
   type Assessment,
   type Category,
 } from '@/api/endpoints/dashboard/assessments';
-import { useUserProfile } from '@/features/account-settings/hooks/useAccountSettings';
 
 /** Coloured avatar circle with patient initials */
 function PatientAvatar({ name, image }: { name: string | null; image: string | null }) {
