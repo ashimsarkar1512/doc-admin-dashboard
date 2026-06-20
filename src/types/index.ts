@@ -109,3 +109,32 @@ export interface Product {
   updatedAt?: string;
   status?: 'Active' | 'Inactive';
 }
+
+export interface TestimonialAvatar {
+  id: string;
+  fileUrl: string;
+  fileName?: string;
+}
+
+export interface Testimonial {
+  id: string;
+  clientName: string;
+  feedback: string;
+  rating: number;
+  date: string;
+  isPublished: boolean;
+  avatar?: TestimonialAvatar | null;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface CreateTestimonialPayload {
+  clientName: string;
+  feedback: string;
+  rating: number;
+  date: string;
+  avatarId?: string | null;
+  isPublished?: boolean;
+}
+
+export type UpdateTestimonialPayload = Partial<CreateTestimonialPayload>;

@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { Plus, X, GripVertical } from 'lucide-react';
 import { SectionCard } from '../shared/SectionCard';
 import { FormInput } from '../shared/FormInput';
