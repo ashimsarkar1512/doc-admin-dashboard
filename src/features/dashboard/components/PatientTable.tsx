@@ -6,7 +6,7 @@ import RecentActivityDetailModal from './RecentActivityDetailModal';
 
 function Avatar({ image, name, size = 'sm' }: { image: string | null; name: string | null; size?: 'sm' | 'lg' }) {
   const dim = size === 'lg' ? 'h-14 w-14' : 'h-8 w-8';
-  const textSize = size === 'lg' ? 'text-lg font-bold' : 'text-[11px] font-semibold';
+  // const textSize = size === 'lg' ? 'text-lg font-bold' : 'text-[11px] font-semibold';
   if (image)
     return <img src={image} alt={name ?? ''} className={`${dim} rounded-full object-cover shrink-0`} />;
   return (
