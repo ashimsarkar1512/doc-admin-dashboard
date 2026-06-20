@@ -1,35 +1,45 @@
-import { useState, useMemo } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
-import { Search, ChevronDown, Eye, Trash2, RefreshCw } from 'lucide-react';
+import { Search, ChevronDown, RefreshCw,} from 'lucide-react';
 import {
-  dummyAssessments,
-  type AssessmentRow,
-  type PatientType,
-  type AssessmentStatus,
-} from './data/assessmentTable';
-
-
+  getAssessments,
+  getCategories,
+  type Assessment,
+  type Category,
+} from '@/api/endpoints/dashboard/assessments';
 
 /** Coloured avatar circle with patient initials */
-function PatientAvatar({ initials }: { initials: string }) {
+function PatientAvatar({ name, image }: { name: string | null; image: string | null }) {
+  const initials = (name || '')
+    .split(' ')
+    .filter(Boolean)
+    .map((n) => n[0])
+    .slice(0, 2)
+    .join('')
+    .toUpperCase() || '??';
+
   return (
-    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-400 to-blue-500 flex items-center justify-center shrink-0">
-      <span className="text-[11px] font-bold text-white tracking-wide">{initials}</span>
+    <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center shrink-0 overflow-hidden">
+      {image ? (
+        <img src={image} alt={name || 'Patient'} className="w-full h-full object-cover" />
+      ) : (
+        <span className="text-sm font-medium text-blue-700">{initials}</span>
+      )}
     </div>
   );
 }
 
-const PATIENT_TYPE_STYLES: Record<PatientType, string> = {
-  'New Patient': 'bg-purple-50 text-purple-500 border border-purple-200',
-  'Repeat Patient': 'bg-indigo-50 text-indigo-600 border border-indigo-200',
+const PATIENT_TYPE_STYLES: Record<string, string> = {
+  'New Patient': 'bg-blue-100 text-blue-600',
+  'Repeat Patient': 'bg-purple-100 text-purple-600',
 };
 
 /** Badge for Patient Type column */
-function PatientTypeBadge({ type }: { type: PatientType }) {
+function PatientTypeBadge({ type }: { type: string }) {
   return (
     <span
-      className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-medium ${PATIENT_TYPE_STYLES[type]}`}
+      className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium ${PATIENT_TYPE_STYLES[type] || 'bg-gray-100 text-gray-600'}`}
     >
       {type === 'Repeat Patient' && <RefreshCw size={10} />}
       {type}
@@ -37,177 +47,405 @@ function PatientTypeBadge({ type }: { type: PatientType }) {
   );
 }
 
-const STATUS_STYLES: Record<AssessmentStatus, string> = {
-  Pending: 'bg-amber-50 text-amber-500 border border-amber-200',
-  Approved: 'bg-green-50 text-green-600 border border-green-200',
-  Declined: 'bg-red-50 text-red-500 border border-red-200',
+const STATUS_STYLES: Record<string, string> = {
+  PENDING: 'bg-[#FFF7ED] text-[#F97316] border border-[#FFEDD5]',
+  APPROVED: 'bg-[#F0FDF4] text-[#22C55E] border border-[#DCFCE7]',
+  REJECTED: 'bg-[#FEF2F2] text-[#EF4444] border border-[#FEE2E2]',
+  'REQUESTED REFILL': 'bg-[#EFF6FF] text-[#3B82F6] border border-[#DBEAFE]',
 };
 
 /** Badge for Status column */
-function StatusBadge({ status }: { status: AssessmentStatus }) {
+function StatusBadge({ status }: { status: string | null }) {
+  // Map internal status to display text
+  const displayStatus = (status || '')
+    .split(' ')
+    .filter(Boolean)
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(' ');
+  
   return (
     <span
-      className={`inline-flex items-center px-3 py-1 rounded-full text-[11px] font-medium ${STATUS_STYLES[status]}`}
+      className={`inline-flex items-center px-3.5 py-1 rounded-full text-[11px] font-semibold tracking-wide ${status ? (STATUS_STYLES[status] || 'bg-slate-50 text-slate-500 border border-slate-100') : 'bg-slate-50 text-slate-500 border border-slate-100'}`}
     >
-      {status}
+      {displayStatus || 'Unknown'}
     </span>
   );
 }
 
-/** Assign / Assigned action button */
-function AssignButton({ assigned }: { assigned: boolean }) {
-  return assigned ? (
-    <button className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-indigo-50 text-indigo-400 border border-indigo-100 cursor-default">
-      Assigned
-    </button>
-  ) : (
-    <button className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-[#1447E6] hover:bg-blue-700 text-white transition-colors">
-      Assign
-    </button>
-  );
-}
-
 /** Generic filter pill dropdown */
-function FilterDropdown({ label }: { label: string }) {
+function FilterDropdown({
+  label,
+  options,
+  value,
+  onChange,
+  
+}: {
+  label: string;
+  options: { value: string; label: string }[];
+  value: string;
+  onChange: (val: string) => void;
+  icon?: React.ElementType;
+}) {
+  const [open, setOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const handleClick = (val: string) => {
+    onChange(val);
+    setOpen(false);
+  };
+
+  const selectedOption = options.find((o) => o.value === value);
+
   return (
-    <button className="flex items-center gap-2 px-4 py-2 border border-slate-200 rounded-lg text-sm text-slate-600 bg-white hover:bg-slate-50 shadow-sm whitespace-nowrap transition-colors">
-      {label}
-      <ChevronDown size={14} className="text-slate-400" />
-    </button>
+    <div className="relative" ref={dropdownRef}>
+      <button
+        onClick={() => setOpen(!open)}
+        className={`flex items-center gap-2 px-4 py-2 border rounded-xl text-[13px] font-medium transition-all duration-200 whitespace-nowrap shadow-sm
+          ${value 
+            ? 'bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100' 
+            : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-50 hover:border-slate-300'}`}
+      >
+        <span>{value ? selectedOption?.label : label}</span>
+        <ChevronDown size={14} className={`transition-transform duration-200 ${open ? 'rotate-180' : ''} ${value ? 'text-blue-600' : 'text-slate-400'}`} />
+      </button>
+      {open && (
+        <div className="absolute z-30 top-full left-0 mt-2 bg-white border border-slate-200 rounded-xl shadow-xl py-1.5 min-w-[200px] animate-in fade-in zoom-in duration-150 origin-top-left">
+          <div className="px-3 py-1.5 text-[11px] font-bold text-slate-400 uppercase tracking-wider border-b border-slate-50 mb-1">
+            Filter by {label}
+          </div>
+          <button
+            onClick={() => handleClick('')}
+            className={`w-full text-left px-4 py-2 text-sm hover:bg-slate-50 transition-colors flex items-center justify-between ${value === '' ? 'text-blue-700 font-semibold bg-blue-50/50' : 'text-slate-600'}`}
+          >
+            All {label}s
+            {value === '' && <div className="w-1.5 h-1.5 rounded-full bg-blue-600" />}
+          </button>
+          <div className="h-px bg-slate-100 my-1" />
+          {options.map((opt) => (
+            <button
+              key={opt.value}
+              onClick={() => handleClick(opt.value)}
+              className={`w-full text-left px-4 py-2 text-sm hover:bg-slate-50 transition-colors flex items-center justify-between ${value === opt.value ? 'text-blue-700 font-semibold bg-blue-50/50' : 'text-slate-600'}`}
+            >
+              {opt.label}
+              {value === opt.value && <div className="w-1.5 h-1.5 rounded-full bg-blue-600" />}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
   );
 }
 
-const FILTER_OPTIONS = ['Category', 'Patient Type', 'Assessment Status', "Today's"] as const;
+const PAGE_SIZE = 10;
 
 // ─── Main Page ────────────────────────────────────────────────────
 
 export default function AssessmentTablePage() {
-  const [searchTerm, setSearchTerm] = useState('');
   const navigate = useNavigate();
 
-  const { data: rows = [] } = useQuery<AssessmentRow[]>({
-    queryKey: ['assessment-table'],
-    queryFn: async () => {
-      await new Promise((r) => setTimeout(r, 600));
-      return dummyAssessments;
-    },
-    staleTime: Infinity, // dummy data never goes stale
+
+  const [searchTerm, setSearchTerm] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState('');
+  const [patientTypeFilter, setPatientTypeFilter] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+
+  // Debounce helper
+  const debounceTimers = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
+  const debounce = useCallback((setter: (v: string) => void, value: string, key: string) => {
+    if (debounceTimers.current[key]) {
+      clearTimeout(debounceTimers.current[key]);
+    }
+    debounceTimers.current[key] = setTimeout(() => {
+      setter(value);
+      setCurrentPage(1);
+    }, 400);
+  }, []);
+
+  const handleSearchChange = (value: string) => {
+    setSearchTerm(value);
+    debounce(setDebouncedSearch, value, 'search');
+  };
+
+  // Fetch categories for dropdown
+  const { data: categoriesData } = useQuery({
+    queryKey: ['assessment-categories'],
+    queryFn: getCategories,
+    staleTime: 60000,
   });
 
-  const filtered = useMemo(
-    () =>
-      rows.filter(
-        (r) =>
-          r.patientName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          r.assessment.toLowerCase().includes(searchTerm.toLowerCase()),
-      ),
-    [rows, searchTerm],
-  );
+  const categories = categoriesData?.data ?? [];
+
+  const { data, isLoading, isFetching } = useQuery({
+    queryKey: ['assessments', currentPage, debouncedSearch, statusFilter, categoryFilter, patientTypeFilter],
+    queryFn: () =>
+      getAssessments({
+        page: currentPage,
+        limit: PAGE_SIZE,
+        search: debouncedSearch || undefined,
+        status: statusFilter || undefined,
+        categoryId: categoryFilter || undefined,
+        patientType: patientTypeFilter || undefined,
+      }),
+    placeholderData: (prev) => prev,
+  });
+
+  const assessments = data?.data ?? [];
+  const meta = data?.meta;
+  const totalPages = meta?.totalPages ?? 1;
+
+  const handlePageChange = (page: number) => {
+    if (page < 1 || page > totalPages) return;
+    setCurrentPage(page);
+  };
+
+  // Status options
+  const statusOptions = [
+    { value: 'PENDING', label: 'Pending' },
+    { value: 'APPROVED', label: 'Approved' },
+    { value: 'REJECTED', label: 'Rejected' },
+    { value: 'REQUESTED REFILL', label: 'Requested Refill' },
+  ];
+
+  // Patient type options
+  const patientTypeOptions = [
+    { value: 'New Patient', label: 'New Patient' },
+    { value: 'Repeat Patient', label: 'Repeat Patient' },
+  ];
+
+  // Category options
+  const categoryOptions = categories.map((c: Category) => ({
+    value: c.id,
+    label: c.name,
+  }));
 
   return (
-    <div className="w-full p-6 md:p-8">
+    <div className="w-full min-h-screen bg-slate-50 p-6 md:p-8">
       {/* Page title */}
-      <h1 className="text-2xl font-semibold text-slate-800 tracking-tight mb-6">
+      <h1 className="text-xl font-semibold text-slate-800 tracking-tight mb-6">
         All Assessments
       </h1>
 
       {/* Toolbar */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
         {/* Search */}
-        <div className="relative w-full sm:w-80">
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <Search className="h-4 w-4 text-slate-400" />
-          </div>
+        <div className="relative group w-full sm:w-80">
+          <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
           <input
             type="text"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Search..."
-            className="block w-full pl-9 pr-3 py-2 border border-slate-200 rounded-lg text-sm text-slate-800 placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 bg-white shadow-sm"
+            value={searchTerm}
+            onChange={(e) => handleSearchChange(e.target.value)}
+            className="pl-10 pr-4 py-2 text-sm border border-slate-200 rounded-xl bg-white text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-blue-100 focus:border-blue-200 w-full transition-all shadow-sm"
           />
         </div>
 
-        {/* Filter pills */}
-        <div className="flex items-center gap-2 flex-wrap">
-          {FILTER_OPTIONS.map((label) => (
-            <FilterDropdown key={label} label={label} />
-          ))}
+        <div className="flex flex-wrap items-center gap-2">
+          <FilterDropdown
+            label="Category"
+            options={categoryOptions}
+            value={categoryFilter}
+            onChange={setCategoryFilter}
+          />
+          <FilterDropdown
+            label="Patient Type"
+            options={patientTypeOptions}
+            value={patientTypeFilter}
+            onChange={setPatientTypeFilter}
+          />
+          <FilterDropdown
+            label="Assessment Status"
+            options={statusOptions}
+            value={statusFilter}
+            onChange={setStatusFilter}
+          />
+          <FilterDropdown
+            label="Today's"
+            options={[{ value: 'today', label: "Today's" }]}
+            value=""
+            onChange={() => {}}
+          />
         </div>
       </div>
 
       {/* Table card */}
-      <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm overflow-x-auto">
-        <table className="w-full text-left text-sm whitespace-nowrap">
-          <thead className="bg-[#F3F4F6] text-slate-700 border-b border-slate-200">
-            <tr>
-              {['Patient', 'Assessment', 'Patient Type', 'Payment', 'Status', 'Date', 'Action'].map(
-                (col) => (
-                  <th key={col} className="px-5 py-4 font-semibold text-[13px]">
-                    {col}
-                  </th>
-                ),
-              )}
-            </tr>
-          </thead>
-
-          <tbody className="divide-y divide-slate-100 text-slate-600">
-            {filtered.map((row) => (
-              <tr key={row.id} className="hover:bg-slate-50/60 transition-colors">
-                {/* Patient */}
-                <td className="px-5 py-3.5">
-                  <div className="flex items-center gap-2.5">
-                    <PatientAvatar initials={row.patientInitials} />
-                    <span className="font-medium text-slate-700">{row.patientName}</span>
-                  </div>
-                </td>
-
-                {/* Assessment */}
-                <td className="px-5 py-3.5 text-slate-600">{row.assessment}</td>
-
-                {/* Patient Type */}
-                <td className="px-5 py-3.5">
-                  <PatientTypeBadge type={row.patientType} />
-                </td>
-
-                {/* Payment */}
-                <td className="px-5 py-3.5 font-medium text-slate-700">{row.payment}</td>
-
-                {/* Status */}
-                <td className="px-5 py-3.5">
-                  <StatusBadge status={row.status} />
-                </td>
-
-                {/* Date */}
-                <td className="px-5 py-3.5 text-slate-500">{row.date}</td>
-
-                {/* Action */}
-                <td className="px-5 py-3.5">
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => navigate({ to: '/dashboard/assessment-table/$assessmentId/preview', params: { assessmentId: row.id } })}
-                      className="p-1.5 text-slate-400 hover:text-slate-700 transition-colors"
-                      title="Preview details"
-                    >
-                      <Eye size={16} />
-                    </button>
-                    <AssignButton assigned={row.assignStatus === 'Assigned'} />
-                    <button className="p-1.5 text-red-400 hover:text-red-600 transition-colors">
-                      <Trash2 size={16} />
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-
-            {filtered.length === 0 && (
+      <div className="bg-white rounded-2xl border border-slate-100 overflow-hidden shadow-sm">
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm whitespace-nowrap">
+            <thead className="bg-slate-50 text-slate-500 border-b border-slate-100">
               <tr>
-                <td colSpan={7} className="px-5 py-12 text-center text-slate-400 text-sm">
-                  No assessments found.
-                </td>
+                <th className="px-6 py-4 font-medium text-left">Patient</th>
+                <th className="px-6 py-4 font-medium text-left">Assessment</th>
+                <th className="px-6 py-4 font-medium text-left">Provider</th>
+                <th className="px-6 py-4 font-medium text-center">Patient Type</th>
+                <th className="px-6 py-4 font-medium text-center">Payment</th>
+                <th className="px-6 py-4 font-medium text-center">Status</th>
+                <th className="px-6 py-4 font-medium text-center">Date</th>
+                <th className="px-6 py-4 font-medium text-center">Action</th>
               </tr>
-            )}
-          </tbody>
-        </table>
+            </thead>
+
+            <tbody className="divide-y divide-slate-50 text-slate-600">
+              {isLoading ? (
+                <tr>
+                  <td colSpan={8} className="px-6 py-20 text-center">
+                    <div className="flex justify-center">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                    </div>
+                  </td>
+                </tr>
+              ) : assessments.length === 0 ? (
+                <tr>
+                  <td colSpan={8} className="px-6 py-12 text-center text-slate-400">
+                    No assessments found.
+                  </td>
+                </tr>
+              ) : (
+                assessments.map((assessment: Assessment) => (
+                  <tr key={assessment.submissionId} className={`hover:bg-slate-50/40 transition-colors ${isFetching ? 'opacity-60' : ''}`}>
+                    {/* Patient */}
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-3">
+                        <PatientAvatar name={assessment.patientName} image={assessment.patientImage} />
+                        <span className="font-medium text-slate-700">{assessment.patientName}</span>
+                      </div>
+                    </td>
+
+                    {/* Assessment */}
+                    <td className="px-6 py-4 text-slate-500">{assessment.categoryName}</td>
+
+                    {/* Provider */}
+                    <td className="px-6 py-4 text-slate-500">{assessment.provider || 'N/A'}</td>
+
+                    {/* Patient Type */}
+                    <td className="px-6 py-4 text-center">
+                      <PatientTypeBadge type={assessment.patientType} />
+                    </td>
+
+                    {/* Payment */}
+                    <td className="px-6 py-4 text-center text-slate-700 font-medium">$99</td>
+
+                    {/* Status */}
+                    <td className="px-6 py-4 text-center">
+                      <StatusBadge status={assessment.status} />
+                    </td>
+
+                    {/* Date */}
+                    <td className="px-6 py-4 text-center text-slate-500">
+                      {new Date(assessment.date).toLocaleDateString(undefined, { month: 'numeric', day: 'numeric', year: '2-digit' })}
+                    </td>
+
+                    {/* Action */}
+                    <td className="px-6 py-4 text-center">
+                      <div className="flex items-center justify-center">
+                        {!assessment.provider ? (
+                          <button
+                            onClick={() => {}}
+                            className="px-6 py-2 bg-blue-600 text-white text-[13px] font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
+                          >
+                            Assign
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => navigate({ to: '/dashboard/assessment-table/$assessmentId/preview', params: { assessmentId: assessment.submissionId }})}
+                            className="px-2 py-1 text-blue-500 text-[13px] font-medium hover:text-blue-600 transition-colors"
+                          >
+                            View Details
+                          </button>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="flex items-center justify-between px-6 py-4 border-t border-slate-100 bg-white">
+            <p className="text-sm text-gray-500">
+              Page <span className="font-medium text-gray-700">{currentPage}</span> of{' '}
+              <span className="font-medium text-gray-700">{totalPages}</span>
+              {meta?.total && (
+                <> &mdash; <span className="font-medium text-gray-700">{meta.total}</span> total</>
+              )}
+            </p>
+            <div className="flex items-center gap-1">
+              <button
+                onClick={() => handlePageChange(1)}
+                disabled={currentPage === 1}
+                className="px-2.5 py-1.5 rounded-lg border border-gray-200 text-xs font-medium text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              >
+                «
+              </button>
+              <button
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+                className="px-3 py-1.5 rounded-lg border border-gray-200 text-xs font-medium text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              >
+                ‹ Prev
+              </button>
+
+              {Array.from({ length: totalPages }, (_, i) => i + 1)
+                .filter((p) => p === 1 || p === totalPages || Math.abs(p - currentPage) <= 1)
+                .reduce<(number | '...')[]>((acc, p, idx, arr) => {
+                  if (idx > 0 && typeof arr[idx - 1] === 'number' && (p as number) - (arr[idx - 1] as number) > 1) {
+                    acc.push('...');
+                  }
+                  acc.push(p);
+                  return acc;
+                }, [])
+                .map((item, idx) =>
+                  item === '...' ? (
+                    <span key={`ellipsis-${idx}`} className="px-2 py-1.5 text-xs text-gray-400">
+                      …
+                    </span>
+                  ) : (
+                    <button
+                      key={item}
+                      onClick={() => handlePageChange(item as number)}
+                      className={`w-8 h-8 rounded-lg border text-xs font-semibold transition-colors ${
+                        currentPage === item
+                          ? 'bg-[#2563EB] border-[#2563EB] text-white shadow-sm shadow-blue-600/20'
+                          : 'border-gray-200 text-gray-600 hover:bg-gray-50'
+                      }`}
+                    >
+                      {item}
+                    </button>
+                  )
+                )}
+
+              <button
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage === totalPages}
+                className="px-3 py-1.5 rounded-lg border border-gray-200 text-xs font-medium text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              >
+                Next ›
+              </button>
+              <button
+                onClick={() => handlePageChange(totalPages)}
+                disabled={currentPage === totalPages}
+                className="px-2.5 py-1.5 rounded-lg border border-gray-200 text-xs font-medium text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              >
+                »
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
