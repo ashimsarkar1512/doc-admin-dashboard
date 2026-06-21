@@ -221,14 +221,11 @@ export default function ProductsPage() {
       description: formDescription,
       categoryId: formCategory,
       images: finalImageId ? [finalImageId] : undefined,
-      variants:
-        variants.length > 0
-          ? variants.map((v) => ({
-              size: v.size,
-              price: Number(v.price),
-              stockQuantity: Number(v.stockQuantity),
-            }))
-          : undefined,
+      variants: variants.map((v) => ({
+        size: v.size,
+        price: Number(v.price),
+        stockQuantity: Number(v.stockQuantity),
+      })),
     };
 
     saveMutation.mutate(payload);

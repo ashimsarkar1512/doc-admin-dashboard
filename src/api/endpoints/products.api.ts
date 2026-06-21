@@ -1,16 +1,6 @@
-import { API_BASE_URL } from '@/api/config';
+import { axiosInstance } from '@/api/axiosInstance';
 import type { Product } from '@/types';
 import type { PaginatedResponse } from '@/api/endpoints/categories.api';
-
-async function handleResponse<T>(response: Response): Promise<T> {
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(
-      (errorData as { message?: string }).message || `Request failed with status ${response.status}`
-    );
-  }
-  return response.json() as Promise<T>;
-}
 
 export interface GetProductsParams {
   search?: string;
@@ -22,16 +12,8 @@ export interface GetProductsParams {
 export const getProducts = async (
   params?: GetProductsParams
 ): Promise<PaginatedResponse<Product>> => {
-  const url = new URL(`${API_BASE_URL}/admin/products`);
-  if (params) {
-    Object.entries(params).forEach(([key, value]) => {
-      if (value !== undefined && value !== '') {
-        url.searchParams.append(key, String(value));
-      }
-    });
-  }
-  const response = await fetch(url.toString());
-  return handleResponse<PaginatedResponse<Product>>(response);
+  const { data } = await axiosInstance.get('/admin/products', { params });
+  return data;
 };
 
 export interface CreateProductPayload {
@@ -45,14 +27,8 @@ export interface CreateProductPayload {
 }
 
 export const createProduct = async (payload: CreateProductPayload): Promise<Product> => {
-  const response = await fetch(`${API_BASE_URL}/admin/products`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(payload),
-  });
-  return handleResponse<Product>(response);
+  const { data } = await axiosInstance.post('/admin/products', payload);
+  return data.data || data;
 };
 
 export interface UpdateProductPayload {
@@ -66,24 +42,10 @@ export interface UpdateProductPayload {
 }
 
 export const updateProduct = async (id: string, payload: UpdateProductPayload): Promise<Product> => {
-  const response = await fetch(`${API_BASE_URL}/admin/products/${id}`, {
-    method: 'PATCH',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(payload),
-  });
-  return handleResponse<Product>(response);
+  const { data } = await axiosInstance.patch(`/admin/products/${id}`, payload);
+  return data.data || data;
 };
 
 export const deleteProduct = async (id: string): Promise<void> => {
-  const response = await fetch(`${API_BASE_URL}/admin/products/${id}`, {
-    method: 'DELETE',
-  });
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(
-      (errorData as { message?: string }).message || `Request failed with status ${response.status}`
-    );
-  }
+  await axiosInstance.delete(`/admin/products/${id}`);
 };
