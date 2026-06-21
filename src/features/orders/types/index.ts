@@ -6,6 +6,8 @@ export interface OrderItem {
   image?: string;
 }
 
+export type OrderStatus = 'PENDING' | 'CONFIRMED' | 'PROCESSING' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED' | 'REFUNDED';
+
 export interface Order {
   id: string;
   orderNumber: string;
@@ -17,7 +19,7 @@ export interface Order {
   };
   items: OrderItem[];
   totalAmount: number;
-  status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
+  status: OrderStatus;
   paymentStatus: 'paid' | 'pending' | 'failed' | 'refunded';
   orderDate: string;
   shippingAddress: {
@@ -26,5 +28,17 @@ export interface Order {
     state: string;
     zipCode: string;
     country: string;
+  };
+  trackingCarrier?: string;
+  trackingNumber?: string;
+}
+
+export interface OrderResponse {
+  data: Order[];
+  meta: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
   };
 }

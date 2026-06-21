@@ -3,6 +3,7 @@ import { useUserProfile } from "@/features/account-settings/hooks/useAccountSett
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { setPageHeader, toggleSidebar } from "@/store/uiSlice";
 import { useQuery } from "@tanstack/react-query";
+import { useOrders } from "@/features/orders/hooks/useOrders";
 import { Link, Outlet, useLocation } from "@tanstack/react-router";
 import {
   Activity,
@@ -189,6 +190,9 @@ export default function DashboardLayout() {
 
   const dispatch = useAppDispatch();
   const location = useLocation();
+
+  const { data: pendingOrdersData } = useOrders({ status: "PENDING", limit: 1 });
+  const pendingOrdersCount = pendingOrdersData?.meta?.total ?? 0;
 
   // Local state for submenus
   const [patientMenuOpen, setPatientMenuOpen] = useState(false);
@@ -525,9 +529,9 @@ export default function DashboardLayout() {
               <Package size={20} className="text-[#272628] shrink-0" />
               {!collapsed && <span className="tracking-wide">Orders</span>}
             </div>
-            {!collapsed && (
+            {!collapsed && pendingOrdersCount > 0 && (
               <span className="flex items-center justify-center w-5 h-5 rounded-full bg-[#E88319] text-white text-[10px] font-bold">
-                3
+                {pendingOrdersCount > 99 ? "99+" : pendingOrdersCount}
               </span>
             )}
           </Link>

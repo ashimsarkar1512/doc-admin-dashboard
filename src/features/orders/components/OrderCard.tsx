@@ -8,15 +8,17 @@ interface OrderCardProps {
   onViewDetails: (order: Order) => void;
 }
 
-const statusColors = {
-  pending: 'bg-amber-100 text-amber-700',
-  processing: 'bg-blue-100 text-blue-700',
-  shipped: 'bg-purple-100 text-purple-700',
-  delivered: 'bg-green-100 text-green-700',
-  cancelled: 'bg-red-100 text-red-700',
+const statusColors: Record<string, string> = {
+  PENDING: 'bg-amber-100 text-amber-700',
+  CONFIRMED: 'bg-blue-100 text-blue-700',
+  PROCESSING: 'bg-indigo-100 text-indigo-700',
+  SHIPPED: 'bg-purple-100 text-purple-700',
+  DELIVERED: 'bg-green-100 text-green-700',
+  CANCELLED: 'bg-red-100 text-red-700',
+  REFUNDED: 'bg-gray-100 text-gray-700',
 };
 
-const paymentStatusColors = {
+const paymentStatusColors: Record<string, string> = {
   paid: 'bg-green-100 text-green-700',
   pending: 'bg-amber-100 text-amber-700',
   failed: 'bg-red-100 text-red-700',
@@ -46,7 +48,7 @@ export const OrderCard: React.FC<OrderCardProps> = ({ order, onViewDetails }) =>
         </div>
         <div className="flex flex-col items-end gap-2">
           <span className={`px-3 py-1 rounded-full text-xs font-medium ${statusColors[order.status]}`}>
-            {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+            {order.status.charAt(0).toUpperCase() + order.status.slice(1).toLowerCase()}
           </span>
           <span className={`px-3 py-1 rounded-full text-xs font-medium ${paymentStatusColors[order.paymentStatus]}`}>
             {order.paymentStatus.charAt(0).toUpperCase() + order.paymentStatus.slice(1)}

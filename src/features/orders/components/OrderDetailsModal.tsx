@@ -1,8 +1,9 @@
-import React from 'react';
-import {  Package, User, MapPin, CreditCard, Truck } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Package, User, MapPin, CreditCard, Truck, Loader2 } from 'lucide-react';
 import Dialog from '@/components/shared/Dialog';
-import type { Order } from '../types';
+import type { Order, OrderStatus } from '../types';
 import { Button } from '@/components/ui/button';
+import { useUpdateOrder } from '../hooks/useOrders';
 
 interface OrderDetailsModalProps {
   order: Order | null;
@@ -10,15 +11,35 @@ interface OrderDetailsModalProps {
   onClose: () => void;
 }
 
-const statusColors = {
-  pending: 'bg-amber-100 text-amber-700',
-  processing: 'bg-blue-100 text-blue-700',
-  shipped: 'bg-purple-100 text-purple-700',
-  delivered: 'bg-green-100 text-green-700',
-  cancelled: 'bg-red-100 text-red-700',
+const statusColors: Record<string, string> = {
+  PENDING: 'bg-amber-100 text-amber-700',
+  CONFIRMED: 'bg-blue-100 text-blue-700',
+  PROCESSING: 'bg-indigo-100 text-indigo-700',
+  SHIPPED: 'bg-purple-100 text-purple-700',
+  DELIVERED: 'bg-green-100 text-green-700',
+  CANCELLED: 'bg-red-100 text-red-700',
+  REFUNDED: 'bg-gray-100 text-gray-700',
 };
 
+const ORDER_STATUSES: OrderStatus[] = [
+  'PENDING', 'CONFIRMED', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'CANCELLED', 'REFUNDED'
+];
+
 export const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({ order, isOpen, onClose }) => {
+  const [status, setStatus] = useState<OrderStatus>('PENDING');
+  const [trackingCarrier, setTrackingCarrier] = useState('');
+  const [trackingNumber, setTrackingNumber] = useState('');
+
+  const updateOrderMutation = useUpdateOrder();
+
+  useEffect(() => {
+    if (order) {
+      setStatus(order.status);
+      setTrackingCarrier(order.trackingCarrier || '');
+      setTrackingNumber(order.trackingNumber || '');
+    }
+  }, [order]);
+
   if (!order) return null;
 
   const formatDate = (dateString: string) => {
@@ -29,6 +50,25 @@ export const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({ order, isO
       hour: '2-digit',
       minute: '2-digit',
     });
+  };
+
+  const handleSave = () => {
+    if (!order) return;
+    updateOrderMutation.mutate(
+      {
+        id: order.id,
+        payload: {
+          status,
+          trackingCarrier: trackingCarrier || undefined,
+          trackingNumber: trackingNumber || undefined,
+        },
+      },
+      {
+        onSuccess: () => {
+          onClose();
+        },
+      }
+    );
   };
 
   return (
@@ -46,7 +86,7 @@ export const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({ order, isO
             <p className="text-sm text-slate-500">Placed on {formatDate(order.orderDate)}</p>
           </div>
           <span className={`px-4 py-2 rounded-full text-sm font-medium ${statusColors[order.status]}`}>
-            {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+            {order.status.charAt(0).toUpperCase() + order.status.slice(1).toLowerCase()}
           </span>
         </div>
 
@@ -83,6 +123,50 @@ export const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({ order, isO
           </div>
         </div>
 
+        {/* Update Section */}
+        <div className="border border-slate-200 rounded-xl p-4">
+           <h4 className="font-semibold text-slate-800 mb-4 flex items-center gap-2">
+             <Truck className="h-5 w-5 text-slate-600" />
+             Fulfillment & Status
+           </h4>
+           <div className="space-y-4">
+             <div>
+               <label className="block text-sm font-medium text-slate-700 mb-1">Status</label>
+               <select
+                 value={status}
+                 onChange={(e) => setStatus(e.target.value as OrderStatus)}
+                 className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 bg-white"
+               >
+                 {ORDER_STATUSES.map(s => (
+                   <option key={s} value={s}>{s.charAt(0).toUpperCase() + s.slice(1).toLowerCase()}</option>
+                 ))}
+               </select>
+             </div>
+             <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Carrier Name</label>
+                  <input
+                    type="text"
+                    value={trackingCarrier}
+                    onChange={(e) => setTrackingCarrier(e.target.value)}
+                    placeholder="e.g. FedEx"
+                    className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Tracking Number</label>
+                  <input
+                    type="text"
+                    value={trackingNumber}
+                    onChange={(e) => setTrackingNumber(e.target.value)}
+                    placeholder="e.g. FX8734523421"
+                    className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                  />
+                </div>
+             </div>
+           </div>
+        </div>
+
         {/* Shipping Address */}
         <div>
           <div className="flex items-center gap-2 mb-3">
@@ -109,12 +193,12 @@ export const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({ order, isO
 
         {/* Actions */}
         <div className="flex gap-3 pt-4 border-t border-slate-100">
-          <Button variant="outline" className="flex-1" onClick={onClose}>
-            Close
+          <Button variant="outline" className="flex-1" onClick={onClose} disabled={updateOrderMutation.isPending}>
+            Cancel
           </Button>
-          <Button className="flex-1 bg-blue-600 hover:bg-blue-700">
-            <Truck className="h-4 w-4 mr-2" />
-            Update Status
+          <Button className="flex-1 bg-blue-600 hover:bg-blue-700" onClick={handleSave} disabled={updateOrderMutation.isPending}>
+            {updateOrderMutation.isPending ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : null}
+            Save Changes
           </Button>
         </div>
       </div>
