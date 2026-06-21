@@ -245,7 +245,7 @@ const businessIntelligenceRoute = createRoute({
   component: BusinessIntelligencePage,
 });
 
-import CommunicationCenterPage from "@/features/dashboard/CommunicationCenterPage";
+import CommunicationCenterPage from "@/features/communication-center/pages/CommunicationCenterPage";
 const communicationCenterRoute = createRoute({
   getParentRoute: () => dashboardLayoutRoute,
   path: "/communication-center",

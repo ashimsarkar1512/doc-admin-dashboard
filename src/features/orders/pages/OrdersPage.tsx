@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Search, Filter, Plus, Package, Truck, CheckCircle, XCircle, ChevronLeft, ChevronRight, Loader2, User } from 'lucide-react';
+import { Search, Filter, Package, Truck, CheckCircle, XCircle, ChevronLeft, ChevronRight, Loader2, User } from 'lucide-react';
 import { OrderCard } from '../components/OrderCard';
 import { OrderDetailsModal } from '../components/OrderDetailsModal';
 import type { Order } from '../types';
@@ -77,11 +77,7 @@ export default function OrdersPage() {
 
   return (
     <div className="w-full px-4 py-5 md:px-6 md:py-6">
-      {/* Header */}
-      <div className="mb-6">
-        <h1 className="text-2xl md:text-3xl font-bold text-slate-800 tracking-tight">Orders</h1>
-        <p className="text-sm text-slate-500 font-medium mt-1">Manage and track all customer orders</p>
-      </div>
+      
 
       {/* Tabs */}
       <div className="flex gap-4 mb-6 overflow-x-auto pb-2">
