@@ -47,9 +47,16 @@ export const OrderCard: React.FC<OrderCardProps> = ({ order, onViewDetails }) =>
       </div>
 
       <div className="space-y-2 mb-4">
-        <div className="flex items-center gap-2 text-sm text-slate-600">
-          <User className="h-4 w-4" />
-          <span>{order.patientName || order.doctorName}</span>
+        <div className="grid grid-cols-1 items-center gap-2 text-sm text-slate-600">
+          <div className='flex gap-2'>
+            <User className="h-4 w-4" />
+          <span>Patient : {order.patientName }</span>
+          </div>
+          
+          <div className='flex gap-2'>
+            <User className="h-4 w-4" />
+          <span>Doctor : { order.doctorName}</span>
+          </div>
         </div>
         <div className="flex items-center gap-2 text-sm text-slate-600">
           <Calendar className="h-4 w-4" />

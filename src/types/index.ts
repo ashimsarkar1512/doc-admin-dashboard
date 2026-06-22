@@ -114,6 +114,7 @@ export interface TestimonialAvatar {
   id: string;
   fileUrl: string;
   fileName?: string;
+  fileType?: string;
 }
 
 export interface Testimonial {

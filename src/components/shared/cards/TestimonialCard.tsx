@@ -62,6 +62,9 @@ export const TestimonialCard: React.FC<TestimonialCardProps> = ({
   onTogglePublish,
 }) => {
   const { isPublished, avatar, clientName, feedback, rating, date } = testimonial;
+console.log("=> this is avater data ",avatar,"this is client data => ",clientName)
+
+
 
   return (
     <div className="bg-white rounded-2xl  transition-shadow duration-200 flex flex-col">
