@@ -43,6 +43,9 @@ export interface GetDocumentsParams {
   limit?: number;
   search?: string;
   type?: string;
+  date?: string;
+  dateFrom?: string;
+  dateTo?: string;
 }
 
 export interface DocumentDetailResponse {
