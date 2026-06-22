@@ -179,24 +179,6 @@ export function HeroSection() {
             </label>
           </div>
         </div>
-
-        {/* Banner */}
-        <div className="pt-4 border-t border-slate-100 space-y-4">
-          <p className="text-sm font-semibold text-slate-600">Banner</p>
-          <FormInput
-            label="Banner Title:"
-            value={form.bannerTitle}
-            onChange={(e) => setField('bannerTitle', e.target.value)}
-            placeholder="e.g. Start your journey today"
-          />
-          <FormTextarea
-            label="Banner Description:"
-            className="h-20"
-            value={form.bannerDescription}
-            onChange={(e) => setField('bannerDescription', e.target.value)}
-            placeholder="Short banner description…"
-          />
-        </div>
       </div>
     </SectionCard>
   );

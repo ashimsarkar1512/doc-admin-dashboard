@@ -46,6 +46,9 @@ export function AccountInformation() {
         state: profile.profile.state,
         zipCode: profile.profile.zipCode,
       });
+      if (profile.profile.avatar) {
+        setAvatarPreview(profile.profile.avatar);
+      }
     }
   }, [profile?.profile, reset]);
 
