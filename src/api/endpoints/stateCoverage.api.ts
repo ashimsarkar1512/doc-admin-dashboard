@@ -25,6 +25,8 @@ export interface StateCoverage {
 export interface GetStateCoveragesParams {
   search?: string;
   status?: StateCoverageStatus | '';
+  from?: string;
+  to?: string;
   page?: number;
   limit?: number;
 }

@@ -80,14 +80,26 @@ export const updateUserProfile = async (payload: UpdateUserProfilePayload): Prom
 };
 
 export const uploadAvatar = async (file: File): Promise<UploadAvatarResponse> => {
+  // Step 1: upload the file
   const formData = new FormData();
-  formData.append('avatar', file);
-  const response = await axiosInstance.post<UploadAvatarResponse>('/auth/me', formData, {
-    headers: {
-      'Content-Type': 'multipart/form-data',
-    },
-  });
-  return response.data;
+  formData.append('context', 'PROFILE_PICTURE');
+  formData.append('files', file);
+  const uploadRes = await axiosInstance.post<{ success: boolean; message: string; data: { id: string; fileUrl: string } }>(
+    '/attachments/upload',
+    formData,
+    { headers: { 'Content-Type': 'multipart/form-data' } }
+  );
+  const attachmentId = uploadRes.data.data.id;
+  const avatarUrl = uploadRes.data.data.fileUrl;
+
+  // Step 2: update the profile with the new avatarId
+  await axiosInstance.patch('/auth/me', { avatarId: attachmentId });
+
+  return {
+    success: true,
+    message: 'Avatar updated successfully',
+    data: { avatarId: attachmentId, avatar: avatarUrl },
+  };
 };
 
 export const toggleMfa = async (): Promise<ToggleMfaResponse> => {

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { ChevronDown, Upload, Loader2 } from "lucide-react";
+import { ChevronDown, Upload, Loader2, Calendar } from "lucide-react";
 import { toast } from "sonner";
 import Dialog from "@/components/shared/Dialog";
 import { axiosInstance } from "@/api/axiosInstance";
@@ -265,14 +265,17 @@ export function TestimonialFormDialog({
             <label className="block text-sm font-medium text-gray-800">
               Date:
             </label>
-            <input
-              id="testimonial-date"
-              type="date"
-              required
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-              className="w-full px-4 py-2.5 rounded-[10px] border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-sm text-black transition-colors"
-            />
+            <div className="relative">
+              <input
+                id="testimonial-date"
+                type="date"
+                required
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+                className="w-full pl-4 pr-10 py-2.5 rounded-[10px] border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-sm text-black transition-colors [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:right-3 [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:cursor-pointer cursor-pointer"
+              />
+              <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+            </div>
           </div>
         </div>
 

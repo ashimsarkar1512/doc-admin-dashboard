@@ -15,25 +15,25 @@ import {
   AlertCircle,
   Calendar,
 } from 'lucide-react';
-import { getIncidentsOverview } from '@/api/endpoints/incidentManagement.api';
+// import { getIncidentsOverview } from '@/api/endpoints/incidentManagement.api';
 
-// ─── Stat Card Component ──────────────────────────────────────────────────────
+// // ─── Stat Card Component ──────────────────────────────────────────────────────
 
-interface StatCardProps {
-  label: string;
-  value: number | undefined;
-}
+// interface StatCardProps {
+//   label: string;
+//   value: number | undefined;
+// }
 
-function StatCard({ label, value }: StatCardProps) {
-  return (
-    <div className="bg-slate-900 text-white rounded-xl px-6 py-5 flex flex-col gap-2 shadow-sm">
-      <p className="text-xs font-medium text-slate-400 uppercase tracking-wider">{label}</p>
-      <p className="text-3xl font-bold">
-        {value === undefined ? <span className="text-slate-600 text-xl animate-pulse">—</span> : value}
-      </p>
-    </div>
-  );
-}
+// function StatCard({ label, value }: StatCardProps) {
+//   return (
+//     <div className="bg-slate-900 text-white rounded-xl px-6 py-5 flex flex-col gap-2 shadow-sm">
+//       <p className="text-xs font-medium text-slate-400 uppercase tracking-wider">{label}</p>
+//       <p className="text-3xl font-bold">
+//         {value === undefined ? <span className="text-slate-600 text-xl animate-pulse">—</span> : value}
+//       </p>
+//     </div>
+//   );
+// }
 
 // ─── Formatting Helpers ───────────────────────────────────────────────────────
 
@@ -58,6 +58,8 @@ export default function StateCoveragePage() {
   // Filter state
   const [search, setSearch] = useState('');
   const [status, setStatus] = useState<StateCoverageStatus | ''>('');
+  const [fromDate, setFromDate] = useState('');
+  const [toDate, setToDate] = useState('');
   const [page, setPage]     = useState(1);
   const limit = 10;
 
@@ -71,15 +73,17 @@ export default function StateCoveragePage() {
     limit,
     ...(search.trim() && { search: search.trim() }),
     ...(status && { status }),
+    ...(fromDate && { from: fromDate }),
+    ...(toDate && { to: toDate }),
   };
 
   // ── Data fetching ──────────────────────────────────────────────────────────
 
   // Fetch incident overview stats to match the top cards in the design
-  const { data: overviewData, isLoading: overviewLoading } = useQuery({
-    queryKey: ['incidents-overview'],
-    queryFn: getIncidentsOverview,
-  });
+  // const { data: overviewData, isLoading: overviewLoading } = useQuery({
+  //   queryKey: ['incidents-overview'],
+  //   queryFn: getIncidentsOverview,
+  // });
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ['state-coverages', queryParams],
@@ -105,7 +109,7 @@ export default function StateCoveragePage() {
 
   const coverages = data?.data ?? [];
   const meta      = data?.meta;
-  const overview  = overviewData?.counts;
+  // const overview  = overviewData?.counts;
 
   // ── Render ─────────────────────────────────────────────────────────────────
 
@@ -115,12 +119,12 @@ export default function StateCoveragePage() {
    
 
       {/* ── Overview Stat Cards ───────────────────────────────────────────── */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-8">
+      {/* <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-8">
         <StatCard label="Total Incidents" value={overviewLoading ? undefined : overview?.total} />
         <StatCard label="Open"            value={overviewLoading ? undefined : overview?.open} />
         <StatCard label="Investigating"   value={overviewLoading ? undefined : overview?.investigating} />
         <StatCard label="Resolved"        value={overviewLoading ? undefined : overview?.resolved} />
-      </div>
+      </div> */}
 
       {/* ── Filter Row ────────────────────────────────────────────────────── */}
       <form onSubmit={handleSearchSubmit} className="flex flex-col sm:flex-row flex-wrap gap-3 mb-6">
@@ -135,17 +139,7 @@ export default function StateCoveragePage() {
           />
         </div>
 
-        <select
-          className="px-3 py-2.5 bg-white border border-slate-200 rounded-lg text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition min-w-[110px]"
-        >
-          <option value="">All Role</option>
-        </select>
-
-        <select
-          className="px-3 py-2.5 bg-white border border-slate-200 rounded-lg text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition min-w-[110px]"
-        >
-          <option value="">All Type</option>
-        </select>
+      
 
         <select
           value={status}
@@ -160,18 +154,20 @@ export default function StateCoveragePage() {
 
         <div className="relative">
           <input
-            type="text"
-            defaultValue="2026-06-01"
-            className="w-[140px] pl-3 pr-10 py-2.5 bg-white border border-slate-200 rounded-lg text-sm text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition"
+            type="date"
+            value={fromDate}
+            onChange={(e) => { setFromDate(e.target.value); handleFilterChange(); }}
+            className="w-[160px] pl-3 pr-10 py-2.5 bg-white border border-slate-200 rounded-lg text-sm text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:right-3 [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:cursor-pointer cursor-pointer"
           />
           <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
         </div>
 
         <div className="relative">
           <input
-            type="text"
-            placeholder="//-//-//"
-            className="w-[140px] pl-3 pr-10 py-2.5 bg-white border border-slate-200 rounded-lg text-sm text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition"
+            type="date"
+            value={toDate}
+            onChange={(e) => { setToDate(e.target.value); handleFilterChange(); }}
+            className="w-[160px] pl-3 pr-10 py-2.5 bg-white border border-slate-200 rounded-lg text-sm text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:right-3 [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:cursor-pointer cursor-pointer"
           />
           <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
         </div>

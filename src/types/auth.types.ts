@@ -129,7 +129,7 @@ export interface UserProfile {
   updatedAt: string;
   profile: {
     id?: string;
-    avatarId?: string;
+    avatar?: string;
     name?: string;
     bio?: string;
     title?: string;
@@ -174,6 +174,7 @@ export interface UploadAvatarResponse {
   message: string;
   data: {
     avatarId: string;
+    avatar: string; // the resolved URL
   };
 }
 
