@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Package, User, MapPin, CreditCard, Truck, Loader2 } from 'lucide-react';
 import Dialog from '@/components/shared/Dialog';
-import type { Order, OrderStatus } from '../types';
+import type { OrderSummary, OrderStatus } from '../types';
 import { Button } from '@/components/ui/button';
-import { useUpdateOrder } from '../hooks/useOrders';
+import { useUpdateOrder, useOrderDetails } from '../hooks/useOrders';
 
 interface OrderDetailsModalProps {
-  order: Order | null;
+  order: OrderSummary | null;
   isOpen: boolean;
   onClose: () => void;
 }
@@ -31,14 +31,17 @@ export const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({ order, isO
   const [trackingNumber, setTrackingNumber] = useState('');
 
   const updateOrderMutation = useUpdateOrder();
+  const { data: fullOrder, isLoading: isLoadingDetails } = useOrderDetails(order?.id ?? '');
 
   useEffect(() => {
     if (order) {
       setStatus(order.status);
-      setTrackingCarrier(order.trackingCarrier || '');
-      setTrackingNumber(order.trackingNumber || '');
     }
-  }, [order]);
+    if (fullOrder) {
+      setTrackingCarrier(fullOrder.trackingCarrier || '');
+      setTrackingNumber(fullOrder.trackingNumber || '');
+    }
+  }, [order, fullOrder]);
 
   if (!order) return null;
 
@@ -83,21 +86,23 @@ export const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({ order, isO
         <div className="flex justify-between items-center">
           <div>
             <h3 className="text-xl font-semibold text-slate-800">{order.orderNumber}</h3>
-            <p className="text-sm text-slate-500">Placed on {formatDate(order.orderDate)}</p>
+            <p className="text-sm text-slate-500">Placed on {formatDate(order.date)}</p>
           </div>
           <span className={`px-4 py-2 rounded-full text-sm font-medium ${statusColors[order.status]}`}>
             {order.status.charAt(0).toUpperCase() + order.status.slice(1).toLowerCase()}
           </span>
         </div>
 
-        {/* Customer Info */}
+        {/* Patient / Doctor Info */}
         <div className="bg-blue-50 rounded-xl p-4">
           <div className="flex items-center gap-2 mb-3">
             <User className="h-5 w-5 text-blue-600" />
-            <h4 className="font-semibold text-slate-800">Customer</h4>
+            <h4 className="font-semibold text-slate-800">Patient</h4>
           </div>
-          <p className="text-slate-700 font-medium">{order.customer.name}</p>
-          <p className="text-slate-600 text-sm">{order.customer.email}</p>
+          <p className="text-slate-700 font-medium">{order.patientName || '—'}</p>
+          {order.doctorName && order.doctorName !== 'N/A' && (
+            <p className="text-slate-600 text-sm">Doctor: {order.doctorName}</p>
+          )}
         </div>
 
         {/* Order Items */}
@@ -106,20 +111,30 @@ export const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({ order, isO
             <Package className="h-5 w-5 text-slate-600" />
             <h4 className="font-semibold text-slate-800">Items</h4>
           </div>
-          <div className="space-y-3">
-            {order.items.map((item) => (
-            <div key={item.id} className="flex justify-between items-center p-3 bg-slate-50 rounded-lg">
-              <div>
-                <p className="font-medium text-slate-800">{item.name}</p>
-                <p className="text-sm text-slate-500">Qty: {item.quantity}</p>
-              </div>
-              <p className="font-semibold text-slate-800">${(item.price * item.quantity).toFixed(2)}</p>
+
+          {isLoadingDetails ? (
+            <div className="flex justify-center items-center py-8">
+              <Loader2 className="h-6 w-6 animate-spin text-blue-600" />
             </div>
-          ))}
-          </div>
+          ) : fullOrder?.items && fullOrder.items.length > 0 ? (
+            <div className="space-y-3">
+              {fullOrder.items.map((item) => (
+                <div key={item.id} className="flex justify-between items-center p-3 bg-slate-50 rounded-lg">
+                  <div>
+                    <p className="font-medium text-slate-800">{item.name}</p>
+                    <p className="text-sm text-slate-500">Qty: {item.quantity}</p>
+                  </div>
+                  <p className="font-semibold text-slate-800">${(item.price * item.quantity).toFixed(2)}</p>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-sm text-slate-500 bg-slate-50 rounded-lg p-3">{order.itemCount} item(s)</p>
+          )}
+
           <div className="flex justify-between items-center mt-4 p-3 bg-blue-600 text-white rounded-lg">
             <span className="font-semibold text-lg">Total</span>
-            <span className="font-bold text-xl">${order.totalAmount.toFixed(2)}</span>
+            <span className="font-bold text-xl">${order.total.toFixed(2)}</span>
           </div>
         </div>
 
@@ -127,7 +142,7 @@ export const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({ order, isO
         <div className="border border-slate-200 rounded-xl p-4">
            <h4 className="font-semibold text-slate-800 mb-4 flex items-center gap-2">
              <Truck className="h-5 w-5 text-slate-600" />
-             Fulfillment & Status
+             Fulfillment &amp; Status
            </h4>
            <div className="space-y-4">
              <div>
@@ -167,36 +182,40 @@ export const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({ order, isO
            </div>
         </div>
 
-        {/* Shipping Address */}
-        <div>
-          <div className="flex items-center gap-2 mb-3">
-            <MapPin className="h-5 w-5 text-slate-600" />
-            <h4 className="font-semibold text-slate-800">Shipping Address</h4>
+        {/* Shipping Address (only if available from full order) */}
+        {fullOrder?.shippingAddress && (
+          <div>
+            <div className="flex items-center gap-2 mb-3">
+              <MapPin className="h-5 w-5 text-slate-600" />
+              <h4 className="font-semibold text-slate-800">Shipping Address</h4>
+            </div>
+            <div className="p-4 bg-slate-50 rounded-lg">
+              <p className="text-slate-700">{fullOrder.shippingAddress.street}</p>
+              <p className="text-slate-700">{fullOrder.shippingAddress.city}, {fullOrder.shippingAddress.state} {fullOrder.shippingAddress.zipCode}</p>
+              <p className="text-slate-700">{fullOrder.shippingAddress.country}</p>
+            </div>
           </div>
-          <div className="p-4 bg-slate-50 rounded-lg">
-            <p className="text-slate-700">{order.shippingAddress.street}</p>
-            <p className="text-slate-700">{order.shippingAddress.city}, {order.shippingAddress.state} {order.shippingAddress.zipCode}</p>
-            <p className="text-slate-700">{order.shippingAddress.country}</p>
-          </div>
-        </div>
+        )}
 
-        {/* Payment Info */}
-        <div>
-          <div className="flex items-center gap-2 mb-3">
-            <CreditCard className="h-5 w-5 text-slate-600" />
-            <h4 className="font-semibold text-slate-800">Payment</h4>
+        {/* Payment Info (only if available from full order) */}
+        {fullOrder?.paymentStatus && (
+          <div>
+            <div className="flex items-center gap-2 mb-3">
+              <CreditCard className="h-5 w-5 text-slate-600" />
+              <h4 className="font-semibold text-slate-800">Payment</h4>
+            </div>
+            <div className="p-4 bg-slate-50 rounded-lg">
+              <p className="text-slate-700">Payment Status: <span className="font-medium">{fullOrder.paymentStatus.charAt(0).toUpperCase() + fullOrder.paymentStatus.slice(1)}</span></p>
+            </div>
           </div>
-          <div className="p-4 bg-slate-50 rounded-lg">
-            <p className="text-slate-700">Payment Status: <span className="font-medium">{order.paymentStatus.charAt(0).toUpperCase() + order.paymentStatus.slice(1)}</span></p>
-          </div>
-        </div>
+        )}
 
         {/* Actions */}
-        <div className="flex gap-3 pt-4 border-t border-slate-100">
-          <Button variant="outline" className="flex-1" onClick={onClose} disabled={updateOrderMutation.isPending}>
+        <div className="flex gap-3 pt-4 border-t border-slate-100 ">
+          <Button variant="outline" className="flex-1 text-black" onClick={onClose} disabled={updateOrderMutation.isPending}>
             Cancel
           </Button>
-          <Button className="flex-1 bg-blue-600 hover:bg-blue-700" onClick={handleSave} disabled={updateOrderMutation.isPending}>
+          <Button className="flex-1 bg-blue-600 hover:bg-blue-700 text-white" onClick={handleSave} disabled={updateOrderMutation.isPending}>
             {updateOrderMutation.isPending ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : null}
             Save Changes
           </Button>

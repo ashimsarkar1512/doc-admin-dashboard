@@ -29,19 +29,14 @@ axiosInstance.interceptors.response.use(
     return response;
   },
   (error) => {
-    // You can handle 401 Unauthorized globally here if needed
     if (error.response && error.response.status === 401) {
       // localStorage.removeItem('token');
       // window.location.href = '/login';
     }
 
-    // Properly format error for better error handling downstream
-    if (error.response && error.response.data) {
-      const errorData = error.response.data;
-      // Ensure error has a proper message property
-      if (errorData.message && !error.message) {
-        error.message = errorData.message;
-      }
+    // Extract the server-side message so toasts show meaningful errors
+    if (error.response?.data?.message) {
+      error.message = error.response.data.message;
     }
 
     return Promise.reject(error);

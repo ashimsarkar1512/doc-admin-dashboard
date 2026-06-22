@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
 import {
   getOrders,
   getOrderById,
@@ -36,9 +37,14 @@ export const useUpdateOrder = () => {
   return useMutation({
     mutationFn: ({ id, payload }: { id: string; payload: UpdateOrderPayload }) =>
       updateOrder(id, payload),
-    onSuccess: (_ , variables) => {
+    onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: orderKeys.lists() });
       queryClient.invalidateQueries({ queryKey: orderKeys.detail(variables.id) });
+      toast.success('Order updated successfully!');
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || 'Failed to update order. Please try again.');
     },
   });
 };
+

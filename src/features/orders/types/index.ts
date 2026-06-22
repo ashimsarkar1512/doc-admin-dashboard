@@ -33,8 +33,22 @@ export interface Order {
   trackingNumber?: string;
 }
 
+export interface OrderSummary {
+  id: string;
+  orderNumber: string;
+  itemCount: number;
+  total: number;
+  patientName: string;
+  doctorName: string;
+  date: string;
+  status: OrderStatus;
+}
+
 export interface OrderResponse {
-  data: Order[];
+  success?: boolean;
+  statusCode?: number;
+  message?: string;
+  orders: OrderSummary[];
   meta: {
     total: number;
     page: number;

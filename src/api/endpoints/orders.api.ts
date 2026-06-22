@@ -1,5 +1,5 @@
 import { axiosInstance } from '@/api/axiosInstance';
-import type { Order, OrderResponse, OrderStatus } from '@/features/orders/types';
+import type { Order, OrderResponse } from '@/features/orders/types';
 
 export interface GetOrdersParams {
   page?: number;
@@ -23,7 +23,7 @@ export const getOrderById = async (id: string): Promise<Order> => {
 };
 
 export interface UpdateOrderPayload {
-  status?: OrderStatus;
+  status?: string;
   trackingCarrier?: string;
   trackingNumber?: string;
 }
@@ -31,7 +31,8 @@ export interface UpdateOrderPayload {
 export const updateOrder = async (
   id: string,
   payload: UpdateOrderPayload
-): Promise<Order> => {
+): Promise<{ success: boolean; statusCode: number; message: string }> => {
   const { data } = await axiosInstance.patch(`/admin/orders/${id}`, payload);
-  return data.data || data;
+  return data;
 };
+

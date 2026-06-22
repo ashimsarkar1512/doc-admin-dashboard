@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Search, Filter, Package, Truck, CheckCircle, XCircle, ChevronLeft, ChevronRight, Loader2, User } from 'lucide-react';
 import { OrderCard } from '../components/OrderCard';
 import { OrderDetailsModal } from '../components/OrderDetailsModal';
-import type { Order } from '../types';
+import type { OrderSummary } from '../types';
 import { useOrders } from '../hooks/useOrders';
 
 const statusTabs = [
@@ -34,7 +34,7 @@ export default function OrdersPage() {
     { value: 'LAST_YEAR', label: 'Last Year' },
   ];
   
-  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [selectedOrder, setSelectedOrder] = useState<OrderSummary | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
   // Debounce search
@@ -56,7 +56,7 @@ export default function OrdersPage() {
     dateRange: dateRange !== 'ALL' ? dateRange : undefined,
   });
 
-  const orders = data?.data || [];
+  const orders = data?.orders || [];
   const meta = data?.meta;
 
   const handleTabChange = (tabId: string) => {
@@ -70,7 +70,7 @@ export default function OrdersPage() {
     setIsFilterOpen(false);
   };
 
-  const handleViewDetails = (order: Order) => {
+  const handleViewDetails = (order: OrderSummary) => {
     setSelectedOrder(order);
     setIsModalOpen(true);
   };
