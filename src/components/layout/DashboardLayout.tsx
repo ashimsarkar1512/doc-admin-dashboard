@@ -86,10 +86,10 @@ const routeTitleMap: Record<string, { title: string; subtitle: string }> = {
     subtitle:
       "Review consultation details before submitting for medical review",
   },
-  "/dashboard/checkout": {
-    title: "Checkout",
-    subtitle: "Review your order and complete your purchase",
-  },
+  // "/dashboard/checkout": {
+  //   title: "Checkout",
+  //   subtitle: "Review your order and complete your purchase",
+  // },
   "/dashboard/products": {
     title: "Products",
     subtitle: "Manage inventory, pricing, and details",
@@ -281,14 +281,7 @@ export default function DashboardLayout() {
             <Package size={20} className="shrink-0" />
             <span>Orders</span>
           </Link>
-          <Link
-            to="/dashboard/checkout"
-            onClick={() => setMobileSidebarOpen(false)}
-            className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-500 text-[#272628] hover:bg-slate-100 transition-all [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-600 [&.active_svg]:text-[#1447E6]"
-          >
-            <ShoppingBag size={20} className="shrink-0" />
-            <span>Checkout</span>
-          </Link>
+      
           <Link
             to="/dashboard/contact-leads"
             onClick={() => setMobileSidebarOpen(false)}
@@ -537,13 +530,7 @@ export default function DashboardLayout() {
           </Link>
 
           {/* Checkout */}
-          <Link
-            to="/dashboard/checkout"
-            className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-500 text-[#272628] hover:bg-slate-100 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-600 [&.active_svg]:text-[#1447E6]"
-          >
-            <ShoppingBag size={20} className="text-[#272628] shrink-0" />
-            {!collapsed && <span className="tracking-wide">Checkout</span>}
-          </Link>
+         
 
           {/* Contact Leads */}
           <Link

@@ -36,7 +36,7 @@ export const useUpdateOrder = () => {
   return useMutation({
     mutationFn: ({ id, payload }: { id: string; payload: UpdateOrderPayload }) =>
       updateOrder(id, payload),
-    onSuccess: (data, variables) => {
+    onSuccess: (_ , variables) => {
       queryClient.invalidateQueries({ queryKey: orderKeys.lists() });
       queryClient.invalidateQueries({ queryKey: orderKeys.detail(variables.id) });
     },
