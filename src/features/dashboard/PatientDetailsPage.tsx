@@ -125,10 +125,10 @@ function RenderQuestion({ question }: { question: AssessmentDetails['questions']
 }
 
 // --- Main Page ---
-export default function PreviewDetailsPage() {
+export default function PatientDetailsPage() {
   const { assessmentId } = useParams({
-    from: "/dashboard/assessment-table/$assessmentId/preview",
-  });
+    strict: false,
+  }) as { assessmentId: string };
   const navigate = useNavigate();
 
   const { data, isLoading, error } = useQuery({
@@ -151,10 +151,10 @@ export default function PreviewDetailsPage() {
         <p className="text-lg font-semibold text-red-600">Failed to load details</p>
         <p className="text-sm text-slate-500">Please try again</p>
         <button
-          onClick={() => navigate({ to: "/dashboard/assessment-table" })}
+          onClick={() => navigate({ to: "/dashboard" })}
           className="px-5 py-2.5 bg-slate-100 text-slate-700 rounded-xl font-medium hover:bg-slate-200 transition-colors"
         >
-          Back to Assessments
+          Back to Dashboard
         </button>
       </div>
     );
@@ -182,11 +182,11 @@ export default function PreviewDetailsPage() {
     <div className="w-full max-w-3xl mx-auto px-4 py-8">
       {/* Back button */}
       <button
-        onClick={() => navigate({ to: "/dashboard/assessment-table" })}
+        onClick={() => navigate({ to: "/dashboard" })}
         className="flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-700 mb-6 transition-colors"
       >
         <ArrowLeft size={16} />
-        Back to Assessments
+        Back to Dashboard
       </button>
 
       <div className="space-y-4">
@@ -253,7 +253,7 @@ export default function PreviewDetailsPage() {
         {/* Compliance Confirmation */}
         <div className="bg-white border border-[#E5E7EB] rounded-xl p-5 space-y-3">
           <div className="flex items-center gap-2 mb-1">
-          
+           
             <p className="text-sm font-semibold text-slate-800">
               Compliance Confirmation
             </p>

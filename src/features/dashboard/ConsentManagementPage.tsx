@@ -211,7 +211,7 @@ export default function ConsentManagementPage() {
       {/* ── Section Header ───────────────────────────────────────────────── */}
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-base font-semibold text-slate-800">
-          Consent Management
+          Consent Management 
         </h2>
         <div className="flex items-center gap-2">
           <button
@@ -322,7 +322,8 @@ export default function ConsentManagementPage() {
 
         <div className="relative">
           <input
-            type="text"
+            // type="text"
+            type="date"
             value={startDate}
             onChange={(e) => {
               setStartDate(e.target.value);
@@ -336,7 +337,7 @@ export default function ConsentManagementPage() {
 
         <div className="relative">
           <input
-            type="text"
+             type="date"
             value={endDate}
             onChange={(e) => {
               setEndDate(e.target.value);

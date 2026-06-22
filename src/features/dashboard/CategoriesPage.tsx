@@ -15,7 +15,7 @@ import Dialog from '@/components/shared/Dialog';
 export default function CategoriesPage() {
   const queryClient = useQueryClient();
   const [searchQuery, setSearchQuery] = useState('');
-  const [statusFilter, setStatusFilter] = useState<'ACTIVE' | 'DISABLED'>('ACTIVE');
+  const [statusFilter, setStatusFilter] = useState<'ALL' | 'ACTIVE' | 'DISABLED'>('ALL');
   const [page, setPage] = useState(1);
   const limit = 8;
 
@@ -92,6 +92,7 @@ export default function CategoriesPage() {
 
   // Client-side filter by status dropdown
   const filteredCategories = allCategories.filter((cat) => {
+    if (statusFilter === 'ALL') return true;
     const s = cat.status?.toUpperCase();
     return s === statusFilter;
   });
@@ -261,11 +262,12 @@ export default function CategoriesPage() {
         <div className="relative">
           <select
             value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value as 'ACTIVE' | 'DISABLED')}
+            onChange={(e) => setStatusFilter(e.target.value as 'ALL' | 'ACTIVE' | 'DISABLED')}
             className="appearance-none pl-4 pr-9 py-2.5 rounded-xl border border-gray-200 bg-transparent text-sm text-gray-700 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 shadow-sm cursor-pointer"
           >
+            <option value="ALL">All Status</option>
             <option value="ACTIVE">Active</option>
-            <option value="DISABLED">Disabled</option>
+            <option value="DISABLED">Inactive</option>
           </select>
           <ChevronDown className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
         </div>
@@ -414,7 +416,7 @@ export default function CategoriesPage() {
           <div className="space-y-2">
             {/* Icon */}
             <div className="space-y-1.5">
-              <label className="text-sm font-medium text-gray-900">Icon: (required)</label>
+              <label className="text-sm font-medium text-gray-900">  Icon <span className="text-red-600">*</span></label>
               <div className="flex items-center gap-3">
                 <input
                   type="file"
@@ -433,14 +435,14 @@ export default function CategoriesPage() {
                   {isUploadingIcon ? 'Uploading...' : 'Choose a File'}
                 </button>
                 {iconUrl && (
-                  <img src={iconUrl} alt="Uploaded icon" className="w-9 h-9 rounded-md object-cover border border-gray-200 shadow-sm" />
+                  <img src={iconUrl} alt="Uploaded icon" className="w-16 h-16 rounded-md object-cover border border-gray-200 shadow-sm" />
                 )}
               </div>
             </div>
 
             {/* Category Name */}
             <div className="space-y-1">
-              <label className="text-sm font-medium text-gray-900">Category Name: (required)</label>
+              <label className="text-sm font-medium text-gray-900">Category Name <span className="text-red-600">*</span></label>
               <input
                 type="text"
                 required
@@ -505,14 +507,20 @@ export default function CategoriesPage() {
               </div>
               
               <div className="space-y-1 pt-1">
-                <label className="text-sm font-medium text-gray-900">Monthly charge: (required)</label>
+                <label className="text-sm font-medium text-gray-900">Monthly charge <span className="text-red-600">*</span></label>
                 <div className="relative flex items-center">
                   <span className="absolute left-3.5 text-gray-400">$</span>
                   <input
                     type="text"
+                    inputMode="decimal"
                     placeholder="0.00"
                     value={monthlyCharge}
-                    onChange={(e) => setMonthlyCharge(e.target.value)}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      if (value === '' || /^\d*\.?\d*$/.test(value)) {
+                        setMonthlyCharge(value);
+                      }
+                    }}
                     className="w-full pl-7 pr-16 py-2.5 rounded-xl border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 text-sm text-black"
                   />
                   <span className="absolute right-3.5 text-gray-500 text-sm">/ month</span>
@@ -548,6 +556,3 @@ export default function CategoriesPage() {
     </div>
   );
 }
-
-
-// dsjlgldfsgfg

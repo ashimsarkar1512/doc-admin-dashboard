@@ -1,9 +1,9 @@
 import Dialog from '@/components/shared/Dialog';
-import type { RecentActivity } from '@/api/endpoints/dashboard/overview';
+import type { Assessment } from '@/api/endpoints/dashboard/patientManagement';
 import { Repeat, Hash, CalendarDays, Tag, ClipboardList, Stethoscope } from 'lucide-react';
 
 interface Props {
-  activity: RecentActivity | null;
+  activity: Assessment | null;
   onClose: () => void;
 }
 

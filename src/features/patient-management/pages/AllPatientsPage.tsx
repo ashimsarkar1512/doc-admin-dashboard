@@ -1,7 +1,9 @@
 import { useState, useRef, useCallback } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { Search, ChevronDown, Eye, Ban, Trash2, ArrowRightToLine, UserCircle2, CheckCircle2 } from 'lucide-react';
+import { Search, ChevronDown, Eye, Ban, Trash2, ArrowRightToLine, UserCircle2, CheckCircle2, FileDown } from 'lucide-react';
 import Swal from 'sweetalert2';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 import { getPatients, updatePatientStatus } from '@/api/endpoints/dashboard/patientManagement';
 import type { Patient, GetPatientsResponse } from '@/api/endpoints/dashboard/patientManagement';
 import ViewPatientModal from '../components/ViewPatientModal';
@@ -61,6 +63,7 @@ export default function AllPatientsPage() {
   const [statusOpen, setStatusOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [viewPatientId, setViewPatientId] = useState<string | null>(null);
+  const [isExporting, setIsExporting] = useState(false);
 
   const debounceTimers = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
   const debounce = useCallback((setter: (v: string) => void, value: string, key: string) => {
@@ -134,31 +137,112 @@ export default function AllPatientsPage() {
   };
 
   const handleExport = () => {
-    const headers = ['Patient', 'Email', 'Contact', 'Active Consultation', 'Status', 'Joining Date'];
-    
+    setIsExporting(true);
+
     getPatients({
       limit: 1000,
       search: debouncedSearch || undefined,
       status: statusFilter || undefined,
     }).then((allData: GetPatientsResponse) => {
-      const exportPatients = allData.data ?? patients;
-      const rows = exportPatients.map((p: Patient) => [
+      const exportPatients = allData.data ?? [];
+      
+      const doc = new jsPDF({
+        orientation: 'landscape',
+        unit: 'mm',
+        format: 'a4'
+      });
+      
+      // Add background header color
+      doc.setFillColor(30, 41, 59); // slate-800 (#1E293B)
+      doc.rect(0, 0, 297, 40, 'F');
+      
+      // Add Title
+      doc.setFontSize(24);
+      doc.setTextColor(255, 255, 255);
+      doc.text('Patient Management Report', 14, 20);
+      
+      // Add Subtitle/Info in Header
+      doc.setFontSize(10);
+      doc.setTextColor(203, 213, 225); // slate-300
+      const generatedDate = new Date().toLocaleString();
+      doc.text(`Generated on: ${generatedDate}`, 14, 28);
+      doc.text(`Total Patients Found: ${exportPatients.length}`, 14, 33);
+      
+      // Filters badge area
+      if (statusFilter || debouncedSearch) {
+        doc.setFontSize(9);
+        let filterStr = 'Filters Applied: ';
+        if (statusFilter) filterStr += `Status: ${statusFilter}  `;
+        if (debouncedSearch) filterStr += `Search: "${debouncedSearch}"`;
+        doc.text(filterStr, 14, 37);
+      }
+
+      const tableColumn = ["#", "Patient Name", "Email Address", "Contact Number", "Consultations", "Status", "Joining Date"];
+      const tableRows = exportPatients.map((p: Patient, index: number) => [
+        index + 1,
         p.name,
         p.email,
         p.contactNumber,
-        String(p.activeConsultation),
+        String(p.activeConsultation).padStart(2, '0'),
         p.status,
         new Date(p.joiningDate).toLocaleDateString(),
       ]);
-      const csv = [headers, ...rows].map((r) => r.map((cell: any) => `"${cell}"`).join(',')).join('\n');
-      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `patients_${new Date().toISOString().split('T')[0]}.csv`;
-      a.click();
-      URL.revokeObjectURL(url);
-    }).catch(() => {
+
+      autoTable(doc, {
+        head: [tableColumn],
+        body: tableRows,
+        startY: 45,
+        theme: 'striped',
+        styles: { 
+          fontSize: 10, 
+          cellPadding: 5,
+          valign: 'middle',
+          font: 'helvetica',
+          textColor: [51, 65, 85] // slate-700
+        },
+        headStyles: { 
+          fillColor: [241, 245, 249], // slate-100
+          textColor: [71, 85, 105], // slate-600
+          fontStyle: 'bold',
+          halign: 'left',
+          lineWidth: 0.1,
+          lineColor: [226, 232, 240] // slate-200
+        },
+        columnStyles: {
+          0: { halign: 'center', cellWidth: 10 },
+          1: { fontStyle: 'bold', textColor: [30, 41, 59] }, // Name in slate-800
+          4: { halign: 'center' },
+          5: { halign: 'center' },
+          6: { halign: 'center' }
+        },
+        alternateRowStyles: { 
+          fillColor: [250, 251, 252] 
+        },
+        margin: { top: 45, bottom: 20 },
+        didDrawPage: (data) => {
+          // Footer
+          const pageSize = doc.internal.pageSize;
+          const pageHeight = pageSize.height ? pageSize.height : pageSize.getHeight();
+          const pageWidth = pageSize.width ? pageSize.width : pageSize.getWidth();
+          
+          doc.setFontSize(9);
+          doc.setTextColor(148, 163, 184); // text-slate-400
+          
+          // Page Number
+          const str = `Page ${data.pageNumber} of ${doc.internal.pages.length - 1}`;
+          doc.text(str, data.settings.margin.left, pageHeight - 10);
+          
+          // Confidentiality Note
+          doc.text('Confidential Patient Document - DocDashboard', pageWidth - 14, pageHeight - 10, { align: 'right' });
+        }
+      });
+
+      doc.save(`patients_report_${new Date().toISOString().split('T')[0]}.pdf`);
+      setIsExporting(false);
+    }).catch((error) => {
+      console.error('Export error:', error);
+      setIsExporting(false);
+      // Only use Swal for errors as a fallback since it's important
       Swal.fire('Error', 'Failed to export patients data', 'error');
     });
   };
@@ -220,10 +304,20 @@ export default function AllPatientsPage() {
           )}
           <button
             onClick={handleExport}
-            className="flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-[#1447E6] rounded-lg hover:bg-blue-800 transition-colors whitespace-nowrap"
+            disabled={isExporting}
+            className="flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-[#1447E6] rounded-lg hover:bg-blue-800 transition-colors whitespace-nowrap disabled:opacity-70 disabled:cursor-not-allowed min-w-[130px] justify-center"
           >
-            <ArrowRightToLine size={15} />
-            Export Data
+            {isExporting ? (
+              <>
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white" />
+                <span>Exporting...</span>
+              </>
+            ) : (
+              <>
+                <FileDown size={15} />
+                <span>Export PDF</span>
+              </>
+            )}
           </button>
         </div>
       </div>

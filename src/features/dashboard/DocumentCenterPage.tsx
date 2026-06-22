@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback } from 'react';
-import { Search, ChevronDown, Eye, Download, X, Check, Loader2, ChevronLeft, ChevronRight, FileText } from 'lucide-react';
+import { Search, ChevronDown, Eye, Download, X, Check, Loader2, ChevronLeft, ChevronRight, FileText, Calendar } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import {
   getDocumentStats,
@@ -10,6 +10,8 @@ import {
 } from '@/api/endpoints/documents.api';
 
 const ITEMS_PER_PAGE = 10;
+const PRESET_DATE_VALUES = ['today', 'last_7_days', 'last_month', 'last_year', 'all'];
+const DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/;
 
 function formatSize(bytes: number): string {
   if (bytes === 0) return '0 B';
@@ -60,6 +62,85 @@ function extractFileUrl(doc: DocumentItem): string | null {
   return d.fileUrl || d.url || d.downloadUrl || d.filePath || d.file_url || d.path || null;
 }
 
+// ── Direct file download (used from table row) ───────────────────────────────
+function getFilenameFromUrl(fileUrl: string, docName: string): string {
+  const raw = fileUrl.split('/').pop()?.split('?')[0] ?? '';
+  return raw || docName;
+}
+
+function downloadBlob(blob: Blob, filename: string) {
+  const objectUrl = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = objectUrl;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(objectUrl), 2000);
+}
+
+async function downloadFileDirectly(doc: DocumentItem): Promise<void> {
+  const fileUrl = extractFileUrl(doc);
+  if (!fileUrl) {
+    downloadDocumentReceipt(doc);
+    return;
+  }
+
+  const filename = getFilenameFromUrl(fileUrl, doc.documentName);
+  const isImage = /\.(png|jpe?g|gif|webp|svg)(\?.*)?$/i.test(fileUrl);
+
+  // ── Attempt 1: fetch with cors ──────────────────────────────────────────
+  try {
+    const res = await fetch(fileUrl, { mode: 'cors' });
+    if (res.ok) {
+      const blob = await res.blob();
+      downloadBlob(blob, filename);
+      return;
+    }
+  } catch {
+    // cors blocked — try next strategy
+  }
+
+  // ── Attempt 2: for images use canvas to extract pixel data ─────────────
+  if (isImage) {
+    try {
+      await new Promise<void>((resolve, reject) => {
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          canvas.width = img.naturalWidth;
+          canvas.height = img.naturalHeight;
+          const ctx = canvas.getContext('2d');
+          if (!ctx) { reject(new Error('canvas ctx')); return; }
+          ctx.drawImage(img, 0, 0);
+          canvas.toBlob((blob) => {
+            if (!blob) { reject(new Error('toBlob failed')); return; }
+            downloadBlob(blob, filename);
+            resolve();
+          }, 'image/png');
+        };
+        img.onerror = () => reject(new Error('img load failed'));
+        img.src = fileUrl;
+      });
+      return;
+    } catch {
+      // canvas also failed — fall through
+    }
+  }
+
+  // ── Attempt 3: open in new tab (last resort) ────────────────────────────
+  const a = document.createElement('a');
+  a.href = fileUrl;
+  a.download = filename;
+  a.target = '_blank';
+  a.rel = 'noopener noreferrer';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}
+
+// ── Receipt HTML download (used only from PreviewPanel) ─────────────────────
 function downloadDocumentReceipt(doc: DocumentItem) {
   const fileUrl = extractFileUrl(doc);
   const isImage = fileUrl && /\.(png|jpe?g|gif|webp|svg)(\?.*)?$/i.test(fileUrl);
@@ -89,9 +170,10 @@ function downloadDocumentReceipt(doc: DocumentItem) {
       overflow: hidden;
     }
     .header {
-      background: linear-gradient(135deg, #1447E6 0%, #2563eb 100%);
+      background: #1e293b;
       color: #fff;
       padding: 32px 32px 24px;
+      border-bottom: 3px solid #1447E6;
     }
     .header-top {
       display: flex;
@@ -101,14 +183,15 @@ function downloadDocumentReceipt(doc: DocumentItem) {
     }
     .header-icon {
       width: 44px; height: 44px;
-      background: rgba(255,255,255,0.18);
+      background: #334155;
       border-radius: 10px;
       display: flex; align-items: center; justify-content: center;
       font-size: 22px;
+      border: 1px solid #475569;
     }
-    .header-brand { font-size: 13px; opacity: 0.8; letter-spacing: 0.5px; text-transform: uppercase; }
-    .doc-title { font-size: 22px; font-weight: 700; word-break: break-word; }
-    .doc-subtitle { font-size: 13px; opacity: 0.75; margin-top: 4px; }
+    .header-brand { font-size: 13px; color: #94a3b8; letter-spacing: 0.5px; text-transform: uppercase; }
+    .doc-title { font-size: 22px; font-weight: 700; word-break: break-word; color: #f8fafc; }
+    .doc-subtitle { font-size: 13px; color: #94a3b8; margin-top: 4px; }
     .badge {
       display: inline-block;
       margin-top: 14px;
@@ -116,8 +199,9 @@ function downloadDocumentReceipt(doc: DocumentItem) {
       border-radius: 999px;
       font-size: 12px;
       font-weight: 600;
-      background: rgba(255,255,255,0.20);
-      color: #fff;
+      background: rgba(20, 71, 230, 0.2);
+      color: #60a5fa;
+      border: 1px solid rgba(20, 71, 230, 0.3);
       letter-spacing: 0.3px;
     }
     .details {
@@ -143,12 +227,28 @@ function downloadDocumentReceipt(doc: DocumentItem) {
     .divider { height: 1px; background: #f1f5f9; margin: 0 32px; }
     .image-section { padding: 24px 32px; }
     .image-section p {
-      font-size: 12px; font-weight: 600; text-transform: uppercase;
-      letter-spacing: 0.6px; color: #94a3b8; margin-bottom: 12px;
+      font-size: 11px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.8px; color: #94a3b8; margin-bottom: 12px;
+    }
+    .image-wrapper {
+      width: 100%;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      min-height: 200px;
     }
     .image-section img {
-      width: 100%; max-height: 320px; object-fit: contain;
-      border-radius: 10px; border: 1px solid #e2e8f0; background: #f8fafc;
+      max-width: 100%;
+      max-height: 400px;
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+      border-radius: 6px;
+      display: block;
     }
     .url-section { padding: 20px 32px; }
     .url-section p {
@@ -207,7 +307,9 @@ function downloadDocumentReceipt(doc: DocumentItem) {
     ${isImage ? `
     <div class="image-section">
       <p>File Preview</p>
-      <img src="${fileUrl}" alt="${doc.documentName}" />
+      <div class="image-wrapper">
+        <img src="${fileUrl}" alt="${doc.documentName}" />
+      </div>
     </div>` : `
     <div class="url-section">
       <p>File Location</p>
@@ -296,6 +398,60 @@ function Row({ label, value }: { label: string; value: string }) {
   );
 }
 
+function DateInput({
+  value,
+  onChange,
+  placeholder,
+}: {
+  value: string;
+  onChange: (val: string) => void;
+  placeholder: string;
+}) {
+  const dateInputRef = useRef<HTMLInputElement>(null);
+
+  const handleIconClick = () => {
+    try {
+      if (dateInputRef.current && 'showPicker' in HTMLInputElement.prototype) {
+        dateInputRef.current.showPicker();
+      } else {
+        dateInputRef.current?.focus();
+        dateInputRef.current?.click();
+      }
+    } catch (err) {
+      dateInputRef.current?.focus();
+      dateInputRef.current?.click();
+    }
+  };
+
+  return (
+    <div className="relative group">
+      <input
+        type="text"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        className="bg-white border border-slate-200 rounded-xl pl-4 pr-10 py-3 text-sm text-slate-600 focus:outline-none focus:ring-2 focus:ring-slate-200 w-[160px] transition-all"
+      />
+      <button
+        type="button"
+        onClick={handleIconClick}
+        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-[#1447E6] transition-colors p-1"
+        aria-label="Open date picker"
+      >
+        <Calendar className="w-4 h-4" />
+      </button>
+      <input
+        type="date"
+        ref={dateInputRef}
+        value={DATE_REGEX.test(value) ? value : ''}
+        onChange={(e) => onChange(e.target.value)}
+        className="absolute left-0 bottom-0 w-full h-0 opacity-0 pointer-events-none"
+        tabIndex={-1}
+      />
+    </div>
+  );
+}
+
 function PreviewPanel({
   documentId,
   onClose,
@@ -316,7 +472,7 @@ function PreviewPanel({
   const doc = data?.data;
 
   return (
-    <div className="w-full lg:w-[280px] shrink-0 bg-white rounded-2xl border border-slate-200 p-5">
+    <div className="w-full lg:w-[400px] shrink-0 bg-white rounded-2xl border border-slate-200 p-5">
       <div className="flex items-center justify-between mb-4">
         <h3 className="font-semibold text-slate-800">Preview</h3>
         <button onClick={onClose} className="text-slate-400 hover:text-slate-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-200 rounded" aria-label="Close preview">
@@ -340,8 +496,15 @@ function PreviewPanel({
             const fileUrl = extractFileUrl(doc);
             const isImage = fileUrl && /\.(png|jpe?g|gif|webp|svg)(\?.*)?$/i.test(fileUrl);
             return isImage ? (
-              <div className="border border-slate-100 rounded-xl h-36 overflow-hidden mb-4">
-                <img src={fileUrl!} alt={doc.documentName} className="w-full h-full object-contain bg-slate-50" />
+              <div
+                className="border border-slate-100 rounded-xl bg-[#f8fafc] mb-4 w-full flex items-center justify-center p-3"
+                style={{ minHeight: '200px' }}
+              >
+                <img
+                  src={fileUrl!}
+                  alt={doc.documentName}
+                  style={{ maxHeight: '400px', width: '100%', height: 'auto', objectFit: 'contain', display: 'block', borderRadius: '6px' }}
+                />
               </div>
             ) : (
               <div className="bg-slate-50 border border-slate-100 rounded-xl h-36 flex items-center justify-center mb-4">
@@ -359,6 +522,7 @@ function PreviewPanel({
             <Row label="Size" value={formatSize(doc.size)} />
           </div>
 
+          {/* PreviewPanel download → receipt HTML (same as before) */}
           <button
             onClick={() => onDownload(doc)}
             disabled={isDownloading}
@@ -436,6 +600,7 @@ function Pagination({
 export default function DocumentCenterPage() {
   const [search, setSearch] = useState('');
   const [typeFilter, setTypeFilter] = useState('All Type');
+  const [date, setDate] = useState('all');
   const [page, setPage] = useState(1);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [previewOpen, setPreviewOpen] = useState(false);
@@ -449,13 +614,40 @@ export default function DocumentCenterPage() {
   });
 
   const { data: docsData, isLoading: docsLoading, isFetching: docsFetching } = useQuery({
-    queryKey: ['documents', page, search, typeFilter],
-    queryFn: () => getDocuments({
-      page,
-      limit: ITEMS_PER_PAGE,
-      search: search || undefined,
-      type: typeFilter !== 'All Type' ? typeFilter : undefined,
-    }),
+    queryKey: ['documents', page, search, typeFilter, date],
+    queryFn: () => {
+      const params: any = {
+        page,
+        limit: ITEMS_PER_PAGE,
+        search: search || undefined,
+        type: typeFilter !== 'All Type' ? typeFilter : undefined,
+      };
+
+      // ── Date param logic ──────────────────────────────────────────────
+      // The backend (/api/v1/admin/documents) ONLY accepts:
+      //   date = today | last_7_days | last_month | last_year | all
+      // It does NOT currently support a specific/custom date (no dateFrom/dateTo).
+      // That mismatch was the bug: typing a custom date sent dateFrom/dateTo,
+      // which the backend silently ignores -> filter appeared to "not work".
+      //
+      // Fix: only send `date` when it's one of the backend-supported presets.
+      // If the user typed a specific YYYY-MM-DD date, we currently CANNOT
+      // filter server-side (backend doesn't support it yet), so we don't send
+      // an unsupported param. Once backend adds dateFrom/dateTo support,
+      // uncomment the block below to wire it up.
+      if (PRESET_DATE_VALUES.includes(date)) {
+        if (date !== 'all') {
+          params.date = date;
+        }
+      } else if (DATE_REGEX.test(date)) {
+        // TODO: backend does not support this yet.
+        // Once backend adds support, send it like this:
+        // params.dateFrom = date;
+        // params.dateTo = date;
+      }
+
+      return getDocuments(params);
+    },
     placeholderData: (prev) => prev,
   });
 
@@ -464,6 +656,15 @@ export default function DocumentCenterPage() {
   const meta = docsData?.meta ?? { page: 1, limit: 10, total: 0, totalPages: 0 };
 
   const typeOptions = ['All Type', ...stats.map((s: DocumentStatsItem) => s.type)];
+  const dateOptions = [
+    { label: 'All Time', value: 'all' },
+    { label: 'Today', value: 'today' },
+    { label: 'Last 7 Days', value: 'last_7_days' },
+    { label: 'Last Month', value: 'last_month' },
+    { label: 'Last Year', value: 'last_year' },
+  ];
+
+  const isCustomDateActive = !PRESET_DATE_VALUES.includes(date) && DATE_REGEX.test(date);
 
   const dismissToast = useCallback((id: string) => {
     setToasts((prev) => prev.filter((t) => t.id !== id));
@@ -484,7 +685,26 @@ export default function DocumentCenterPage() {
     setPreviewOpen(true);
   };
 
-  const handleDownload = useCallback(async (doc: DocumentItem) => {
+  // Table row download → direct file download
+  const handleRowDownload = useCallback(async (doc: DocumentItem) => {
+    if (downloadingId) return;
+    setDownloadingId(doc.id);
+    try {
+      await downloadFileDirectly(doc);
+      pushToast({ title: 'Download complete', message: doc.documentName, variant: 'success' });
+    } catch (err) {
+      pushToast({
+        title: 'Download failed',
+        message: err instanceof Error ? err.message : 'Please try again.',
+        variant: 'error',
+      });
+    } finally {
+      setDownloadingId(null);
+    }
+  }, [downloadingId, pushToast]);
+
+  // PreviewPanel download → receipt HTML
+  const handlePreviewDownload = useCallback(async (doc: DocumentItem) => {
     if (downloadingId) return;
     setDownloadingId(doc.id);
     try {
@@ -503,6 +723,20 @@ export default function DocumentCenterPage() {
 
   const handleSearch = (value: string) => { setSearch(value); setPage(1); };
   const handleTypeFilter = (value: string) => { setTypeFilter(value); setPage(1); };
+
+  const handleDate = (value: string) => {
+    setDate(value);
+    setPage(1);
+    // Warn the user (instead of silently doing nothing) when they pick a
+    // specific date the backend can't filter by yet.
+    if (!PRESET_DATE_VALUES.includes(value) && DATE_REGEX.test(value)) {
+      pushToast({
+        title: 'Custom date filter not supported yet',
+        message: 'Backend only supports Today / 7 Days / Month / Year / All for now.',
+        variant: 'error',
+      });
+    }
+  };
 
   const isLoading = statsLoading || (docsLoading && documents.length === 0);
 
@@ -528,6 +762,7 @@ export default function DocumentCenterPage() {
       ) : null}
 
       <div className="flex flex-wrap items-center gap-3 mb-5">
+        {/* Search */}
         <div className="relative flex-1 min-w-[220px]">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
           <input
@@ -538,11 +773,13 @@ export default function DocumentCenterPage() {
             className="w-full bg-white border border-slate-200 rounded-xl pl-10 pr-4 py-3 text-sm text-slate-600 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-200"
           />
         </div>
+
+        {/* Type filter */}
         <div className="relative">
           <select
             value={typeFilter}
             onChange={(e) => handleTypeFilter(e.target.value)}
-            className="appearance-none bg-white border border-slate-200 rounded-xl pl-4 pr-9 py-3 text-sm text-slate-600 min-w-[150px] focus:outline-none focus:ring-2 focus:ring-slate-200 cursor-pointer"
+            className="appearance-none bg-white border border-slate-200 rounded-xl pl-4 pr-9 py-3 text-sm text-slate-600 min-w-[130px] focus:outline-none focus:ring-2 focus:ring-slate-200 cursor-pointer"
           >
             {typeOptions.map((opt) => (
               <option key={opt} value={opt}>{opt === 'All Type' ? 'All Type' : typeDisplayName(opt)}</option>
@@ -550,6 +787,52 @@ export default function DocumentCenterPage() {
           </select>
           <ChevronDown className="absolute right-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
         </div>
+
+        {/* Date Filter */}
+        <div className="relative">
+          <select
+            value={dateOptions.some((opt) => opt.value === date) ? date : 'custom'}
+            onChange={(e) => handleDate(e.target.value)}
+            className="appearance-none bg-white border border-slate-200 rounded-xl pl-4 pr-9 py-3 text-sm text-slate-600 min-w-[130px] focus:outline-none focus:ring-2 focus:ring-slate-200 cursor-pointer"
+          >
+            {dateOptions.map((opt) => (
+              <option key={opt.value} value={opt.value}>{opt.label}</option>
+            ))}
+            {date !== 'all' && !dateOptions.some((opt) => opt.value === date) && (
+              <option value={date}>Custom: {date}</option>
+            )}
+          </select>
+          <ChevronDown className="absolute right-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+        </div>
+
+        {/* Custom Date Input */}
+        {/* <div className="relative">
+          <DateInput
+            value={dateOptions.some((opt) => opt.value === date) ? '' : date}
+            onChange={handleDate}
+            placeholder="Type date (YYYY-MM-DD)"
+          />
+          {isCustomDateActive && (
+            <span
+              className="absolute -bottom-5 left-0 text-[11px] text-amber-500 whitespace-nowrap"
+              title="Backend doesn't support a specific date filter yet — showing all results"
+            >
+              Not supported by server yet
+            </span>
+          )}
+        </div> */}
+
+        {/* Clear filter button — shown when filters are active */}
+        {/* {(search || typeFilter !== 'All Type' || date !== 'all') && (
+          <button
+            onClick={() => { setSearch(''); setTypeFilter('All Type'); setDate('all'); setPage(1); }}
+            className="flex items-center gap-1.5 px-3 py-3 rounded-xl text-sm text-slate-400 hover:text-slate-600 hover:bg-white border border-transparent hover:border-slate-200 transition-colors"
+            title="Clear all filters"
+          >
+            <X className="w-3.5 h-3.5" />
+            Clear
+          </button>
+        )} */}
       </div>
 
       <div className="flex flex-col lg:flex-row gap-5 items-start">
@@ -594,7 +877,7 @@ export default function DocumentCenterPage() {
                               <Eye className="w-4 h-4" />
                             </button>
                             <button
-                              onClick={() => handleDownload(doc)}
+                              onClick={() => handleRowDownload(doc)}
                               disabled={isDownloading}
                               className="rounded-lg p-1 text-green-500 hover:text-green-600 disabled:opacity-60 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-green-200"
                               aria-label={`Download ${doc.documentName}`}
@@ -626,7 +909,7 @@ export default function DocumentCenterPage() {
           <PreviewPanel
             documentId={selectedId}
             onClose={() => { setPreviewOpen(false); setSelectedId(null); }}
-            onDownload={handleDownload}
+            onDownload={handlePreviewDownload}
             isDownloading={downloadingId === selectedId}
           />
         )}
