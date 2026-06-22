@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Plus, Search, AlertCircle, Upload, Trash2 } from "lucide-react";
+import { Plus, Search, AlertCircle, Upload, Trash2, ChevronDown } from "lucide-react";
 import { toast } from "sonner";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import type { Product } from "@/types";
@@ -21,6 +21,7 @@ import { axiosInstance } from "@/api/axiosInstance";
 export default function ProductsPage() {
   const queryClient = useQueryClient();
   const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState<'ALL' | 'ACTIVE' | 'DISABLED'>('ALL');
 
   // Modals state
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -58,6 +59,15 @@ export default function ProductsPage() {
     queryFn: () => getProducts({ search: searchQuery || undefined, limit: 50 }),
   });
   const products = productsData?.data ?? [];
+
+  // Client-side filter by status
+  const filteredProducts = products.filter((product) => {
+    if (statusFilter === 'ALL') return true;
+    // Assuming products have a status field similar to categories, or we can check stock
+    // For now, let's filter based on status if it exists, otherwise return all
+    const s = (product as any).status?.toUpperCase();
+    return s === statusFilter;
+  });
 
   // Mutations
   const saveMutation = useMutation({
@@ -238,15 +248,30 @@ export default function ProductsPage() {
     <div className="p-6 md:p-6 w-full space-y-10 font-sans">
       {/* Control Panel */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-5 ">
-        <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-          <input
-            type="text"
-            placeholder="Search products..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-11 pr-4 py-2.5 rounded-xl border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-sm text-black placeholder-gray-400"
-          />
+        <div className="flex flex-1 items-center gap-3 max-w-2xl">
+          <div className="relative flex-1">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Search products..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-11 pr-4 py-2.5 rounded-xl border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-sm text-black placeholder-gray-400"
+            />
+          </div>
+
+          <div className="relative">
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value as 'ALL' | 'ACTIVE' | 'DISABLED')}
+              className="appearance-none pl-4 pr-10 py-2.5 rounded-xl border border-gray-200 bg-white text-sm text-gray-700 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 cursor-pointer shadow-sm"
+            >
+              <option value="ALL">All Status</option>
+              <option value="ACTIVE">Active</option>
+              <option value="DISABLED">Disabled</option>
+            </select>
+            <ChevronDown className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
+          </div>
         </div>
 
         <button
@@ -271,9 +296,9 @@ export default function ProductsPage() {
             Failed to load products. Please try again.
           </span>
         </div>
-      ) : products.length > 0 ? (
+      ) : filteredProducts.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {products.map((product) => (
+          {filteredProducts.map((product) => (
             <ProductCard
               key={product.id}
               product={product}
@@ -292,15 +317,20 @@ export default function ProductsPage() {
               No products found
             </h3>
             <p className="text-gray-400 text-sm max-w-sm">
-              We couldn't find any products matching search "{searchQuery}".
+              We couldn't find any products matching your filters.
             </p>
           </div>
-          <button
-            onClick={() => setSearchQuery("")}
-            className="text-blue-600 hover:text-blue-700 font-semibold text-sm underline underline-offset-4"
-          >
-            Clear search
-          </button>
+          {(searchQuery || statusFilter !== 'ALL') && (
+            <button
+              onClick={() => {
+                setSearchQuery("");
+                setStatusFilter("ALL");
+              }}
+              className="text-blue-600 hover:text-blue-700 font-semibold text-sm underline underline-offset-4"
+            >
+              Clear all filters
+            </button>
+          )}
         </div>
       )}
 

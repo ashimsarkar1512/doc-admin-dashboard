@@ -50,10 +50,14 @@ export interface GetCategoriesResponse {
   data: Category[];
 }
 
-// --- New Types for Single Assessment Details ---
+// --- Types for Single Assessment Details ---
+interface SelectedOption {
+  id: string;
+  label: string;
+}
 
 interface PatientAnswer {
-  selectedOptions: string[];
+  selectedOptions: SelectedOption[];
   textResponse: string | null;
   file: string | null;
 }
@@ -62,22 +66,22 @@ interface QuestionOption {
   id: string;
   label: string;
   inputType?: string;
-  subQuestions: any[];
+  subQuestions: Question[];
 }
 
 interface Question {
   id: string;
-  type: 'INPUT' | 'CHECKBOX' | 'RADIO' | string;
-  heading: string;
-  questionText: string;
-  description: string;
+  type: 'INPUT' | 'CHECKBOX' | 'RADIO' | 'SINGLE_CHOICE' | 'MULTIPLE_CHOICE' | 'INFORMATION_ONLY' | string;
+  heading: string | null;
+  questionText: string | null;
+  description: string | null;
   options: QuestionOption[];
-  patientAnswer: PatientAnswer;
+  patientAnswer: PatientAnswer | null;
 }
 
 interface Product {
   name: string;
-  size?: string;
+  size?: string | null;
   image: string;
   price: number;
 }

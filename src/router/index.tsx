@@ -106,6 +106,13 @@ const previewDetailsRoute = createRoute({
   component: PreviewDetailsPage,
 });
 
+import PatientDetailsPage from "@/features/dashboard/PatientDetailsPage";
+const patientDetailsRoute = createRoute({
+  getParentRoute: () => dashboardLayoutRoute,
+  path: "/patient-management/$assessmentId/preview",
+  component: PatientDetailsPage,
+});
+
 import CheckoutPage from "@/features/dashboard/CheckoutPage";
 const checkoutRoute = createRoute({
   getParentRoute: () => dashboardLayoutRoute,
@@ -292,6 +299,7 @@ const routeTree = rootRoute.addChildren([
     assessmentsRoute,
     assessmentTableRoute,
     previewDetailsRoute,
+    patientDetailsRoute,
     checkoutRoute,
     productsRoute,
     providersRoute,

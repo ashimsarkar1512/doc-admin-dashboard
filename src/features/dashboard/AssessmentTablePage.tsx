@@ -2,12 +2,9 @@ import { useState, useRef, useCallback, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
 import { Search, ChevronDown, RefreshCw,} from 'lucide-react';
-import {
-  getAssessments,
-  getCategories,
-  type Assessment,
-  type Category,
-} from '@/api/endpoints/dashboard/assessments';
+import { getAssessments, getCategories, type Assessment, type Category } from '@/api/endpoints/dashboard/assessments';
+import AssignDoctorModal from './components/AssignDoctorModal';
+import { useQueryClient } from '@tanstack/react-query';
 
 /** Coloured avatar circle with patient initials */
 function PatientAvatar({ name, image }: { name: string | null; image: string | null }) {
@@ -153,7 +150,7 @@ const PAGE_SIZE = 10;
 
 export default function AssessmentTablePage() {
   const navigate = useNavigate();
-
+  const queryClient = useQueryClient();
 
   const [searchTerm, setSearchTerm] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
@@ -161,6 +158,7 @@ export default function AssessmentTablePage() {
   const [categoryFilter, setCategoryFilter] = useState('');
   const [patientTypeFilter, setPatientTypeFilter] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
+  const [assigningAssessment, setAssigningAssessment] = useState<Assessment | null>(null);
 
   // Debounce helper
   const debounceTimers = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
@@ -205,11 +203,6 @@ export default function AssessmentTablePage() {
   const assessments = data?.data ?? [];
   const meta = data?.meta;
   const totalPages = meta?.totalPages ?? 1;
-
-  const handlePageChange = (page: number) => {
-    if (page < 1 || page > totalPages) return;
-    setCurrentPage(page);
-  };
 
   // Status options
   const statusOptions = [
@@ -352,7 +345,7 @@ export default function AssessmentTablePage() {
                       <div className="flex items-center justify-center">
                         {!assessment.provider ? (
                           <button
-                            onClick={() => {}}
+                            onClick={() => setAssigningAssessment(assessment)}
                             className="px-6 py-2 bg-blue-600 text-white text-[13px] font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
                           >
                             Assign
@@ -384,69 +377,36 @@ export default function AssessmentTablePage() {
                 <> &mdash; <span className="font-medium text-gray-700">{meta.total}</span> total</>
               )}
             </p>
-            <div className="flex items-center gap-1">
-              <button
-                onClick={() => handlePageChange(1)}
-                disabled={currentPage === 1}
-                className="px-2.5 py-1.5 rounded-lg border border-gray-200 text-xs font-medium text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-              >
-                «
-              </button>
-              <button
-                onClick={() => handlePageChange(currentPage - 1)}
-                disabled={currentPage === 1}
-                className="px-3 py-1.5 rounded-lg border border-gray-200 text-xs font-medium text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-              >
-                ‹ Prev
-              </button>
 
-              {Array.from({ length: totalPages }, (_, i) => i + 1)
-                .filter((p) => p === 1 || p === totalPages || Math.abs(p - currentPage) <= 1)
-                .reduce<(number | '...')[]>((acc, p, idx, arr) => {
-                  if (idx > 0 && typeof arr[idx - 1] === 'number' && (p as number) - (arr[idx - 1] as number) > 1) {
-                    acc.push('...');
-                  }
-                  acc.push(p);
-                  return acc;
-                }, [])
-                .map((item, idx) =>
-                  item === '...' ? (
-                    <span key={`ellipsis-${idx}`} className="px-2 py-1.5 text-xs text-gray-400">
-                      …
-                    </span>
-                  ) : (
-                    <button
-                      key={item}
-                      onClick={() => handlePageChange(item as number)}
-                      className={`w-8 h-8 rounded-lg border text-xs font-semibold transition-colors ${
-                        currentPage === item
-                          ? 'bg-[#2563EB] border-[#2563EB] text-white shadow-sm shadow-blue-600/20'
-                          : 'border-gray-200 text-gray-600 hover:bg-gray-50'
-                      }`}
-                    >
-                      {item}
-                    </button>
-                  )
-                )}
-
+            <div className="flex items-center gap-2">
               <button
-                onClick={() => handlePageChange(currentPage + 1)}
-                disabled={currentPage === totalPages}
-                className="px-3 py-1.5 rounded-lg border border-gray-200 text-xs font-medium text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                disabled={currentPage === 1 || isFetching}
+                className="p-2 rounded-lg border border-slate-200 text-slate-400 hover:text-slate-600 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
-                Next ›
+                <ChevronDown className="rotate-90" size={18} />
               </button>
               <button
-                onClick={() => handlePageChange(totalPages)}
-                disabled={currentPage === totalPages}
-                className="px-2.5 py-1.5 rounded-lg border border-gray-200 text-xs font-medium text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                disabled={currentPage === totalPages || isFetching}
+                className="p-2 rounded-lg border border-slate-200 text-slate-400 hover:text-slate-600 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
-                »
+                <ChevronDown className="-rotate-90" size={18} />
               </button>
             </div>
           </div>
         )}
       </div>
+
+      <AssignDoctorModal
+        isOpen={!!assigningAssessment}
+        onClose={() => {
+          setAssigningAssessment(null);
+          // Refresh assessments list after assign
+          queryClient.invalidateQueries({ queryKey: ['assessments'] });
+        }}
+        assessment={assigningAssessment}
+      />
     </div>
   );
 }
