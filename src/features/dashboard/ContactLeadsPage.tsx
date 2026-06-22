@@ -89,12 +89,12 @@ const handleExport = async () => {
       <div className="flex flex-col sm:flex-row justify-end  mb-8 gap-4">
       
         <div className="flex justify-end items-center gap-3 w-full sm:w-auto">
-          <select className="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm text-slate-700 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20">
+          {/* <select className="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm text-slate-700 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20">
             <option>All services</option>
           </select>
           <select className="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm text-slate-700 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20">
             <option>Today</option>
-          </select>
+          </select> */}
           <button 
             onClick={handleExport}
             className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors ml-auto sm:ml-0"
