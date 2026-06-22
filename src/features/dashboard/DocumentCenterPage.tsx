@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback } from 'react';
-import { Search, ChevronDown, Eye, Download, X, Check, Loader2, ChevronLeft, ChevronRight, FileText, Calendar } from 'lucide-react';
+import { Search, ChevronDown, Eye, Download, X, Check, Loader2, ChevronLeft, ChevronRight, FileText } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import {
   getDocumentStats,
@@ -398,59 +398,59 @@ function Row({ label, value }: { label: string; value: string }) {
   );
 }
 
-function DateInput({
-  value,
-  onChange,
-  placeholder,
-}: {
-  value: string;
-  onChange: (val: string) => void;
-  placeholder: string;
-}) {
-  const dateInputRef = useRef<HTMLInputElement>(null);
+// function DateInput({
+//   value,
+//   onChange,
+//   placeholder,
+// }: {
+//   value: string;
+//   onChange: (val: string) => void;
+//   placeholder: string;
+// }) {
+//   const dateInputRef = useRef<HTMLInputElement>(null);
 
-  const handleIconClick = () => {
-    try {
-      if (dateInputRef.current && 'showPicker' in HTMLInputElement.prototype) {
-        dateInputRef.current.showPicker();
-      } else {
-        dateInputRef.current?.focus();
-        dateInputRef.current?.click();
-      }
-    } catch (err) {
-      dateInputRef.current?.focus();
-      dateInputRef.current?.click();
-    }
-  };
+//   const handleIconClick = () => {
+//     try {
+//       if (dateInputRef.current && 'showPicker' in HTMLInputElement.prototype) {
+//         dateInputRef.current.showPicker();
+//       } else {
+//         dateInputRef.current?.focus();
+//         dateInputRef.current?.click();
+//       }
+//     } catch (err) {
+//       dateInputRef.current?.focus();
+//       dateInputRef.current?.click();
+//     }
+//   };
 
-  return (
-    <div className="relative group">
-      <input
-        type="text"
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        placeholder={placeholder}
-        className="bg-white border border-slate-200 rounded-xl pl-4 pr-10 py-3 text-sm text-slate-600 focus:outline-none focus:ring-2 focus:ring-slate-200 w-[160px] transition-all"
-      />
-      <button
-        type="button"
-        onClick={handleIconClick}
-        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-[#1447E6] transition-colors p-1"
-        aria-label="Open date picker"
-      >
-        <Calendar className="w-4 h-4" />
-      </button>
-      <input
-        type="date"
-        ref={dateInputRef}
-        value={DATE_REGEX.test(value) ? value : ''}
-        onChange={(e) => onChange(e.target.value)}
-        className="absolute left-0 bottom-0 w-full h-0 opacity-0 pointer-events-none"
-        tabIndex={-1}
-      />
-    </div>
-  );
-}
+//   return (
+//     <div className="relative group">
+//       <input
+//         type="text"
+//         value={value}
+//         onChange={(e) => onChange(e.target.value)}
+//         placeholder={placeholder}
+//         className="bg-white border border-slate-200 rounded-xl pl-4 pr-10 py-3 text-sm text-slate-600 focus:outline-none focus:ring-2 focus:ring-slate-200 w-[160px] transition-all"
+//       />
+//       <button
+//         type="button"
+//         onClick={handleIconClick}
+//         className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-[#1447E6] transition-colors p-1"
+//         aria-label="Open date picker"
+//       >
+//         <Calendar className="w-4 h-4" />
+//       </button>
+//       <input
+//         type="date"
+//         ref={dateInputRef}
+//         value={DATE_REGEX.test(value) ? value : ''}
+//         onChange={(e) => onChange(e.target.value)}
+//         className="absolute left-0 bottom-0 w-full h-0 opacity-0 pointer-events-none"
+//         tabIndex={-1}
+//       />
+//     </div>
+//   );
+// }
 
 function PreviewPanel({
   documentId,
@@ -664,7 +664,7 @@ export default function DocumentCenterPage() {
     { label: 'Last Year', value: 'last_year' },
   ];
 
-  const isCustomDateActive = !PRESET_DATE_VALUES.includes(date) && DATE_REGEX.test(date);
+  // const isCustomDateActive = !PRESET_DATE_VALUES.includes(date) && DATE_REGEX.test(date);
 
   const dismissToast = useCallback((id: string) => {
     setToasts((prev) => prev.filter((t) => t.id !== id));
