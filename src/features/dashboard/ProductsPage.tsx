@@ -30,6 +30,7 @@ export default function ProductsPage() {
   const [formName, setFormName] = useState("");
   const [formCategory, setFormCategory] = useState("");
   const [formPrice, setFormPrice] = useState("");
+  const [formSize, setFormSize] = useState("");
   const [formDescription, setFormDescription] = useState("");
   const [formImageFile, setFormImageFile] = useState<File | null>(null);
   const [formImagePreview, setFormImagePreview] = useState<string>("");
@@ -115,6 +116,7 @@ export default function ProductsPage() {
     setFormName("");
     setFormCategory(categories.length > 0 ? String(categories[0].id) : "");
     setFormPrice("");
+    setFormSize("");
     setFormDescription("");
     setFormImageFile(null);
     setFormImagePreview("");
@@ -130,6 +132,7 @@ export default function ProductsPage() {
     setFormName(product.name);
     setFormCategory(product.categoryId);
     setFormPrice(String(product.price));
+    setFormSize("");
     setFormDescription(product.description || "");
     setFormImageFile(null);
     setFormImagePreview(product.images?.[0]?.fileUrl || "");
@@ -221,14 +224,11 @@ export default function ProductsPage() {
       description: formDescription,
       categoryId: formCategory,
       images: finalImageId ? [finalImageId] : undefined,
-      variants:
-        variants.length > 0
-          ? variants.map((v) => ({
-              size: v.size,
-              price: Number(v.price),
-              stockQuantity: Number(v.stockQuantity),
-            }))
-          : undefined,
+      variants: variants.map((v) => ({
+        size: v.size,
+        price: Number(v.price),
+        stockQuantity: Number(v.stockQuantity),
+      })),
     };
 
     saveMutation.mutate(payload);
@@ -385,21 +385,22 @@ export default function ProductsPage() {
                 </label>
                 <div className="flex bg-white rounded-[10px] border border-gray-200 overflow-hidden">
                   <input
-                    type="text"
+                    type="number"
+                    min={0}
                     placeholder="e.g., 10"
-                    value={formPrice?.split(" ")[0] || ""}
+                    value={formSize?.split(" ")[0] || ""}
                     onChange={(e) =>
-                      setFormPrice(
-                        `${e.target.value} ${formPrice?.split(" ")[1] || "ml"}`,
+                      setFormSize(
+                        `${e.target.value} ${formSize?.split(" ")[1] || "ml"}`,
                       )
                     }
                     className="w-full px-3 py-2 text-sm focus:outline-none text-black"
                   />
                   <select
-                    value={formPrice?.split(" ")[1] || "ml"}
+                    value={formSize?.split(" ")[1] || "ml"}
                     onChange={(e) =>
-                      setFormPrice(
-                        `${formPrice?.split(" ")[0] || ""} ${e.target.value}`,
+                      setFormSize(
+                        `${formSize?.split(" ")[0] || ""} ${e.target.value}`,
                       )
                     }
                     className="bg-gray-50 border-l border-gray-200 px-2 py-2 text-sm text-gray-700 outline-none cursor-pointer"
@@ -460,7 +461,8 @@ export default function ProductsPage() {
                     </label>
                     <div className="flex bg-white rounded-[10px] border border-gray-200 overflow-hidden">
                       <input
-                        type="text"
+                        type="number"
+                        min={0}
                         placeholder="e.g., 10"
                         value={variant.size.split(" ")[0] || ""}
                         onChange={(e) =>

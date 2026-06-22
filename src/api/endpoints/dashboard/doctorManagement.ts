@@ -22,7 +22,7 @@ export interface Doctor {
   shortBio: string;
   email: string;
   officeLocation: string;
-  status: 'ACTIVE' | 'INACTIVE';
+  status: 'ACTIVE' | 'INACTIVE' | 'BLOCKED' | string;
   activeConsultation: number;
   createdAt: string;
   updatedAt: string;
@@ -73,4 +73,35 @@ export const getDoctorTitles = async (search?: string): Promise<GetDoctorTitlesR
     params: search ? { title: search } : undefined,
   });
   return data;
+};
+
+export const getDoctorDetails = async (id: string): Promise<Doctor> => {
+  const { data } = await axiosInstance.get<{ data: Doctor }>(`/admin/doctors/${id}`);
+  return data.data;
+};
+
+export interface UpdateDoctorPayload {
+  avatarId?: string;
+  featured?: boolean;
+  fullName?: string;
+  shortBio?: string;
+  email?: string;
+  password?: string;
+  status?: 'ACTIVE' | 'INACTIVE' | 'BLOCKED' | string;
+  roleTitle?: string;
+  officeLocation?: string;
+}
+
+export const updateDoctor = async (id: string, payload: UpdateDoctorPayload): Promise<Doctor> => {
+  const { data } = await axiosInstance.patch<{ data: Doctor }>(`/admin/doctors/${id}`, payload);
+  return data.data;
+};
+
+export const updateDoctorStatus = async (id: string, status: string): Promise<Doctor> => {
+  const { data } = await axiosInstance.patch<{ data: Doctor }>(`/admin/doctors/${id}/status`, { status });
+  return data.data;
+};
+
+export const deleteDoctor = async (id: string): Promise<void> => {
+  await axiosInstance.delete(`/admin/doctors/${id}`);
 };
