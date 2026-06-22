@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { Search, ChevronDown, Eye, Ban, Trash2, ArrowRightToLine, UserCircle2, CheckCircle2, FileDown } from 'lucide-react';
+import { Search, ChevronDown, Eye, Ban, Trash2,  UserCircle2, CheckCircle2, FileDown } from 'lucide-react';
 import Swal from 'sweetalert2';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
