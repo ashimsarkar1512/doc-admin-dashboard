@@ -850,10 +850,8 @@
 
 // add here upload imge defrent api 
 
-
 import React, { useEffect, useState } from 'react';
 import { Save, Upload, Loader2 } from 'lucide-react';
-// import axiosInstance from '@/lib/axiosInstance'; // adjust path if different in your project
 import {
   getWebsiteSettings,
   updateWebsiteSettings,
@@ -973,7 +971,9 @@ function Divider() {
 
 // ─── Attachment upload helper ──────────────────────────────────────────────────
 // Uploads a single file to the attachments endpoint and returns the new attachment id.
-// Adjust the `context` values below to match your backend's actual enum.
+// NOTE: "PRODUCT_IMAGE" is the only context value confirmed working so far (from
+// the product page). Logo/favicon/social-preview may need a different enum value —
+// swap it in once you confirm the real list from your backend/swagger.
 async function uploadAttachment(file: File, context: string): Promise<string> {
   const formData = new FormData();
   formData.append('context', context);
@@ -1038,6 +1038,7 @@ export default function SiteSettingsPage() {
         setLoading(true);
         setError(null);
         const data: WebsiteSettings = await getWebsiteSettings();
+        console.log("Website Settings API Response:", data);
         if (!isMounted) return;
 
         setTitle(data.title ?? '');
@@ -1119,11 +1120,11 @@ export default function SiteSettingsPage() {
       //    ids in the settings payload, not raw files.
       const [whiteLogoId, blackLogoId, faviconLightId, faviconDarkId, socialPreviewId] =
         await Promise.all([
-          whiteLogoFile ? uploadAttachment(whiteLogoFile, 'LOGO') : Promise.resolve(undefined),
-          blackLogoFile ? uploadAttachment(blackLogoFile, 'LOGO') : Promise.resolve(undefined),
-          faviconLightFile ? uploadAttachment(faviconLightFile, 'FAVICON') : Promise.resolve(undefined),
-          faviconDarkFile ? uploadAttachment(faviconDarkFile, 'FAVICON') : Promise.resolve(undefined),
-          socialPreviewFile ? uploadAttachment(socialPreviewFile, 'SOCIAL_PREVIEW') : Promise.resolve(undefined),
+          whiteLogoFile ? uploadAttachment(whiteLogoFile, 'PRODUCT_IMAGE') : Promise.resolve(undefined),
+          blackLogoFile ? uploadAttachment(blackLogoFile, 'PRODUCT_IMAGE') : Promise.resolve(undefined),
+          faviconLightFile ? uploadAttachment(faviconLightFile, 'PRODUCT_IMAGE') : Promise.resolve(undefined),
+          faviconDarkFile ? uploadAttachment(faviconDarkFile, 'PRODUCT_IMAGE') : Promise.resolve(undefined),
+          socialPreviewFile ? uploadAttachment(socialPreviewFile, 'PRODUCT_IMAGE') : Promise.resolve(undefined),
         ]);
 
       // 2. Send plain JSON with ids (not files) to the settings endpoint

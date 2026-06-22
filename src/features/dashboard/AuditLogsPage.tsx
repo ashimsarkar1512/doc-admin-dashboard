@@ -428,7 +428,7 @@
 
 // import {  useState,  } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import {
   getAuditLogs,
   getAuditLogsStats,
@@ -457,29 +457,10 @@ import {
   Database,
 } from "lucide-react";
 
-import Swal from "sweetalert2";
+
 import Auditlogdetailmodal from "./components/auditLogPageComponent/Auditlogdetailmodal ";
 
-// ─── Display Maps ─────────────────────────────────────────────────────────────
 
-// const STATUS_STYLES: Record<
-//   AuditLogStatus,
-//   { label: string; className: string }
-// > = {
-//   SUCCESS: {
-//     label: "Success",
-//     className: "bg-green-50 text-green-600 border border-green-200",
-//   },
-//   FAILED: {
-//     label: "Failed",
-//     className: "bg-red-50 text-red-600 border border-red-200",
-//   },
-// };
-
-// const FALLBACK_STATUS_STYLE = {
-//   label: "Unknown",
-//   className: "bg-slate-100 text-slate-500 border border-slate-200",
-// };
 
 // Static dropdown options — swagger has no dedicated "options" endpoint,
 // so these are derived from the values seen in the audit log data.
@@ -521,10 +502,10 @@ function StatCard({ label, value, icon }: StatCardProps) {
 // ─── Avatar ───────────────────────────────────────────────────────────────────
 
 function getInitials(name: string | null) {
-  const parts = (name || '').trim().split(/\s+/).filter(Boolean);
-  if (parts.length === 0) return '??';
+  const parts = (name || "").trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return "??";
   if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
-  return (parts[0][0] + (parts[1]?.[0] || '')).toUpperCase();
+  return (parts[0][0] + (parts[1]?.[0] || "")).toUpperCase();
 }
 
 function Avatar({ name }: { name: string }) {
@@ -538,6 +519,8 @@ function Avatar({ name }: { name: string }) {
 // ─── Page Component ───────────────────────────────────────────────────────────
 
 export default function AuditLogsPage() {
+  // Add at the top of the component, after existing useState declarations:
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   // Filter state
   const [search, setSearch] = useState("");
   const [role, setRole] = useState<string>("");
@@ -546,7 +529,7 @@ export default function AuditLogsPage() {
   const [startDate, setStartDate] = useState<string>("");
   const [endDate, setEndDate] = useState<string>("");
   const [page, setPage] = useState(1);
-  const [isExporting, setIsExporting] = useState(false);
+  const [isExporting, ] = useState(false);
   const [selectedLog, setSelectedLog] = useState<AuditLog | null>(null);
   const limit = 10;
 
@@ -554,14 +537,20 @@ export default function AuditLogsPage() {
   const queryParams: GetAuditLogsParams = {
     page,
     limit,
-    ...(search.trim() && { search: search.trim() }),
+    ...(debouncedSearch && { search: debouncedSearch }), // ← changed
     ...(role && { role }),
     ...(activityType && { activityType }),
     ...(status && { status }),
     ...(startDate && { startDate }),
     ...(endDate && { endDate }),
   };
-
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(search.trim());
+      setPage(1);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [search]);
   // ── Data fetching ──────────────────────────────────────────────────────────
 
   const {
@@ -593,36 +582,35 @@ export default function AuditLogsPage() {
     refetchStats();
   };
 
-  const handleExport = async () => {
-    setIsExporting(true);
-    try {
-      const exportParams = {
-        ...(search.trim() && { search: search.trim() }),
-        ...(role && { role }),
-        ...(activityType && { activityType }),
-        ...(status && { status }),
-        ...(startDate && { startDate }),
-        ...(endDate && { endDate }),
-      };
-      const blob = await exportAuditLogs(exportParams);
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = `audit-logs-${new Date().toISOString().slice(0, 10)}.csv`;
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      window.URL.revokeObjectURL(url);
-    } catch (error) {
-      Swal.fire({
-        icon: "error",
-        title: "Export failed",
-        text: "Could not export audit logs. Please try again.",
-      });
-    } finally {
-      setIsExporting(false);
-    }
-  };
+const handleExport = async () => {
+  try {
+    const blob = await exportAuditLogs({
+      search,
+      role,
+      activityType,
+      status,
+      startDate,
+      endDate,
+    });
+
+    // 👇 file download trigger
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+
+    // filename (optional - backend থেকেও parse করতে পারো)
+    link.download = 'audit-logs.csv';
+
+    document.body.appendChild(link);
+    link.click();
+
+    link.remove();
+    window.URL.revokeObjectURL(url);
+    refetchStats();
+  } catch (error) {
+    console.error('Export failed', error);
+  }
+};
 
   // ── Derived values ─────────────────────────────────────────────────────────
 
@@ -761,7 +749,8 @@ export default function AuditLogsPage() {
 
         <div className="relative">
           <input
-            type="text"
+            // type="text"
+            type="date"
             value={startDate}
             onChange={(e) => {
               setStartDate(e.target.value);
@@ -775,7 +764,8 @@ export default function AuditLogsPage() {
 
         <div className="relative">
           <input
-            type="text"
+            type="date"
+            // type="text"
             value={endDate}
             onChange={(e) => {
               setEndDate(e.target.value);
