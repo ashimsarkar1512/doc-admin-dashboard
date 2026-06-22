@@ -6,7 +6,7 @@ import type { Assessment } from '@/types';
 import MetricCard from '@/components/shared/cards/MetricCard';
 import AssessmentCard from '@/components/shared/cards/AssessmentCard';
 import AssessmentFormDialog from './components/AssessmentFormDialog';
-import { getAssessments } from '@/api/endpoints/assessments.api';
+import { getAssessments, getAssessmentStats } from '@/api/endpoints/assessments.api';
 import { getCategories } from '@/api/endpoints/categories.api';
 import { API_BASE_URL } from '@/api/config';
 import Swal from 'sweetalert2';
@@ -34,6 +34,11 @@ export default function AssessmentsPage() {
   });
   const categories = categoriesData?.data ?? [];
 
+  const { data: statsData, isLoading: isStatsLoading } = useQuery({
+    queryKey: ['assessment-stats'],
+    queryFn: getAssessmentStats,
+  });
+
   const { data, isLoading, isError } = useQuery({
     queryKey: ['assessments', { categoryName: categoryNameFilter }],
     queryFn: () => getAssessments({ categoryName: categoryNameFilter || undefined, limit: 50 }),
@@ -45,6 +50,7 @@ export default function AssessmentsPage() {
     mutationFn: deleteAssessment,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['assessments'] });
+      queryClient.invalidateQueries({ queryKey: ['assessment-stats'] });
       toast.success('Assessment deleted.');
     },
     onError: (error: Error) => {
@@ -84,20 +90,36 @@ export default function AssessmentsPage() {
     setEditingAssessment(null);
   };
 
-  // Stats derived from fetched data
-  const activeCount = assessments.filter((a) => a.status === 'ACTIVE').length;
-  const totalQuestions = assessments.reduce((acc, a) => acc + (a.totalQuestions ?? 0), 0);
-
   return (
     <div className="p-6 md:p-10 w-full space-y-10 font-sans">
 
       {/* Metric Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6">
         {[
-          { label: 'Active Assessments', value: activeCount.toString().padStart(2, '0') },
-          { label: 'Total Questions', value: totalQuestions.toLocaleString() },
-          { label: 'Total Assessments', value: assessments.length.toString().padStart(2, '0') },
-          { label: 'Draft Assessments', value: assessments.filter(a => a.status === 'DRAFT').length.toString().padStart(2, '0') },
+          { 
+            label: 'Active Assessments', 
+            value: isStatsLoading ? '...' : (statsData?.activeAssessments ?? 0).toString().padStart(2, '0') 
+          },
+          { 
+            label: 'Draft Assessments', 
+            value: isStatsLoading ? '...' : (statsData?.draftAssessments ?? 0).toString().padStart(2, '0') 
+          },
+          { 
+            label: 'Disabled Assessments', 
+            value: isStatsLoading ? '...' : (statsData?.disabledAssessments ?? 0).toString().padStart(2, '0') 
+          },
+          { 
+            label: 'Assessments Taken', 
+            value: isStatsLoading ? '...' : (statsData?.assessmentTaken ?? 0).toLocaleString() 
+          },
+          { 
+            label: 'Approved Assessments', 
+            value: isStatsLoading ? '...' : (statsData?.approvedAssessments ?? 0).toString().padStart(2, '0') 
+          },
+          { 
+            label: 'Declined Assessments', 
+            value: isStatsLoading ? '...' : (statsData?.declinedAssessments ?? 0).toString().padStart(2, '0') 
+          },
         ].map((m, i) => (
           <MetricCard key={i} label={m.label} value={m.value} />
         ))}
