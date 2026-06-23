@@ -88,6 +88,7 @@ export default function AssessmentFormDialog({ isOpen, onClose, editingAssessmen
     },
     onSuccess: (saved) => {
       queryClient.invalidateQueries({ queryKey: ['assessments'] });
+      queryClient.invalidateQueries({ queryKey: ['assessment-stats'] });
       if (!assessmentId) {
         setAssessmentId(saved.id);
         toast.success('Assessment created! You can now add questions.');

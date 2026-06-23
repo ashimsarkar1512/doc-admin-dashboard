@@ -1,0 +1,353 @@
+import { useParams, useNavigate } from "@tanstack/react-router";
+import { ArrowLeft } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { getAssessmentDetails, type AssessmentDetails } from "@/api/endpoints/dashboard/assessments";
+
+// --- Sub-components ---
+
+function SectionCard({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="bg-white border border-[#E5E7EB] rounded-xl p-5 space-y-3">
+      {children}
+    </div>
+  );
+}
+
+function Question({ text }: { text?: string | null }) {
+  if (!text) return null;
+  return <p className="text-sm font-semibold text-slate-800">{text}</p>;
+}
+
+function RadioAnswer({ label }: { label: string }) {
+  return (
+    <div className="flex items-center gap-2.5">
+      <div className="w-4 h-4 rounded-full border-2 border-[#1447E6] flex items-center justify-center shrink-0">
+        <div className="w-2 h-2 rounded-full bg-[#1447E6]" />
+      </div>
+      <span className="text-sm text-slate-600">{label}</span>
+    </div>
+  );
+}
+
+function CheckboxAnswer({ label }: { label: string }) {
+  return (
+    <div className="flex items-center gap-2.5">
+      <div className="w-4 h-4 rounded bg-[#1447E6] flex items-center justify-center shrink-0">
+        <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
+          <path
+            d="M1 4L3.5 6.5L9 1"
+            stroke="white"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      </div>
+      <span className="text-sm text-slate-600">{label}</span>
+    </div>
+  );
+}
+
+function GrayCheckbox({ text }: { text: string }) {
+  return (
+    <div className="flex items-center gap-2.5 py-2 border border-[#E5E7EB] rounded-lg px-4 bg-slate-50">
+      <div className="w-4 h-4 rounded bg-[#1447E6] flex items-center justify-center shrink-0">
+        <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
+          <path
+            d="M1 4L3.5 6.5L9 1"
+            stroke="white"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      </div>
+      <span className="text-sm text-slate-600">{text}</span>
+    </div>
+  );
+}
+
+// --- Helper to render dynamic questions ---
+function RenderQuestion({ question }: { question: AssessmentDetails['questions'][0] }) {
+  // Skip if it's just info only with no patient answer needed
+  if (question.type === 'INFORMATION_ONLY') {
+    return (
+      <SectionCard key={question.id}>
+        {question.heading && <p className="text-xs text-slate-500 font-medium mb-1">{question.heading}</p>}
+        <Question text={question.questionText} />
+        {question.description && <p className="text-xs text-slate-500">{question.description}</p>}
+      </SectionCard>
+    );
+  }
+
+  const isSingleChoice = question.type === 'SINGLE_CHOICE';
+  const isMultipleChoice = question.type === 'MULTIPLE_CHOICE';
+  const isInput = question.type === 'INPUT';
+
+  return (
+    <SectionCard key={question.id}>
+      {question.heading && <p className="text-xs text-slate-500 font-medium mb-1">{question.heading}</p>}
+      <Question text={question.questionText} />
+      {question.description && <p className="text-xs text-slate-500">{question.description}</p>}
+      
+      <div className="space-y-2 mt-4">
+        {/* Text Response */}
+        {isInput && question.patientAnswer?.textResponse && (
+          <div className="text-sm text-slate-600 bg-slate-50 p-3 rounded-lg border border-slate-100">
+            {question.patientAnswer.textResponse}
+          </div>
+        )}
+        {/* File Attachment - Show if present */}
+        {question.patientAnswer?.file && (
+           <div className="text-sm text-slate-600 bg-slate-50 p-3 rounded-lg border border-slate-100 flex items-center gap-2">
+            <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            <span>File attached</span>
+          </div>
+        )}
+        {/* Selected Options (Checkboxes/Radio) */}
+        {(isSingleChoice || isMultipleChoice) && question.patientAnswer?.selectedOptions && question.patientAnswer.selectedOptions.length > 0 && (
+          <div className="space-y-2">
+            {question.patientAnswer.selectedOptions.map((opt, idx) => {
+              const displayLabel = opt.label || opt.id || 'Unknown';
+              return isSingleChoice ? (
+                <RadioAnswer key={idx} label={displayLabel} />
+              ) : (
+                <CheckboxAnswer key={idx} label={displayLabel} />
+              );
+            })}
+          </div>
+        )}
+      </div>
+    </SectionCard>
+  );
+}
+
+// --- Main Page ---
+export default function PatientDetailsPage() {
+  const { assessmentId } = useParams({
+    strict: false,
+  }) as { assessmentId: string };
+  const navigate = useNavigate();
+
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["assessment-details", assessmentId],
+    queryFn: () => getAssessmentDetails(assessmentId),
+  });
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
+        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#1447E6]"></div>
+        <p className="text-sm text-slate-500">Loading details...</p>
+      </div>
+    );
+  }
+
+  if (error || !data?.success) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4 px-4">
+        <p className="text-lg font-semibold text-red-600">Failed to load details</p>
+        <p className="text-sm text-slate-500">Please try again</p>
+        <button
+          onClick={() => navigate({ to: "/dashboard" })}
+          className="px-5 py-2.5 bg-slate-100 text-slate-700 rounded-xl font-medium hover:bg-slate-200 transition-colors"
+        >
+          Back to Dashboard
+        </button>
+      </div>
+    );
+  }
+
+  const details = data.data;
+  const statusDisplay = (details?.status || '')
+    .split(' ')
+    .filter(Boolean)
+    .map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+    .join(' ');
+  const isRejected = details?.status === 'REJECTED' || details?.status === 'DECLINED';
+  
+  const formatCurrency = (amount: number) => `$${amount.toFixed(2)}`;
+  
+  const complianceChecks = [
+    "I have reviewed and agree to the Terms of Service and Privacy Policy.",
+    "I certify that all information provided is accurate and complete.",
+    "I understand that providing false or misleading information may result in denial of treatment.",
+    "I understand that treatment recommendations are based on the information I have provided.",
+    "I understand that additional information may be requested before treatment is approved."
+  ];
+
+  return (
+    <div className="w-full max-w-3xl mx-auto px-4 py-8">
+      {/* Back button */}
+      <button
+        onClick={() => navigate({ to: "/dashboard" })}
+        className="flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-700 mb-6 transition-colors"
+      >
+        <ArrowLeft size={16} />
+        Back to Dashboard
+      </button>
+
+      <div className="space-y-4">
+        {/* Patient Header Card */}
+        <SectionCard>
+          <div className="flex items-start justify-between flex-wrap gap-3 mb-4">
+            <div className="flex items-center gap-3">
+              {/* Avatar */}
+              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-400 to-blue-500 flex items-center justify-center shrink-0 overflow-hidden">
+                <span className="text-xs font-bold text-white">PM</span>
+              </div>
+              <div>
+                <p className="font-semibold text-slate-800 text-sm">
+                  Patient: {details.assessment.title}
+                </p>
+                <p className="text-xs text-slate-500">
+                  Consultation id: {details.submissionCode}
+                </p>
+                {details.reviewedBy && (
+                  <p className="text-xs text-slate-500 mt-1">
+                    Reviewed by: {details.reviewedBy.name}
+                  </p>
+                )}
+              </div>
+            </div>
+            
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-medium text-slate-700 bg-slate-100 px-3 py-1 rounded-full">
+                {details.assessment.category}
+              </span>
+              <span className={`text-xs font-semibold px-3 py-1 rounded-full ${
+                isRejected ? 'bg-red-50 text-red-600 border border-red-100' :
+                details.status === 'APPROVED' ? 'bg-green-50 text-green-600 border border-green-100' :
+                'bg-orange-50 text-orange-600 border border-orange-100'
+              }`}>
+                {statusDisplay}
+              </span>
+            </div>
+          </div>
+          
+          {/* Hero Image */}
+          {details.assessment.thumbnail && (
+            <div className="w-full h-44 rounded-xl overflow-hidden bg-slate-100">
+              <img
+                src={details.assessment.thumbnail.replace(/`/g, '')}
+                alt={details.assessment.title}
+                className="w-full h-full object-cover"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).style.display = 'none';
+                }}
+              />
+            </div>
+          )}
+          <p className="text-xs text-slate-500 mt-2">
+            {details.assessment.title}
+          </p>
+        </SectionCard>
+
+        {/* Render all dynamic questions */}
+        {details.questions.map(q => (
+          <RenderQuestion key={q.id} question={q} />
+        ))}
+
+        {/* Compliance Confirmation */}
+        <div className="bg-white border border-[#E5E7EB] rounded-xl p-5 space-y-3">
+          <div className="flex items-center gap-2 mb-1">
+           
+            <p className="text-sm font-semibold text-slate-800">
+              Compliance Confirmation
+            </p>
+          </div>
+          {complianceChecks.map((check, i) => (
+            <GrayCheckbox key={i} text={check} />
+          ))}
+        </div>
+
+        {/* Payment Summary */}
+        <div className="bg-white border border-[#E5E7EB] rounded-xl p-5">
+          <p className="font-semibold text-slate-800 mb-1">Payment Summary</p>
+          <p className="text-xs text-slate-500 mb-4">
+            Patient selected{" "}
+            {details.paymentSummary.products.length === 1 ? "one product" : `${details.paymentSummary.products.length} products`}:
+          </p>
+
+          <div className="flex flex-col sm:flex-row gap-6">
+            {/* Product list */}
+            <div className="flex-1 space-y-3">
+              {details.paymentSummary.products.map((p, i) => (
+                <div key={i} className="flex items-center gap-3">
+                  <div className="w-12 h-12 bg-[#2A2D31] rounded-lg overflow-hidden shrink-0 flex items-center justify-center">
+                    <img
+                      src={p.image.replace(/`/g, '')}
+                      alt={p.name}
+                      className="w-full h-full object-contain p-1"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).style.display = 'none';
+                      }}
+                    />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold text-slate-800">
+                      {p.name}
+                    </p>
+                    {p.size && (
+                      <span className="inline-block mt-1 px-2 py-0.5 bg-[#1447E6] text-white text-[10px] rounded-full font-medium">
+                        {p.size}
+                      </span>
+                    )}
+                  </div>
+                  <span className="text-sm font-semibold text-[#1447E6] shrink-0">
+                    {formatCurrency(p.price)}
+                  </span>
+                </div>
+              ))}
+            </div>
+
+            {/* Price breakdown */}
+            <div className="sm:w-52 space-y-2 text-sm border-t sm:border-t-0 sm:border-l border-[#E5E7EB] sm:pl-6 pt-4 sm:pt-0">
+              <div className="flex justify-between text-slate-600">
+                <span>Subtotal</span>
+                <span>{formatCurrency(details.paymentSummary.subtotal)}</span>
+              </div>
+              <div className="flex justify-between text-slate-600">
+                <span>Service Duration</span>
+                <span>{details.paymentSummary.serviceDuration}</span>
+              </div>
+              <div className="flex justify-between text-slate-600">
+                <span>Service Fees</span>
+                <span>{formatCurrency(details.paymentSummary.serviceFees)}</span>
+              </div>
+              <div className="flex justify-between text-slate-600">
+                <span>Shipping charge</span>
+                <span>{formatCurrency(details.paymentSummary.shippingCharge)}</span>
+              </div>
+              <div className="flex justify-between text-slate-600">
+                <span>Discount</span>
+                <span className={details.paymentSummary.discount > 0 ? "text-red-500" : ""}>
+                  {details.paymentSummary.discount > 0 ? `- ${formatCurrency(details.paymentSummary.discount)}` : formatCurrency(details.paymentSummary.discount)}
+                </span>
+              </div>
+              <div className="flex justify-between font-bold text-slate-800 border-t border-[#E5E7EB] pt-2 mt-1">
+                <span>Total</span>
+                <span className="text-[#1447E6]">{formatCurrency(details.paymentSummary.total)}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Decline Reason (if doctorNotes exist) */}
+        {details.doctorNotes && (
+          <div className="bg-amber-50 border border-amber-200 rounded-xl p-5">
+            <p className="font-semibold text-slate-800 text-sm">Assessment Notes</p>
+            {details.reviewedBy && (
+              <p className="text-xs text-slate-500 mt-1">By: {details.reviewedBy.name}</p>
+            )}
+            <p className="text-sm text-slate-600 mt-4">
+              {details.doctorNotes}
+            </p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

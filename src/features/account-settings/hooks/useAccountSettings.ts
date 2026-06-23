@@ -75,26 +75,30 @@ export const useUpdateUserProfile = () => {
 
 export const useUploadAvatar = () => {
   const queryClient = useQueryClient();
-  return useMutation<{ avatarId: string }, unknown, File>({
+  return useMutation<{ avatarId: string; avatar: string }, unknown, File>({
     mutationFn: async (file) => {
       const res = await uploadAvatar(file);
       return res.data;
     },
     onSuccess: (data) => {
       toast.success('Avatar uploaded successfully');
-      const currentProfile = queryClient.getQueryData<UserProfile>(['userProfile']);
-      if (currentProfile) {
-        queryClient.setQueryData<UserProfile>(['userProfile'], (old) => ({
-          ...old!,
-          profile: {
-            ...old?.profile,
-            avatarId: data.avatarId,
-          },
-        }));
-      }
+      queryClient.setQueryData<UserProfile>(['userProfile'], (old) =>
+        old
+          ? {
+              ...old,
+              profile: {
+                ...old.profile,
+                avatar: data.avatar,
+              },
+            }
+          : old
+      );
     },
     onError: () => {
       toast.error('Failed to upload avatar');
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['userProfile'] });
     },
   });
 };

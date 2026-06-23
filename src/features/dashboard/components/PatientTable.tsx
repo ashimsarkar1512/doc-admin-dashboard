@@ -1,8 +1,10 @@
 import { useState } from "react";
-import { useRecentActivity } from "@/hooks/useDashboardStats";
-import type { RecentActivity } from "@/api/endpoints/dashboard/overview";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "@tanstack/react-router";
 import { Eye, Repeat } from "lucide-react";
 import RecentActivityDetailModal from "./RecentActivityDetailModal";
+import AssignDoctorModal from "./AssignDoctorModal";
+import { getAllAssessments, type Assessment } from "@/api/endpoints/dashboard/patientManagement";
 
 function Avatar({
   image,
@@ -14,8 +16,6 @@ function Avatar({
   size?: "sm" | "lg";
 }) {
   const dim = size === "lg" ? "h-14 w-14" : "h-8 w-8";
-  // const textSize =
-  // size === "lg" ? "text-lg font-bold" : "text-[11px] font-semibold";
   if (image)
     return (
       <img
@@ -63,8 +63,18 @@ function StatusBadge({ status }: { status: string }) {
 }
 
 export function PatientTable() {
-  const { data, isLoading } = useRecentActivity();
-  const [selected, setSelected] = useState<RecentActivity | null>(null);
+  const queryClient = useQueryClient();
+  const navigate = useNavigate();
+  const { data, isLoading } = useQuery({
+    queryKey: ["assessments"],
+    queryFn: () => getAllAssessments(),
+  });
+  const [selected, setSelected] = useState<Assessment | null>(null);
+  const [assigningAssessment, setAssigningAssessment] = useState<Assessment | null>(null);
+
+  const shouldShowAssignButton = (row: Assessment) => {
+    return !row.provider;
+  };
 
   return (
     <>
@@ -73,66 +83,36 @@ export function PatientTable() {
           <table className="w-full text-left text-sm">
             <thead>
               <tr className="border-b border-slate-200 bg-slate-50">
-                <th className="px-6 py-3 font-medium text-slate-500 text-sm">
-                  Patient
-                </th>
-                <th className="px-6 py-3 font-medium text-slate-500 text-sm">
-                  Assessment
-                </th>
-                <th className="px-6 py-3 font-medium text-slate-500 text-sm">
-                  Patient Type
-                </th>
-                <th className="px-6 py-3 font-medium text-slate-500 text-sm">
-                  Provider
-                </th>
-                <th className="px-6 py-3 font-medium text-slate-500 text-sm">
-                  Status
-                </th>
-                <th className="px-6 py-3 font-medium text-slate-500 text-sm">
-                  Date
-                </th>
-                <th className="px-6 py-3 font-medium text-slate-500 text-sm">
-                  Action
-                </th>
+                <th className="px-6 py-3 font-medium text-slate-500 text-sm">Patient</th>
+                <th className="px-6 py-3 font-medium text-slate-500 text-sm">Assessment</th>
+                <th className="px-6 py-3 font-medium text-slate-500 text-sm">Patient Type</th>
+                <th className="px-6 py-3 font-medium text-slate-500 text-sm">Provider</th>
+                <th className="px-6 py-3 font-medium text-slate-500 text-sm">Status</th>
+                <th className="px-6 py-3 font-medium text-slate-500 text-sm">Date</th>
+                <th className="px-6 py-3 font-medium text-slate-500 text-sm text-center">Action</th>
               </tr>
             </thead>
             <tbody>
               {isLoading && (
                 <tr>
-                  <td
-                    colSpan={8}
-                    className="px-6 py-10 text-center text-slate-400"
-                  >
-                    Loading...
-                  </td>
+                  <td colSpan={8} className="px-6 py-10 text-center text-slate-400">Loading...</td>
                 </tr>
               )}
-              {!isLoading && (!data || data.length === 0) && (
+              {!isLoading && (!data?.data || data.data.length === 0) && (
                 <tr>
-                  <td
-                    colSpan={8}
-                    className="px-6 py-10 text-center text-slate-400"
-                  >
-                    No recent activity
-                  </td>
+                  <td colSpan={8} className="px-6 py-10 text-center text-slate-400">No recent activity</td>
                 </tr>
               )}
-              {data?.map((row: RecentActivity) => {
-                const isPending = row.status.toUpperCase() === "PENDING";
+              {data?.data?.map((row: Assessment) => {
+                const showAssign = shouldShowAssignButton(row);
                 return (
-                  <tr
-                    key={row.submissionId}
-                    className="border-b border-slate-100 last:border-b-0"
-                  >
+                  <tr key={row.submissionId} className="border-b border-slate-100 last:border-b-0">
                     {/* Patient */}
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
-                        <Avatar
-                          image={row.patientImage}
-                          name={row.patientName}
-                        />
+                        <Avatar image={row.patientImage} name={row.patientName} />
                         <span className="font-medium text-slate-700 whitespace-nowrap">
-                          {row.patientName ?? "—"}
+                          {row.patientName ?? '—'}
                         </span>
                       </div>
                     </td>
@@ -144,7 +124,7 @@ export function PatientTable() {
 
                     {/* Patient Type */}
                     <td className="px-6 py-4">
-                      {row.patientType === "New Patient" ? (
+                      {row.patientType === 'New Patient' ? (
                         <span className="inline-flex items-center gap-1 rounded-lg bg-[#DBEAFE] px-3 py-1 text-xs font-medium text-[#2563EB] whitespace-nowrap">
                           New Patient
                         </span>
@@ -158,7 +138,7 @@ export function PatientTable() {
 
                     {/* Provider */}
                     <td className="px-6 py-4 text-slate-600 whitespace-nowrap">
-                      {row.provider ?? "—"}
+                      {row.provider ?? '—'}
                     </td>
 
                     {/* Status */}
@@ -168,16 +148,12 @@ export function PatientTable() {
 
                     {/* Date */}
                     <td className="px-6 py-4 text-slate-500 whitespace-nowrap">
-                      {new Date(row.date).toLocaleDateString("en-US", {
-                        year: "2-digit",
-                        month: "numeric",
-                        day: "numeric",
-                      })}
+                      {new Date(row.date).toLocaleDateString('en-US', { year: '2-digit', month: 'numeric', day: 'numeric' })}
                     </td>
 
                     {/* Action */}
                     <td className="px-6 py-4">
-                      <div className="flex items-center gap-4">
+                      <div className="flex items-center justify-center gap-4">
                         <button
                           type="button"
                           className="text-slate-600 hover:text-slate-800 transition-colors"
@@ -188,14 +164,23 @@ export function PatientTable() {
                         </button>
                         <button
                           type="button"
-                          disabled={!isPending}
+                          onClick={() => {
+                            if (showAssign) {
+                              setAssigningAssessment(row);
+                            } else {
+                              navigate({
+                                to: "/dashboard/patient-management/$assessmentId/preview",
+                                params: { assessmentId: row.submissionId },
+                              });
+                            }
+                          }}
                           className={
-                            isPending
-                              ? "rounded-lg bg-[#1447E6] px-4 py-1.5 text-xs font-medium text-white hover:bg-[#1338C3] transition-colors whitespace-nowrap"
-                              : "rounded-lg bg-[#EFF6FF] px-4 py-1.5 text-xs font-medium text-[#90A1B9] cursor-not-allowed whitespace-nowrap"
+                            showAssign
+                              ? 'rounded-lg bg-[#1447E6] px-4 py-1.5 text-xs font-medium text-white hover:bg-[#1338C3] transition-colors whitespace-nowrap min-w-[100px]'
+                              : 'rounded-lg bg-slate-100 px-4 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-200 transition-colors whitespace-nowrap min-w-[100px]'
                           }
                         >
-                          {isPending ? "Assign" : "Assigned"}
+                          {showAssign ? 'Assign' : 'View Details'}
                         </button>
                       </div>
                     </td>
@@ -206,9 +191,14 @@ export function PatientTable() {
           </table>
         </div>
       </div>
-      <RecentActivityDetailModal
-        activity={selected}
-        onClose={() => setSelected(null)}
+      <RecentActivityDetailModal activity={selected} onClose={() => setSelected(null)} />
+      <AssignDoctorModal
+        isOpen={!!assigningAssessment}
+        onClose={() => {
+          setAssigningAssessment(null);
+          queryClient.invalidateQueries({ queryKey: ['assessments'] });
+        }}
+        assessment={assigningAssessment}
       />
     </>
   );

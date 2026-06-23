@@ -273,3 +273,23 @@ aside {
 nav a:hover, nav button:hover {
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
+/* Hide default calendar icon */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  opacity: 0;
+  display: none;
+}
+
+/* Optional (Firefox fix) */
+input[type="date"] {
+  appearance: none;
+}
+
+/* Hide scrollbar but allow scroll */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;  /* IE & Edge */
+  scrollbar-width: none;     /* Firefox */
+}

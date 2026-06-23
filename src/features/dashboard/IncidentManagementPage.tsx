@@ -151,6 +151,8 @@ export default function IncidentManagementPage() {
   const [severity] = useState<IncidentSeverity | "">("");
   const [status, setStatus] = useState<IncidentStatus | "">("");
   const [source] = useState<IncidentSource | "">("");
+  const [detectedFrom, setDetectedFrom] = useState("");
+  const [detectedTo, setDetectedTo] = useState("");
   const [page, setPage] = useState(1);
   const limit = 10;
 
@@ -166,6 +168,8 @@ export default function IncidentManagementPage() {
     ...(severity && { severity }),
     ...(status && { status }),
     ...(source && { source }),
+    ...(detectedFrom && { detectedFrom }),
+    ...(detectedTo && { detectedTo }),
   };
 
   // ── Data fetching ──────────────────────────────────────────────────────────
@@ -297,13 +301,7 @@ export default function IncidentManagementPage() {
           />
         </div>
 
-        <select className="px-3 py-2.5 bg-white border border-slate-200 rounded-lg text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition min-w-[110px]">
-          <option value="">All Role</option>
-        </select>
-
-        <select className="px-3 py-2.5 bg-white border border-slate-200 rounded-lg text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition min-w-[110px]">
-          <option value="">All Type</option>
-        </select>
+    
 
         <select
           value={status}
@@ -322,18 +320,20 @@ export default function IncidentManagementPage() {
 
         <div className="relative">
           <input
-            type="text"
-            defaultValue="2026-06-01"
-            className="w-[140px] pl-3 pr-10 py-2.5 bg-white border border-slate-200 rounded-lg text-sm text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition"
+            type="date"
+            value={detectedFrom}
+            onChange={(e) => { setDetectedFrom(e.target.value); handleFilterChange(); }}
+            className="w-[160px] pl-3 pr-10 py-2.5 bg-white border border-slate-200 rounded-lg text-sm text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:right-3 [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:cursor-pointer cursor-pointer"
           />
           <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
         </div>
 
         <div className="relative">
           <input
-            type="text"
-            placeholder="//-//-//"
-            className="w-[140px] pl-3 pr-10 py-2.5 bg-white border border-slate-200 rounded-lg text-sm text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition"
+            type="date"
+            value={detectedTo}
+            onChange={(e) => { setDetectedTo(e.target.value); handleFilterChange(); }}
+            className="w-[160px] pl-3 pr-10 py-2.5 bg-white border border-slate-200 rounded-lg text-sm text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:right-3 [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:cursor-pointer cursor-pointer"
           />
           <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
         </div>

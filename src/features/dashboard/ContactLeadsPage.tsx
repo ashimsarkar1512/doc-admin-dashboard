@@ -86,18 +86,15 @@ const handleExport = async () => {
 
   return (
     <div className="w-full p-4 md:p-8">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-slate-800 tracking-tight">Contact Leads</h1>
-          <p className="text-sm text-slate-500 font-medium mt-1">Manage your administrative role</p>
-        </div>
-        <div className="flex items-center gap-3 w-full sm:w-auto">
-          <select className="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm text-slate-700 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20">
+      <div className="flex flex-col sm:flex-row justify-end  mb-8 gap-4">
+      
+        <div className="flex justify-end items-center gap-3 w-full sm:w-auto">
+          {/* <select className="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm text-slate-700 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20">
             <option>All services</option>
           </select>
           <select className="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm text-slate-700 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20">
             <option>Today</option>
-          </select>
+          </select> */}
           <button 
             onClick={handleExport}
             className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors ml-auto sm:ml-0"
