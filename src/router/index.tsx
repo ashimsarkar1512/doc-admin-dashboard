@@ -155,7 +155,7 @@ const contactLeadsRoute = createRoute({
   component: ContactLeadsPage,
 });
 
-import PaymentsPage from "@/features/dashboard/PaymentsPage";
+import PaymentsPage from "@/features/payments/pages/PaymentsPage";
 const paymentsRoute = createRoute({
   getParentRoute: () => dashboardLayoutRoute,
   path: "/payments",
