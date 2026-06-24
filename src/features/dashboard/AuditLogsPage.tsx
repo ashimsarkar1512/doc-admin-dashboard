@@ -544,6 +544,8 @@ export default function AuditLogsPage() {
     ...(startDate && { startDate }),
     ...(endDate && { endDate }),
   };
+
+  // this debunce for type search  
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearch(search.trim());
