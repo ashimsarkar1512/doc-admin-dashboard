@@ -38,6 +38,8 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { ProfileDropdown } from "./ProfileDropdown";
+import { NotificationDropdown } from "./NotificationDropdown";
+import { useNotificationSocket } from "@/features/notifications/hooks/useNotifications";
 
 // Route to title mapping for cleaner code
 const routeTitleMap: Record<string, { title: string; subtitle: string }> = {
@@ -175,6 +177,9 @@ export default function DashboardLayout() {
   const user = useAppSelector((state) => state.auth.user);
   const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
   const { data: profile } = useUserProfile();
+
+  // Initialize Notification Socket
+  useNotificationSocket();
 
   // Fetch unread contact leads count for sidebar badge
   const { data: unreadData } = useQuery({
@@ -798,12 +803,7 @@ export default function DashboardLayout() {
           {/* Right section */}
           <div className="flex items-center gap-2">
             {/* Notification Bell */}
-            <button className="relative flex items-center justify-center w-9 h-9 rounded-xl text-slate-500 hover:bg-slate-100 hover:text-slate-700 transition-all duration-200">
-              <Bell size={18} strokeWidth={1.8} />
-              {unreadCount > 0 && (
-                <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-red-500" />
-              )}
-            </button>
+            <NotificationDropdown />
 
             {/* Divider */}
             <div className="w-px h-7 bg-slate-200 mx-1" />
