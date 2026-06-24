@@ -30,7 +30,7 @@ export function NotificationDropdown() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const getRouteForAction = (actionType: string, referenceId: string) => {
+  const getRouteForAction = (actionType: string, _referenceId: string) => {
     switch (actionType) {
       case "PAYMENT_SUCCESS":
         return `/dashboard/payments`;

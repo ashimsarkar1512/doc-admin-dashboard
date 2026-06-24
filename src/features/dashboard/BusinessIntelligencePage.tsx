@@ -241,7 +241,7 @@ export default function BusinessIntelligencePage() {
                   tickLine={false}
                   ticks={[0, 20000, 40000, 60000, 80000]}
                   domain={[0, 80000]}
-                  tickFormatter={(v) => `$${v === 0 ? '0k' : `${v / 1000}k`}`}
+                  tickFormatter={(v: number) => `$${v === 0 ? '0k' : `${v / 1000}k`}`}
                 />
                 <Tooltip content={<ChartTooltip />} />
                 <Line type="monotone" dataKey="revenue" name="Revenue" stroke="#2563eb" strokeWidth={2.5} dot={false} activeDot={{ r: 3 }} />
@@ -352,7 +352,7 @@ export default function BusinessIntelligencePage() {
                       </Pie>
                       <Tooltip
                         contentStyle={{ fontSize: 11, borderRadius: 8, border: '1px solid #e2e8f0' }}
-                        formatter={(v: number, name: string) => [`${(v as number).toFixed(1)}%`, name]}
+                        formatter={(v: any, name: any) => [`${Number(v).toFixed(1)}%`, String(name)]}
                       />
                     </PieChart>
                   </ResponsiveContainer>

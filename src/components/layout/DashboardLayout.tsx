@@ -10,7 +10,6 @@ import {
   AlertTriangle,
   BadgeDollarSign,
   BarChart2,
-  Bell,
   ChevronDown,
   ChevronLeft,
   ChevronRight,
