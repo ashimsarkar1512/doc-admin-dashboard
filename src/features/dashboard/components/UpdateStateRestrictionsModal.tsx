@@ -153,7 +153,7 @@ export default function UpdateStateRestrictionsModal({
               </div>
 
               {isDropdownOpen && (
-                <div className="absolute z-10 w-full mt-1 bg-white border border-slate-200 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                <div className="w-full mt-2 bg-slate-50/50 border border-slate-200 rounded-lg shadow-sm max-h-60 overflow-y-auto">
                   {categories.map((category) => {
                     const isSelected = selectedCategoryIds.includes(category.id);
                     return (
