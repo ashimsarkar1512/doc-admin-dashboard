@@ -13,6 +13,8 @@ interface OtpPending {
   challengeId: string | null;
   method: 'EMAIL' | 'SMS';
   purpose: 'LOGIN' | 'FORGOT_PASSWORD';
+  email?: string;
+  phone?: string | null;
 }
 
 interface AuthState {
@@ -82,6 +84,14 @@ const authSlice = createSlice({
     clearOtpPending: (state) => {
       state.otpPending = null;
     },
+    setCredentials: (
+      state,
+      action: import('@reduxjs/toolkit').PayloadAction<{ user: VerifyOtpResponseData['user']; accessToken: string }>
+    ) => {
+      state.user = action.payload.user;
+      state.isAuthenticated = true;
+      localStorage.setItem('token', action.payload.accessToken);
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -113,5 +123,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { clearError, resetAuthState, setOtpPending, clearOtpPending } = authSlice.actions;
+export const { clearError, resetAuthState, setOtpPending, clearOtpPending, setCredentials } = authSlice.actions;
 export default authSlice.reducer;
