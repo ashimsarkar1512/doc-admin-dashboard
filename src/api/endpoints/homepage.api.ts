@@ -1,5 +1,5 @@
 import { axiosInstance } from '@/api/axiosInstance';
-import type { HomepageContentResponse, HomepageFormState, HowItWorksStepForm, FaqForm } from '../../features/website-management/types/homepage.types';
+import type { HomepageContentResponse, HomepageFormState } from '../../features/website-management/types/homepage.types';
 
 const BASE = '/admin/homepage-content';
 
@@ -10,84 +10,116 @@ export async function getHomepageContent(): Promise<HomepageContentResponse> {
   return data;
 }
 
-// ─── PATCH ──────────────────────────────────────────────────────────────────
-// The API expects multipart/form-data because it accepts binary image files.
-// We build a FormData object and only append fields that have changed.
+// ─── POST (Upload) ──────────────────────────────────────────────────────────
 
-function appendSteps(fd: FormData, steps: HowItWorksStepForm[]) {
-  steps.forEach((step, i) => {
-    if (step.id) fd.append(`howItWorksSteps[${i}][id]`, step.id);
-    fd.append(`howItWorksSteps[${i}][title]`, step.title);
-    fd.append(`howItWorksSteps[${i}][description]`, step.description);
-    // omitted 'order' to prevent "@IsInt()" failure on strings
-  });
-}
-
-function appendFaqs(fd: FormData, faqs: FaqForm[]) {
-  faqs.forEach((faq, i) => {
-    if (faq.id) fd.append(`faqs[${i}][id]`, faq.id);
-    fd.append(`faqs[${i}][question]`, faq.question);
-    fd.append(`faqs[${i}][answer]`, faq.answer);
-    // omitted 'order' to prevent "@IsInt()" failure on strings
-  });
-}
-
-export async function patchHomepageContent(
-  form: HomepageFormState,
-  heroImage?: File | null,
-  heroBadgeImage?: File | null,
-): Promise<HomepageContentResponse> {
+export async function uploadAttachment(file: File, context: string): Promise<{ id: string }> {
   const fd = new FormData();
+  fd.append('context', context);
+  fd.append('files', file);
 
-  // Binary files (only when user picked a new file)
-  if (heroImage) fd.append('heroImage', heroImage);
-  if (heroBadgeImage) fd.append('heroBadgeImage', heroBadgeImage);
-
-  // Scalar text / boolean fields
-  const scalars: Array<[string, string | boolean]> = [
-    ['heroBadgeText', form.heroBadgeText],
-    ['heroBadgeLink', form.heroBadgeLink],
-    ['heroTitle', form.heroTitle],
-    ['heroDescription', form.heroDescription],
-    ['heroButtonText', form.heroButtonText],
-    ['heroButtonLink', form.heroButtonLink],
-    ['heroButtonNewTab', form.heroButtonNewTab],
-    ['bannerTitle', form.bannerTitle],
-    ['bannerDescription', form.bannerDescription],
-    ['aboutSubtitle', form.aboutSubtitle],
-    ['aboutTitle', form.aboutTitle],
-    ['aboutDescription', form.aboutDescription],
-    ['aboutPrimaryButtonText', form.aboutPrimaryButtonText],
-    ['aboutPrimaryButtonLink', form.aboutPrimaryButtonLink],
-    ['aboutPrimaryButtonNewTab', form.aboutPrimaryButtonNewTab],
-    ['aboutSecondaryButtonText', form.aboutSecondaryButtonText],
-    ['aboutSecondaryButtonLink', form.aboutSecondaryButtonLink],
-    ['aboutSecondaryButtonNewTab', form.aboutSecondaryButtonNewTab],
-    ['productTitle', form.productTitle],
-    ['productButtonLink', form.productButtonLink],
-    ['productButtonNewTab', form.productButtonNewTab],
-    ['howItWorksTitle', form.howItWorksTitle],
-    ['testimonialTitle', form.testimonialTitle],
-    ['testimonialSubtitle', form.testimonialSubtitle],
-    ['testimonialDescription', form.testimonialDescription],
-    ['testimonialButtonLink', form.testimonialButtonLink],
-    ['testimonialButtonNewTab', form.testimonialButtonNewTab],
-    ['pricingTitle', form.pricingTitle],
-    ['pricingSubtitle', form.pricingSubtitle],
-    ['pricingDescription', form.pricingDescription],
-    ['pricingButtonLink', form.pricingButtonLink],
-    ['pricingButtonNewTab', form.pricingButtonNewTab],
-  ];
-
-  scalars.forEach(([key, value]) => fd.append(key, String(value)));
-
-  // Arrays
-  form.aboutBullets.forEach((b) => fd.append('aboutBullets', b));
-  appendSteps(fd, form.howItWorksSteps);
-  appendFaqs(fd, form.faqs);
-
-  const { data } = await axiosInstance.patch<HomepageContentResponse>(BASE, fd, {
+  const { data } = await axiosInstance.post<any>('/attachments/upload', fd, {
     headers: { 'Content-Type': 'multipart/form-data' },
   });
-  return data;
+  
+  const result = data?.data;
+  const id = Array.isArray(result) ? result[0]?.id : result?.id;
+  
+  if (!id) {
+    throw new Error('Upload succeeded but no ID was returned');
+  }
+  
+  return { id };
+}
+
+// ─── PUT (Sections) ─────────────────────────────────────────────────────────
+
+export async function updateHeroSection(form: Partial<HomepageFormState>): Promise<void> {
+  await axiosInstance.put(`${BASE}/hero`, {
+    heroMediaId: form.heroMediaId || null,
+    heroBadgeImageId: form.heroBadgeImageId || null,
+    heroTitle: form.heroTitle,
+    heroDescription: form.heroDescription,
+    heroButtonText: form.heroButtonText,
+    heroButtonLink: form.heroButtonLink,
+    heroButtonNewTab: form.heroButtonNewTab,
+  });
+}
+
+export async function updateAssessmentSection(form: Partial<HomepageFormState>): Promise<void> {
+  await axiosInstance.put(`${BASE}/assessment`, {
+    assessmentTitle: form.assessmentTitle,
+    assessmentDescription: form.assessmentDescription,
+  });
+}
+
+export async function updateAboutSection(form: Partial<HomepageFormState>): Promise<void> {
+  await axiosInstance.put(`${BASE}/about`, {
+    aboutTitle: form.aboutTitle,
+    aboutDescription: form.aboutDescription,
+    aboutFeaturedService1Id: form.aboutFeaturedService1Id || null,
+    aboutFeaturedService2Id: form.aboutFeaturedService2Id || null,
+    aboutFeaturedService3Id: form.aboutFeaturedService3Id || null,
+    aboutButtonText: form.aboutButtonText,
+    aboutButtonLink: form.aboutButtonLink,
+    aboutButtonNewTab: form.aboutButtonNewTab,
+    aboutMediaId: form.aboutMediaId || null,
+  });
+}
+
+export async function updateProvidersSection(form: Partial<HomepageFormState>): Promise<void> {
+  await axiosInstance.put(`${BASE}/providers`, {
+    providersTitle: form.providersTitle,
+    providersButtonText: form.providersButtonText,
+    providersButtonLink: form.providersButtonLink,
+    providersButtonNewTab: form.providersButtonNewTab,
+  });
+}
+
+export async function updateHowItWorksSection(form: Partial<HomepageFormState>): Promise<void> {
+  await axiosInstance.put(`${BASE}/how-it-works`, {
+    howItWorksTitle: form.howItWorksTitle,
+    howItWorksStep1Title: form.howItWorksStep1Title,
+    howItWorksStep1Description: form.howItWorksStep1Description,
+    howItWorksStep2Title: form.howItWorksStep2Title,
+    howItWorksStep2Description: form.howItWorksStep2Description,
+    howItWorksStep3Title: form.howItWorksStep3Title,
+    howItWorksStep3Description: form.howItWorksStep3Description,
+    howItWorksStep4Title: form.howItWorksStep4Title,
+    howItWorksStep4Description: form.howItWorksStep4Description,
+  });
+}
+
+export async function updateTestimonialSection(form: Partial<HomepageFormState>): Promise<void> {
+  await axiosInstance.put(`${BASE}/testimonials`, {
+    testimonialTitle: form.testimonialTitle,
+    testimonialCardTitle: form.testimonialCardTitle,
+    testimonialCardDescription: form.testimonialCardDescription,
+    testimonialButtonText: form.testimonialButtonText,
+    testimonialButtonLink: form.testimonialButtonLink,
+    testimonialButtonNewTab: form.testimonialButtonNewTab,
+  });
+}
+
+export async function updateFaqSection(form: Partial<HomepageFormState>): Promise<void> {
+  await axiosInstance.put(`${BASE}/faq`, {
+    faqTitle: form.faqTitle,
+    faqCardTitle: form.faqCardTitle,
+    faqCardDescription: form.faqCardDescription,
+    faqButtonText: form.faqButtonText,
+    faqButtonLink: form.faqButtonLink,
+    faqButtonNewTab: form.faqButtonNewTab,
+    faqCardMediaId: form.faqCardMediaId || null,
+    faqQuestion1: form.faqQuestion1,
+    faqAnswer1: form.faqAnswer1,
+    faqQuestion2: form.faqQuestion2,
+    faqAnswer2: form.faqAnswer2,
+    faqQuestion3: form.faqQuestion3,
+    faqAnswer3: form.faqAnswer3,
+    faqQuestion4: form.faqQuestion4,
+    faqAnswer4: form.faqAnswer4,
+    faqQuestion5: form.faqQuestion5,
+    faqAnswer5: form.faqAnswer5,
+    faqQuestion6: form.faqQuestion6,
+    faqAnswer6: form.faqAnswer6,
+  });
 }

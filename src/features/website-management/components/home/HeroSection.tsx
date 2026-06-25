@@ -16,7 +16,7 @@ export function HeroSection() {
     heroImageRef.current = file;
     if (file) {
       // Show a local preview URL so the user sees the new image immediately
-      setField('heroImageUrl', URL.createObjectURL(file));
+      setField('heroMediaUrl', URL.createObjectURL(file));
     }
   };
 
@@ -36,8 +36,8 @@ export function HeroSection() {
           <label className="block text-sm font-medium text-slate-700 mb-2">Hero Media</label>
           <div className="flex items-end gap-4">
             <div className="w-48 h-28 rounded-lg overflow-hidden border border-slate-200 bg-slate-50 flex items-center justify-center">
-              {form.heroImageUrl ? (
-                <img src={form.heroImageUrl} className="w-full h-full object-cover" alt="Hero" />
+              {form.heroMediaUrl ? (
+                <img src={form.heroMediaUrl} className="w-full h-full object-cover" alt="Hero" />
               ) : (
                 <span className="text-xs text-slate-400">{isLoading ? 'Loading…' : 'No image'}</span>
               )}
@@ -53,10 +53,10 @@ export function HeroSection() {
               >
                 <Upload size={16} /> Upload
               </button>
-              {form.heroImageUrl && (
+              {form.heroMediaUrl && (
                 <button
                   type="button"
-                  onClick={() => { heroImageRef.current = null; setField('heroImageUrl', ''); }}
+                  onClick={() => { heroImageRef.current = null; setField('heroMediaUrl', ''); }}
                   className="text-red-500 hover:text-red-600"
                   title="Remove image"
                 >
@@ -115,21 +115,7 @@ export function HeroSection() {
           />
         </div>
 
-        {/* Badge text & link */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <FormInput
-            label="Badge Text:"
-            value={form.heroBadgeText}
-            onChange={(e) => setField('heroBadgeText', e.target.value)}
-            placeholder="e.g. Board-certified doctors"
-          />
-          <FormInput
-            label="Badge Link:"
-            value={form.heroBadgeLink}
-            onChange={(e) => setField('heroBadgeLink', e.target.value)}
-            placeholder="https://..."
-          />
-        </div>
+
 
         <FormInput
           label="Hero Title:"

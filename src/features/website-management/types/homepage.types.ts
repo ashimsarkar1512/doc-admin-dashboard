@@ -1,133 +1,167 @@
 // ─── Raw API types (nullable {} fields from API) ──────────────────────────────
 
-export interface HowItWorksStep {
+export interface FileMedia {
   id: string;
-  homePageContentId: string;
-  title: string;
-  description: string | null;
-  iconUrl: string | null;
-  order: number;
+  fileName: string;
+  fileUrl: string;
+  fileType: string;
+  fileSize: number;
+  context: string;
   createdAt: string;
   updatedAt: string;
 }
 
-export interface Faq {
+export interface FeaturedService {
   id: string;
-  homePageContentId: string;
-  question: string;
-  answer: string;
-  order: number;
-  createdAt: string;
-  updatedAt: string;
+  name: string;
+  slug: string;
 }
 
-// The API returns nullable `{}` for optional string fields — we normalise to string
 export interface HomepageContentResponse {
   id: string;
-  heroImageUrl: string | null;
-  heroBadgeImageUrl: string | null;
-  heroBadgeText: string | null;
-  heroBadgeLink: string | null;
+  heroMediaId: string | null;
+  heroMedia: FileMedia | null;
+  heroBadgeImageId: string | null;
+  heroBadgeImage: FileMedia | null;
   heroTitle: string | null;
   heroDescription: string | null;
   heroButtonText: string | null;
   heroButtonLink: string | null;
   heroButtonNewTab: boolean;
-  bannerTitle: string | null;
-  bannerDescription: string | null;
-  aboutSubtitle: string | null;
+
+  assessmentTitle: string | null;
+  assessmentDescription: string | null;
+
   aboutTitle: string | null;
   aboutDescription: string | null;
-  aboutPrimaryButtonText: string | null;
-  aboutPrimaryButtonLink: string | null;
-  aboutPrimaryButtonNewTab: boolean;
-  aboutSecondaryButtonText: string | null;
-  aboutSecondaryButtonLink: string | null;
-  aboutSecondaryButtonNewTab: boolean;
-  aboutBullets: string[];
-  productTitle: string | null;
-  productButtonLink: string | null;
-  productButtonNewTab: boolean;
+  aboutFeaturedService1Id: string | null;
+  aboutFeaturedService1: FeaturedService | null;
+  aboutFeaturedService2Id: string | null;
+  aboutFeaturedService2: FeaturedService | null;
+  aboutFeaturedService3Id: string | null;
+  aboutFeaturedService3: FeaturedService | null;
+  aboutButtonText: string | null;
+  aboutButtonLink: string | null;
+  aboutButtonNewTab: boolean;
+  aboutMediaId: string | null;
+  aboutMedia: FileMedia | null;
+
+  providersTitle: string | null;
+  providersButtonText: string | null;
+  providersButtonLink: string | null;
+  providersButtonNewTab: boolean;
+
   howItWorksTitle: string | null;
-  howItWorksSteps: HowItWorksStep[];
+  howItWorksStep1Title: string | null;
+  howItWorksStep1Description: string | null;
+  howItWorksStep2Title: string | null;
+  howItWorksStep2Description: string | null;
+  howItWorksStep3Title: string | null;
+  howItWorksStep3Description: string | null;
+  howItWorksStep4Title: string | null;
+  howItWorksStep4Description: string | null;
+
   testimonialTitle: string | null;
-  testimonialSubtitle: string | null;
-  testimonialDescription: string | null;
+  testimonialCardTitle: string | null;
+  testimonialCardDescription: string | null;
+  testimonialButtonText: string | null;
   testimonialButtonLink: string | null;
   testimonialButtonNewTab: boolean;
-  pricingTitle: string | null;
-  pricingSubtitle: string | null;
-  pricingDescription: string | null;
-  pricingButtonLink: string | null;
-  pricingButtonNewTab: boolean;
-  faqs: Faq[];
+
+  faqTitle: string | null;
+  faqCardTitle: string | null;
+  faqCardDescription: string | null;
+  faqButtonText: string | null;
+  faqButtonLink: string | null;
+  faqButtonNewTab: boolean;
+  faqCardMediaId: string | null;
+  faqCardMedia: FileMedia | null;
+  faqQuestion1: string | null;
+  faqAnswer1: string | null;
+  faqQuestion2: string | null;
+  faqAnswer2: string | null;
+  faqQuestion3: string | null;
+  faqAnswer3: string | null;
+  faqQuestion4: string | null;
+  faqAnswer4: string | null;
+  faqQuestion5: string | null;
+  faqAnswer5: string | null;
+  faqQuestion6: string | null;
+  faqAnswer6: string | null;
+
   createdAt: string;
   updatedAt: string;
 }
 
 // ─── Normalised form state (strings guaranteed, never null) ──────────────────
 
-export interface HowItWorksStepForm {
-  id?: string;           // undefined for newly added items
-  title: string;
-  description: string;
-  iconUrl?: string;
-  order: number;
-}
-
-export interface FaqForm {
-  id?: string;           // undefined for newly added items
-  question: string;
-  answer: string;
-  order: number;
-}
-
 export interface HomepageFormState {
-  // Hero
-  heroImageUrl: string;
-  heroBadgeImageUrl: string;
-  heroBadgeText: string;
-  heroBadgeLink: string;
+  heroMediaId: string;
+  heroMediaUrl: string; // for display only
+  heroBadgeImageId: string;
+  heroBadgeImageUrl: string; // for display only
   heroTitle: string;
   heroDescription: string;
   heroButtonText: string;
   heroButtonLink: string;
   heroButtonNewTab: boolean;
-  // Banner
-  bannerTitle: string;
-  bannerDescription: string;
-  // About
-  aboutSubtitle: string;
+
+  assessmentTitle: string;
+  assessmentDescription: string;
+
   aboutTitle: string;
   aboutDescription: string;
-  aboutPrimaryButtonText: string;
-  aboutPrimaryButtonLink: string;
-  aboutPrimaryButtonNewTab: boolean;
-  aboutSecondaryButtonText: string;
-  aboutSecondaryButtonLink: string;
-  aboutSecondaryButtonNewTab: boolean;
-  aboutBullets: string[];
-  // Product
-  productTitle: string;
-  productButtonLink: string;
-  productButtonNewTab: boolean;
-  // How It Works
+  aboutFeaturedService1Id: string;
+  aboutFeaturedService2Id: string;
+  aboutFeaturedService3Id: string;
+  aboutButtonText: string;
+  aboutButtonLink: string;
+  aboutButtonNewTab: boolean;
+  aboutMediaId: string;
+  aboutMediaUrl: string; // for display only
+
+  providersTitle: string;
+  providersButtonText: string;
+  providersButtonLink: string;
+  providersButtonNewTab: boolean;
+
   howItWorksTitle: string;
-  howItWorksSteps: HowItWorksStepForm[];
-  // Testimonial
+  howItWorksStep1Title: string;
+  howItWorksStep1Description: string;
+  howItWorksStep2Title: string;
+  howItWorksStep2Description: string;
+  howItWorksStep3Title: string;
+  howItWorksStep3Description: string;
+  howItWorksStep4Title: string;
+  howItWorksStep4Description: string;
+
   testimonialTitle: string;
-  testimonialSubtitle: string;
-  testimonialDescription: string;
+  testimonialCardTitle: string;
+  testimonialCardDescription: string;
+  testimonialButtonText: string;
   testimonialButtonLink: string;
   testimonialButtonNewTab: boolean;
-  // Pricing
-  pricingTitle: string;
-  pricingSubtitle: string;
-  pricingDescription: string;
-  pricingButtonLink: string;
-  pricingButtonNewTab: boolean;
-  // FAQ
-  faqs: FaqForm[];
+
+  faqTitle: string;
+  faqCardTitle: string;
+  faqCardDescription: string;
+  faqButtonText: string;
+  faqButtonLink: string;
+  faqButtonNewTab: boolean;
+  faqCardMediaId: string;
+  faqCardMediaUrl: string; // for display only
+  faqQuestion1: string;
+  faqAnswer1: string;
+  faqQuestion2: string;
+  faqAnswer2: string;
+  faqQuestion3: string;
+  faqAnswer3: string;
+  faqQuestion4: string;
+  faqAnswer4: string;
+  faqQuestion5: string;
+  faqAnswer5: string;
+  faqQuestion6: string;
+  faqAnswer6: string;
 }
 
 // ─── Helper: normalize API response → form state ─────────────────────────────
@@ -138,57 +172,71 @@ const bool = (v: unknown, fallback = false): boolean =>
 
 export function normaliseHomepage(data: HomepageContentResponse): HomepageFormState {
   return {
-    heroImageUrl: str(data.heroImageUrl),
-    heroBadgeImageUrl: str(data.heroBadgeImageUrl),
-    heroBadgeText: str(data.heroBadgeText),
-    heroBadgeLink: str(data.heroBadgeLink),
+    heroMediaId: str(data.heroMediaId),
+    heroMediaUrl: str(data.heroMedia?.fileUrl),
+    heroBadgeImageId: str(data.heroBadgeImageId),
+    heroBadgeImageUrl: str(data.heroBadgeImage?.fileUrl),
     heroTitle: str(data.heroTitle),
     heroDescription: str(data.heroDescription),
     heroButtonText: str(data.heroButtonText),
     heroButtonLink: str(data.heroButtonLink),
     heroButtonNewTab: bool(data.heroButtonNewTab, true),
-    bannerTitle: str(data.bannerTitle),
-    bannerDescription: str(data.bannerDescription),
-    aboutSubtitle: str(data.aboutSubtitle),
+
+    assessmentTitle: str(data.assessmentTitle),
+    assessmentDescription: str(data.assessmentDescription),
+
     aboutTitle: str(data.aboutTitle),
     aboutDescription: str(data.aboutDescription),
-    aboutPrimaryButtonText: str(data.aboutPrimaryButtonText),
-    aboutPrimaryButtonLink: str(data.aboutPrimaryButtonLink),
-    aboutPrimaryButtonNewTab: bool(data.aboutPrimaryButtonNewTab, true),
-    aboutSecondaryButtonText: str(data.aboutSecondaryButtonText),
-    aboutSecondaryButtonLink: str(data.aboutSecondaryButtonLink),
-    aboutSecondaryButtonNewTab: bool(data.aboutSecondaryButtonNewTab, true),
-    aboutBullets: Array.isArray(data.aboutBullets) ? data.aboutBullets : [],
-    productTitle: str(data.productTitle),
-    productButtonLink: str(data.productButtonLink),
-    productButtonNewTab: bool(data.productButtonNewTab, true),
+    aboutFeaturedService1Id: str(data.aboutFeaturedService1Id),
+    aboutFeaturedService2Id: str(data.aboutFeaturedService2Id),
+    aboutFeaturedService3Id: str(data.aboutFeaturedService3Id),
+    aboutButtonText: str(data.aboutButtonText),
+    aboutButtonLink: str(data.aboutButtonLink),
+    aboutButtonNewTab: bool(data.aboutButtonNewTab, true),
+    aboutMediaId: str(data.aboutMediaId),
+    aboutMediaUrl: str(data.aboutMedia?.fileUrl),
+
+    providersTitle: str(data.providersTitle),
+    providersButtonText: str(data.providersButtonText),
+    providersButtonLink: str(data.providersButtonLink),
+    providersButtonNewTab: bool(data.providersButtonNewTab, true),
+
     howItWorksTitle: str(data.howItWorksTitle),
-    howItWorksSteps: (data.howItWorksSteps ?? [])
-      .sort((a, b) => a.order - b.order)
-      .map((s) => ({
-        id: s.id,
-        title: s.title,
-        description: str(s.description),
-        iconUrl: str(s.iconUrl),
-        order: s.order,
-      })),
+    howItWorksStep1Title: str(data.howItWorksStep1Title),
+    howItWorksStep1Description: str(data.howItWorksStep1Description),
+    howItWorksStep2Title: str(data.howItWorksStep2Title),
+    howItWorksStep2Description: str(data.howItWorksStep2Description),
+    howItWorksStep3Title: str(data.howItWorksStep3Title),
+    howItWorksStep3Description: str(data.howItWorksStep3Description),
+    howItWorksStep4Title: str(data.howItWorksStep4Title),
+    howItWorksStep4Description: str(data.howItWorksStep4Description),
+
     testimonialTitle: str(data.testimonialTitle),
-    testimonialSubtitle: str(data.testimonialSubtitle),
-    testimonialDescription: str(data.testimonialDescription),
+    testimonialCardTitle: str(data.testimonialCardTitle),
+    testimonialCardDescription: str(data.testimonialCardDescription),
+    testimonialButtonText: str(data.testimonialButtonText),
     testimonialButtonLink: str(data.testimonialButtonLink),
     testimonialButtonNewTab: bool(data.testimonialButtonNewTab, true),
-    pricingTitle: str(data.pricingTitle),
-    pricingSubtitle: str(data.pricingSubtitle),
-    pricingDescription: str(data.pricingDescription),
-    pricingButtonLink: str(data.pricingButtonLink),
-    pricingButtonNewTab: bool(data.pricingButtonNewTab, true),
-    faqs: (data.faqs ?? [])
-      .sort((a, b) => a.order - b.order)
-      .map((f) => ({
-        id: f.id,
-        question: f.question,
-        answer: f.answer,
-        order: f.order,
-      })),
+
+    faqTitle: str(data.faqTitle),
+    faqCardTitle: str(data.faqCardTitle),
+    faqCardDescription: str(data.faqCardDescription),
+    faqButtonText: str(data.faqButtonText),
+    faqButtonLink: str(data.faqButtonLink),
+    faqButtonNewTab: bool(data.faqButtonNewTab, true),
+    faqCardMediaId: str(data.faqCardMediaId),
+    faqCardMediaUrl: str(data.faqCardMedia?.fileUrl),
+    faqQuestion1: str(data.faqQuestion1),
+    faqAnswer1: str(data.faqAnswer1),
+    faqQuestion2: str(data.faqQuestion2),
+    faqAnswer2: str(data.faqAnswer2),
+    faqQuestion3: str(data.faqQuestion3),
+    faqAnswer3: str(data.faqAnswer3),
+    faqQuestion4: str(data.faqQuestion4),
+    faqAnswer4: str(data.faqAnswer4),
+    faqQuestion5: str(data.faqQuestion5),
+    faqAnswer5: str(data.faqAnswer5),
+    faqQuestion6: str(data.faqQuestion6),
+    faqAnswer6: str(data.faqAnswer6),
   };
 }

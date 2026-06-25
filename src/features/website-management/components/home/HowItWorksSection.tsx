@@ -1,12 +1,10 @@
-
-import { Plus, X, GripVertical } from 'lucide-react';
 import { SectionCard } from '../shared/SectionCard';
 import { FormInput } from '../shared/FormInput';
 import { FormTextarea } from '../shared/FormTextarea';
 import { useHomepage } from '../../context/HomepageContext';
 
 export function HowItWorksSection() {
-  const { form, setField, updateStep, addStep, removeStep } = useHomepage();
+  const { form, setField } = useHomepage();
 
   return (
     <SectionCard title="How It Works Section">
@@ -15,53 +13,82 @@ export function HowItWorksSection() {
           label="Section Title"
           value={form.howItWorksTitle}
           onChange={(e) => setField('howItWorksTitle', e.target.value)}
-          placeholder="Medical weight management"
+          placeholder="How It Works"
         />
 
         <div className="space-y-4 pt-2 border-t border-slate-100">
-          {form.howItWorksSteps.length === 0 && (
-            <p className="text-sm text-slate-400 italic">No steps yet. Add one below.</p>
-          )}
-          {form.howItWorksSteps.map((step, i) => (
-            <div key={step.id ?? `new-${i}`} className="border border-slate-100 rounded-lg p-4 bg-slate-50 space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2 text-sm font-bold text-slate-600">
-                  <GripVertical size={16} className="text-slate-300" />
-                  Step {i + 1}
-                </div>
-                <button
-                  type="button"
-                  onClick={() => removeStep(i)}
-                  className="text-red-400 hover:text-red-600 transition-colors"
-                  title="Remove step"
-                >
-                  <X size={16} />
-                </button>
-              </div>
-              <FormInput
-                label="Title"
-                value={step.title}
-                onChange={(e) => updateStep(i, { title: e.target.value })}
-                placeholder="Step title…"
-              />
-              <FormTextarea
-                label="Description"
-                className="h-16"
-                value={step.description}
-                onChange={(e) => updateStep(i, { description: e.target.value })}
-                placeholder="Step description…"
-              />
-            </div>
-          ))}
-        </div>
+          {/* Step 1 */}
+          <div className="border border-slate-100 rounded-lg p-4 bg-slate-50 space-y-4">
+            <div className="flex items-center gap-2 text-sm font-bold text-slate-600">Step 1</div>
+            <FormInput
+              label="Title"
+              value={form.howItWorksStep1Title}
+              onChange={(e) => setField('howItWorksStep1Title', e.target.value)}
+              placeholder="Step 1 title…"
+            />
+            <FormTextarea
+              label="Description"
+              className="h-16"
+              value={form.howItWorksStep1Description}
+              onChange={(e) => setField('howItWorksStep1Description', e.target.value)}
+              placeholder="Step 1 description…"
+            />
+          </div>
 
-        <button
-          type="button"
-          onClick={addStep}
-          className="flex items-center gap-1.5 px-4 py-2 bg-[#1447E6] text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
-        >
-          <Plus size={16} /> Add Step
-        </button>
+          {/* Step 2 */}
+          <div className="border border-slate-100 rounded-lg p-4 bg-slate-50 space-y-4">
+            <div className="flex items-center gap-2 text-sm font-bold text-slate-600">Step 2</div>
+            <FormInput
+              label="Title"
+              value={form.howItWorksStep2Title}
+              onChange={(e) => setField('howItWorksStep2Title', e.target.value)}
+              placeholder="Step 2 title…"
+            />
+            <FormTextarea
+              label="Description"
+              className="h-16"
+              value={form.howItWorksStep2Description}
+              onChange={(e) => setField('howItWorksStep2Description', e.target.value)}
+              placeholder="Step 2 description…"
+            />
+          </div>
+
+          {/* Step 3 */}
+          <div className="border border-slate-100 rounded-lg p-4 bg-slate-50 space-y-4">
+            <div className="flex items-center gap-2 text-sm font-bold text-slate-600">Step 3</div>
+            <FormInput
+              label="Title"
+              value={form.howItWorksStep3Title}
+              onChange={(e) => setField('howItWorksStep3Title', e.target.value)}
+              placeholder="Step 3 title…"
+            />
+            <FormTextarea
+              label="Description"
+              className="h-16"
+              value={form.howItWorksStep3Description}
+              onChange={(e) => setField('howItWorksStep3Description', e.target.value)}
+              placeholder="Step 3 description…"
+            />
+          </div>
+
+          {/* Step 4 */}
+          <div className="border border-slate-100 rounded-lg p-4 bg-slate-50 space-y-4">
+            <div className="text-sm font-bold text-slate-600">Step 4</div>
+            <FormInput
+              label="Title"
+              value={form.howItWorksStep4Title}
+              onChange={(e) => setField('howItWorksStep4Title', e.target.value)}
+              placeholder="Step 4 title…"
+            />
+            <FormTextarea
+              label="Description"
+              className="h-16"
+              value={form.howItWorksStep4Description}
+              onChange={(e) => setField('howItWorksStep4Description', e.target.value)}
+              placeholder="Step 4 description…"
+            />
+          </div>
+        </div>
       </div>
     </SectionCard>
   );

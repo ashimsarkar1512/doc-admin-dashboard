@@ -1,4 +1,3 @@
-
 import { SectionCard } from '../shared/SectionCard';
 import { FormInput } from '../shared/FormInput';
 import { FormTextarea } from '../shared/FormTextarea';
@@ -12,15 +11,15 @@ export function AssessmentSection() {
       <div className="space-y-5">
         <FormInput
           label="Section Title:"
-          value={form.bannerTitle}
-          onChange={(e) => setField('bannerTitle', e.target.value)}
+          value={form.assessmentTitle}
+          onChange={(e) => setField('assessmentTitle', e.target.value)}
           placeholder="Start from a tailored assessment"
         />
         <FormTextarea
           label="Section Description:"
           className="h-20"
-          value={form.bannerDescription}
-          onChange={(e) => setField('bannerDescription', e.target.value)}
+          value={form.assessmentDescription}
+          onChange={(e) => setField('assessmentDescription', e.target.value)}
           placeholder="Comprehensive care for a wide range of everyday conditions…"
         />
       </div>
