@@ -447,7 +447,7 @@ import {
   ChevronRight,
   Loader2,
   AlertCircle,
-  Calendar,
+
   Download,
   RefreshCw,
   Eye,
@@ -456,7 +456,7 @@ import {
   UsersRound,
   Database,
 } from "lucide-react";
-
+import DatePicker from "@/components/shared/DatePicker";
 
 import Auditlogdetailmodal from "./components/auditLogPageComponent/Auditlogdetailmodal ";
 
@@ -749,35 +749,25 @@ const handleExport = async () => {
           <option value="FAILED">Failed</option>
         </select>
 
-        <div className="relative">
-          <input
-            // type="text"
-            type="date"
-            value={startDate}
-            onChange={(e) => {
-              setStartDate(e.target.value);
-              handleFilterChange();
-            }}
-            placeholder="2026-06-01"
-            className="w-[140px] pl-3 pr-10 py-2.5 bg-white border border-slate-200 rounded-lg text-sm text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition"
-          />
-          <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
-        </div>
+        <DatePicker
+          value={startDate}
+          onChange={(e) => {
+            setStartDate(e.target.value);
+            handleFilterChange();
+          }}
+          placeholder="2026-06-01"
+          wrapperClassName="w-[140px]"
+        />
 
-        <div className="relative">
-          <input
-            type="date"
-            // type="text"
-            value={endDate}
-            onChange={(e) => {
-              setEndDate(e.target.value);
-              handleFilterChange();
-            }}
-            placeholder="//-//-//"
-            className="w-[140px] pl-3 pr-10 py-2.5 bg-white border border-slate-200 rounded-lg text-sm text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition"
-          />
-          <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
-        </div>
+        <DatePicker
+          value={endDate}
+          onChange={(e) => {
+            setEndDate(e.target.value);
+            handleFilterChange();
+          }}
+          placeholder="//-//-//"
+          wrapperClassName="w-[140px]"
+        />
       </form>
 
       {/* ── Table ─────────────────────────────────────────────────────────── */}

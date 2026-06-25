@@ -91,7 +91,7 @@ export function HomepageProvider({ children }: { children: React.ReactNode }) {
         finalForm.heroMediaId = id;
       }
       if (heroBadgeImageRef.current) {
-        const { id } = await uploadAttachment(heroBadgeImageRef.current, 'HERO_IMAGE_BADGE');
+        const { id } = await uploadAttachment(heroBadgeImageRef.current, 'HERO_BADGE_IMAGE');
         finalForm.heroBadgeImageId = id;
       }
       if (aboutMediaRef.current) {

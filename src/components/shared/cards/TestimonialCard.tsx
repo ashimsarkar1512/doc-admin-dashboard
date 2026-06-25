@@ -54,7 +54,7 @@ export interface TestimonialCardProps {
 
 // ── Card ──────────────────────────────────────────────────────────────────────
 
-export const TestimonialCard: React.FC<TestimonialCardProps> = ({
+export const  TestimonialCard: React.FC<TestimonialCardProps> = ({
   testimonial,
   isToggling,
   onEdit,
@@ -62,8 +62,11 @@ export const TestimonialCard: React.FC<TestimonialCardProps> = ({
   onTogglePublish,
 }) => {
   const { isPublished, avatar, clientName, feedback, rating, date } = testimonial;
-console.log("=> this is avater data ",avatar,"this is client data => ",clientName)
+  const [imgError, setImgError] = React.useState(false);
 
+  React.useEffect(() => {
+    setImgError(false);
+  }, [avatar?.fileUrl]);
 
 
   return (
@@ -74,11 +77,12 @@ console.log("=> this is avater data ",avatar,"this is client data => ",clientNam
 
         {/* Avatar */}
         <div className="w-10 h-10 shrink-0">
-          {avatar?.fileUrl ? (
+          {avatar?.fileUrl && !imgError ? (
             <img
               src={avatar.fileUrl}
               alt={clientName}
               className="w-10 h-10 rounded-full object-cover"
+              onError={() => setImgError(true)}
             />
           ) : (
             <GoogleIcon />

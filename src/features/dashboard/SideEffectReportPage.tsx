@@ -12,6 +12,7 @@ import type {
   GetSideEffectReportsParams,
 } from '@/api/endpoints/reportSideEffect.api';
 import SideEffectReportModal from './components/SideEffectReportModal';
+import DatePicker from '@/components/shared/DatePicker';
 import {
   Eye,
   Trash2,
@@ -21,7 +22,7 @@ import {
   Paperclip,
   AlertCircle,
   Loader2,
-  Calendar,
+
 } from 'lucide-react';
 import Swal from 'sweetalert2';
 
@@ -270,25 +271,17 @@ export default function SideEffectReportPage() {
         </select>
 
         {/* Dates */}
-        <div className="relative">
-          <input
-            type="date"
-            value={fromDate}
-            onChange={(e) => { setFromDate(e.target.value); handleFilterChange(); }}
-            className="w-[160px] pl-3 pr-10 py-2.5 bg-white border border-slate-200 rounded-lg text-sm text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:right-3 [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:cursor-pointer cursor-pointer"
-          />
-          <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
-        </div>
+        <DatePicker
+          value={fromDate}
+          onChange={(e) => { setFromDate(e.target.value); handleFilterChange(); }}
+          wrapperClassName="w-[160px]"
+        />
 
-        <div className="relative">
-          <input
-            type="date"
-            value={toDate}
-            onChange={(e) => { setToDate(e.target.value); handleFilterChange(); }}
-            className="w-[160px] pl-3 pr-10 py-2.5 bg-white border border-slate-200 rounded-lg text-sm text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:right-3 [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:cursor-pointer cursor-pointer"
-          />
-          <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
-        </div>
+        <DatePicker
+          value={toDate}
+          onChange={(e) => { setToDate(e.target.value); handleFilterChange(); }}
+          wrapperClassName="w-[160px]"
+        />
       </form>
 
       {/* ── Table ───────────────────────────────────────────── */}
