@@ -4,11 +4,16 @@ export interface LoginCredentials {
 }
 
 export interface LoginResponseData {
-  userId: string;
+  userId?: string;
   status?: string;
   challengeId?: string;
   method?: string;
   purpose?: string;
+  email?: string;
+  phone?: string | null;
+  accessToken?: string;
+  tokenType?: string;
+  user?: User;
 }
 
 export interface LoginResponse {
