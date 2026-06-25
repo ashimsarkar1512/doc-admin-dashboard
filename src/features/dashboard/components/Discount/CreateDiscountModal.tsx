@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { X } from "lucide-react";
 import type { DiscountPayload } from "@/api/endpoints/discountsApi";
+import DatePicker from "@/components/shared/DatePicker";
 
 interface Props {
   isOpen: boolean;
@@ -122,8 +123,7 @@ export default function CreateDiscountModal({ isOpen, onClose, onSubmit, isLoadi
             <label className="block text-sm font-medium text-slate-700 mb-1.5">
               Expiration Date:
             </label>
-            <input
-              type="date"
+            <DatePicker
               value={expiresAt}
               min={new Date().toISOString().split("T")[0]}
               onChange={(e) => setExpiresAt(e.target.value)}

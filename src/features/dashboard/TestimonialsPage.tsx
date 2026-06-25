@@ -196,14 +196,7 @@ export default function TestimonialsPage() {
   return (
     <div className="p-6 w-full space-y-6 font-sans">
       {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900 tracking-tight">
-          Testimonials
-        </h1>
-        <p className="text-sm text-gray-500 mt-0.5">
-          Create and manage user testimonials
-        </p>
-      </div>
+     
 
       {/* Control Bar */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">

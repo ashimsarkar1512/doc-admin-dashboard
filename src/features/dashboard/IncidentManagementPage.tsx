@@ -14,6 +14,7 @@ import type {
   GetIncidentsParams,
 } from "@/api/endpoints/incidentManagement.api";
 import IncidentDetailModal from "./components/IncidentDetailModal";
+import DatePicker from "@/components/shared/DatePicker";
 import {
   Search,
   Eye,
@@ -23,7 +24,7 @@ import {
   ChevronDown,
   Loader2,
   AlertCircle,
-  Calendar,
+
 } from "lucide-react";
 import Swal from "sweetalert2";
 
@@ -318,25 +319,17 @@ export default function IncidentManagementPage() {
           <option value="CLOSED">Closed</option>
         </select>
 
-        <div className="relative">
-          <input
-            type="date"
-            value={detectedFrom}
-            onChange={(e) => { setDetectedFrom(e.target.value); handleFilterChange(); }}
-            className="w-[160px] pl-3 pr-10 py-2.5 bg-white border border-slate-200 rounded-lg text-sm text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:right-3 [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:cursor-pointer cursor-pointer"
-          />
-          <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
-        </div>
+        <DatePicker
+          value={detectedFrom}
+          onChange={(e) => { setDetectedFrom(e.target.value); handleFilterChange(); }}
+          wrapperClassName="w-[160px]"
+        />
 
-        <div className="relative">
-          <input
-            type="date"
-            value={detectedTo}
-            onChange={(e) => { setDetectedTo(e.target.value); handleFilterChange(); }}
-            className="w-[160px] pl-3 pr-10 py-2.5 bg-white border border-slate-200 rounded-lg text-sm text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:right-3 [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:cursor-pointer cursor-pointer"
-          />
-          <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
-        </div>
+        <DatePicker
+          value={detectedTo}
+          onChange={(e) => { setDetectedTo(e.target.value); handleFilterChange(); }}
+          wrapperClassName="w-[160px]"
+        />
       </form>
 
       {/* ── Table ─────────────────────────────────────────────────────────── */}

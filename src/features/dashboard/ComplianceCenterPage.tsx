@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { SummaryCards } from './components/ComplianceCenter/SummaryCards';
 import { SecurityAlerts } from './components/ComplianceCenter/SecurityAlerts';
 import { ComplianceStatus } from './components/ComplianceCenter/ComplianceStatus';
