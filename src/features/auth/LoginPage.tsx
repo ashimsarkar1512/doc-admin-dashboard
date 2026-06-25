@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { useAppDispatch } from '@/store/hooks';
-import { clearError, setOtpPending } from '@/store/slices/authSlice';
+import { clearError, setOtpPending, setCredentials } from '@/store/slices/authSlice';
 import { useNavigate } from '@tanstack/react-router';
 import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import { requestLogin } from '@/api/endpoints/auth.api';
@@ -26,17 +26,31 @@ export default function LoginPage() {
     setIsRequesting(true);
     try {
       const loginRes = await requestLogin({ email: data.email, password: data.password });
-      const uid = loginRes.data?.userId;
 
-      dispatch(setOtpPending({
-        userId: uid,
-        challengeId: null,
-        method: 'EMAIL',
-        purpose: 'LOGIN',
-      }));
+      if (loginRes.data?.status === 'OTP_REQUIRED') {
+        dispatch(setOtpPending({
+          userId: loginRes.data.userId!,
+          challengeId: null,
+          method: 'EMAIL',
+          purpose: 'LOGIN',
+          email: loginRes.data.email || data.email,
+          phone: loginRes.data.phone || null,
+        }));
 
-      toast.success(loginRes.message || 'Credentials verified. Choose how to receive your OTP.');
-      routerNavigate({ to: '/receive-otp' });
+        toast.success(loginRes.message || 'Credentials verified. Choose how to receive your OTP.');
+        routerNavigate({ to: '/receive-otp' });
+      } else if (loginRes.data?.accessToken && loginRes.data?.user) {
+        dispatch(setCredentials({
+          user: loginRes.data.user,
+          accessToken: loginRes.data.accessToken,
+        }));
+        
+        toast.success(loginRes.message || 'Login successful');
+        routerNavigate({ to: '/dashboard' });
+      } else {
+        toast.success(loginRes.message || 'Login successful');
+        routerNavigate({ to: '/dashboard' });
+      }
     } catch (err: unknown) {
       const e = err as import('axios').AxiosError<{ message: string }>;
       toast.error(e.response?.data?.message || e.message || 'Failed to login');

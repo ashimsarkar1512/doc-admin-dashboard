@@ -8,6 +8,21 @@ import { requestSendOtp } from '@/api/endpoints/auth.api';
 
 type Method = 'EMAIL' | 'SMS';
 
+const maskEmail = (email?: string | null) => {
+  if (!email) return "";
+  const [name, domain] = email.split("@");
+  if (!domain) return email;
+  const visibleChars = name.length > 4 ? name.slice(0, 4) : name;
+  return `${visibleChars}****@${domain}`;
+};
+
+const maskPhone = (phone?: string | null) => {
+  if (!phone) return "";
+  if (phone.length < 4) return phone;
+  const visibleChars = phone.slice(-4);
+  return `****${visibleChars}`;
+};
+
 export default function ReceiveOtpPage() {
   const routerNavigate = useNavigate();
   const dispatch = useAppDispatch();
@@ -127,38 +142,44 @@ export default function ReceiveOtpPage() {
                     onChange={() => setMethod('EMAIL')}
                     className="sr-only"
                   />
-                  <span className="text-sm text-white/85">Email: ex*****@email.com</span>
+                  <span className="text-sm text-white/85">
+                    Email: {otpPending?.email ? maskEmail(otpPending.email) : 'ex*****@email.com'}
+                  </span>
                 </label>
 
                 {/* Phone option */}
-                <label
-                  className={`flex items-center gap-3 w-full rounded-2xl px-4 py-3.5 border cursor-pointer transition-all duration-200 ${
-                    method === 'SMS'
-                      ? 'border-white/30 bg-white/15'
-                      : 'border-white/10 bg-white/5 hover:bg-white/10'
-                  }`}
-                >
-                  <div
-                    className={`w-5 h-5 rounded-full border-2 flex-shrink-0 flex items-center justify-center transition-all ${
+                {otpPending?.phone && (
+                  <label
+                    className={`flex items-center gap-3 w-full rounded-2xl px-4 py-3.5 border cursor-pointer transition-all duration-200 ${
                       method === 'SMS'
-                        ? 'border-[#2563eb] bg-[#2563eb]'
-                        : 'border-white/40 bg-transparent'
+                        ? 'border-white/30 bg-white/15'
+                        : 'border-white/10 bg-white/5 hover:bg-white/10'
                     }`}
                   >
-                    {method === 'SMS' && (
-                      <div className="w-2 h-2 rounded-full bg-white" />
-                    )}
-                  </div>
-                  <input
-                    type="radio"
-                    name="method"
-                    value="SMS"
-                    checked={method === 'SMS'}
-                    onChange={() => setMethod('SMS')}
-                    className="sr-only"
-                  />
-                  <span className="text-sm text-white/85">Phone: +123*******90</span>
-                </label>
+                    <div
+                      className={`w-5 h-5 rounded-full border-2 flex-shrink-0 flex items-center justify-center transition-all ${
+                        method === 'SMS'
+                          ? 'border-[#2563eb] bg-[#2563eb]'
+                          : 'border-white/40 bg-transparent'
+                      }`}
+                    >
+                      {method === 'SMS' && (
+                        <div className="w-2 h-2 rounded-full bg-white" />
+                      )}
+                    </div>
+                    <input
+                      type="radio"
+                      name="method"
+                      value="SMS"
+                      checked={method === 'SMS'}
+                      onChange={() => setMethod('SMS')}
+                      className="sr-only"
+                    />
+                    <span className="text-sm text-white/85">
+                      Phone: {maskPhone(otpPending.phone)}
+                    </span>
+                  </label>
+                )}
               </div>
 
               <div className="mt-6">
