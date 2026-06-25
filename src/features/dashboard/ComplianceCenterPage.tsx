@@ -1,61 +1,144 @@
-import { useQuery } from '@tanstack/react-query';
+import React from 'react';
+import { SummaryCards } from './components/ComplianceCenter/SummaryCards';
+import { SecurityAlerts } from './components/ComplianceCenter/SecurityAlerts';
+import { ComplianceStatus } from './components/ComplianceCenter/ComplianceStatus';
+import { ProviderLicensing } from './components/ComplianceCenter/ProviderLicensing';
+import type { 
+  SummaryMetric, 
+  SecurityAlert, 
+  ComplianceStatusItem, 
+  ProviderLicense 
+} from './components/ComplianceCenter/types';
+
+const SUMMARY_METRICS: SummaryMetric[] = [
+  { title: 'HIPAA Compliance', value: '87%', subtitle: 'Readiness score' },
+  { title: 'Consent Completion', value: '73%', subtitle: 'Of active patients' },
+  { title: 'Security Alerts', value: '22', subtitle: 'Active right now' },
+  { title: 'Failed Logins (24h)', value: '47', subtitle: '+8 from yesterday' },
+  { title: 'MFA Adoption', value: '91%', subtitle: 'Staff coverage' },
+  { title: 'Audit Log (24h)', value: '3,847', subtitle: 'Events logged' },
+];
+
+const SECURITY_ALERTS: SecurityAlert[] = [
+  {
+    id: '1',
+    severity: 'Critical',
+    title: 'Unauthorized Access',
+    timeAgo: '2 mins ago',
+    detailLine1: 'Unknown IP 192.168.1.45',
+    detailLine2: '3 failed login attempts from unrecognized device',
+  },
+  {
+    id: '2',
+    severity: 'High',
+    title: 'Suspicious Login',
+    timeAgo: '14 mins ago',
+    detailLine1: 'Dr. Michael Chen',
+    detailLine2: 'Login from new location: Dallas, TX (usual: Boston, MA)',
+  },
+  {
+    id: '3',
+    severity: 'Medium',
+    title: 'Large Data Export',
+    timeAgo: '1 hr ago',
+    detailLine1: 'Staff: Jessica Martinez',
+    detailLine2: 'Exported 2,400 patient records — exceeds daily threshold',
+  },
+  {
+    id: '4',
+    severity: 'Medium',
+    title: 'PHI Access Anomaly',
+    timeAgo: '3 hrs ago',
+    detailLine1: 'Dr. Sarah Johnson',
+    detailLine2: 'Accessed 47 patient records outside normal pattern',
+  },
+  {
+    id: '5',
+    severity: 'Low',
+    title: 'Multiple Failed Logins',
+    timeAgo: '5 hrs ago',
+    detailLine1: 'David Wilson',
+    detailLine2: '5 failed login attempts — account temporarily locked',
+  },
+];
+
+const COMPLIANCE_STATUS: ComplianceStatusItem[] = [
+  { id: '1', label: 'HIPAA Readiness Score', statusText: 'Compliant', statusType: 'success', percentage: 87 },
+  { id: '2', label: 'Data Retention Policy', statusText: 'Active', statusType: 'success', percentage: 100 },
+  { id: '3', label: 'Consent Coverage', statusText: 'Needs Review', statusType: 'warning', percentage: 73 },
+  { id: '4', label: 'MFA Enforcement', statusText: 'Active', statusType: 'success', percentage: 91 },
+  { id: '5', label: 'Audit Trail Coverage', statusText: 'Active', statusType: 'success', percentage: 98 },
+];
+
+const PROVIDER_LICENSES: ProviderLicense[] = [
+  {
+    id: '1',
+    name: 'Dr. Sarah Mitchell',
+    initials: 'SM',
+    states: ['TX', 'CA', 'FL'],
+    npi: '1234567890',
+    dea: 'BM1234567',
+    licenseExpires: 'Expiring in 72d',
+    licenseStatus: 'warning',
+    insuranceExpires: 'Expiring in 27d',
+    insuranceStatus: 'warning',
+  },
+  {
+    id: '2',
+    name: 'Dr. James Okafor',
+    initials: 'JO',
+    states: ['TX', 'NY'],
+    npi: '0987654321',
+    dea: 'BO9876543',
+    licenseExpires: '118d left',
+    licenseStatus: 'success',
+    insuranceExpires: '225d left',
+    insuranceStatus: 'success',
+  },
+  {
+    id: '3',
+    name: 'Emily Torres NP',
+    initials: 'ET',
+    states: ['TX'],
+    npi: '1122334455',
+    dea: 'N/A',
+    licenseExpires: 'Expiring in 24d',
+    licenseStatus: 'warning',
+    insuranceExpires: 'Expiring in 36d',
+    insuranceStatus: 'warning',
+  },
+  {
+    id: '4',
+    name: 'Dr. Kevin Nash',
+    initials: 'KN',
+    states: ['CA', 'WA'],
+    npi: '5544332211',
+    dea: 'BN5544332',
+    licenseExpires: '270d left',
+    licenseStatus: 'success',
+    insuranceExpires: '270d left',
+    insuranceStatus: 'success',
+  },
+];
 
 export default function ComplianceCenterPage() {
-  const { data, isLoading } = useQuery({
-    queryKey: ['compliance-center'],
-    queryFn: async () => {
-      await new Promise((resolve) => setTimeout(resolve, 800));
-      return [
-        { id: 1, check: 'HIPAA Data Encryption', category: 'Data Security', status: 'Passed', lastReview: '2026-06-01' },
-        { id: 2, check: 'Access Control Audit', category: 'Access Management', status: 'Passed', lastReview: '2026-05-28' },
-        { id: 3, check: 'PHI Handling Policy', category: 'Data Privacy', status: 'Warning', lastReview: '2026-05-20' },
-        { id: 4, check: 'Breach Notification SOP', category: 'Incident Response', status: 'Passed', lastReview: '2026-06-03' },
-        { id: 5, check: 'Business Associate Agreements', category: 'Legal', status: 'Failed', lastReview: '2026-04-15' },
-      ];
-    },
-  });
-
-  const statusColor = (s: string) =>
-    s === 'Passed' ? 'bg-green-100 text-green-700' :
-    s === 'Warning' ? 'bg-amber-100 text-amber-700' :
-    'bg-red-100 text-red-700';
-
   return (
-    <div className="w-full p-4 md:p-8">
-      <div className="mb-8">
-        <h1 className="text-2xl sm:text-3xl font-bold text-slate-800 tracking-tight">Compliance Center</h1>
-        <p className="text-sm text-slate-500 font-medium mt-1">Monitor regulatory compliance checks and audit results</p>
+    <div className="w-full p-6 md:p-8 min-h-screen bg-[#FAFAFB]">
+      {/* Header */}
+      
+
+      <SummaryCards metrics={SUMMARY_METRICS} />
+
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div className="lg:col-span-8">
+          <SecurityAlerts alerts={SECURITY_ALERTS} />
+        </div>
+        <div className="lg:col-span-4">
+          <ComplianceStatus items={COMPLIANCE_STATUS} />
+        </div>
       </div>
-      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
-        {isLoading ? (
-          <div className="p-8 flex justify-center items-center"><p className="text-slate-500">Loading compliance data...</p></div>
-        ) : (
-          <table className="w-full text-left text-sm text-slate-600">
-            <thead className="bg-slate-50 border-b border-slate-200 text-slate-700 font-semibold">
-              <tr>
-                <th className="px-6 py-4">Compliance Check</th>
-                <th className="px-6 py-4">Category</th>
-                <th className="px-6 py-4">Last Review</th>
-                <th className="px-6 py-4">Status</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
-              {data?.map((item) => (
-                <tr key={item.id} className="hover:bg-slate-50 transition-colors">
-                  <td className="px-6 py-4 font-medium text-slate-800">{item.check}</td>
-                  <td className="px-6 py-4">{item.category}</td>
-                  <td className="px-6 py-4">{item.lastReview}</td>
-                  <td className="px-6 py-4">
-                    <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${statusColor(item.status)}`}>
-                      {item.status}
-                    </span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
-      </div>
+
+      <ProviderLicensing providers={PROVIDER_LICENSES} />
     </div>
   );
 }
