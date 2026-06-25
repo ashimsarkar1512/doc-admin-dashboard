@@ -63,7 +63,7 @@ export function NotificationDropdown() {
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="relative flex items-center justify-center w-9 h-9 rounded-xl text-slate-500 hover:bg-slate-100 hover:text-slate-700 transition-all duration-200"
+        className="relative flex items-center justify-center w-9 h-9 rounded-xl text-slate-500 hover:text-slate-700 transition-all duration-200"
       >
         <Bell size={18} strokeWidth={1.8} />
         {unreadCount > 0 && (
@@ -92,7 +92,7 @@ export function NotificationDropdown() {
             )}
           </div>
 
-          <div className="overflow-y-auto flex-1 p-2">
+          <div className="overflow-y-auto flex-1 p-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
             {isLoading ? (
               <div className="flex justify-center items-center py-8">
                 <Loader2 className="animate-spin text-slate-400" size={24} />
@@ -115,7 +115,7 @@ export function NotificationDropdown() {
                         notification.referenceId
                       )
                     }
-                    className={`text-left p-3 rounded-xl transition-all duration-200 flex flex-col gap-1 ${
+                    className={`text-left p-3 rounded-xl transition-all duration-200 flex flex-col gap-1 cursor-pointer ${
                       notification.isRead 
                         ? 'bg-transparent hover:bg-slate-50 opacity-75' 
                         : 'bg-blue-50/50 hover:bg-blue-50 border border-blue-100/50'
