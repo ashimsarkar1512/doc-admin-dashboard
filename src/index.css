@@ -293,3 +293,15 @@ input[type="date"] {
   -ms-overflow-style: none;  /* IE & Edge */
   scrollbar-width: none;     /* Firefox */
 }
+
+@layer base {
+  input, textarea, select {
+    @apply bg-white text-slate-900 border-slate-200;
+  }
+
+  .dark input,
+  .dark textarea,
+  .dark select {
+    @apply bg-slate-800 text-slate-100 border-slate-600;
+  }
+}

@@ -217,7 +217,7 @@ export const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({ order, isO
           </Button>
           <Button className="flex-1 bg-blue-600 hover:bg-blue-700 text-white" onClick={handleSave} disabled={updateOrderMutation.isPending}>
             {updateOrderMutation.isPending ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : null}
-            Save Changes
+            Save Changes 
           </Button>
         </div>
       </div>
