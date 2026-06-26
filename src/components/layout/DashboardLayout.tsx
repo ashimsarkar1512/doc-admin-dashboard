@@ -640,7 +640,7 @@
 //             <Link
 //               to="/dashboard/employee-permissions"
 //               className="flex items-center justify-center p-2.5 rounded-md text-slate-600 hover:bg-slate-100 [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active_svg]:text-[#1447E6]"
-//               title="Compliance & Access "
+//               title="Compliance & Access"
 //             >
 //               <ShieldCheck size={20} className="text-slate-400 shrink-0" />
 //             </Link>
@@ -811,7 +811,7 @@
 //             <div className="flex items-center gap-2.5">
 //               <div className="hidden sm:flex flex-col text-right">
 //                 <span className="text-[13px] font-semibold text-slate-800 leading-none">
-//                   {profile?.profile?.name || user?.name || "N/A"}
+//                   {profile?.profile?.name || user?.name || "Dr. Darren"}
 //                 </span>
 //                 <span className="text-[11px] text-slate-400 leading-none mt-0.5 font-medium">
 //                   {profile?.role || user?.role || "Admin"}
@@ -832,7 +832,8 @@
 // }
 
 
-import { getContactLeads } from "@/api/endpoints/contact-leads.api";
+
+// new code import { getContactLeads } from "@/api/endpoints/contact-leads.api";
 import { useUserProfile } from "@/features/account-settings/hooks/useAccountSettings";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { setPageHeader, toggleSidebar } from "@/store/uiSlice";
@@ -873,6 +874,7 @@ import { useEffect, useState } from "react";
 import { ProfileDropdown } from "./ProfileDropdown";
 import { NotificationDropdown } from "./NotificationDropdown";
 import { useNotificationSocket } from "@/features/notifications/hooks/useNotifications";
+import { getContactLeads } from "@/api/endpoints/contact-leads.api";
 
 // Route to title mapping for cleaner code
 const routeTitleMap: Record<string, { title: string; subtitle: string }> = {
