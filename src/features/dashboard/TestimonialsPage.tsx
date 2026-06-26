@@ -2,6 +2,7 @@ import React, { useState, useCallback, useMemo, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Search, Plus, Download, ChevronDown, Star } from "lucide-react";
+import Swal from "sweetalert2";
 import type {
   Testimonial,
   CreateTestimonialPayload,
@@ -39,7 +40,9 @@ export default function TestimonialsPage() {
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [filterIdx, setFilterIdx] = useState(0);
   const [filterOpen, setFilterOpen] = useState(false);
-  const searchTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const searchTimer = useRef<ReturnType<typeof setTimeout> | undefined>(
+    undefined,
+  );
 
   // Modal state
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -124,10 +127,45 @@ export default function TestimonialsPage() {
     setEditing(t);
     setIsModalOpen(true);
   }, []);
+  // const handleDelete = useCallback(
+  //   (id: string) => {
+  //     if (!confirm("Delete this testimonial?")) return;
+  //     deleteMutation.mutate(id);
+  //   },
+  //   [deleteMutation],
+  // );
+
   const handleDelete = useCallback(
-    (id: string) => {
-      if (!confirm("Delete this testimonial?")) return;
-      deleteMutation.mutate(id);
+    (id: string, name?: string) => {
+      Swal.fire({
+        title: "Are you sure?",
+        html: `Are you sure you want to permanently delete this testimonial?
+       This action cannot be undone.`,
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#ef4444",
+        cancelButtonColor: "#64748b",
+        confirmButtonText: "Yes, delete it!",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          deleteMutation.mutate(id, {
+            onSuccess: () => {
+              Swal.fire(
+                "Deleted!",
+                `<b>${name || "Testimonial"}</b> has been successfully deleted.`,
+                "success",
+              );
+            },
+            onError: (err: Error) => {
+              Swal.fire(
+                "Error!",
+                err.message || "Failed to delete testimonial",
+                "error",
+              );
+            },
+          });
+        }
+      });
     },
     [deleteMutation],
   );
@@ -196,7 +234,6 @@ export default function TestimonialsPage() {
   return (
     <div className="p-6 w-full space-y-6 font-sans">
       {/* Header */}
-     
 
       {/* Control Bar */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">

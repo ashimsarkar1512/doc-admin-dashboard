@@ -35,7 +35,7 @@ export function ProfileDropdown({ user: storeUser }: ProfileDropdownProps) {
   // Get user info - first check if profile has nested profile, else use store user
   const profileName = profile?.profile?.name;
   const profileEmail = profile?.email;
-  const userName = profileName || storeUser?.name || "Admin Darren";
+  const userName = profileName || storeUser?.name || "N/A";
   const userEmail = profileEmail || storeUser?.email || "admin@telemed.com";
   const initials = userName.substring(0, 2).toUpperCase();
   const mfaEnabled = profile?.mfaEnabled || false;
