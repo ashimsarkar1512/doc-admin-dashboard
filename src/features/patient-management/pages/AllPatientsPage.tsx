@@ -113,140 +113,303 @@ export default function AllPatientsPage() {
     setCurrentPage(page);
   };
 
-  const handleStatusUpdate = (id: string, newStatus: string, name: string, actionText: string) => {
-    Swal.fire({
-      title: 'Are you sure?',
-      text: `Do you want to ${actionText.toLowerCase()} ${name}?`,
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: newStatus === 'ACTIVE' ? '#10b981' : '#ef4444',
-      cancelButtonColor: '#64748b',
-      confirmButtonText: `Yes, ${actionText}!`,
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        try {
-          await updatePatientStatus(id, newStatus);
-          Swal.fire('Success!', `${name} has been ${actionText.toLowerCase()}d.`, 'success');
-          queryClient.invalidateQueries({ queryKey: ['patients'] });
-        } catch (error) {
-          const message = error instanceof Error ? error.message : `Failed to ${actionText.toLowerCase()} patient`;
-          Swal.fire('Error!', message, 'error');
-        }
+  // const handleStatusUpdate = (id: string, newStatus: string, name: string, actionText: string) => {
+  //   Swal.fire({
+  //     title: 'Are you sure?',
+  //     text: `Do you want to ${actionText.toLowerCase()} ${name}?`,
+  //     icon: 'warning',
+  //     showCancelButton: true,
+  //     confirmButtonColor: newStatus === 'ACTIVE' ? '#10b981' : '#ef4444',
+  //     cancelButtonColor: '#64748b',
+  //     confirmButtonText: `Yes, ${actionText}!`,
+  //   }).then(async (result) => {
+  //     if (result.isConfirmed) {
+  //       try {
+  //         await updatePatientStatus(id, newStatus);
+  //         Swal.fire('Success!', `${name} has been ${actionText.toLowerCase()}d.`, 'success');
+  //         queryClient.invalidateQueries({ queryKey: ['patients'] });
+  //       } catch (error) {
+  //         const message = error instanceof Error ? error.message : `Failed to ${actionText.toLowerCase()} patient`;
+  //         Swal.fire('Error!', message, 'error');
+  //       }
+  //     }
+  //   });
+  // };
+
+const handleStatusUpdate = (id: string, newStatus: string, name: string, actionText: string) => {
+  const isDelete = newStatus === 'DELETED';
+
+  Swal.fire({
+    title: 'Are you sure?',
+    text: isDelete
+      ? `Do you want to ${actionText.toLowerCase()} ${name}? This will deactivate the record and hide it from active use. You can restore it later if needed.`
+      : `Do you want to ${actionText.toLowerCase()} ${name}? You can undo this action later.`,
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: newStatus === 'ACTIVE' ? '#10b981' : '#ef4444',
+    cancelButtonColor: '#64748b',
+    confirmButtonText: `Yes, ${actionText}!`,
+  }).then(async (result) => {
+    if (result.isConfirmed) {
+      try {
+        await updatePatientStatus(id, newStatus);
+        Swal.fire('Success!', `${name} has been ${actionText.toLowerCase()}d.`, 'success');
+        queryClient.invalidateQueries({ queryKey: ['patients'] });
+      } catch (error) {
+        const message = error instanceof Error ? error.message : `Failed to ${actionText.toLowerCase()} patient`;
+        Swal.fire('Error!', message, 'error');
       }
-    });
-  };
+    }
+  });
+};
+
+
+  // const handleExport = () => {
+  //   setIsExporting(true);
+
+  //   getPatients({
+  //     limit: 1000,
+  //     search: debouncedSearch || undefined,
+  //     status: statusFilter || undefined,
+  //   }).then((allData: GetPatientsResponse) => {
+  //     const exportPatients = allData.data ?? [];
+      
+  //     const doc = new jsPDF({
+  //       orientation: 'landscape',
+  //       unit: 'mm',
+  //       format: 'a4'
+  //     });
+      
+  //     // Add background header color
+  //     doc.setFillColor(30, 41, 59); // slate-800 (#1E293B)
+  //     doc.rect(0, 0, 297, 40, 'F');
+      
+  //     // Add Title
+  //     doc.setFontSize(24);
+  //     doc.setTextColor(255, 255, 255);
+  //     doc.text('Patient Management Report', 14, 20);
+      
+  //     // Add Subtitle/Info in Header
+  //     doc.setFontSize(10);
+  //     doc.setTextColor(203, 213, 225); // slate-300
+  //     const generatedDate = new Date().toLocaleString();
+  //     doc.text(`Generated on: ${generatedDate}`, 14, 28);
+  //     doc.text(`Total Patients Found: ${exportPatients.length}`, 14, 33);
+      
+  //     // Filters badge area
+  //     if (statusFilter || debouncedSearch) {
+  //       doc.setFontSize(9);
+  //       let filterStr = 'Filters Applied: ';
+  //       if (statusFilter) filterStr += `Status: ${statusFilter}  `;
+  //       if (debouncedSearch) filterStr += `Search: "${debouncedSearch}"`;
+  //       doc.text(filterStr, 14, 37);
+  //     }
+
+  //     const tableColumn = ["#", "Patient Name", "Email Address", "Contact Number", "Consultations", "Status", "Joining Date"];
+  //     const tableRows = exportPatients.map((p: Patient, index: number) => [
+  //       index + 1,
+  //       p.name,
+  //       p.email,
+  //       p.contactNumber,
+  //       String(p.activeConsultation).padStart(2, '0'),
+  //       p.status,
+  //       new Date(p.joiningDate).toLocaleDateString(),
+  //     ]);
+
+  //     autoTable(doc, {
+  //       head: [tableColumn],
+  //       body: tableRows,
+  //       startY: 45,
+  //       theme: 'striped',
+  //       styles: { 
+  //         fontSize: 10, 
+  //         cellPadding: 2,
+  //         valign: 'middle',
+  //         font: 'helvetica',
+  //         textColor: [51, 65, 85] // slate-700
+  //       },
+  //       headStyles: { 
+  //         fillColor: [241, 245, 249], // slate-100
+  //         textColor: [71, 85, 105], // slate-600
+  //         fontStyle: 'bold',
+  //         halign: 'left',
+  //         lineWidth: 0.1,
+  //         lineColor: [226, 232, 240] // slate-200
+  //       },
+  //       columnStyles: {
+  //         0: { halign: 'center', cellWidth: 10 },
+  //         1: { fontStyle: 'bold', textColor: [30, 41, 59] }, // Name in slate-800
+  //         4: { halign: 'center' },
+  //         5: { halign: 'center' },
+  //         6: { halign: 'center' }
+  //       },
+  //       alternateRowStyles: { 
+  //         fillColor: [250, 251, 252] 
+  //       },
+  //       margin: { top: 45, bottom: 20 },
+  //       didDrawPage: (data) => {
+  //         // Footer
+  //         const pageSize = doc.internal.pageSize;
+  //         const pageHeight = pageSize.height ? pageSize.height : pageSize.getHeight();
+  //         const pageWidth = pageSize.width ? pageSize.width : pageSize.getWidth();
+          
+  //         doc.setFontSize(9);
+  //         doc.setTextColor(148, 163, 184); // text-slate-400
+          
+  //         // Page Number
+  //         const str = `Page ${data.pageNumber} of ${doc.internal.pages.length - 1}`;
+  //         doc.text(str, data.settings.margin.left, pageHeight - 10);
+          
+  //         // Confidentiality Note
+  //         doc.text('Confidential Patient Document - DocDashboard', pageWidth - 14, pageHeight - 10, { align: 'right' });
+  //       }
+  //     });
+
+  //     doc.save(`patients_report_${new Date().toISOString().split('T')[0]}.pdf`);
+  //     setIsExporting(false);
+  //   }).catch((error) => {
+  //     console.error('Export error:', error);
+  //     setIsExporting(false);
+  //     // Only use Swal for errors as a fallback since it's important
+  //     Swal.fire('Error', 'Failed to export patients data', 'error');
+  //   });
+  // };
+
+
 
   const handleExport = () => {
-    setIsExporting(true);
+  setIsExporting(true);
 
-    getPatients({
-      limit: 1000,
-      search: debouncedSearch || undefined,
-      status: statusFilter || undefined,
-    }).then((allData: GetPatientsResponse) => {
-      const exportPatients = allData.data ?? [];
-      
-      const doc = new jsPDF({
-        orientation: 'landscape',
-        unit: 'mm',
-        format: 'a4'
-      });
-      
-      // Add background header color
-      doc.setFillColor(30, 41, 59); // slate-800 (#1E293B)
-      doc.rect(0, 0, 297, 40, 'F');
-      
-      // Add Title
-      doc.setFontSize(24);
-      doc.setTextColor(255, 255, 255);
-      doc.text('Patient Management Report', 14, 20);
-      
-      // Add Subtitle/Info in Header
-      doc.setFontSize(10);
-      doc.setTextColor(203, 213, 225); // slate-300
-      const generatedDate = new Date().toLocaleString();
-      doc.text(`Generated on: ${generatedDate}`, 14, 28);
-      doc.text(`Total Patients Found: ${exportPatients.length}`, 14, 33);
-      
-      // Filters badge area
-      if (statusFilter || debouncedSearch) {
-        doc.setFontSize(9);
-        let filterStr = 'Filters Applied: ';
-        if (statusFilter) filterStr += `Status: ${statusFilter}  `;
-        if (debouncedSearch) filterStr += `Search: "${debouncedSearch}"`;
-        doc.text(filterStr, 14, 37);
+  getPatients({
+    limit: 1000,
+    search: debouncedSearch || undefined,
+    status: statusFilter || undefined,
+  }).then((allData: GetPatientsResponse) => {
+    const exportPatients = allData.data ?? [];
+    
+    const doc = new jsPDF({
+      orientation: 'landscape',
+      unit: 'mm',
+      format: 'a4'
+    });
+    
+    // Add background header gradient (simulated)
+    const startColor = [44, 97, 91];   // #2c615b
+    const midColor = [93, 142, 135];   // #5d8e87
+    const endColor = [24, 49, 44];     // #18312c
+
+    const steps = 40;
+
+    for (let i = 0; i < steps; i++) {
+      let r, g, b;
+
+      if (i < steps / 2) {
+        const t = i / (steps / 2);
+        r = startColor[0] + (midColor[0] - startColor[0]) * t;
+        g = startColor[1] + (midColor[1] - startColor[1]) * t;
+        b = startColor[2] + (midColor[2] - startColor[2]) * t;
+      } else {
+        const t = (i - steps / 2) / (steps / 2);
+        r = midColor[0] + (endColor[0] - midColor[0]) * t;
+        g = midColor[1] + (endColor[1] - midColor[1]) * t;
+        b = midColor[2] + (endColor[2] - midColor[2]) * t;
       }
 
-      const tableColumn = ["#", "Patient Name", "Email Address", "Contact Number", "Consultations", "Status", "Joining Date"];
-      const tableRows = exportPatients.map((p: Patient, index: number) => [
-        index + 1,
-        p.name,
-        p.email,
-        p.contactNumber,
-        String(p.activeConsultation).padStart(2, '0'),
-        p.status,
-        new Date(p.joiningDate).toLocaleDateString(),
-      ]);
+      doc.setFillColor(r, g, b);
+      doc.rect(0, i, 297, 1, 'F');
+    }
+    
+    // Add Title
+    doc.setFontSize(24);
+    doc.setTextColor(255, 255, 255);
+    doc.text('Patient Management Report', 14, 20);
+    
+    // Add Subtitle/Info in Header
+    doc.setFontSize(10);
+    doc.setTextColor(203, 213, 225); // slate-300
+    const generatedDate = new Date().toLocaleString();
+    doc.text(`Generated on: ${generatedDate}`, 14, 28);
+    doc.text(`Total Patients Found: ${exportPatients.length}`, 14, 33);
+    
+    // Filters badge area
+    if (statusFilter || debouncedSearch) {
+      doc.setFontSize(9);
+      let filterStr = 'Filters Applied: ';
+      if (statusFilter) filterStr += `Status: ${statusFilter}  `;
+      if (debouncedSearch) filterStr += `Search: "${debouncedSearch}"`;
+      doc.text(filterStr, 14, 37);
+    }
 
-      autoTable(doc, {
-        head: [tableColumn],
-        body: tableRows,
-        startY: 45,
-        theme: 'striped',
-        styles: { 
-          fontSize: 10, 
-          cellPadding: 5,
-          valign: 'middle',
-          font: 'helvetica',
-          textColor: [51, 65, 85] // slate-700
-        },
-        headStyles: { 
-          fillColor: [241, 245, 249], // slate-100
-          textColor: [71, 85, 105], // slate-600
-          fontStyle: 'bold',
-          halign: 'left',
-          lineWidth: 0.1,
-          lineColor: [226, 232, 240] // slate-200
-        },
-        columnStyles: {
-          0: { halign: 'center', cellWidth: 10 },
-          1: { fontStyle: 'bold', textColor: [30, 41, 59] }, // Name in slate-800
-          4: { halign: 'center' },
-          5: { halign: 'center' },
-          6: { halign: 'center' }
-        },
-        alternateRowStyles: { 
-          fillColor: [250, 251, 252] 
-        },
-        margin: { top: 45, bottom: 20 },
-        didDrawPage: (data) => {
-          // Footer
-          const pageSize = doc.internal.pageSize;
-          const pageHeight = pageSize.height ? pageSize.height : pageSize.getHeight();
-          const pageWidth = pageSize.width ? pageSize.width : pageSize.getWidth();
-          
-          doc.setFontSize(9);
-          doc.setTextColor(148, 163, 184); // text-slate-400
-          
-          // Page Number
-          const str = `Page ${data.pageNumber} of ${doc.internal.pages.length - 1}`;
-          doc.text(str, data.settings.margin.left, pageHeight - 10);
-          
-          // Confidentiality Note
-          doc.text('Confidential Patient Document - DocDashboard', pageWidth - 14, pageHeight - 10, { align: 'right' });
-        }
-      });
+    const tableColumn = ["#", "Patient Name", "Email Address", "Contact Number", "Consultations", "Status", "Joining Date"];
+    const tableRows = exportPatients.map((p: Patient, index: number) => [
+      index + 1,
+      p.name,
+      p.email,
+      p.contactNumber,
+      String(p.activeConsultation).padStart(2, '0'),
+      p.status,
+      new Date(p.joiningDate).toLocaleDateString(),
+    ]);
 
-      doc.save(`patients_report_${new Date().toISOString().split('T')[0]}.pdf`);
-      setIsExporting(false);
-    }).catch((error) => {
-      console.error('Export error:', error);
-      setIsExporting(false);
-      // Only use Swal for errors as a fallback since it's important
-      Swal.fire('Error', 'Failed to export patients data', 'error');
+    autoTable(doc, {
+      head: [tableColumn],
+      body: tableRows,
+      startY: 45,
+      theme: 'striped',
+      styles: { 
+        fontSize: 10, 
+        cellPadding: 2,
+        valign: 'middle',
+        font: 'helvetica',
+        textColor: [51, 65, 85] // slate-700
+      },
+      headStyles: { 
+        fillColor: [241, 245, 249], // slate-100
+        textColor: [71, 85, 105], // slate-600
+        fontStyle: 'bold',
+        halign: 'left',
+        lineWidth: 0.1,
+        lineColor: [226, 232, 240] // slate-200
+      },
+      columnStyles: {
+        0: { halign: 'center', cellWidth: 10 },
+        1: { fontStyle: 'bold', textColor: [30, 41, 59] },
+        4: { halign: 'center' },
+        5: { halign: 'center' },
+        6: { halign: 'center' }
+      },
+      alternateRowStyles: { 
+        fillColor: [250, 251, 252] 
+      },
+      margin: { top: 45, bottom: 20 },
+      didDrawPage: (data) => {
+        const pageSize = doc.internal.pageSize;
+        const pageHeight = pageSize.height ? pageSize.height : pageSize.getHeight();
+        const pageWidth = pageSize.width ? pageSize.width : pageSize.getWidth();
+        
+        doc.setFontSize(9);
+        doc.setTextColor(148, 163, 184);
+        
+        const str = `Page ${data.pageNumber} of ${doc.internal.pages.length - 1}`;
+        doc.text(str, data.settings.margin.left, pageHeight - 10);
+        
+        doc.text(
+          'Confidential Patient Document - DocDashboard',
+          pageWidth - 14,
+          pageHeight - 10,
+          { align: 'right' }
+        );
+      }
     });
-  };
 
+    doc.save(`patients_report_${new Date().toISOString().split('T')[0]}.pdf`);
+    setIsExporting(false);
+  }).catch((error) => {
+    console.error('Export error:', error);
+    setIsExporting(false);
+    Swal.fire('Error', 'Failed to export patients data', 'error');
+  });
+};
   return (
     <div className="w-full min-h-screen bg-slate-50 p-6 md:p-8">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-5 gap-4">

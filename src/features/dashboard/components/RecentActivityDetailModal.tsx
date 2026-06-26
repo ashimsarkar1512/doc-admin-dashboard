@@ -1,6 +1,6 @@
 import Dialog from '@/components/shared/Dialog';
 import type { Assessment } from '@/api/endpoints/dashboard/patientManagement';
-import { Repeat, Hash, CalendarDays, Tag, ClipboardList, Stethoscope } from 'lucide-react';
+import { Repeat, Hash, CalendarDays, Tag,  Stethoscope } from 'lucide-react';
 
 interface Props {
   activity: Assessment | null;
@@ -53,6 +53,7 @@ function Field({
 }
 
 export default function RecentActivityDetailModal({ activity, onClose }: Props) {
+  console.log(activity)
   if (!activity) return null;
 
   const status = activity.status.toUpperCase();
@@ -70,13 +71,13 @@ export default function RecentActivityDetailModal({ activity, onClose }: Props) 
   });
 
   return (
-    <Dialog isOpen={!!activity} onClose={onClose} title="Assessment Details" maxWidthClass="max-w-lg">
+    <Dialog isOpen={!!activity} onClose={onClose} title="Assessment Details " maxWidthClass="max-w-lg">
       {/* Patient header */}
       <div className="flex items-center gap-4 pb-5 border-b border-slate-100 mb-5">
         <Avatar image={activity.patientImage} name={activity.patientName} />
         <div className="min-w-0">
-          <p className="text-base font-semibold text-slate-800 truncate">{activity.patientName ?? '—'}</p>
-          <div className="flex items-center gap-2 mt-1.5 flex-wrap">
+          <p className="text-base font-semibold text-slate-800 truncate">{activity.patientName || "N/A"}</p>
+          <div className="flex items-center gap-2 mt-1.5 flex-wrap ">
             {activity.patientType === 'New Patient' ? (
               <span className="inline-flex items-center rounded-lg bg-[#DBEAFE] px-2.5 py-0.5 text-xs font-medium text-[#2563EB]">
                 New Patient
@@ -98,13 +99,14 @@ export default function RecentActivityDetailModal({ activity, onClose }: Props) 
         <Field label="Submission Code" value={activity.submissionCode} icon={Hash} mono />
         <Field label="Date" value={formattedDate} icon={CalendarDays} />
         <Field label="Category" value={activity.categoryName} icon={Tag} />
-        <Field label="Assessment" value={activity.assessmentName} icon={ClipboardList} />
+        <Field label="Provider" value={activity.provider} icon={Stethoscope} />
+        {/* <Field label="Assessment" value={activity.assessmentName} icon={ClipboardList} /> */}
       </div>
 
       {/* Provider — called out on its own row */}
-      <div className="mt-5 pt-5 border-t border-slate-100">
+      {/* <div className="mt-5 pt-5 border-t border-slate-100">
         <Field label="Provider" value={activity.provider} icon={Stethoscope} />
-      </div>
+      </div> */}
 
   
     </Dialog>
