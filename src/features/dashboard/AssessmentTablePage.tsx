@@ -116,7 +116,7 @@ function FilterDropdown({
         <ChevronDown size={14} className={`transition-transform duration-200 ${open ? 'rotate-180' : ''} ${value ? 'text-blue-600' : 'text-slate-400'}`} />
       </button>
       {open && (
-        <div className="absolute z-30 top-full left-0 mt-2 bg-white border border-slate-200 rounded-xl shadow-xl py-1.5 min-w-[200px] animate-in fade-in zoom-in duration-150 origin-top-left">
+        <div className="absolute z-30 top-full right-0 mt-2 bg-white border border-slate-200 rounded-xl shadow-xl py-1.5 min-w-[200px] animate-in fade-in zoom-in duration-150 origin-top-right">
           <div className="px-3 py-1.5 text-[11px] font-bold text-slate-400 uppercase tracking-wider border-b border-slate-50 mb-1">
             Filter by {label}
           </div>
@@ -124,7 +124,7 @@ function FilterDropdown({
             onClick={() => handleClick('')}
             className={`w-full text-left px-4 py-2 text-sm hover:bg-slate-50 transition-colors flex items-center justify-between ${value === '' ? 'text-blue-700 font-semibold bg-blue-50/50' : 'text-slate-600'}`}
           >
-            All {label}s
+            All
             {value === '' && <div className="w-1.5 h-1.5 rounded-full bg-blue-600" />}
           </button>
           <div className="h-px bg-slate-100 my-1" />
@@ -157,6 +157,7 @@ export default function AssessmentTablePage() {
   const [statusFilter, setStatusFilter] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
   const [patientTypeFilter, setPatientTypeFilter] = useState('');
+  const [dateFilter, setDateFilter] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [assigningAssessment, setAssigningAssessment] = useState<Assessment | null>(null);
 
@@ -171,6 +172,11 @@ export default function AssessmentTablePage() {
       setCurrentPage(1);
     }, 400);
   }, []);
+
+  const handleFilterChange = (setter: React.Dispatch<React.SetStateAction<string>>) => (value: string) => {
+    setter(value);
+    setCurrentPage(1);
+  };
 
   const handleSearchChange = (value: string) => {
     setSearchTerm(value);
@@ -187,7 +193,7 @@ export default function AssessmentTablePage() {
   const categories = categoriesData?.data ?? [];
 
   const { data, isLoading, isFetching } = useQuery({
-    queryKey: ['assessments', currentPage, debouncedSearch, statusFilter, categoryFilter, patientTypeFilter],
+    queryKey: ['assessments', currentPage, debouncedSearch, statusFilter, categoryFilter, patientTypeFilter, dateFilter],
     queryFn: () =>
       getAssessments({
         page: currentPage,
@@ -196,6 +202,7 @@ export default function AssessmentTablePage() {
         status: statusFilter || undefined,
         categoryId: categoryFilter || undefined,
         patientType: patientTypeFilter || undefined,
+        date: dateFilter || undefined,
       }),
     placeholderData: (prev) => prev,
   });
@@ -250,25 +257,25 @@ export default function AssessmentTablePage() {
             label="Category"
             options={categoryOptions}
             value={categoryFilter}
-            onChange={setCategoryFilter}
+            onChange={handleFilterChange(setCategoryFilter)}
           />
           <FilterDropdown
             label="Patient Type"
             options={patientTypeOptions}
             value={patientTypeFilter}
-            onChange={setPatientTypeFilter}
+            onChange={handleFilterChange(setPatientTypeFilter)}
           />
           <FilterDropdown
             label="Assessment Status"
             options={statusOptions}
             value={statusFilter}
-            onChange={setStatusFilter}
+            onChange={handleFilterChange(setStatusFilter)}
           />
           <FilterDropdown
             label="Today's"
             options={[{ value: 'today', label: "Today's" }]}
-            value=""
-            onChange={() => {}}
+            value={dateFilter}
+            onChange={handleFilterChange(setDateFilter)}
           />
         </div>
       </div>

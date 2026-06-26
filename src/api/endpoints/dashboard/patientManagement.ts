@@ -145,3 +145,10 @@ export const assignDoctor = async (request: AssignDoctorRequest): Promise<Assign
   );
   return data;
 };
+
+export const getRecentActivity = async (): Promise<Patient[]> => {
+  const { data } = await axiosInstance.get<GetPatientsResponse>(
+    '/admin/dashboard/recent-activity'
+  );
+  return data.data;
+};

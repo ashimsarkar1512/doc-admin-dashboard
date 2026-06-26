@@ -27,13 +27,14 @@ export default function ViewPatientModal({ isOpen, onClose, patientId }: ViewPat
       .join('')
       .toUpperCase();
   };
+  console.log(patient)
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
       <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden animate-in fade-in zoom-in duration-200">
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
-          <h2 className="text-lg font-semibold text-slate-800">Patient Details</h2>
+          <h2 className="text-lg font-semibold text-slate-800">Patient Details </h2>
           <button
             onClick={onClose}
             className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded-full transition-all"
@@ -67,17 +68,17 @@ export default function ViewPatientModal({ isOpen, onClose, patientId }: ViewPat
                   {patient.image ? (
                     <img
                       src={patient.image}
-                      alt={patient.name}
+                      alt={patient.name || "anonymous"}
                       className="h-full w-full rounded-full object-cover"
                     />
                   ) : (
                     <span className="text-xl font-bold text-blue-700">
-                      {getInitials(patient.name)}
+                      {getInitials(patient.name || "N/A")}
                     </span>
                   )}
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-slate-900">{patient.name}</h3>
+                  <h3 className="text-xl font-bold text-slate-900">{patient.name|| "N/A "}</h3>
                   <div className="flex items-center gap-2 mt-1">
                     <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
                       patient.status === 'ACTIVE' 
@@ -148,7 +149,7 @@ export default function ViewPatientModal({ isOpen, onClose, patientId }: ViewPat
         <div className="px-6 py-4 bg-slate-50 border-t border-slate-100 flex justify-end">
           <button
             onClick={onClose}
-            className="px-6 py-2 text-sm font-semibold text-slate-600 hover:text-slate-800 transition-colors"
+            className="px-6 py-2 text-sm font-semibold text-slate-600 hover:bg-gray-600 hover:text-white rounded transition-colors"
           >
             Close
           </button>

@@ -4,7 +4,8 @@ import { useNavigate } from "@tanstack/react-router";
 import { Eye, Repeat } from "lucide-react";
 import RecentActivityDetailModal from "./RecentActivityDetailModal";
 import AssignDoctorModal from "./AssignDoctorModal";
-import { getAllAssessments, type Assessment } from "@/api/endpoints/dashboard/patientManagement";
+import {  type Assessment } from "@/api/endpoints/dashboard/patientManagement";
+import { getRecentActivity } from "@/api/endpoints/dashboard/overview";
 
 function Avatar({
   image,
@@ -65,10 +66,15 @@ function StatusBadge({ status }: { status: string }) {
 export function PatientTable() {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+  // const { data, isLoading } = useQuery({
+  //   queryKey: ["assessments"],
+  //   queryFn: () => getAllAssessments(),
+  // });
   const { data, isLoading } = useQuery({
-    queryKey: ["assessments"],
-    queryFn: () => getAllAssessments(),
-  });
+  queryKey: ["recent-activity"],
+  queryFn: () => getRecentActivity(),
+});
+console.log(data)
   const [selected, setSelected] = useState<Assessment | null>(null);
   const [assigningAssessment, setAssigningAssessment] = useState<Assessment | null>(null);
 
@@ -98,12 +104,12 @@ export function PatientTable() {
                   <td colSpan={8} className="px-6 py-10 text-center text-slate-400">Loading...</td>
                 </tr>
               )}
-              {!isLoading && (!data?.data || data.data.length === 0) && (
+              {!isLoading && (!data|| data.length === 0) && (
                 <tr>
                   <td colSpan={8} className="px-6 py-10 text-center text-slate-400">No recent activity</td>
                 </tr>
               )}
-              {data?.data?.map((row: Assessment) => {
+              {data?.map((row: Assessment) => {
                 const showAssign = shouldShowAssignButton(row);
                 return (
                   <tr key={row.submissionId} className="border-b border-slate-100 last:border-b-0">

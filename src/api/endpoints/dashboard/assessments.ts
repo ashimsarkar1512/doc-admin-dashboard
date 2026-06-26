@@ -26,6 +26,7 @@ export interface GetAssessmentsParams {
   categoryId?: string;
   patientType?: string;
   date?: string;
+  timeRange?: string;
 }
 
 export interface AssessmentsMeta {

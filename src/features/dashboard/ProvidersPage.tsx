@@ -130,30 +130,53 @@ export default function ProvidersPage() {
     setIsAddModalOpen(false);
   };
 
-  const handleDelete = (id: string, name: string) => {
-    Swal.fire({
-      title: 'Are you sure?',
-      text: `Do you really want to delete ${name}? This action cannot be undone.`,
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#ef4444',
-      cancelButtonColor: '#64748b',
-      confirmButtonText: 'Yes, delete it!',
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        try {
-          await deleteDoctor(id);
-          Swal.fire('Deleted!', `${name} has been deleted.`, 'success');
-          queryClient.invalidateQueries({ queryKey: ['doctors'] });
-          queryClient.invalidateQueries({ queryKey: ['doctorTitles'] });
-        } catch (error) {
-          const message = error instanceof Error ? error.message : 'Failed to delete doctor';
-          Swal.fire('Error!', message, 'error');
-        }
+  // const handleDelete = (id: string, name: string) => {
+  //   Swal.fire({
+  //     title: 'Are you sure?',
+  //     text: `Do you really want to delete ${name}? This action cannot be undone.`,
+  //     icon: 'warning',
+  //     showCancelButton: true,
+  //     confirmButtonColor: '#ef4444',
+  //     cancelButtonColor: '#64748b',
+  //     confirmButtonText: 'Yes, delete it!',
+  //   }).then(async (result) => {
+  //     if (result.isConfirmed) {
+  //       try {
+  //         await deleteDoctor(id);
+  //         Swal.fire('Deleted!', `${name} has been deleted.`, 'success');
+  //         queryClient.invalidateQueries({ queryKey: ['doctors'] });
+  //         queryClient.invalidateQueries({ queryKey: ['doctorTitles'] });
+  //       } catch (error) {
+  //         const message = error instanceof Error ? error.message : 'Failed to delete doctor';
+  //         Swal.fire('Error!', message, 'error');
+  //       }
+  //     }
+  //   });
+  // };
+const handleDelete = (id: string, name: string) => {
+  Swal.fire({
+    title: 'Are you sure?',
+    html: `Are you sure you want to permanently delete <b>${name}</b>?
+           This action is irreversible and will permanently remove all associated data.`,
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#ef4444',
+    cancelButtonColor: '#64748b',
+    confirmButtonText: 'Yes, delete it!',
+  }).then(async (result) => {
+    if (result.isConfirmed) {
+      try {
+        await deleteDoctor(id);
+        Swal.fire('Deleted!', `<b>${name}</b> has been successfully deleted.`, 'success');
+        queryClient.invalidateQueries({ queryKey: ['doctors'] });
+        queryClient.invalidateQueries({ queryKey: ['doctorTitles'] });
+      } catch (error) {
+        const message = error instanceof Error ? error.message : 'Failed to delete doctor';
+        Swal.fire('Error!', message, 'error');
       }
-    });
-  };
-
+    }
+  });
+};
   const handleToggleStatus = (id: string, currentStatus: string, name: string) => {
     const newStatus = currentStatus === 'BLOCKED' ? 'ACTIVE' : 'BLOCKED';
     const actionText = newStatus === 'BLOCKED' ? 'ban' : 'unban';
