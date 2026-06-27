@@ -55,19 +55,34 @@ export interface EmployeeData {
   updatedAt: string;
   deletedAt: string | null;
   userRoles: UserRole[];
+  userPermissions?: {
+    id: string;
+    permissionId: string;
+    permission?: Permission;
+  }[];
 }
 
 export const getPermissions = async (): Promise<Permission[]> => {
   const { data } = await axiosInstance.get('/admin/employee-permissions/permissions');
-  return data;
+  return data.data || data;
 };
 
 export const getRoles = async (): Promise<Role[]> => {
   const { data } = await axiosInstance.get('/admin/employee-permissions/roles');
-  return data;
+  return data.data || data;
 };
 
 export const getEmployees = async (): Promise<EmployeeData[]> => {
   const { data } = await axiosInstance.get('/admin/employee-permissions/employees');
-  return data;
+  return data.data || data;
+};
+
+export const createEmployee = async (payload: any): Promise<EmployeeData> => {
+  const { data } = await axiosInstance.post('/admin/employee-permissions/employees', payload);
+  return data.data || data;
+};
+
+export const updateEmployee = async ({ id, payload }: { id: string; payload: any }): Promise<EmployeeData> => {
+  const { data } = await axiosInstance.patch(`/admin/employee-permissions/employees/${id}`, payload);
+  return data.data || data;
 };

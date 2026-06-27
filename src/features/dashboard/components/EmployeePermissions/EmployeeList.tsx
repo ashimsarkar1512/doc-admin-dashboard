@@ -57,10 +57,17 @@ export const EmployeeList: React.FC<EmployeeListProps> = ({ employees, onCreate,
             <tbody className="divide-y divide-slate-100 text-slate-600">
               {employees.map((emp) => {
                 const roleName = emp.userRoles[0]?.role?.displayName || 'No Role';
-                // Gather all unique permissions from all roles
-                const allPermissions = Array.from(new Set(
-                  emp.userRoles.flatMap(ur => ur.role.permissions.map(p => p.permission.name))
-                ));
+                let allPermissions: string[] = [];
+                if (emp.userPermissions && emp.userPermissions.length > 0) {
+                  allPermissions = emp.userPermissions.map(up => up.permission?.name).filter(Boolean) as string[];
+                } else {
+                  allPermissions = Array.from(new Set(
+                    emp.userRoles.flatMap(ur => ur.role?.permissions?.map(p => p.permission?.name) || [])
+                  ));
+                }
+                
+                // Ensure they are unique
+                allPermissions = Array.from(new Set(allPermissions));
                 
                 const visiblePermissions = allPermissions.slice(0, 2);
                 const extraPermissionsCount = allPermissions.length > 2 ? allPermissions.length - 2 : 0;
@@ -70,10 +77,10 @@ export const EmployeeList: React.FC<EmployeeListProps> = ({ employees, onCreate,
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
                         <div className="w-9 h-9 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-sm">
-                          {emp.name.charAt(0).toUpperCase()}
+                          {(emp.name || 'U').charAt(0).toUpperCase()}
                         </div>
                         <div>
-                          <div className="font-medium text-slate-800">{emp.name}</div>
+                          <div className="font-medium text-slate-800">{emp.name || 'Unknown User'}</div>
                           <div className="text-[12px] text-slate-500 mt-0.5">{roleName}</div>
                         </div>
                       </div>

@@ -1,11 +1,12 @@
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { EmployeeList } from './components/EmployeePermissions/EmployeeList';
 import { EmployeeRoleForm } from './components/EmployeePermissions/EmployeeRoleForm';
-import { getEmployees, getPermissions, getRoles } from '@/api/endpoints/employeePermissions.api';
+import { getEmployees, getPermissions, getRoles, createEmployee, updateEmployee } from '@/api/endpoints/employeePermissions.api';
 import type { Employee } from './components/EmployeePermissions/types';
 
 export default function EmployeePermissionsPage() {
+  const queryClient = useQueryClient();
   const [view, setView] = useState<'list' | 'create' | 'edit' | 'view'>('list');
   const [selectedEmployee, setSelectedEmployee] = useState<Employee | undefined>(undefined);
 
@@ -22,6 +23,24 @@ export default function EmployeePermissionsPage() {
   const { data: permissions = [], isLoading: isLoadingPermissions } = useQuery({
     queryKey: ['permissions'],
     queryFn: getPermissions,
+  });
+
+  const createMutation = useMutation({
+    mutationFn: createEmployee,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['employees'] });
+      setView('list');
+      setSelectedEmployee(undefined);
+    },
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: updateEmployee,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['employees'] });
+      setView('list');
+      setSelectedEmployee(undefined);
+    },
   });
 
   const handleCreate = () => {
@@ -44,10 +63,12 @@ export default function EmployeePermissionsPage() {
     setSelectedEmployee(undefined);
   };
 
-  const handleSave = () => {
-    // In a real app, you would save the data to a backend here.
-    setView('list');
-    setSelectedEmployee(undefined);
+  const handleSave = (payload: any) => {
+    if (view === 'create') {
+      createMutation.mutate(payload);
+    } else if (view === 'edit' && selectedEmployee) {
+      updateMutation.mutate({ id: selectedEmployee.id, payload });
+    }
   };
 
   const isLoading = isLoadingEmployees || isLoadingRoles || isLoadingPermissions;
@@ -56,15 +77,9 @@ export default function EmployeePermissionsPage() {
     <div className="w-full p-6 md:p-8 min-h-screen bg-[#FAFAFB]">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4">
-      
-        {view !== 'list' && view !== 'view' && (
-          <button 
-            onClick={handleSave}
-            className="px-6 py-2.5 bg-[#1447E6] text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors shadow-sm"
-          >
-            Save Role & Permission
-          </button>
-        )}
+        <h1 className="text-2xl font-bold text-slate-800">
+          {view === 'create' ? 'Create Employee Role' : view === 'edit' ? 'Edit Employee Role' : view === 'view' ? 'Employee Role Details' : 'Employee Roles & Permissions'}
+        </h1>
       </div>
 
       {isLoading ? (
