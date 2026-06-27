@@ -1,58 +1,47 @@
 import { useState } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { EmployeeList } from './components/EmployeePermissions/EmployeeList';
 import { EmployeeRoleForm } from './components/EmployeePermissions/EmployeeRoleForm';
-import type { Employee, PermissionItem } from './components/EmployeePermissions/types';
-
-const INITIAL_EMPLOYEES: Employee[] = [
-  {
-    id: 1,
-    name: 'Michael Chen',
-    role: 'Admin',
-    email: 'micheal.chen@gmail.com',
-    password: 'Hff6*****ghghfgh',
-    permissions: ['View PHI', 'Edit PHI'],
-    extraPermissions: '+2',
-    lastLogin: '2026-06-01 09:02',
-    avatar: 'https://i.pravatar.cc/150?u=1'
-  },
-  {
-    id: 2,
-    name: 'Sarah Johnson',
-    role: 'General Manger',
-    email: 'sarah12@gmail.com',
-    password: 'C@*****ereret',
-    permissions: ['View PHI', 'Edit PHI'],
-    extraPermissions: '+2',
-    lastLogin: '2026-06-01 09:02',
-    avatar: 'https://i.pravatar.cc/150?u=2'
-  },
-  {
-    id: 3,
-    name: 'Emma Davis',
-    role: 'Reviewer',
-    email: 'emma.davis@gmail.com',
-    password: 'a#2*****rsertgser',
-    permissions: ['View PHI', 'Edit PHI'],
-    extraPermissions: '+2',
-    lastLogin: '2026-06-01 09:02',
-    avatar: 'https://i.pravatar.cc/150?u=3'
-  },
-];
-
-const ALL_PERMISSIONS: PermissionItem[] = [
-  { name: 'View PHI', description: 'Access to view patient health information', active: true },
-  { name: 'Edit PHI', description: 'Modify patient health records and medical data', active: true },
-  { name: 'View Billing', description: 'Access billing records and financial data', active: false },
-  { name: 'Approve Prescriptions', description: 'Authorize and approve prescription orders', active: true },
-  { name: 'Export Data', description: 'Export patient or system data to CSV/PDF', active: false },
-  { name: 'Manage Providers', description: 'Add, edit, or deactivate provider accounts', active: false },
-  { name: 'Manage Users', description: 'Create, modify, and delete user accounts', active: false },
-  { name: 'View Audit Logs', description: 'Access compliance and activity audit logs', active: false },
-];
+import { getEmployees, getPermissions, getRoles, createEmployee, updateEmployee } from '@/api/endpoints/employeePermissions.api';
+import type { Employee } from './components/EmployeePermissions/types';
 
 export default function EmployeePermissionsPage() {
+  const queryClient = useQueryClient();
   const [view, setView] = useState<'list' | 'create' | 'edit' | 'view'>('list');
   const [selectedEmployee, setSelectedEmployee] = useState<Employee | undefined>(undefined);
+
+  const { data: employees = [], isLoading: isLoadingEmployees } = useQuery({
+    queryKey: ['employees'],
+    queryFn: getEmployees,
+  });
+
+  const { data: roles = [], isLoading: isLoadingRoles } = useQuery({
+    queryKey: ['roles'],
+    queryFn: getRoles,
+  });
+
+  const { data: permissions = [], isLoading: isLoadingPermissions } = useQuery({
+    queryKey: ['permissions'],
+    queryFn: getPermissions,
+  });
+
+  const createMutation = useMutation({
+    mutationFn: createEmployee,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['employees'] });
+      setView('list');
+      setSelectedEmployee(undefined);
+    },
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: updateEmployee,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['employees'] });
+      setView('list');
+      setSelectedEmployee(undefined);
+    },
+  });
 
   const handleCreate = () => {
     setSelectedEmployee(undefined);
@@ -74,30 +63,30 @@ export default function EmployeePermissionsPage() {
     setSelectedEmployee(undefined);
   };
 
-  const handleSave = () => {
-    // In a real app, you would save the data to a backend here.
-    setView('list');
-    setSelectedEmployee(undefined);
+  const handleSave = (payload: any) => {
+    if (view === 'create') {
+      createMutation.mutate(payload);
+    } else if (view === 'edit' && selectedEmployee) {
+      updateMutation.mutate({ id: selectedEmployee.id, payload });
+    }
   };
+
+  const isLoading = isLoadingEmployees || isLoadingRoles || isLoadingPermissions;
 
   return (
     <div className="w-full p-6 md:p-8 min-h-screen bg-[#FAFAFB]">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4">
-      
-        {view !== 'list' && view !== 'view' && (
-          <button 
-            onClick={handleSave}
-            className="px-6 py-2.5 bg-[#1447E6] text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors shadow-sm"
-          >
-            Save Role & Permission
-          </button>
-        )}
+        <h1 className="text-2xl font-bold text-slate-800">
+          {view === 'create' ? 'Create Employee Role' : view === 'edit' ? 'Edit Employee Role' : view === 'view' ? 'Employee Role Details' : 'Employee Roles & Permissions'}
+        </h1>
       </div>
 
-      {view === 'list' ? (
+      {isLoading ? (
+        <div className="flex justify-center py-12 text-slate-500">Loading permissions data...</div>
+      ) : view === 'list' ? (
         <EmployeeList 
-          employees={INITIAL_EMPLOYEES} 
+          employees={employees} 
           onCreate={handleCreate} 
           onEdit={handleEdit} 
           onView={handleView} 
@@ -106,7 +95,8 @@ export default function EmployeePermissionsPage() {
         <EmployeeRoleForm 
           mode={view}
           employee={selectedEmployee}
-          permissions={ALL_PERMISSIONS}
+          permissions={permissions}
+          roles={roles}
           onCancel={handleCancel}
           onSave={handleSave}
         />

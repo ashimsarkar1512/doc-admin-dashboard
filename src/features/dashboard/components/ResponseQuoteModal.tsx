@@ -28,9 +28,7 @@ export default function ResponseQuoteModal({
     if (lead && isOpen) {
       setEmail(lead.email);
       setFullName(lead.fullName);
-      setMessage(
-        "Thank you for reaching out to Weight Loss MD. We're glad to hear you're ready to take the next step toward a healthier lifestyle. Based on your goals, our team can help create a personalized plan including nutrition guidance, fitness recommendations, and ongoing support tailored to your needs. We'd be happy to schedule a consultation to learn more about you and recommend the best program to get started."
-      );
+      setMessage('');
       setFile(null);
     }
   }, [lead, isOpen]);

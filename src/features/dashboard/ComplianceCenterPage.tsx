@@ -1,23 +1,15 @@
-
+import { useQuery } from '@tanstack/react-query';
 import { SummaryCards } from './components/ComplianceCenter/SummaryCards';
 import { SecurityAlerts } from './components/ComplianceCenter/SecurityAlerts';
 import { ComplianceStatus } from './components/ComplianceCenter/ComplianceStatus';
 import { ProviderLicensing } from './components/ComplianceCenter/ProviderLicensing';
+import { getComplianceDashboard } from '@/api/endpoints/compliance.api';
 import type { 
   SummaryMetric, 
   SecurityAlert, 
   ComplianceStatusItem, 
   ProviderLicense 
 } from './components/ComplianceCenter/types';
-
-const SUMMARY_METRICS: SummaryMetric[] = [
-  { title: 'HIPAA Compliance', value: '87%', subtitle: 'Readiness score' },
-  { title: 'Consent Completion', value: '73%', subtitle: 'Of active patients' },
-  { title: 'Security Alerts', value: '22', subtitle: 'Active right now' },
-  { title: 'Failed Logins (24h)', value: '47', subtitle: '+8 from yesterday' },
-  { title: 'MFA Adoption', value: '91%', subtitle: 'Staff coverage' },
-  { title: 'Audit Log (24h)', value: '3,847', subtitle: 'Events logged' },
-];
 
 const SECURITY_ALERTS: SecurityAlert[] = [
   {
@@ -60,14 +52,6 @@ const SECURITY_ALERTS: SecurityAlert[] = [
     detailLine1: 'David Wilson',
     detailLine2: '5 failed login attempts — account temporarily locked',
   },
-];
-
-const COMPLIANCE_STATUS: ComplianceStatusItem[] = [
-  { id: '1', label: 'HIPAA Readiness Score', statusText: 'Compliant', statusType: 'success', percentage: 87 },
-  { id: '2', label: 'Data Retention Policy', statusText: 'Active', statusType: 'success', percentage: 100 },
-  { id: '3', label: 'Consent Coverage', statusText: 'Needs Review', statusType: 'warning', percentage: 73 },
-  { id: '4', label: 'MFA Enforcement', statusText: 'Active', statusType: 'success', percentage: 91 },
-  { id: '5', label: 'Audit Trail Coverage', statusText: 'Active', statusType: 'success', percentage: 98 },
 ];
 
 const PROVIDER_LICENSES: ProviderLicense[] = [
@@ -122,11 +106,38 @@ const PROVIDER_LICENSES: ProviderLicense[] = [
 ];
 
 export default function ComplianceCenterPage() {
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ['complianceDashboard'],
+    queryFn: getComplianceDashboard,
+  });
+
+  const SUMMARY_METRICS: SummaryMetric[] = data ? [
+    { title: 'HIPAA Compliance', value: `${data.hipaaCompliance.value}${data.hipaaCompliance.unit}`, subtitle: data.hipaaCompliance.label },
+    { title: 'Consent Completion', value: `${data.consentCompletion.value}${data.consentCompletion.unit}`, subtitle: data.consentCompletion.label },
+    { title: 'Security Alerts', value: `${data.securityAlerts.value}`, subtitle: data.securityAlerts.label },
+    { title: 'Failed Logins (24h)', value: `${data.failedLogins24h.value}`, subtitle: data.failedLogins24h.label },
+    { title: 'MFA Adoption', value: `${data.mfaAdoption.value}${data.mfaAdoption.unit}`, subtitle: data.mfaAdoption.label },
+    { title: 'Audit Log (24h)', value: `${data.auditLog24h.value.toLocaleString()}`, subtitle: data.auditLog24h.label },
+  ] : [];
+
+  const COMPLIANCE_STATUS: ComplianceStatusItem[] = data ? data.complianceStatus.map((item, index) => ({
+    id: String(index + 1),
+    label: item.name,
+    statusText: item.status,
+    statusType: item.statusCode === 'COMPLIANT' ? 'success' : item.statusCode === 'WARNING' ? 'warning' : 'danger',
+    percentage: item.percent,
+  })) : [];
+
+  if (isLoading) {
+    return <div className="p-8 text-center text-slate-500">Loading compliance data...</div>;
+  }
+
+  if (isError) {
+    return <div className="p-8 text-center text-red-500">Failed to load compliance data.</div>;
+  }
+
   return (
     <div className="w-full p-6 md:p-8 min-h-screen bg-[#FAFAFB]">
-      {/* Header */}
-      
-
       <SummaryCards metrics={SUMMARY_METRICS} />
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
