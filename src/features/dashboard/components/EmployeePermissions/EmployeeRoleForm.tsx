@@ -1,35 +1,58 @@
 import React, { useState, useEffect } from 'react';
 import { ChevronDown } from 'lucide-react';
-import type { Employee, PermissionItem } from './types';
+import type { Employee, Permission, Role } from './types';
 
 interface EmployeeRoleFormProps {
   mode: 'create' | 'edit' | 'view';
   employee?: Employee;
-  permissions: PermissionItem[];
+  permissions: Permission[];
+  roles: Role[];
   onCancel: () => void;
   onSave: () => void;
 }
 
-export const EmployeeRoleForm: React.FC<EmployeeRoleFormProps> = ({ mode, employee, permissions: initialPermissions, onCancel, onSave }) => {
-  const [permissions, setPermissions] = useState(initialPermissions);
+export const EmployeeRoleForm: React.FC<EmployeeRoleFormProps> = ({ mode, employee, permissions, roles, onCancel, onSave }) => {
   const isReadOnly = mode === 'view';
+  
+  // Default role is the employee's first role, or the first available role if creating
+  const defaultRoleId = employee?.userRoles[0]?.roleId || (roles.length > 0 ? roles[0].id : '');
+  const [selectedRoleId, setSelectedRoleId] = useState(defaultRoleId);
+  
+  // Local state to track which permissions are currently active
+  const [activePermissionIds, setActivePermissionIds] = useState<Set<string>>(new Set());
 
+  // Update active permissions whenever the selected role changes
   useEffect(() => {
-    // Reset permissions if needed on mount or when mode/employee changes
-    setPermissions(initialPermissions);
-  }, [initialPermissions, employee]);
+    const role = roles.find(r => r.id === selectedRoleId);
+    if (role) {
+      setActivePermissionIds(new Set(role.permissions.map(rp => rp.permissionId)));
+    } else {
+      setActivePermissionIds(new Set());
+    }
+  }, [selectedRoleId, roles]);
 
-  const togglePermission = (index: number) => {
+  // Set initial selected role when employee/roles load
+  useEffect(() => {
+    setSelectedRoleId(employee?.userRoles[0]?.roleId || (roles.length > 0 ? roles[0].id : ''));
+  }, [employee, roles]);
+
+  const togglePermission = (permId: string) => {
     if (isReadOnly) return;
-    const newPerms = [...permissions];
-    newPerms[index] = { ...newPerms[index], active: !newPerms[index].active };
-    setPermissions(newPerms);
+    setActivePermissionIds(prev => {
+      const next = new Set(prev);
+      if (next.has(permId)) {
+        next.delete(permId);
+      } else {
+        next.add(permId);
+      }
+      return next;
+    });
   };
 
   return (
     <div className="max-w-9xl mx-auto">
       <h2 className="text-[20px] font-semibold text-slate-800 mb-6">
-        {mode === 'create' ? 'Create New Role' : mode === 'edit' ? 'Edit Role' : 'View Role'}
+        {mode === 'create' ? 'Create New Employee' : mode === 'edit' ? 'Edit Employee Role' : 'View Employee Role'}
       </h2>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 mb-8">
@@ -47,41 +70,45 @@ export const EmployeeRoleForm: React.FC<EmployeeRoleFormProps> = ({ mode, employ
           <label className="block text-[13px] font-medium text-slate-700 mb-2">Assign Role</label>
           <div className="relative">
             <select 
-              defaultValue={employee?.role || 'General Manger'}
+              value={selectedRoleId}
+              onChange={(e) => setSelectedRoleId(e.target.value)}
               disabled={isReadOnly}
               className="w-full appearance-none pl-4 pr-10 py-2.5 border border-slate-200 rounded-lg text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 bg-white cursor-pointer disabled:bg-slate-50 disabled:text-slate-500 disabled:cursor-not-allowed"
             >
-              <option value="General Manger">General Manger</option>
-              <option value="Admin">Admin</option>
-              <option value="Reviewer">Reviewer</option>
+              {roles.map((role) => (
+                <option key={role.id} value={role.id}>{role.displayName}</option>
+              ))}
             </select>
             <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={16} />
           </div>
         </div>
         <div>
-          <label className="block text-[13px] font-medium text-slate-700 mb-2">Username:</label>
+          <label className="block text-[13px] font-medium text-slate-700 mb-2">Email:</label>
           <input
-            type="text"
+            type="email"
             placeholder="johndoe@gmail.com"
             defaultValue={employee?.email || ''}
             disabled={isReadOnly}
             className="w-full px-4 py-2.5 border border-slate-200 rounded-lg text-[13px] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 placeholder-slate-400 disabled:bg-slate-50 disabled:text-slate-500"
           />
         </div>
-        <div>
-          <label className="block text-[13px] font-medium text-slate-700 mb-2">password:</label>
-          <input
-            type="password"
-            placeholder="***************"
-            defaultValue={employee ? '********' : ''}
-            disabled={isReadOnly}
-            className="w-full px-4 py-2.5 border border-slate-200 rounded-lg text-[13px] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 placeholder-slate-400 disabled:bg-slate-50 disabled:text-slate-500"
-          />
-        </div>
+        {mode === 'create' && (
+          <div>
+            <label className="block text-[13px] font-medium text-slate-700 mb-2">Password:</label>
+            <input
+              type="password"
+              placeholder="***************"
+              disabled={isReadOnly}
+              className="w-full px-4 py-2.5 border border-slate-200 rounded-lg text-[13px] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 placeholder-slate-400 disabled:bg-slate-50 disabled:text-slate-500"
+            />
+          </div>
+        )}
       </div>
 
       <div>
-        <h3 className="text-[14px] font-medium text-slate-800 mb-3">Permissions</h3>
+        <h3 className="text-[14px] font-medium text-slate-800 mb-3">
+          Role Permissions <span className="text-slate-500 font-normal text-xs ml-2">(Customize specific permissions)</span>
+        </h3>
         <div className="border border-slate-200 rounded-xl overflow-hidden bg-white shadow-sm">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-[13px]">
@@ -93,26 +120,31 @@ export const EmployeeRoleForm: React.FC<EmployeeRoleFormProps> = ({ mode, employ
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {permissions.map((perm, idx) => (
-                  <tr key={idx} className="hover:bg-slate-50/50 transition-colors">
-                    <td className="px-6 py-4 font-medium text-slate-700">{perm.name}</td>
-                    <td className="px-6 py-4">
-                      <button 
-                        type="button"
-                        onClick={() => togglePermission(idx)}
-                        disabled={isReadOnly}
-                        className={`w-11 h-[22px] rounded-full flex items-center transition-colors px-0.5 ${
-                          perm.active ? 'bg-[#1447E6]' : 'bg-slate-200'
-                        } ${isReadOnly ? 'opacity-70 cursor-not-allowed' : ''}`}
-                      >
-                        <div className={`w-[18px] h-[18px] rounded-full bg-white transition-transform ${
-                          perm.active ? 'translate-x-5' : 'translate-x-0'
-                        }`} />
-                      </button>
-                    </td>
-                    <td className="px-6 py-4 text-slate-500">{perm.description}</td>
-                  </tr>
-                ))}
+                {permissions.map((perm) => {
+                  const isActive = activePermissionIds.has(perm.id);
+                  return (
+                    <tr key={perm.id} className="hover:bg-slate-50/50 transition-colors">
+                      <td className="px-6 py-4 font-medium text-slate-700">{perm.name}</td>
+                      <td className="px-6 py-4">
+                        <button
+                          type="button"
+                          onClick={() => togglePermission(perm.id)}
+                          disabled={isReadOnly}
+                          className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
+                            isActive ? 'bg-[#1447E6]' : 'bg-slate-200'
+                          } ${isReadOnly ? 'cursor-default opacity-70' : 'cursor-pointer'}`}
+                        >
+                          <span
+                            className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                              isActive ? 'translate-x-4' : 'translate-x-1'
+                            } shadow-sm`}
+                          />
+                        </button>
+                        </td>
+                      <td className="px-6 py-4 text-slate-500">{perm.description}</td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>

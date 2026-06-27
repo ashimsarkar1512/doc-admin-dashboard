@@ -1,9 +1,11 @@
 export interface OrderItem {
   id: string;
-  name: string;
+  productName: string;
+  variantSize: string;
+  unitPrice: number;
   quantity: number;
-  price: number;
-  image?: string;
+  totalPrice: number;
+  productImage: string;
 }
 
 export type OrderStatus = 'PENDING' | 'CONFIRMED' | 'PROCESSING' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED' | 'REFUNDED';
@@ -11,26 +13,36 @@ export type OrderStatus = 'PENDING' | 'CONFIRMED' | 'PROCESSING' | 'SHIPPED' | '
 export interface Order {
   id: string;
   orderNumber: string;
-  customer: {
-    id: string;
-    name: string;
-    email: string;
-    avatar?: string;
-  };
-  items: OrderItem[];
-  totalAmount: number;
-  status: OrderStatus;
-  paymentStatus: 'paid' | 'pending' | 'failed' | 'refunded';
   orderDate: string;
+  patientName: string;
+  doctorName: string;
+  status: OrderStatus;
+  items: OrderItem[];
+  subtotal: number;
+  discountAmount: number;
+  shippingAmount: number;
+  totalAmount: number;
   shippingAddress: {
-    street: string;
+    name: string;
+    phone: string;
+    address: string;
     city: string;
     state: string;
-    zipCode: string;
-    country: string;
+    zip: string;
+    country: string | null;
   };
-  trackingCarrier?: string;
-  trackingNumber?: string;
+  paymentDetails: {
+    method: string;
+    last4: string;
+    brand: string;
+    totalAmount: number;
+    status: string;
+    transactionId: string;
+  };
+  shippingInfo: {
+    carrierName: string | null;
+    trackingNumber: string | null;
+  };
 }
 
 export interface OrderSummary {

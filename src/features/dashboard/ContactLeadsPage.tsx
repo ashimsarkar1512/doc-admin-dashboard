@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import Swal from 'sweetalert2';
+import { toast } from 'sonner';
 import { getContactLeads, respondContactLead, deleteContactLead, exportContactLeads } from '@/api/endpoints/contact-leads.api';
 import type { ContactLead } from '@/api/endpoints/contact-leads.api';
 import ContactLeadsTable from './components/ContactLeadsTable';
@@ -35,6 +37,7 @@ console.log(data,"contact data")
       queryClient.invalidateQueries({ queryKey: ['contact-leads'] });
       setIsViewModalOpen(false);
       setViewLeadId(null);
+      toast.success('Contact lead deleted successfully');
     },
   });
 
@@ -44,6 +47,7 @@ console.log(data,"contact data")
       queryClient.invalidateQueries({ queryKey: ['contact-leads'] });
       setIsRespondModalOpen(false);
       setRespondLead(null);
+      toast.success('Response sent successfully');
     },
   });
 
@@ -58,9 +62,36 @@ console.log(data,"contact data")
   };
 
   const handleDelete = (id: string) => {
-    if (window.confirm('Are you sure you want to delete this contact lead?')) {
-      deleteMutation.mutate(id);
-    }
+    Swal.fire({
+      title: 'Delete Contact Lead?',
+      text: "This action cannot be undone. Are you sure you want to permanently delete this lead?",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, delete it',
+      cancelButtonText: 'Cancel',
+      reverseButtons: true,
+      buttonsStyling: false,
+      customClass: {
+        container: 'z-[10000]',
+        popup: 'rounded-2xl shadow-xl border border-slate-100 p-6',
+        title: 'text-xl font-semibold text-slate-800 pb-2',
+        htmlContainer: 'text-sm text-slate-500 m-0 pb-6',
+        confirmButton: 'bg-red-500 hover:bg-red-600 text-white px-5 py-2.5 rounded-xl font-medium transition-all shadow-sm outline-none focus:ring-2 focus:ring-red-500/20',
+        cancelButton: 'bg-white hover:bg-slate-50 text-slate-700 px-5 py-2.5 rounded-xl font-medium transition-all border border-slate-200 outline-none focus:ring-2 focus:ring-slate-500/20 mr-3',
+        actions: 'w-full flex justify-end m-0 p-0',
+        icon: 'border-amber-400 text-amber-500 mb-4'
+      },
+      showClass: {
+        popup: 'animate-in fade-in zoom-in-95 duration-200'
+      },
+      hideClass: {
+        popup: 'animate-out fade-out zoom-out-95 duration-200'
+      }
+    }).then((result) => {
+      if (result.isConfirmed) {
+        deleteMutation.mutate(id);
+      }
+    });
   };
 
   const handleSendResponse = (id: string, formData: FormData) => {
