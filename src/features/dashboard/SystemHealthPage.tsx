@@ -219,7 +219,22 @@ export default function SystemHealthPage() {
   }, [refetch]);
 
   return (
-    <div className="w-full min-h-screen bg-slate-50 p-4 sm:p-6 overflow-hidden">
+    <>
+      {/* Hide scrollbar but keep scroll working */}
+      <style>{`
+        main:has(> div[data-page="system-health"]) {
+          scrollbar-width: none !important;
+          -ms-overflow-style: none !important;
+        }
+        main:has(> div[data-page="system-health"])::-webkit-scrollbar {
+          display: none !important;
+        }
+      `}</style>
+    <div
+      data-page="system-health"
+      className="w-full min-h-screen bg-slate-50 p-4 sm:p-6"
+    >
+
 
       {/* Loading skeleton */}
       {isLoading && (
@@ -307,5 +322,7 @@ export default function SystemHealthPage() {
         </>
       )}
     </div>
+    </>
   );
 }
+
