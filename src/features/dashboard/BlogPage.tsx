@@ -235,7 +235,7 @@ export default function BlogPage() {
             className="w-full pl-10 pr-4 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#1447E6]/20 focus:border-[#1447E6] transition-all bg-white"
           />
         </div>
-        <div className="flex items-center gap-3">
+        {/* <div className="flex items-center gap-3">
           <select 
             value={statusFilter}
             onChange={(e) => {
@@ -248,7 +248,7 @@ export default function BlogPage() {
             <option value="published">Published</option>
             <option value="draft">Draft</option>
           </select>
-        </div>
+        </div> */}
       </div>
 
       {/* Blog Cards Grid */}
