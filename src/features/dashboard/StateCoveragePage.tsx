@@ -14,8 +14,8 @@ import {
   ChevronRight,
   Loader2,
   AlertCircle,
-
 } from 'lucide-react';
+import { usePermissions } from '@/hooks/usePermissions';
 // import { getIncidentsOverview } from '@/api/endpoints/incidentManagement.api';
 
 // // ─── Stat Card Component ──────────────────────────────────────────────────────
@@ -59,6 +59,8 @@ export default function StateCoveragePage() {
   // Filter state
   const [search, setSearch] = useState('');
   const [status, setStatus] = useState<StateCoverageStatus | ''>('');
+  const { canManage } = usePermissions();
+  const canManageCoverage = canManage('state_coverage');
   const [fromDate, setFromDate] = useState('');
   const [toDate, setToDate] = useState('');
   const [page, setPage]     = useState(1);
@@ -249,13 +251,15 @@ export default function StateCoveragePage() {
 
                         {/* Actions */}
                         <td className="px-5 py-4 whitespace-nowrap text-right">
-                          <button
-                            onClick={() => handleEditRestriction(item.id)}
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors"
-                          >
-                            <Pencil className="w-3.5 h-3.5" />
-                            Edit Restriction
-                          </button>
+                          {canManageCoverage && (
+                            <button
+                              onClick={() => handleEditRestriction(item.id)}
+                              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors"
+                            >
+                              <Pencil className="w-3.5 h-3.5" />
+                              Edit Restriction
+                            </button>
+                          )}
                         </td>
                       </tr>
                     );

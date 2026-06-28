@@ -841,6 +841,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useOrders } from "@/features/orders/hooks/useOrders";
 import { Link, Outlet, useLocation, useNavigate } from "@tanstack/react-router";
 import { logout } from "@/store/slices/authSlice";
+import { queryClient } from "@/lib/queryClient";
 import {
   Activity,
   AlertTriangle,
@@ -864,6 +865,7 @@ import {
   ScrollText,
   ShieldCheck,
   ShoppingBag,
+  BookOpen,
   Star,
   Stethoscope,
   Tag,
@@ -931,6 +933,10 @@ const routeTitleMap: Record<string, { title: string; subtitle: string }> = {
   "/dashboard/products": {
     title: "Products",
     subtitle: "Manage inventory, pricing, and details",
+  },
+  "/dashboard/blogs": {
+    title: "Blogs",
+    subtitle: "Manage and create blog posts",
   },
   "/dashboard/testimonials": {
     title: "Testimonials",
@@ -1034,6 +1040,7 @@ export default function DashboardLayout() {
   const navigate = useNavigate();
 
   const handleSignOut = () => {
+    queryClient.clear();
     dispatch(logout())
       .unwrap()
       .then(() => {
@@ -1196,6 +1203,16 @@ export default function DashboardLayout() {
           >
             <ShoppingBag size={20} className="shrink-0" />
             <span>Products</span>
+          </Link>
+          )}
+          {can('view:website_management') && (
+          <Link
+            to="/dashboard/blogs"
+            onClick={() => setMobileSidebarOpen(false)}
+            className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-500 text-[#272628] hover:bg-slate-100 transition-all [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-600 [&.active_svg]:text-[#1447E6]"
+          >
+            <BookOpen size={20} className="shrink-0" />
+            <span>Blogs</span>
           </Link>
           )}
           {can('view:testimonials') && (
@@ -1493,6 +1510,15 @@ export default function DashboardLayout() {
           </Link>
           )}
 
+          {/* Blogs */}
+          <Link
+            to="/dashboard/blogs"
+            className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-500 text-[#272628] hover:bg-slate-100 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-600 [&.active_svg]:text-[#1447E6]"
+          >
+            <BookOpen size={20} className="text-[#272628] shrink-0" />
+            {!collapsed && <span className="tracking-wide">Blogs</span>}
+          </Link>
+
           {/* Testimonials */}
           {can('view:testimonials') && (
           <Link
@@ -1605,6 +1631,7 @@ export default function DashboardLayout() {
               {/* Submenus */}
               {complianceMenuOpen && (
                 <div className="pl-3 mt-1 space-y-1">
+                  {can('view:employee_permissions') && (
                   <Link
                     to="/dashboard/employee-permissions"
                     className="flex items-center gap-3 px-3 py-2 rounded-md text-xs font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold [&.active_svg]:text-[#1447E6]"
@@ -1612,6 +1639,8 @@ export default function DashboardLayout() {
                     <UserCog size={18} className="text-slate-500 shrink-0" />
                     <span>Employee Permissions</span>
                   </Link>
+                  )}
+                  {can('view:compliance_center') && (
                   <Link
                     to="/dashboard/compliance-center"
                     className="flex items-center gap-3 px-3 py-2 rounded-md text-xs font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold [&.active_svg]:text-[#1447E6]"
@@ -1622,6 +1651,8 @@ export default function DashboardLayout() {
                     />
                     <span>Compliance Center</span>
                   </Link>
+                  )}
+                  {can('view:audit_logs') && (
                   <Link
                     to="/dashboard/audit-logs"
                     className="flex items-center gap-3 px-3 py-2 rounded-md text-xs font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold [&.active_svg]:text-[#1447E6]"
@@ -1629,6 +1660,8 @@ export default function DashboardLayout() {
                     <ScrollText size={18} className="text-slate-500 shrink-0" />
                     <span>Audit Logs</span>
                   </Link>
+                  )}
+                  {can('view:consent_management') && (
                   <Link
                     to="/dashboard/consent-management"
                     className="flex items-center gap-3 px-3 py-2 rounded-md text-xs font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold [&.active_svg]:text-[#1447E6]"
@@ -1636,6 +1669,8 @@ export default function DashboardLayout() {
                     <FileText size={18} className="text-slate-500 shrink-0" />
                     <span>Consent Management</span>
                   </Link>
+                  )}
+                  {can('view:incident_management') && (
                   <Link
                     to="/dashboard/incident-management"
                     className="flex items-center gap-3 px-3 py-2 rounded-md text-xs font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold [&.active_svg]:text-[#1447E6]"
@@ -1646,6 +1681,8 @@ export default function DashboardLayout() {
                     />
                     <span>Incident Management</span>
                   </Link>
+                  )}
+                  {can('view:state_coverage') && (
                   <Link
                     to="/dashboard/state-coverage"
                     className="flex items-center gap-3 px-3 py-2 rounded-md text-xs font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold [&.active_svg]:text-[#1447E6]"
@@ -1653,6 +1690,8 @@ export default function DashboardLayout() {
                     <Map size={18} className="text-slate-500 shrink-0" />
                     <span>State Coverage</span>
                   </Link>
+                  )}
+                  {can('view:prescription_oversight') && (
                   <Link
                     to="/dashboard/prescription-oversight"
                     className="flex items-center gap-3 px-3 py-2 rounded-md text-xs font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold [&.active_svg]:text-[#1447E6]"
@@ -1660,6 +1699,8 @@ export default function DashboardLayout() {
                     <Pill size={18} className="text-slate-500 shrink-0" />
                     <span>Side effect report</span>
                   </Link>
+                  )}
+                  {can('view:business_intelligence') && (
                   <Link
                     to="/dashboard/business-intelligence"
                     className="flex items-center gap-3 px-3 py-2 rounded-md text-xs font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold [&.active_svg]:text-[#1447E6]"
@@ -1667,6 +1708,8 @@ export default function DashboardLayout() {
                     <BarChart2 size={18} className="text-slate-500 shrink-0" />
                     <span>Business Intelligence</span>
                   </Link>
+                  )}
+                  {can('view:communication_center') && (
                   <Link
                     to="/dashboard/communication-center"
                     className="flex items-center gap-3 px-3 py-2 rounded-md text-xs font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold [&.active_svg]:text-[#1447E6]"
@@ -1677,6 +1720,8 @@ export default function DashboardLayout() {
                     />
                     <span>Communication Center</span>
                   </Link>
+                  )}
+                  {can('view:document_center') && (
                   <Link
                     to="/dashboard/document-center"
                     className="flex items-center gap-3 px-3 py-2 rounded-md text-xs font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold [&.active_svg]:text-[#1447E6]"
@@ -1684,6 +1729,8 @@ export default function DashboardLayout() {
                     <Folder size={18} className="text-slate-500 shrink-0" />
                     <span>Document Center</span>
                   </Link>
+                  )}
+                  {can('view:system_health') && (
                   <Link
                     to="/dashboard/system-health"
                     className="flex items-center gap-3 px-3 py-2 rounded-md text-xs font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold [&.active_svg]:text-[#1447E6]"
@@ -1691,6 +1738,7 @@ export default function DashboardLayout() {
                     <Activity size={18} className="text-slate-500 shrink-0" />
                     <span>System Health</span>
                   </Link>
+                  )}
                 </div>
               )}
             </div>
