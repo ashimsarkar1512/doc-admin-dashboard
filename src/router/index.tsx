@@ -130,6 +130,13 @@ const productsRoute = createRoute({
   component: ProductsPage,
 });
 
+import BlogPage from "@/features/dashboard/BlogPage";
+const blogsRoute = createRoute({
+  getParentRoute: () => dashboardLayoutRoute,
+  path: "/blogs",
+  component: BlogPage,
+});
+
 import ProvidersPage from "@/features/dashboard/ProvidersPage";
 const providersRoute = createRoute({
   getParentRoute: () => dashboardLayoutRoute,
@@ -317,6 +324,7 @@ const routeTree = rootRoute.addChildren([
     patientDetailsRoute,
     checkoutRoute,
     productsRoute,
+    blogsRoute,
     providersRoute,
     patientsRoute,
     ordersRoute,

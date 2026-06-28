@@ -841,6 +841,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useOrders } from "@/features/orders/hooks/useOrders";
 import { Link, Outlet, useLocation, useNavigate } from "@tanstack/react-router";
 import { logout } from "@/store/slices/authSlice";
+import { queryClient } from "@/lib/queryClient";
 import {
   Activity,
   AlertTriangle,
@@ -864,6 +865,7 @@ import {
   ScrollText,
   ShieldCheck,
   ShoppingBag,
+  BookOpen,
   Star,
   Stethoscope,
   Tag,
@@ -931,6 +933,10 @@ const routeTitleMap: Record<string, { title: string; subtitle: string }> = {
   "/dashboard/products": {
     title: "Products",
     subtitle: "Manage inventory, pricing, and details",
+  },
+  "/dashboard/blogs": {
+    title: "Blogs",
+    subtitle: "Manage and create blog posts",
   },
   "/dashboard/testimonials": {
     title: "Testimonials",
@@ -1034,6 +1040,7 @@ export default function DashboardLayout() {
   const navigate = useNavigate();
 
   const handleSignOut = () => {
+    queryClient.clear();
     dispatch(logout())
       .unwrap()
       .then(() => {
@@ -1198,6 +1205,14 @@ export default function DashboardLayout() {
             <span>Products</span>
           </Link>
           )}
+          <Link
+            to="/dashboard/blogs"
+            onClick={() => setMobileSidebarOpen(false)}
+            className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-500 text-[#272628] hover:bg-slate-100 transition-all [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-600 [&.active_svg]:text-[#1447E6]"
+          >
+            <BookOpen size={20} className="shrink-0" />
+            <span>Blogs</span>
+          </Link>
           {can('view:testimonials') && (
           <Link
             to="/dashboard/testimonials"
@@ -1492,6 +1507,15 @@ export default function DashboardLayout() {
             {!collapsed && <span className="tracking-wide">Products</span>}
           </Link>
           )}
+
+          {/* Blogs */}
+          <Link
+            to="/dashboard/blogs"
+            className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-500 text-[#272628] hover:bg-slate-100 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-600 [&.active_svg]:text-[#1447E6]"
+          >
+            <BookOpen size={20} className="text-[#272628] shrink-0" />
+            {!collapsed && <span className="tracking-wide">Blogs</span>}
+          </Link>
 
           {/* Testimonials */}
           {can('view:testimonials') && (
