@@ -839,7 +839,8 @@ import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { setPageHeader, toggleSidebar } from "@/store/uiSlice";
 import { useQuery } from "@tanstack/react-query";
 import { useOrders } from "@/features/orders/hooks/useOrders";
-import { Link, Outlet, useLocation } from "@tanstack/react-router";
+import { Link, Outlet, useLocation, useNavigate } from "@tanstack/react-router";
+import { logout } from "@/store/slices/authSlice";
 import {
   Activity,
   AlertTriangle,
@@ -1030,6 +1031,15 @@ export default function DashboardLayout() {
 
   const dispatch = useAppDispatch();
   const location = useLocation();
+  const navigate = useNavigate();
+
+  const handleSignOut = () => {
+    dispatch(logout())
+      .unwrap()
+      .then(() => {
+        navigate({ to: "/" });
+      });
+  };
 
   const { data: pendingOrdersData } = useOrders({ status: "PENDING", limit: 1 });
   const pendingOrdersCount = pendingOrdersData?.meta?.total ?? 0;
@@ -1224,13 +1234,13 @@ export default function DashboardLayout() {
 
         {/* Mobile logout */}
         <div className="border-t border-slate-100 p-4">
-          <Link
-            to="/"
-            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-bold text-red-600 hover:bg-red-50 transition-all"
+          <button
+            onClick={handleSignOut}
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-bold text-red-600 hover:bg-red-50 transition-all text-left"
           >
             <LogOut size={18} className="shrink-0" />
             <span>Logout</span>
-          </Link>
+          </button>
         </div>
       </div>
 
@@ -1621,16 +1631,16 @@ export default function DashboardLayout() {
         <div
           className={`border-t border-slate-100 ${collapsed ? "p-2" : "p-4"} hover:bg-red-50 transition-colors duration-200`}
         >
-          <Link
-            to="/"
-            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-bold text-red-600 hover:text-red-700 hover:bg-red-100 transition-all duration-200 group"
+          <button
+            onClick={handleSignOut}
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-bold text-red-600 hover:text-red-700 hover:bg-red-100 transition-all duration-200 group text-left"
           >
             <LogOut
               size={18}
               className="shrink-0 group-hover:scale-110 transition-transform"
             />
             {!collapsed && <span>Logout</span>}
-          </Link>
+          </button>
         </div>
       </aside>
 

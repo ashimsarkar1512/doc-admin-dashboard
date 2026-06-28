@@ -1,5 +1,5 @@
 
-import { Camera, Save, Loader2 } from 'lucide-react';
+import { Camera, Save, Loader2, User } from 'lucide-react';
 import { useRef, useState, useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { FormInput } from '../../website-management/components/shared/FormInput';
@@ -93,9 +93,12 @@ export function AccountInformation() {
       
       <div className="p-6 space-y-6">
         {/* Avatar Upload */}
-        <div className="relative w-16 h-16 rounded-full overflow-hidden border-2 border-white shadow-md">
-          <img 
-            src={avatarPreview || '/images/Login.png'} className="w-full h-full object-cover" alt="Profile avatar" />
+        <div className="relative w-16 h-16 rounded-full overflow-hidden border-2 border-white shadow-md bg-slate-100 flex items-center justify-center">
+          {avatarPreview ? (
+            <img src={avatarPreview} className="w-full h-full object-cover" alt="Profile avatar" />
+          ) : (
+            <User className="text-slate-400 w-8 h-8" />
+          )}
           <div 
             className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity cursor-pointer"
             onClick={handleAvatarClick}

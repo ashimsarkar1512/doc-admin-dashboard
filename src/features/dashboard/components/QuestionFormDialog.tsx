@@ -447,13 +447,13 @@ export default function QuestionFormDialog({
                 </div>
               ))}
             </div>
-            <button
+            {/* <button
               type="button"
               onClick={() => setDescriptions([...descriptions, ''])}
               className="text-[#2563EB] hover:text-blue-700 text-sm font-medium inline-block transition-colors"
             >
               + Add more
-            </button>
+            </button> */}
           </div>
 
           {/* ── Content Alignment (Info only) ── */}

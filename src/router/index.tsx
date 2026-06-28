@@ -10,6 +10,7 @@ import {
   createRoute,
   createRouter,
   Outlet,
+  redirect,
 } from "@tanstack/react-router";
 
 const rootRoute = createRootRoute({
@@ -21,6 +22,13 @@ const indexRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/",
   component: LoginPage,
+  beforeLoad: () => {
+    const { isAuthenticated } = store.getState().auth;
+    const token = localStorage.getItem("token");
+    if (isAuthenticated && token) {
+      throw redirect({ to: "/dashboard" });
+    }
+  },
 });
 
 // Forgot password route
@@ -59,14 +67,9 @@ const dashboardLayoutRoute = createRoute({
   component: DashboardLayout,
   beforeLoad: () => {
     const { isAuthenticated } = store.getState().auth;
-    if (!isAuthenticated) {
-      throw new Error('Not authenticated');
-    }
-  },
-  onError: (error) => {
-    if (error.message === "Not authenticated") {
-      // Redirect to login
-      window.location.href = "/";
+    const token = localStorage.getItem("token");
+    if (!isAuthenticated || !token) {
+      throw redirect({ to: "/" });
     }
   },
 });
