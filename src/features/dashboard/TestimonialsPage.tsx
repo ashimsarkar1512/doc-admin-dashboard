@@ -19,6 +19,8 @@ import {
   TestimonialCardSkeleton,
 } from "@/components/shared/cards/TestimonialCard";
 import { TestimonialFormDialog } from "@/features/dashboard/components/TestimonialFormDialog";
+import { useAppSelector } from "@/store/hooks";
+import { useUserProfile } from "@/features/account-settings/hooks/useAccountSettings";
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
@@ -47,6 +49,14 @@ export default function TestimonialsPage() {
   // Modal state
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editing, setEditing] = useState<Testimonial | null>(null);
+
+  // Permissions
+  const user = useAppSelector((state) => state.auth.user);
+  const { data: profile } = useUserProfile();
+  const currentUser = user || profile;
+  const permissions: string[] = (currentUser as any)?.permissions ?? [];
+  const isAdmin = currentUser?.roles?.includes('ADMIN') || currentUser?.role === 'ADMIN';
+  const canManage = isAdmin || permissions.includes('manage:testimonials');
 
   // Per-card toggling tracker
   const [togglingId, setTogglingId] = useState<string | null>(null);
@@ -306,15 +316,17 @@ export default function TestimonialsPage() {
         </button>
 
         {/* Add New */}
-        <button
-          id="testimonials-add"
-          type="button"
-          onClick={handleOpenCreate}
-          className="flex items-center gap-2 px-5 py-2.5 bg-[#2563EB] hover:bg-blue-700 text-white rounded-xl text-sm font-semibold shadow-sm transition-colors"
-        >
-          <Plus className="w-4 h-4" />
-          Add new testimonial
-        </button>
+        {canManage && (
+          <button
+            id="testimonials-add"
+            type="button"
+            onClick={handleOpenCreate}
+            className="flex items-center gap-2 px-5 py-2.5 bg-[#2563EB] hover:bg-blue-700 text-white rounded-xl text-sm font-semibold shadow-sm transition-colors"
+          >
+            <Plus className="w-4 h-4" />
+            Add new testimonial
+          </button>
+        )}
       </div>
 
       {/* Grid */}
@@ -341,7 +353,7 @@ export default function TestimonialsPage() {
               ? `No results for "${debouncedSearch}"`
               : "Start by adding your first testimonial."}
           </p>
-          {!debouncedSearch && (
+          {!debouncedSearch && canManage && (
             <button
               onClick={handleOpenCreate}
               className="px-5 py-2.5 bg-[#2563EB] hover:bg-blue-700 text-white rounded-xl text-sm font-semibold transition-colors"
@@ -360,6 +372,7 @@ export default function TestimonialsPage() {
               onEdit={handleOpenEdit}
               onDelete={handleDelete}
               onTogglePublish={handleTogglePublish}
+              canManage={canManage}
             />
           ))}
         </div>

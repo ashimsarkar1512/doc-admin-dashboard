@@ -183,6 +183,18 @@ const employeePermissionsRoute = createRoute({
   component: EmployeePermissionsPage,
 });
 
+const employeePermissionsActionRoute = createRoute({
+  getParentRoute: () => dashboardLayoutRoute,
+  path: "/employee-permissions/$action",
+  component: EmployeePermissionsPage,
+});
+
+const employeePermissionsIdRoute = createRoute({
+  getParentRoute: () => dashboardLayoutRoute,
+  path: "/employee-permissions/$action/$id",
+  component: EmployeePermissionsPage,
+});
+
 const websiteManagementRoute = createRoute({
   getParentRoute: () => dashboardLayoutRoute,
   path: "/website-management",
@@ -310,6 +322,8 @@ const routeTree = rootRoute.addChildren([
     testimonialsRoute,
     discountsRoute,
     employeePermissionsRoute,
+    employeePermissionsActionRoute,
+    employeePermissionsIdRoute,
     websiteManagementRoute,
     pagesRoute,
     siteSettingsRoute,

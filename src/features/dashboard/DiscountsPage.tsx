@@ -12,6 +12,7 @@ import UpdateDiscountModal from "./components/Discount/UpdateDiscountModal";
 import ViewDiscountModal from "./components/Discount/ViewDiscountModal";
 import CreateDiscountModal from "./components/Discount/CreateDiscountModal";
 import DeleteDiscountModal from "./components/Discount/DeleteDiscountModal";
+import { usePermissions } from '@/hooks/usePermissions';
 
 export default function DiscountsPage() {
   const [page, setPage] = useState(1);
@@ -22,6 +23,9 @@ export default function DiscountsPage() {
   const [viewDiscount, setViewDiscount] = useState<Discount | null>(null);
   const [editDiscount, setEditDiscount] = useState<Discount | null>(null);
   const [deleteDiscountId, setDeleteDiscountId] = useState<string | null>(null);
+
+  const { canManage } = usePermissions();
+  const canManageDiscounts = canManage('discounts_and_marketing');
 
   const queryClient = useQueryClient();
 
@@ -87,13 +91,15 @@ export default function DiscountsPage() {
             Manage promotional codes and marketing campaigns
           </p>
         </div>
-        <button
-          onClick={() => setIsCreateModalOpen(true)}
-          className="flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-semibold transition-colors whitespace-nowrap"
-        >
-          <Plus className="w-4 h-4" />
-          Create Custom Discount
-        </button>
+        {canManageDiscounts && (
+          <button
+            onClick={() => setIsCreateModalOpen(true)}
+            className="flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-semibold transition-colors whitespace-nowrap"
+          >
+            <Plus className="w-4 h-4" />
+            Create Custom Discount
+          </button>
+        )}
       </div>
 
       {/* Search + Filter */}
@@ -196,29 +202,33 @@ export default function DiscountsPage() {
                               </svg>
                             </button>
                             {/* Edit */}
-                            <button
-                              onClick={() => setEditDiscount(item)}
-                              title="Edit"
-                              className="p-1.5 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded-md transition-colors"
-                            >
-                              <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-                              </svg>
-                            </button>
+                            {canManageDiscounts && (
+                              <button
+                                onClick={() => setEditDiscount(item)}
+                                title="Edit"
+                                className="p-1.5 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded-md transition-colors"
+                              >
+                                <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                                </svg>
+                              </button>
+                            )}
                             {/* Delete */}
-                            <button
-                              onClick={() => handleDelete(item.id)}
-                              title="Delete"
-                              className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors"
-                            >
-                              <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <polyline points="3 6 5 6 21 6"/>
-                                <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
-                                <path d="M10 11v6M14 11v6"/>
-                                <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
-                              </svg>
-                            </button>
+                            {canManageDiscounts && (
+                              <button
+                                onClick={() => handleDelete(item.id)}
+                                title="Delete"
+                                className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors"
+                              >
+                                <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                  <polyline points="3 6 5 6 21 6"/>
+                                  <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                                  <path d="M10 11v6M14 11v6"/>
+                                  <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+                                </svg>
+                              </button>
+                            )}
                           </div>
                         </td>
                       </tr>

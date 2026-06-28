@@ -86,3 +86,21 @@ export const updateEmployee = async ({ id, payload }: { id: string; payload: any
   const { data } = await axiosInstance.patch(`/admin/employee-permissions/employees/${id}`, payload);
   return data.data || data;
 };
+
+export const deleteEmployee = async (id: string): Promise<void> => {
+  await axiosInstance.delete(`/admin/employee-permissions/employees/${id}`);
+};
+
+export const toggleEmployeeStatus = async ({ id, status }: { id: string; status: 'ACTIVE' | 'SUSPENDED' }): Promise<void> => {
+  await axiosInstance.patch(`/admin/employee-permissions/employees/${id}/status`, { status });
+};
+
+export const createRole = async (payload: any): Promise<Role> => {
+  const { data } = await axiosInstance.post('/admin/employee-permissions/roles', payload);
+  return data.data || data;
+};
+
+export const updateRole = async ({ id, payload }: { id: string; payload: any }): Promise<Role> => {
+  const { data } = await axiosInstance.patch(`/admin/employee-permissions/roles/${id}`, payload);
+  return data.data || data;
+};
