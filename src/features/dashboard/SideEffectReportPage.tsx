@@ -21,10 +21,11 @@ import {
   ChevronRight,
   Paperclip,
   AlertCircle,
-  Loader2,
 
+  Loader2,
 } from 'lucide-react';
 import Swal from 'sweetalert2';
+import { usePermissions } from '@/hooks/usePermissions';
 
 // ─── Severity & Status helpers ────────────────────────────────────────────────
 
@@ -110,6 +111,8 @@ export default function SideEffectReportPage() {
   // Modal
   const [selectedReportId, setSelectedReportId] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { canManage } = usePermissions();
+  const canManageReports = canManage('prescription_oversight');
 
   const params: GetSideEffectReportsParams = {
     page,
@@ -421,14 +424,16 @@ export default function SideEffectReportPage() {
                             >
                               <Eye className="w-4 h-4" />
                             </button>
-                            <button
-                              onClick={() => handleDelete(report.id)}
-                              title="Delete"
-                              disabled={deleteMutation.isPending}
-                              className="text-red-400 hover:text-red-600 transition-colors p-1 rounded hover:bg-red-50 disabled:opacity-50"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </button>
+                            {canManageReports && (
+                              <button
+                                onClick={() => handleDelete(report.id)}
+                                title="Delete"
+                                disabled={deleteMutation.isPending}
+                                className="text-red-400 hover:text-red-600 transition-colors p-1 rounded hover:bg-red-50 disabled:opacity-50"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            )}
                           </div>
                         </td>
                       </tr>

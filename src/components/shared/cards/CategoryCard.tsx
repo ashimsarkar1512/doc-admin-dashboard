@@ -6,6 +6,7 @@ export interface CategoryCardProps {
   category: Category;
   onEdit: (category: Category) => void;
   onDelete: (id: number | string) => void;
+  canManage?: boolean;
 }
 
 // Map category names to distinct inline SVG icons (matches design icons)
@@ -79,7 +80,7 @@ const CategoryIcon: React.FC<{ name: string }> = ({ name }) => {
   );
 };
 
-export const CategoryCard: React.FC<CategoryCardProps> = ({ category, onEdit, onDelete }) => {
+export const CategoryCard: React.FC<CategoryCardProps> = ({ category, onEdit, onDelete, canManage = true }) => {
   const isActive = category.status === 'Active' || category.status === 'ACTIVE';
 
   // Determine label for the treatments count
@@ -155,22 +156,24 @@ export const CategoryCard: React.FC<CategoryCardProps> = ({ category, onEdit, on
       </div>
 
       {/* Footer Action Buttons */}
-      <div className="flex items-center gap-2 pt-1">
-        <button
-          onClick={() => onEdit(category)}
-          className="flex-1 inline-flex items-center justify-center bg-white hover:bg-gray-50 active:bg-gray-100 text-gray-700 font-medium text-sm py-2.5 rounded-xl border border-gray-200 transition-colors cursor-pointer"
-        >
-          Edit
-        </button>
+      {canManage && (
+        <div className="flex items-center gap-2 pt-1">
+          <button
+            onClick={() => onEdit(category)}
+            className="flex-1 inline-flex items-center justify-center bg-white hover:bg-gray-50 active:bg-gray-100 text-gray-700 font-medium text-sm py-2.5 rounded-xl border border-gray-200 transition-colors cursor-pointer"
+          >
+            Edit
+          </button>
 
-        <button
-          onClick={() => onDelete(category.id)}
-          className="bg-white hover:bg-red-50 active:bg-red-100 text-red-500 p-2.5 rounded-xl border border-gray-200 hover:border-red-100 transition-colors cursor-pointer flex items-center justify-center"
-          title="Delete Category"
-        >
-          <Trash2 className="h-4 w-4" />
-        </button>
-      </div>
+          <button
+            onClick={() => onDelete(category.id)}
+            className="bg-white hover:bg-red-50 active:bg-red-100 text-red-500 p-2.5 rounded-xl border border-gray-200 hover:border-red-100 transition-colors cursor-pointer flex items-center justify-center"
+            title="Delete Category"
+          >
+            <Trash2 className="h-4 w-4" />
+          </button>
+        </div>
+      )}
     </div>
   );
 };

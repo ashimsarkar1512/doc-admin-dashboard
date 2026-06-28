@@ -11,6 +11,7 @@ import { axiosInstance } from '@/api/axiosInstance';
 import { getErrorMessage } from '@/lib/errorHandler';
 import CategoryCard from '@/components/shared/cards/CategoryCard';
 import Dialog from '@/components/shared/Dialog';
+import { usePermissions } from '@/hooks/usePermissions';
 
 export default function CategoriesPage() {
   const queryClient = useQueryClient();
@@ -18,6 +19,8 @@ export default function CategoriesPage() {
   const [statusFilter, setStatusFilter] = useState<'ALL' | 'ACTIVE' | 'DISABLED'>('ALL');
   const [page, setPage] = useState(1);
   const limit = 8;
+  const { canManage } = usePermissions();
+  const canManageCategories = canManage('service_categories_and_plans');
 
   // Modals state
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -276,13 +279,15 @@ export default function CategoriesPage() {
         <div className="flex-1 hidden sm:block" />
 
         {/* Add New Category Button */}
-        <button
-          onClick={handleOpenCreate}
-          className="inline-flex items-center gap-2 bg-[#2563EB] hover:bg-blue-700 active:bg-blue-800 text-white px-5 py-2.5 rounded-xl font-semibold text-sm transition-all shadow-sm shadow-blue-600/20 cursor-pointer whitespace-nowrap"
-        >
-          <Plus className="h-4 w-4" />
-          <span>Add new category</span>
-        </button>
+        {canManageCategories && (
+          <button
+            onClick={handleOpenCreate}
+            className="inline-flex items-center gap-2 bg-[#2563EB] hover:bg-blue-700 active:bg-blue-800 text-white px-5 py-2.5 rounded-xl font-semibold text-sm transition-all shadow-sm shadow-blue-600/20 cursor-pointer whitespace-nowrap"
+          >
+            <Plus className="h-4 w-4" />
+            <span>Add new category</span>
+          </button>
+        )}
       </div>
 
       {/* ── Categories Cards Grid ──────────────────────────────────── */}
@@ -305,6 +310,7 @@ export default function CategoriesPage() {
               category={category}
               onEdit={handleOpenEdit}
               onDelete={handleDelete}
+              canManage={canManageCategories}
             />
           ))}
         </div>

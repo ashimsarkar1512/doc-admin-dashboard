@@ -24,9 +24,9 @@ import {
   ChevronDown,
   Loader2,
   AlertCircle,
-
 } from "lucide-react";
 import Swal from "sweetalert2";
+import { usePermissions } from "@/hooks/usePermissions";
 
 // ─── Display Maps ─────────────────────────────────────────────────────────────
 
@@ -104,6 +104,7 @@ interface InlineStatusProps {
   incident: Incident;
   onUpdate: (id: string, status: IncidentStatus) => void;
   isPending: boolean;
+  disabled?: boolean;
 }
 
 const FALLBACK_STYLE = {
@@ -115,6 +116,7 @@ function InlineStatusDropdown({
   incident,
   onUpdate,
   isPending,
+  disabled = false,
 }: InlineStatusProps) {
   const style = STATUS_STYLES[incident.status] ?? FALLBACK_STYLE;
 
@@ -125,10 +127,10 @@ function InlineStatusDropdown({
         onChange={(e) =>
           onUpdate(incident.id, e.target.value as IncidentStatus)
         }
-        disabled={isPending}
+        disabled={isPending || disabled}
         className={`
           appearance-none pl-2.5 pr-6 py-1 rounded-full text-xs font-semibold border
-          focus:outline-none disabled:opacity-60 cursor-pointer transition-colors
+          focus:outline-none disabled:opacity-60 ${disabled ? "cursor-default" : "cursor-pointer"} transition-colors
           ${style.className}
         `}
       >
@@ -137,7 +139,7 @@ function InlineStatusDropdown({
         <option value="RESOLVED">Resolved</option>
         <option value="CLOSED">Closed</option>
       </select>
-      <ChevronDown className="absolute right-1.5 w-3 h-3 pointer-events-none opacity-60" />
+      {!disabled && <ChevronDown className="absolute right-1.5 w-3 h-3 pointer-events-none opacity-60" />}
     </div>
   );
 }
@@ -146,6 +148,8 @@ function InlineStatusDropdown({
 
 export default function IncidentManagementPage() {
   const queryClient = useQueryClient();
+  const { canManage } = usePermissions();
+  const canManageIncidents = canManage('incident_management');
 
   // Filter state
   const [search, setSearch] = useState("");
@@ -302,8 +306,6 @@ export default function IncidentManagementPage() {
           />
         </div>
 
-    
-
         <select
           value={status}
           onChange={(e) => {
@@ -439,6 +441,7 @@ export default function IncidentManagementPage() {
                           <InlineStatusDropdown
                             incident={incident}
                             onUpdate={handleInlineStatusUpdate}
+                            disabled={!canManageIncidents}
                             isPending={
                               updateStatusMutation.isPending &&
                               updateStatusMutation.variables?.id === incident.id
@@ -461,14 +464,16 @@ export default function IncidentManagementPage() {
                             >
                               <Eye className="w-4 h-4" />
                             </button>
-                            <button
-                              onClick={() => handleDelete(incident)}
-                              title="Delete Incident"
-                              disabled={deleteMutation.isPending}
-                              className="p-1.5 text-red-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors disabled:opacity-50"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </button>
+                            {canManageIncidents && (
+                              <button
+                                onClick={() => handleDelete(incident)}
+                                title="Delete Incident"
+                                disabled={deleteMutation.isPending}
+                                className="p-1.5 text-red-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors disabled:opacity-50"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            )}
                           </div>
                         </td>
                       </tr>

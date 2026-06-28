@@ -24,9 +24,12 @@ import type { Blog } from "@/api/endpoints/blogs.api";
 import { uploadAttachment } from "@/api/endpoints/attachments.api";
 import { getCategories } from "@/api/endpoints/categories.api";
 import { getDoctors } from "@/api/endpoints/dashboard/doctorManagement";
+import { usePermissions } from '@/hooks/usePermissions';
 
 export default function BlogPage() {
   const queryClient = useQueryClient();
+  const { canManage } = usePermissions();
+  const canManageBlogs = canManage('website_management');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingBlogId, setEditingBlogId] = useState<string | null>(null);
   const [coverImage, setCoverImage] = useState<string | null>(null);
@@ -206,13 +209,15 @@ export default function BlogPage() {
           <h1 className="text-2xl font-semibold text-slate-900 tracking-tight">Blog Management</h1>
           <p className="text-sm text-slate-500 mt-1">Create, edit, and manage your blog posts</p>
         </div>
-        <button
-          onClick={openCreateModal}
-          className="flex items-center gap-2 bg-[#1447E6] hover:bg-blue-700 text-white px-4 py-2.5 rounded-lg text-sm font-medium transition-colors shadow-sm"
-        >
-          <Plus size={18} />
-          Create Blog
-        </button>
+        {canManageBlogs && (
+          <button
+            onClick={openCreateModal}
+            className="flex items-center gap-2 bg-[#1447E6] hover:bg-blue-700 text-white px-4 py-2.5 rounded-lg text-sm font-medium transition-colors shadow-sm"
+          >
+            <Plus size={18} />
+            Create Blog
+          </button>
+        )}
       </div>
 
       {/* Toolbar / Search */}
@@ -328,21 +333,23 @@ export default function BlogPage() {
                 </div>
 
                 {/* Edit and Delete Buttons exactly like the screenshot */}
-                <div className="mt-auto pt-4 flex items-center gap-2">
-                  <button 
-                    onClick={() => openEditModal(blog)}
-                    className="flex-1 bg-slate-100 hover:bg-slate-200 text-[#1447E6] font-medium text-sm py-2 rounded-xl transition-colors text-center"
-                  >
-                    Edit
-                  </button>
-                  <button 
-                    onClick={() => handleDelete(blog.id)}
-                    className="bg-[#FFF1F2] hover:bg-[#FFE4E6] text-red-500 p-2 rounded-xl transition-colors flex-shrink-0 flex items-center justify-center aspect-square"
-                    aria-label="Delete blog"
-                  >
-                    <Trash2 size={18} />
-                  </button>
-                </div>
+                {canManageBlogs && (
+                  <div className="mt-auto pt-4 flex items-center gap-2">
+                    <button 
+                      onClick={() => openEditModal(blog)}
+                      className="flex-1 bg-slate-100 hover:bg-slate-200 text-[#1447E6] font-medium text-sm py-2 rounded-xl transition-colors text-center"
+                    >
+                      Edit
+                    </button>
+                    <button 
+                      onClick={() => handleDelete(blog.id)}
+                      className="bg-[#FFF1F2] hover:bg-[#FFE4E6] text-red-500 p-2 rounded-xl transition-colors flex-shrink-0 flex items-center justify-center aspect-square"
+                      aria-label="Delete blog"
+                    >
+                      <Trash2 size={18} />
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           ))}

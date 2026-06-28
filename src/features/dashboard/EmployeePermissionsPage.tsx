@@ -5,6 +5,7 @@ import { EmployeeRoleForm } from './components/EmployeePermissions/EmployeeRoleF
 import { getEmployees, getPermissions, getRoles, createEmployee, updateEmployee, deleteEmployee, toggleEmployeeStatus, createRole, updateRole } from '@/api/endpoints/employeePermissions.api';
 import type { Employee } from './components/EmployeePermissions/types';
 import { toast } from 'sonner';
+import { usePermissions } from '@/hooks/usePermissions';
 
 export default function EmployeePermissionsPage() {
   const queryClient = useQueryClient();
@@ -15,10 +16,13 @@ export default function EmployeePermissionsPage() {
   let view: 'list' | 'create' | 'edit' | 'view' = 'list';
   let employeeId: string | undefined = undefined;
 
+  const { canManage } = usePermissions();
+  const canManageEmployees = canManage('employee_permissions');
+
   if (pathParts[2] === 'create') {
-    view = 'create';
+    view = canManageEmployees ? 'create' : 'list';
   } else if (pathParts[2] === 'edit') {
-    view = 'edit';
+    view = canManageEmployees ? 'edit' : 'view';
     employeeId = pathParts[3];
   } else if (pathParts[2] === 'view') {
     view = 'view';
