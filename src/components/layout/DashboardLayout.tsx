@@ -1205,7 +1205,6 @@ export default function DashboardLayout() {
             <span>Products</span>
           </Link>
           )}
-          {can('view:testimonials') && (
           <Link
             to="/dashboard/blogs"
             onClick={() => setMobileSidebarOpen(false)}
@@ -1214,6 +1213,7 @@ export default function DashboardLayout() {
             <BookOpen size={20} className="shrink-0" />
             <span>Blogs</span>
           </Link>
+          {can('view:testimonials') && (
           <Link
             to="/dashboard/testimonials"
             onClick={() => setMobileSidebarOpen(false)}
