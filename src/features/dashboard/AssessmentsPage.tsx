@@ -10,6 +10,7 @@ import { getAssessments, getAssessmentStats } from '@/api/endpoints/assessments.
 import { getCategories } from '@/api/endpoints/categories.api';
 import { API_BASE_URL } from '@/api/config';
 import Swal from 'sweetalert2';
+import { usePermissions } from '@/hooks/usePermissions';
 
 async function deleteAssessment(id: string): Promise<void> {
   const response = await fetch(`${API_BASE_URL}/admin/assessments/${id}`, {
@@ -27,6 +28,8 @@ export default function AssessmentsPage() {
   const [editingAssessment, setEditingAssessment] = useState<Assessment | null>(null);
   const [categoryNameFilter, setCategoryNameFilter] = useState<string>('');
   const [modalKey, setModalKey] = useState(0);
+  const { canManage } = usePermissions();
+  const canManageAssessments = canManage('assessments');
 
   const { data: categoriesData } = useQuery({
     queryKey: ['categories'],
@@ -162,13 +165,15 @@ export default function AssessmentsPage() {
             Create and manage assessment forms and questions.
           </p>
         </div>
-        <button
-          onClick={handleOpenCreate}
-          className="inline-flex items-center gap-2 bg-[#2563EB] hover:bg-blue-700 text-white px-5 py-3 rounded-xl font-bold text-sm transition-all shadow-sm shadow-blue-600/10 cursor-pointer self-start sm:self-auto"
-        >
-          <Plus className="h-4 w-4" />
-          <span>Create Assessment</span>
-        </button>
+        {canManageAssessments && (
+          <button
+            onClick={handleOpenCreate}
+            className="inline-flex items-center gap-2 bg-[#2563EB] hover:bg-blue-700 text-white px-5 py-3 rounded-xl font-bold text-sm transition-all shadow-sm shadow-blue-600/10 cursor-pointer self-start sm:self-auto"
+          >
+            <Plus className="h-4 w-4" />
+            <span>Create Assessment</span>
+          </button>
+        )}
       </div>
 
       {/* Cards Grid */}
@@ -190,6 +195,7 @@ export default function AssessmentsPage() {
               assessment={a}
               onEdit={handleOpenEdit}
               onDelete={handleDelete}
+              canManage={canManageAssessments}
             />
           ))}
         </div>

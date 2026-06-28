@@ -6,9 +6,10 @@ export interface AssessmentCardProps {
   assessment: Assessment;
   onEdit: (assessment: Assessment) => void;
   onDelete: (id: string) => void;
+  canManage?: boolean;
 }
 
-export const AssessmentCard: React.FC<AssessmentCardProps> = ({ assessment, onEdit, onDelete }) => {
+export const AssessmentCard: React.FC<AssessmentCardProps> = ({ assessment, onEdit, onDelete, canManage = true }) => {
   const publishedDate = assessment.publishedAt
     ? new Date(assessment.publishedAt).toLocaleDateString('en-US')
     : '—';
@@ -67,22 +68,24 @@ export const AssessmentCard: React.FC<AssessmentCardProps> = ({ assessment, onEd
       </div>
 
       {/* Footer Action Buttons */}
-      <div className="flex items-center gap-3">
-        <button
-          onClick={() => onEdit(assessment)}
-          className="flex-1 inline-flex items-center justify-center bg-[#F4F4F5] hover:bg-gray-200 active:bg-gray-300 text-gray-800 font-medium text-sm py-2.5 rounded-xl transition-colors cursor-pointer"
-        >
-          <span>Edit</span>
-        </button>
+      {canManage && (
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => onEdit(assessment)}
+            className="flex-1 inline-flex items-center justify-center bg-[#F4F4F5] hover:bg-gray-200 active:bg-gray-300 text-gray-800 font-medium text-sm py-2.5 rounded-xl transition-colors cursor-pointer"
+          >
+            <span>Edit</span>
+          </button>
 
-        <button
-          onClick={() => onDelete(assessment.id)}
-          className="bg-[#FEF2F2] hover:bg-red-100 active:bg-red-200 text-red-500 p-2.5 rounded-xl transition-colors cursor-pointer flex items-center justify-center shrink-0"
-          title="Delete Assessment"
-        >
-          <Trash2 className="h-[18px] w-[18px]" />
-        </button>
-      </div>
+          <button
+            onClick={() => onDelete(assessment.id)}
+            className="bg-[#FEF2F2] hover:bg-red-100 active:bg-red-200 text-red-500 p-2.5 rounded-xl transition-colors cursor-pointer flex items-center justify-center shrink-0"
+            title="Delete Assessment"
+          >
+            <Trash2 className="h-[18px] w-[18px]" />
+          </button>
+        </div>
+      )}
     </div>
   );
 };

@@ -17,9 +17,12 @@ import type {
 } from "@/api/endpoints/products.api";
 import { getCategories } from "@/api/endpoints/categories.api";
 import { axiosInstance } from "@/api/axiosInstance";
+import { usePermissions } from '@/hooks/usePermissions';
 
 export default function ProductsPage() {
   const queryClient = useQueryClient();
+  const { canManage } = usePermissions();
+  const canManageProducts = canManage('products');
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<'ALL' | 'ACTIVE' | 'DISABLED'>('ALL');
 
@@ -274,13 +277,15 @@ export default function ProductsPage() {
           </div>
         </div>
 
-        <button
-          onClick={handleOpenCreate}
-          className="inline-flex items-center gap-2 bg-[#2563EB] hover:bg-blue-700 text-white px-5 py-3 rounded-xl font-bold text-sm transition-all shadow-sm shadow-blue-600/10 cursor-pointer self-start md:self-auto"
-        >
-          <Plus className="h-4.5 w-4.5" />
-          <span>Add new product</span>
-        </button>
+        {canManageProducts && (
+          <button
+            onClick={handleOpenCreate}
+            className="inline-flex items-center gap-2 bg-[#2563EB] hover:bg-blue-700 text-white px-5 py-3 rounded-xl font-bold text-sm transition-all shadow-sm shadow-blue-600/10 cursor-pointer self-start md:self-auto"
+          >
+            <Plus className="h-4.5 w-4.5" />
+            <span>Add new product</span>
+          </button>
+        )}
       </div>
 
       {/* Products Grid */}
@@ -304,6 +309,7 @@ export default function ProductsPage() {
               product={product}
               onEdit={handleOpenEdit}
               onDelete={handleDelete}
+              canManage={canManageProducts}
             />
           ))}
         </div>

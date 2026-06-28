@@ -6,6 +6,7 @@ import { getDoctors, getDoctorTitles, deleteDoctor, updateDoctorStatus } from '@
 import AddDoctorModal from './components/AddDoctorModal';
 import ViewDoctorModal from './components/ViewDoctorModal';
 import EditDoctorModal from './components/EditDoctorModal';
+import { usePermissions } from '@/hooks/usePermissions';
 
 const STATUS_OPTIONS = [
   { label: 'All Status', value: '' },
@@ -52,6 +53,8 @@ export default function ProvidersPage() {
   const [titleSearchTerm, setTitleSearchTerm] = useState('');
   const [titleOpen, setTitleOpen] = useState(false);
   const titleRef = useRef<HTMLDivElement>(null);
+  const { canManage } = usePermissions();
+  const canManageDoctors = canManage('doctor_management');
 
   // Debounce helper using useRef to persist timeout IDs across renders
   const debounceTimers = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
@@ -209,13 +212,15 @@ const handleDelete = (id: string, name: string) => {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
           <h1 className="text-xl font-semibold text-slate-800">Doctor Management</h1>
-          <button
-            onClick={() => setIsAddModalOpen(true)}
-            className="flex items-center gap-2 bg-[#1447E6] text-white px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors shadow-sm whitespace-nowrap"
-          >
-            <Plus size={16} />
-            Add New Doctor
-          </button>
+          {canManageDoctors && (
+            <button
+              onClick={() => setIsAddModalOpen(true)}
+              className="flex items-center gap-2 bg-[#1447E6] text-white px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors shadow-sm whitespace-nowrap"
+            >
+              <Plus size={16} />
+              Add New Doctor
+            </button>
+          )}
         </div>
 
         {/* Toolbar */}
@@ -450,33 +455,39 @@ const handleDelete = (id: string, name: string) => {
                           >
                             <Eye size={16} />
                           </button>
-                          <button
-                            type="button"
-                            className="text-slate-500 hover:text-[#1447E6] transition-colors"
-                            aria-label={`Edit ${doctor.fullName}`}
-                            title="Edit"
-                            onClick={() => setEditDoctorId(doctor.id)}
-                          >
-                            <SquarePen size={15} />
-                          </button>
-                          <button
-                            type="button"
-                            className={`transition-colors ${doctor.status === 'BLOCKED' ? 'text-emerald-500 hover:text-emerald-700' : 'text-slate-500 hover:text-amber-600'}`}
-                            aria-label={`${doctor.status === 'BLOCKED' ? 'Unban' : 'Ban'} ${doctor.fullName}`}
-                            title={doctor.status === 'BLOCKED' ? 'Unban' : 'Ban'}
-                            onClick={() => handleToggleStatus(doctor.id, doctor.status, doctor.fullName)}
-                          >
-                            {doctor.status === 'BLOCKED' ? <CheckCircle2 size={16} /> : <Ban size={16} />}
-                          </button>
-                          <button
-                            type="button"
-                            className="text-red-500 hover:text-red-700 transition-colors"
-                            aria-label={`Delete ${doctor.fullName}`}
-                            title="Delete"
-                            onClick={() => handleDelete(doctor.id, doctor.fullName)}
-                          >
-                            <Trash2 size={16} />
-                          </button>
+                          {canManageDoctors && (
+                            <button
+                              type="button"
+                              className="text-slate-500 hover:text-[#1447E6] transition-colors"
+                              aria-label={`Edit ${doctor.fullName}`}
+                              title="Edit"
+                              onClick={() => setEditDoctorId(doctor.id)}
+                            >
+                              <SquarePen size={15} />
+                            </button>
+                          )}
+                          {canManageDoctors && (
+                            <button
+                              type="button"
+                              className={`transition-colors ${doctor.status === 'BLOCKED' ? 'text-emerald-500 hover:text-emerald-700' : 'text-slate-500 hover:text-amber-600'}`}
+                              aria-label={`${doctor.status === 'BLOCKED' ? 'Unban' : 'Ban'} ${doctor.fullName}`}
+                              title={doctor.status === 'BLOCKED' ? 'Unban' : 'Ban'}
+                              onClick={() => handleToggleStatus(doctor.id, doctor.status, doctor.fullName)}
+                            >
+                              {doctor.status === 'BLOCKED' ? <CheckCircle2 size={16} /> : <Ban size={16} />}
+                            </button>
+                          )}
+                          {canManageDoctors && (
+                            <button
+                              type="button"
+                              className="text-red-500 hover:text-red-700 transition-colors"
+                              aria-label={`Delete ${doctor.fullName}`}
+                              title="Delete"
+                              onClick={() => handleDelete(doctor.id, doctor.fullName)}
+                            >
+                              <Trash2 size={16} />
+                            </button>
+                          )}
                         </div>
                       </td>
                     </tr>
