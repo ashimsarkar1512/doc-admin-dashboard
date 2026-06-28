@@ -2,6 +2,7 @@ import { useUserProfile } from "@/features/account-settings/hooks/useAccountSett
 import { useAppDispatch } from "@/store/hooks";
 import { logout } from "@/store/slices/authSlice";
 import { Link, useNavigate } from "@tanstack/react-router";
+import { queryClient } from "@/lib/queryClient";
 import { ShieldCheck, User, Settings, LogOut } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
@@ -41,6 +42,7 @@ export function ProfileDropdown({ user: storeUser }: ProfileDropdownProps) {
 
   const handleSignOut = () => {
     setIsOpen(false);
+    queryClient.clear();
     dispatch(logout())
       .unwrap()
       .then(() => {

@@ -54,6 +54,7 @@ export interface User {
   email: string;
   role?: string;
   roles?: string[];
+  permissions?: string[];
   status: string;
   phone?: string;
   emailVerifiedAt?: string | null;

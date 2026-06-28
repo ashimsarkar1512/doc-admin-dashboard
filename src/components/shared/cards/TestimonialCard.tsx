@@ -48,8 +48,9 @@ export interface TestimonialCardProps {
   testimonial: Testimonial;
   isToggling: boolean;
   onEdit: (t: Testimonial) => void;
-  onDelete: (id: string) => void;
+  onDelete: (id: string, name?: string) => void;
   onTogglePublish: (t: Testimonial) => void;
+  canManage?: boolean;
 }
 
 // ── Card ──────────────────────────────────────────────────────────────────────
@@ -60,6 +61,7 @@ export const  TestimonialCard: React.FC<TestimonialCardProps> = ({
   onEdit,
   onDelete,
   onTogglePublish,
+  canManage = true,
 }) => {
   const { isPublished, avatar, clientName, feedback, rating, date } = testimonial;
   const [imgError, setImgError] = React.useState(false);
@@ -120,45 +122,47 @@ export const  TestimonialCard: React.FC<TestimonialCardProps> = ({
       </div>
 
       {/* Footer Actions */}
-      <div className="px-5 pb-5 flex items-center gap-2">
-        {/* Publish / Hide — fills remaining space */}
-        <button
-          type="button"
-          onClick={() => onTogglePublish(testimonial)}
-          disabled={isToggling}
-          className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-sm font-semibold transition-colors disabled:opacity-60 ${
-            isPublished
-              ? "bg-gray-100 hover:bg-gray-200 text-gray-700"
-              : "bg-[#2563EB] hover:bg-blue-700 text-white"
-          }`}
-        >
-          {isToggling ? (
-            <Loader2 className="w-4 h-4 animate-spin" />
-          ) : isPublished ? (
-            <><EyeOff className="w-4 h-4" /> Hide from website</>
-          ) : (
-            <><Globe className="w-4 h-4" /> Publish to website</>
-          )}
-        </button>
+      {canManage && (
+        <div className="px-5 pb-5 flex items-center gap-2">
+          {/* Publish / Hide — fills remaining space */}
+          <button
+            type="button"
+            onClick={() => onTogglePublish(testimonial)}
+            disabled={isToggling}
+            className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-sm font-semibold transition-colors disabled:opacity-60 ${
+              isPublished
+                ? "bg-gray-100 hover:bg-gray-200 text-gray-700"
+                : "bg-[#2563EB] hover:bg-blue-700 text-white"
+            }`}
+          >
+            {isToggling ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : isPublished ? (
+              <><EyeOff className="w-4 h-4" /> Hide from website</>
+            ) : (
+              <><Globe className="w-4 h-4" /> Publish to website</>
+            )}
+          </button>
 
-        {/* Edit */}
-        <button
-          onClick={() => onEdit(testimonial)}
-          className="p-2.5 rounded-xl border border-gray-200 text-gray-500 hover:text-blue-600 hover:border-blue-200 hover:bg-blue-50 transition-colors"
-          title="Edit"
-        >
-          <Pencil className="w-4 h-4" />
-        </button>
+          {/* Edit */}
+          <button
+            onClick={() => onEdit(testimonial)}
+            className="p-2.5 rounded-xl border border-gray-200 text-gray-500 hover:text-blue-600 hover:border-blue-200 hover:bg-blue-50 transition-colors"
+            title="Edit"
+          >
+            <Pencil className="w-4 h-4" />
+          </button>
 
-        {/* Delete */}
-        <button
-          onClick={() => onDelete(testimonial.id)}
-          className="p-2.5 rounded-xl border border-gray-200 text-gray-500 hover:text-red-600 hover:border-red-200 hover:bg-red-50 transition-colors"
-          title="Delete"
-        >
-          <Trash2 className="w-4 h-4" />
-        </button>
-      </div>
+          {/* Delete */}
+          <button
+            onClick={() => onDelete(testimonial.id, testimonial.clientName)}
+            className="p-2.5 rounded-xl border border-gray-200 text-gray-500 hover:text-red-600 hover:border-red-200 hover:bg-red-50 transition-colors"
+            title="Delete"
+          >
+            <Trash2 className="w-4 h-4" />
+          </button>
+        </div>
+      )}
     </div>
   );
 };

@@ -8,6 +8,7 @@ interface ContactLeadsTableProps {
   onRespond: (lead: ContactLead) => void;
   onDelete: (id: string) => void;
   isLoading: boolean;
+  canManage?: boolean;
 }
 
 export default function ContactLeadsTable({
@@ -16,6 +17,7 @@ export default function ContactLeadsTable({
   onRespond,
   onDelete,
   isLoading,
+  canManage = true,
 }: ContactLeadsTableProps) {
   if (isLoading) {
     return (
@@ -69,20 +71,24 @@ export default function ContactLeadsTable({
                   >
                     <Eye className="w-4 h-4" />
                   </button>
-                  <button
-                    onClick={() => onRespond(item)}
-                    className="text-indigo-600 hover:text-indigo-800 transition-colors"
-                    title="Send Response"
-                  >
-                    <Mail className="w-4 h-4" />
-                  </button>
-                  <button
-                    onClick={() => onDelete(item.id)}
-                    className="text-red-500 hover:text-red-700 transition-colors"
-                    title="Delete"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
+                  {canManage && (
+                    <button
+                      onClick={() => onRespond(item)}
+                      className="text-indigo-600 hover:text-indigo-800 transition-colors"
+                      title="Send Response"
+                    >
+                      <Mail className="w-4 h-4" />
+                    </button>
+                  )}
+                  {canManage && (
+                    <button
+                      onClick={() => onDelete(item.id)}
+                      className="text-red-500 hover:text-red-700 transition-colors"
+                      title="Delete"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  )}
                 </div>
               </td>
             </tr>
