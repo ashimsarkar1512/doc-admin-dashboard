@@ -11,7 +11,7 @@ import {
   FileText,
   Trash2,
   Loader2,
-  Edit2,
+  
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
