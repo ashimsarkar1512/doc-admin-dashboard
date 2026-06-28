@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Upload, Loader2 } from 'lucide-react';
+import { Upload, Loader2, User } from 'lucide-react';
 import { toast } from 'sonner';
 import Dialog from '@/components/shared/Dialog';
 import { uploadAttachment } from '@/api/endpoints/attachments.api';
@@ -123,7 +123,7 @@ export default function AddDoctorModal({ isOpen, onClose, onSuccess }: Props) {
               {thumbnailPreview ? (
                 <img src={thumbnailPreview} alt="Thumbnail" className="w-full h-full object-cover" />
               ) : (
-                <span className="text-gray-400 text-xs">No image</span>
+                <User className="text-gray-400 w-12 h-12" />
               )}
               {isUploading && (
                 <div className="absolute inset-0 bg-white/70 flex flex-col items-center justify-center gap-1.5">

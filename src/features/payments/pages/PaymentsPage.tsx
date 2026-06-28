@@ -63,34 +63,55 @@ async function exportPaymentsPDF(search: string, status: string) {
 
   const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
 
-  // Clean neutral header — no brand blue
-  doc.setFillColor(248, 249, 250); // very light gray
-  doc.rect(0, 0, 297, 38, 'F');
-  // Left accent bar — dark slate
-  doc.setFillColor(30, 41, 59); // slate-800
-  doc.rect(0, 0, 4, 38, 'F');
-  doc.setFontSize(20);
-  doc.setTextColor(30, 41, 59); // slate-800
-  doc.setFont('helvetica', 'bold');
-  doc.text('Payments Report', 12, 15);
-  doc.setFont('helvetica', 'normal');
-  doc.setFontSize(9);
-  doc.setTextColor(100, 116, 139); // slate-500
-  doc.text(`Generated: ${new Date().toLocaleString()}`, 12, 23);
-  doc.text(`Total Records: ${rows.length}`, 12, 29);
-  if (status || search) {
-    const parts: string[] = [];
-    if (status) parts.push(`Status: ${statusLabel(status)}`);
-    if (search) parts.push(`Search: "${search}"`);
-    doc.text(`Filters: ${parts.join('  ·  ')}`, 12, 35);
-  }
-  // Bottom border
-  doc.setDrawColor(226, 232, 240); // slate-200
-  doc.setLineWidth(0.5);
-  doc.line(0, 38, 297, 38);
+    // Add background header gradient (simulated)
+    const startColor = [44, 97, 91];   // #2c615b
+    const midColor = [93, 142, 135];   // #5d8e87
+    const endColor = [24, 49, 44];     // #18312c
+
+    const steps = 40;
+
+    for (let i = 0; i < steps; i++) {
+      let r, g, b;
+
+      if (i < steps / 2) {
+        const t = i / (steps / 2);
+        r = startColor[0] + (midColor[0] - startColor[0]) * t;
+        g = startColor[1] + (midColor[1] - startColor[1]) * t;
+        b = startColor[2] + (midColor[2] - startColor[2]) * t;
+      } else {
+        const t = (i - steps / 2) / (steps / 2);
+        r = midColor[0] + (endColor[0] - midColor[0]) * t;
+        g = midColor[1] + (endColor[1] - midColor[1]) * t;
+        b = midColor[2] + (endColor[2] - midColor[2]) * t;
+      }
+
+      doc.setFillColor(r, g, b);
+      doc.rect(0, i, 297, 1, 'F');
+    }
+    
+    // Add Title
+    doc.setFontSize(24);
+    doc.setTextColor(255, 255, 255);
+    doc.text('Payments Report', 14, 20);
+    
+    // Add Subtitle/Info in Header
+    doc.setFontSize(10);
+    doc.setTextColor(203, 213, 225); // slate-300
+    const generatedDate = new Date().toLocaleString();
+    doc.text(`Generated on: ${generatedDate}`, 14, 28);
+    doc.text(`Total Records Found: ${rows.length}`, 14, 33);
+    
+    // Filters badge area
+    if (status || search) {
+      doc.setFontSize(9);
+      let filterStr = 'Filters Applied: ';
+      if (status) filterStr += `Status: ${statusLabel(status)}  `;
+      if (search) filterStr += `Search: "${search}"`;
+      doc.text(filterStr, 14, 37);
+    }
 
   autoTable(doc, {
-    startY: 44,
+    startY: 45,
     head: [['Patient Name', 'Card', 'Transaction ID', 'Payment Type', 'Amount', 'Date', 'Status']],
     body: rows.map((p) => [
       p.patientName || '—',
@@ -102,22 +123,35 @@ async function exportPaymentsPDF(search: string, status: string) {
       statusLabel(p.status),
     ]),
     theme: 'striped',
-    styles: { fontSize: 9, cellPadding: 4, textColor: [51, 65, 85] as [number, number, number] },
-    headStyles: {
-      fillColor: [51, 65, 85] as [number, number, number],   // slate-700
-      textColor: [255, 255, 255] as [number, number, number],
+    styles: { fontSize: 10, cellPadding: 2, valign: 'middle', font: 'helvetica', textColor: [51, 65, 85] as [number, number, number] },
+    headStyles: { 
+      fillColor: [241, 245, 249] as [number, number, number],
+      textColor: [71, 85, 105] as [number, number, number],
       fontStyle: 'bold',
-      lineWidth: 0,
+      halign: 'left',
+      lineWidth: 0.1,
+      lineColor: [226, 232, 240] as [number, number, number]
     },
-    alternateRowStyles: { fillColor: [250, 251, 253] as [number, number, number] },
+    alternateRowStyles: { fillColor: [250, 251, 252] as [number, number, number] },
     columnStyles: { 4: { halign: 'right', fontStyle: 'bold' } },
-    didDrawPage: (hookData) => {
-      const ph = doc.internal.pageSize.getHeight();
-      const pw = doc.internal.pageSize.getWidth();
-      doc.setFontSize(8);
+    margin: { top: 45, bottom: 20 },
+    didDrawPage: (data) => {
+      const pageSize = doc.internal.pageSize;
+      const pageHeight = pageSize.height ? pageSize.height : pageSize.getHeight();
+      const pageWidth = pageSize.width ? pageSize.width : pageSize.getWidth();
+      
+      doc.setFontSize(9);
       doc.setTextColor(148, 163, 184);
-      doc.text(`Page ${hookData.pageNumber}`, hookData.settings.margin.left, ph - 8);
-      doc.text('Confidential · DocDashboard', pw - 14, ph - 8, { align: 'right' });
+      
+      const str = `Page ${data.pageNumber} of ${doc.internal.pages.length - 1}`;
+      doc.text(str, data.settings.margin.left, pageHeight - 10);
+      
+      doc.text(
+        'Confidential Payment Document - DocDashboard',
+        pageWidth - 14,
+        pageHeight - 10,
+        { align: 'right' }
+      );
     },
   });
 
@@ -130,30 +164,31 @@ async function downloadSinglePaymentPDF(payment: PaymentDetail) {
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
   const pw = doc.internal.pageSize.getWidth();
 
-  // Soft brand header
-  doc.setFillColor(235, 241, 255); // #EBF1FF
+  // Document Center style header
+  doc.setFillColor(30, 41, 59); // #1e293b (slate-800)
   doc.rect(0, 0, pw, 38, 'F');
-  doc.setFillColor(30, 41, 59); // slate-800 left accent
-  doc.rect(0, 0, 4, 38, 'F');
+  
   doc.setFontSize(18);
-  doc.setTextColor(20, 71, 230);
+  doc.setTextColor(255, 255, 255); // white
   doc.setFont('helvetica', 'bold');
   doc.text('Payment Receipt', 12, 15);
   doc.setFont('helvetica', 'normal');
+  
   doc.setFontSize(9);
-  doc.setTextColor(71, 85, 105);
-  doc.text(payment.transactionId, 12, 23);
+  doc.setTextColor(148, 163, 184); // slate-400 (#94a3b8)
+  doc.text(`Transaction ID: ${payment.transactionId}`, 12, 23);
   doc.text(`Generated: ${new Date().toLocaleString()}`, 12, 29);
+  
   // Status on right
   doc.setFontSize(9);
   doc.setFont('helvetica', 'bold');
-  doc.setTextColor(20, 71, 230);
+  doc.setTextColor(255, 255, 255);
   doc.text(statusLabel(payment.status), pw - 14, 20, { align: 'right' });
   doc.setFont('helvetica', 'normal');
-  // Bottom accent line
-  doc.setDrawColor(20, 71, 230);
-  doc.setLineWidth(0.4);
-  doc.line(4, 38, pw, 38);
+  
+  // Bottom accent border (blue)
+  doc.setFillColor(20, 71, 230); // #1447E6
+  doc.rect(0, 37, pw, 1, 'F');
 
   let y = 46;
 

@@ -170,10 +170,9 @@ function downloadDocumentReceipt(doc: DocumentItem) {
       overflow: hidden;
     }
     .header {
-      background: #1e293b;
+      background: linear-gradient(180deg, #2c615b 0%, #5d8e87 50%, #18312c 100%);
       color: #fff;
       padding: 32px 32px 24px;
-      border-bottom: 3px solid #1447E6;
     }
     .header-top {
       display: flex;
@@ -779,7 +778,7 @@ export default function DocumentCenterPage() {
           <select
             value={typeFilter}
             onChange={(e) => handleTypeFilter(e.target.value)}
-            className="appearance-none bg-white border border-slate-200 rounded-xl pl-4 pr-9 py-3 text-sm text-slate-600 min-w-[130px] focus:outline-none focus:ring-2 focus:ring-slate-200 cursor-pointer"
+            className="appearance-none bg-white border border-slate-200 rounded-xl pl-4 pr-9 py-3 text-sm text-slate-600 w-[194px] focus:outline-none focus:ring-2 focus:ring-slate-200 cursor-pointer"
           >
             {typeOptions.map((opt) => (
               <option key={opt} value={opt}>{opt === 'All Type' ? 'All Type' : typeDisplayName(opt)}</option>
@@ -793,7 +792,7 @@ export default function DocumentCenterPage() {
           <select
             value={dateOptions.some((opt) => opt.value === date) ? date : 'custom'}
             onChange={(e) => handleDate(e.target.value)}
-            className="appearance-none bg-white border border-slate-200 rounded-xl pl-4 pr-9 py-3 text-sm text-slate-600 min-w-[130px] focus:outline-none focus:ring-2 focus:ring-slate-200 cursor-pointer"
+            className="appearance-none bg-white border border-slate-200 rounded-xl pl-4 pr-9 py-3 text-sm text-slate-600 w-[194px] focus:outline-none focus:ring-2 focus:ring-slate-200 cursor-pointer"
           >
             {dateOptions.map((opt) => (
               <option key={opt.value} value={opt.value}>{opt.label}</option>

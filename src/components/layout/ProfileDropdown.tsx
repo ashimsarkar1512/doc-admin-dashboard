@@ -2,7 +2,7 @@ import { useUserProfile } from "@/features/account-settings/hooks/useAccountSett
 import { useAppDispatch } from "@/store/hooks";
 import { logout } from "@/store/slices/authSlice";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { ShieldCheck, X } from "lucide-react";
+import { ShieldCheck, X, User, Settings, LogOut } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 interface ProfileDropdownProps {
@@ -53,49 +53,46 @@ export function ProfileDropdown({ user: storeUser }: ProfileDropdownProps) {
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-10 h-10 rounded-full bg-[#1447E6] flex items-center justify-center shadow-sm hover:opacity-90 transition-opacity focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+        className="w-10 h-10 rounded-full bg-[#1447E6] flex items-center justify-center shadow-sm hover:opacity-90 transition-opacity focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 overflow-hidden"
       >
-        <span className="text-sm font-bold text-white tracking-wide">
-          {initials}
-        </span>
+        {profile?.profile?.avatar ? (
+          <img src={profile.profile.avatar} alt="Profile" className="w-full h-full object-cover" />
+        ) : (
+          <User className="text-white w-5 h-5" />
+        )}
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-72 bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-slate-100 z-50 overflow-hidden">
-          <div className="p-6 pb-4 relative">
-            <button
-              onClick={() => setIsOpen(false)}
-              className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors"
-            >
-              <X size={18} />
-            </button>
-
-            <h3 className="text-lg font-bold text-[#1A1F36] mb-1">
+        <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-lg border border-slate-100 z-50 overflow-hidden origin-top-right animate-in fade-in zoom-in duration-150">
+          <div className="p-4 pb-3 relative border-b border-slate-100">
+            <h3 className="text-sm font-semibold text-slate-800 mb-0.5 truncate">
               {userName}
             </h3>
-            <p className="text-[15px] text-slate-500 mb-4">{userEmail}</p>
+            <p className="text-xs text-slate-500 mb-2.5 truncate">{userEmail}</p>
 
-            <div className="flex items-center gap-2 bg-[#ECFDF3] text-[#027A48] px-4 py-2.5 rounded-xl font-medium text-sm mb-6">
-              <ShieldCheck size={18} />
+            <div className="flex items-center gap-1 bg-[#ECFDF3] text-[#027A48] px-2 py-1 rounded-md font-medium text-[11px] w-fit border border-[#D1FADF]">
+              <ShieldCheck size={12} />
               <span>{mfaEnabled ? "MFA Enabled" : "MFA Disabled"}</span>
             </div>
+          </div>
 
-            <div className="flex flex-col gap-1">
-              <Link
-                to="/dashboard/account-settings"
-                onClick={() => setIsOpen(false)}
-                className="block px-2 py-2 text-[15px] font-medium text-[#1A1F36] hover:bg-slate-50 rounded-lg transition-colors"
-              >
-                Settings
-              </Link>
+          <div className="p-1.5 flex flex-col gap-0.5">
+            <Link
+              to="/dashboard/account-settings"
+              onClick={() => setIsOpen(false)}
+              className="flex items-center gap-2.5 px-2.5 py-1.5 text-[13px] font-medium text-slate-700 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition-colors"
+            >
+              <Settings size={14} className="text-slate-400" />
+              <span>Settings</span>
+            </Link>
 
-              <button
-                onClick={handleSignOut}
-                className="block w-full text-left px-2 py-2 text-[15px] font-medium text-[#F04438] hover:bg-red-50 rounded-lg transition-colors"
-              >
-                Sign Out
-              </button>
-            </div>
+            <button
+              onClick={handleSignOut}
+              className="w-full flex items-center gap-2.5 px-2.5 py-1.5 text-[13px] font-medium text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors text-left"
+            >
+              <LogOut size={14} className="text-red-500" />
+              <span>Logout</span>
+            </button>
           </div>
         </div>
       )}
