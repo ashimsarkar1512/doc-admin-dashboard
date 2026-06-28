@@ -43,7 +43,7 @@ export default function BlogPage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [searchQuery, setSearchQuery] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
+  const [statusFilter, _] = useState("all");
   const [page, setPage] = useState(1);
 
   const { data: blogsData, isLoading, isError } = useQuery({
