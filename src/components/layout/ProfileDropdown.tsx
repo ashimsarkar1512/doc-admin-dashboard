@@ -2,7 +2,7 @@ import { useUserProfile } from "@/features/account-settings/hooks/useAccountSett
 import { useAppDispatch } from "@/store/hooks";
 import { logout } from "@/store/slices/authSlice";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { ShieldCheck, X, User, Settings, LogOut } from "lucide-react";
+import { ShieldCheck, User, Settings, LogOut } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 interface ProfileDropdownProps {
@@ -37,7 +37,6 @@ export function ProfileDropdown({ user: storeUser }: ProfileDropdownProps) {
   const profileEmail = profile?.email;
   const userName = profileName || storeUser?.name || "N/A";
   const userEmail = profileEmail || storeUser?.email || "admin@telemed.com";
-  const initials = userName.substring(0, 2).toUpperCase();
   const mfaEnabled = profile?.mfaEnabled || false;
 
   const handleSignOut = () => {
