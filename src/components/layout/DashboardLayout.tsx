@@ -841,6 +841,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useOrders } from "@/features/orders/hooks/useOrders";
 import { Link, Outlet, useLocation, useNavigate } from "@tanstack/react-router";
 import { logout } from "@/store/slices/authSlice";
+import { queryClient } from "@/lib/queryClient";
 import {
   Activity,
   AlertTriangle,
@@ -1039,6 +1040,7 @@ export default function DashboardLayout() {
   const navigate = useNavigate();
 
   const handleSignOut = () => {
+    queryClient.clear();
     dispatch(logout())
       .unwrap()
       .then(() => {
