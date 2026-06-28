@@ -6,12 +6,14 @@ export interface ProductCardProps {
   product: Product;
   onEdit: (product: Product) => void;
   onDelete: (id: string) => void;
+  canManage?: boolean;
 }
 
 export const ProductCard: React.FC<ProductCardProps> = ({
   product,
   onEdit,
   onDelete,
+  canManage = true,
 }) => {
   return (
     <div className="group bg-white rounded-2xl   transition-all duration-200 flex flex-col justify-between overflow-hidden h-full">
@@ -67,22 +69,24 @@ export const ProductCard: React.FC<ProductCardProps> = ({
       </div>
 
       {/* Footer Action Buttons */}
-      <div className="px-5 pb-5 flex items-center gap-3">
-        <button
-          onClick={() => onEdit(product)}
-          className="flex-1 inline-flex items-center justify-center bg-[#F4F4F5] hover:bg-gray-200 active:bg-gray-300 text-gray-800 font-medium text-sm py-2.5 rounded-xl transition-colors cursor-pointer"
-        >
-          <span>Edit</span>
-        </button>
+      {canManage && (
+        <div className="px-5 pb-5 flex items-center gap-3">
+          <button
+            onClick={() => onEdit(product)}
+            className="flex-1 inline-flex items-center justify-center bg-[#F4F4F5] hover:bg-gray-200 active:bg-gray-300 text-gray-800 font-medium text-sm py-2.5 rounded-xl transition-colors cursor-pointer"
+          >
+            <span>Edit</span>
+          </button>
 
-        <button
-          onClick={() => onDelete(product.id)}
-          className="bg-[#FEF2F2] hover:bg-red-100 active:bg-red-200 text-red-500 p-2.5 rounded-xl transition-colors cursor-pointer flex items-center justify-center shrink-0"
-          title="Delete Product"
-        >
-          <Trash2 className="h-[18px] w-[18px]" />
-        </button>
-      </div>
+          <button
+            onClick={() => onDelete(product.id)}
+            className="bg-[#FEF2F2] hover:bg-red-100 active:bg-red-200 text-red-500 p-2.5 rounded-xl transition-colors cursor-pointer flex items-center justify-center shrink-0"
+            title="Delete Product"
+          >
+            <Trash2 className="h-[18px] w-[18px]" />
+          </button>
+        </div>
+      )}
     </div>
   );
 };

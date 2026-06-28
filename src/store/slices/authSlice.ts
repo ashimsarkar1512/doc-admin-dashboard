@@ -26,7 +26,7 @@ interface AuthState {
 }
 
 const initialState: AuthState = {
-  user: null,
+  user: localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user') as string) : null,
   isLoading: false,
   error: null,
   isAuthenticated: !!localStorage.getItem('token'),
@@ -44,9 +44,14 @@ export const login = createAsyncThunk<
 
     const roles = response.data.user.roles;
     const role = response.data.user.role;
+    const permissions = response.data.user.permissions;
 
-    if ((!roles || !roles.includes('ADMIN')) && role !== 'ADMIN') {
-      return rejectWithValue('Access denied: Admins only');
+    const isAdmin = (roles && roles.includes('ADMIN')) || role === 'ADMIN';
+    const isEmployee = permissions && permissions.length > 0;
+
+    // Allow login if the user is an ADMIN or has any permissions (employee)
+    if (!isAdmin && !isEmployee) {
+      return rejectWithValue('Access denied: You do not have permission to access this dashboard.');
     }
 
     return { message: response.message, data: response.data };
@@ -64,9 +69,9 @@ export const logout = createAsyncThunk('auth/logout', async () => {
     await apiLogout();
   } catch (error) {
     console.error('Failed to logout from backend', error);
-    // Even if backend fails, we want to clear local state
   } finally {
     localStorage.removeItem('token');
+    localStorage.removeItem('user');
   }
 });
 
@@ -91,6 +96,7 @@ const authSlice = createSlice({
       state.user = action.payload.user;
       state.isAuthenticated = true;
       localStorage.setItem('token', action.payload.accessToken);
+      localStorage.setItem('user', JSON.stringify(action.payload.user));
     },
   },
   extraReducers: (builder) => {
@@ -106,6 +112,9 @@ const authSlice = createSlice({
         state.isAuthenticated = true;
         if (action.payload.data.accessToken) {
           localStorage.setItem('token', action.payload.data.accessToken);
+        }
+        if (action.payload.data.user) {
+          localStorage.setItem('user', JSON.stringify(action.payload.data.user));
         }
       })
       .addCase(login.rejected, (state, action) => {
