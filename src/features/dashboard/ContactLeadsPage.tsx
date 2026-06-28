@@ -8,6 +8,7 @@ import ContactLeadsTable from './components/ContactLeadsTable';
 import ViewMessageModal from './components/ViewMessageModal';
 import ResponseQuoteModal from './components/ResponseQuoteModal';
 import { Download, ChevronLeft, ChevronRight } from 'lucide-react';
+import { usePermissions } from '@/hooks/usePermissions';
 
 export default function ContactLeadsPage() {
   const [page, setPage] = useState(1);
@@ -20,6 +21,8 @@ export default function ContactLeadsPage() {
   const [isRespondModalOpen, setIsRespondModalOpen] = useState(false);
 
   const queryClient = useQueryClient();
+  const { canManage } = usePermissions();
+  const canManageLeads = canManage('contact_leads');
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ['contact-leads', page, limit],
@@ -147,6 +150,7 @@ const handleExport = async () => {
               onView={handleView}
               onRespond={handleRespond}
               onDelete={handleDelete}
+              canManage={canManageLeads}
             />
 
             {!isLoading && data?.meta && data.meta.totalPages > 1 && (

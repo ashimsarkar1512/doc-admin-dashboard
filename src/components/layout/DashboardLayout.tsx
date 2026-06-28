@@ -1050,6 +1050,24 @@ export default function DashboardLayout() {
   const [complianceMenuOpen, setComplianceMenuOpen] = useState(true);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
+  // ── Permission helpers ──────────────────────────────────────────────────
+  const currentUser = user || profile;
+  const userPermissions: string[] = (currentUser as any)?.permissions ?? [];
+  const isAdmin = currentUser?.roles?.includes('ADMIN') || currentUser?.role === 'ADMIN';
+  const can = (perm: string) => isAdmin || userPermissions.includes(perm);
+  const hasComplianceAccess =
+    can('view:employee_permissions') ||
+    can('view:compliance_center') ||
+    can('view:audit_logs') ||
+    can('view:consent_management') ||
+    can('view:incident_management') ||
+    can('view:state_coverage') ||
+    can('view:prescription_oversight') ||
+    can('view:business_intelligence') ||
+    can('view:communication_center') ||
+    can('view:document_center') ||
+    can('view:system_health');
+
   // Synchronize route changes to Redux Page Header State
   useEffect(() => {
     const path = location.pathname;
@@ -1100,6 +1118,7 @@ export default function DashboardLayout() {
             <LayoutGrid size={20} className="shrink-0" />
             <span>Dashboard</span>
           </Link>
+          {can('view:doctor_management') && (
           <Link
             to="/dashboard/providers"
             onClick={() => setMobileSidebarOpen(false)}
@@ -1108,6 +1127,8 @@ export default function DashboardLayout() {
             <Stethoscope size={20} className="shrink-0" />
             <span>Doctor Management</span>
           </Link>
+          )}
+          {can('view:patient_management') && (
           <Link
             to="/dashboard/patients"
             onClick={() => setMobileSidebarOpen(false)}
@@ -1116,6 +1137,8 @@ export default function DashboardLayout() {
             <Users size={20} className="shrink-0" />
             <span>Patient Management</span>
           </Link>
+          )}
+          {can('view:assessments') && (
           <Link
             to="/dashboard/assessments"
             onClick={() => setMobileSidebarOpen(false)}
@@ -1124,6 +1147,8 @@ export default function DashboardLayout() {
             <ClipboardList size={20} className="shrink-0" />
             <span>Assessments</span>
           </Link>
+          )}
+          {can('view:orders') && (
           <Link
             to="/dashboard/orders"
             onClick={() => setMobileSidebarOpen(false)}
@@ -1132,7 +1157,8 @@ export default function DashboardLayout() {
             <Package size={20} className="shrink-0" />
             <span>Orders</span>
           </Link>
-      
+          )}
+          {can('view:contact_leads') && (
           <Link
             to="/dashboard/contact-leads"
             onClick={() => setMobileSidebarOpen(false)}
@@ -1141,6 +1167,8 @@ export default function DashboardLayout() {
             <MessageSquare size={20} className="shrink-0" />
             <span>Contact Leads</span>
           </Link>
+          )}
+          {can('view:payments') && (
           <Link
             to="/dashboard/payments"
             onClick={() => setMobileSidebarOpen(false)}
@@ -1149,6 +1177,8 @@ export default function DashboardLayout() {
             <BadgeDollarSign size={20} className="shrink-0" />
             <span>Payments</span>
           </Link>
+          )}
+          {can('view:service_categories_and_plans') && (
           <Link
             to="/dashboard/categories"
             onClick={() => setMobileSidebarOpen(false)}
@@ -1157,6 +1187,8 @@ export default function DashboardLayout() {
             <Folders size={20} className="shrink-0" />
             <span>Service Category & Plan</span>
           </Link>
+          )}
+          {can('view:products') && (
           <Link
             to="/dashboard/products"
             onClick={() => setMobileSidebarOpen(false)}
@@ -1165,6 +1197,8 @@ export default function DashboardLayout() {
             <ShoppingBag size={20} className="shrink-0" />
             <span>Products</span>
           </Link>
+          )}
+          {can('view:testimonials') && (
           <Link
             to="/dashboard/testimonials"
             onClick={() => setMobileSidebarOpen(false)}
@@ -1173,6 +1207,8 @@ export default function DashboardLayout() {
             <Star size={20} className="shrink-0" />
             <span>Testimonials</span>
           </Link>
+          )}
+          {can('view:discounts_and_marketing') && (
           <Link
             to="/dashboard/discounts"
             onClick={() => setMobileSidebarOpen(false)}
@@ -1181,6 +1217,8 @@ export default function DashboardLayout() {
             <Tag size={20} className="shrink-0" />
             <span>Discounts & Marketing</span>
           </Link>
+          )}
+          {can('view:website_management') && (
           <Link
             to="/dashboard/website-management"
             onClick={() => setMobileSidebarOpen(false)}
@@ -1189,6 +1227,7 @@ export default function DashboardLayout() {
             <Globe size={20} className="shrink-0" />
             <span>Website Management</span>
           </Link>
+          )}
           <Link
             to="/dashboard/account-settings"
             onClick={() => setMobileSidebarOpen(false)}
@@ -1197,7 +1236,8 @@ export default function DashboardLayout() {
             <UserCog size={20} className="shrink-0" />
             <span>Account Settings</span>
           </Link>
-          <hr className="my-2 border-slate-100" />
+          {hasComplianceAccess && <hr className="my-2 border-slate-100" />}
+          {can('view:employee_permissions') && (
           <Link
             to="/dashboard/employee-permissions"
             onClick={() => setMobileSidebarOpen(false)}
@@ -1206,6 +1246,8 @@ export default function DashboardLayout() {
             <UserCog size={20} className="shrink-0" />
             <span>Employee Permissions</span>
           </Link>
+          )}
+          {can('view:compliance_center') && (
           <Link
             to="/dashboard/compliance-center"
             onClick={() => setMobileSidebarOpen(false)}
@@ -1214,6 +1256,8 @@ export default function DashboardLayout() {
             <ShieldCheck size={20} className="shrink-0" />
             <span>Compliance Center</span>
           </Link>
+          )}
+          {can('view:audit_logs') && (
           <Link
             to="/dashboard/audit-logs"
             onClick={() => setMobileSidebarOpen(false)}
@@ -1222,6 +1266,8 @@ export default function DashboardLayout() {
             <ScrollText size={20} className="shrink-0" />
             <span>Audit Logs</span>
           </Link>
+          )}
+          {can('view:system_health') && (
           <Link
             to="/dashboard/system-health"
             onClick={() => setMobileSidebarOpen(false)}
@@ -1230,6 +1276,8 @@ export default function DashboardLayout() {
             <Activity size={20} className="shrink-0" />
             <span>System Health</span>
           </Link>
+          )}
+
         </nav>
 
         {/* Mobile logout */}
@@ -1292,6 +1340,7 @@ export default function DashboardLayout() {
           </Link>
 
           {/* Doctor Management */}
+          {can('view:doctor_management') && (
           <Link
             to="/dashboard/providers"
             className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-500 text-[#272628] hover:bg-slate-100 hover:text-slate-900 transition-all duration-150 [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-600 [&.active]:shadow-sm [&.active_svg]:text-[#1447E6] group"
@@ -1304,9 +1353,11 @@ export default function DashboardLayout() {
               <span className="tracking-wide">Doctor Management</span>
             )}
           </Link>
+          )}
 
           {/* Patient Management */}
-          {collapsed ? (
+          {can('view:patient_management') && (
+          collapsed ? (
             <Link
               to="/dashboard/patients"
               className="flex items-center justify-center p-2.5 rounded-md text-slate-600 hover:bg-slate-100 [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active_svg]:text-[#1447E6]"
@@ -1353,9 +1404,11 @@ export default function DashboardLayout() {
                 </div>
               )}
             </div>
+          )
           )}
 
           {/* Assessments */}
+          {can('view:assessments') && (
           <Link
             to="/dashboard/assessments"
             className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-500 text-[#272628] hover:bg-slate-100 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-600 [&.active_svg]:text-[#1447E6]"
@@ -1363,8 +1416,10 @@ export default function DashboardLayout() {
             <ClipboardList size={20} className="text-[#272628] shrink-0" />
             {!collapsed && <span className="tracking-wide">Assessments</span>}
           </Link>
+          )}
 
           {/* Orders */}
+          {can('view:orders') && (
           <Link
             to="/dashboard/orders"
             className="flex items-center justify-between px-3 py-2.5 rounded-md text-sm font-500 text-[#272628] hover:bg-slate-100 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-600 [&.active_svg]:text-[#1447E6]"
@@ -1379,11 +1434,13 @@ export default function DashboardLayout() {
               </span>
             )}
           </Link>
+          )}
 
           {/* Checkout */}
          
 
           {/* Contact Leads */}
+          {can('view:contact_leads') && (
           <Link
             to="/dashboard/contact-leads"
             className="flex items-center justify-between px-3 py-2.5 rounded-md text-sm font-500 text-[#272628] hover:bg-slate-100 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-600 [&.active_svg]:text-[#1447E6]"
@@ -1400,8 +1457,9 @@ export default function DashboardLayout() {
               </span>
             )}
           </Link>
-
+          )}
           {/* Payments */}
+          {can('view:payments') && (
           <Link
             to="/dashboard/payments"
             className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-500 text-[#272628] hover:bg-slate-100 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-600 [&.active_svg]:text-[#1447E6]"
@@ -1409,8 +1467,10 @@ export default function DashboardLayout() {
             <BadgeDollarSign size={20} className="text-[#272628] shrink-0" />
             {!collapsed && <span className="tracking-wide">Payments</span>}
           </Link>
+          )}
 
           {/* Categories */}
+          {can('view:service_categories_and_plans') && (
           <Link
             to="/dashboard/categories"
             className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-500 text-[#272628] hover:bg-slate-100 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-600 [&.active_svg]:text-[#1447E6]"
@@ -1420,8 +1480,10 @@ export default function DashboardLayout() {
               <span className="tracking-wide">Service Category & Plan</span>
             )}
           </Link>
+          )}
 
           {/* Products */}
+          {can('view:products') && (
           <Link
             to="/dashboard/products"
             className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-500 text-[#272628] hover:bg-slate-100 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-600 [&.active_svg]:text-[#1447E6]"
@@ -1429,8 +1491,10 @@ export default function DashboardLayout() {
             <ShoppingBag size={20} className="text-[#272628] shrink-0" />
             {!collapsed && <span className="tracking-wide">Products</span>}
           </Link>
+          )}
 
           {/* Testimonials */}
+          {can('view:testimonials') && (
           <Link
             to="/dashboard/testimonials"
             className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-500 text-[#272628] hover:bg-slate-100 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-600 [&.active_svg]:text-[#1447E6]"
@@ -1438,8 +1502,10 @@ export default function DashboardLayout() {
             <Star size={20} className="text-[#272628] shrink-0" />
             {!collapsed && <span className="tracking-wide">Testimonials</span>}
           </Link>
+          )}
 
           {/* Discounts & Marketing */}
+          {can('view:discounts_and_marketing') && (
           <Link
             to="/dashboard/discounts"
             className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-500 text-[#272628] hover:bg-slate-100 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-600 [&.active_svg]:text-[#1447E6]"
@@ -1449,9 +1515,11 @@ export default function DashboardLayout() {
               <span className="tracking-wide">Discounts & Marketing</span>
             )}
           </Link>
+          )}
 
           {/* Website Management */}
-          {collapsed ? (
+          {can('view:website_management') && (
+          collapsed ? (
             <Link
               to="/dashboard/website-management"
               className="flex items-center justify-center p-2.5 rounded-md text-slate-600 hover:bg-slate-100 [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active_svg]:text-[#1447E6]"
@@ -1504,12 +1572,14 @@ export default function DashboardLayout() {
                 </div>
               )}
             </div>
+          )
           )}
 
-          <hr className="sidebar-divider" />
+          {hasComplianceAccess && <hr className="sidebar-divider" />}
 
           {/* Compliance & Access */}
-          {collapsed ? (
+          {hasComplianceAccess && (
+          collapsed ? (
             <Link
               to="/dashboard/employee-permissions"
               className="flex items-center justify-center p-2.5 rounded-md text-slate-600 hover:bg-slate-100 [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active_svg]:text-[#1447E6]"
@@ -1624,6 +1694,7 @@ export default function DashboardLayout() {
                 </div>
               )}
             </div>
+          )
           )}
         </nav>
 
