@@ -359,7 +359,11 @@ export default function AssessmentTablePage() {
                           </button>
                         ) : (
                           <button
-                            onClick={() => navigate({ to: '/dashboard/assessment-table/$assessmentId/preview', params: { assessmentId: assessment.submissionId }})}
+                            onClick={() => {
+                              sessionStorage.setItem('currentPatientName', assessment.patientName || '');
+                              sessionStorage.setItem('currentPatientImage', assessment.patientImage || '');
+                              navigate({ to: '/dashboard/assessment-table/$assessmentId/preview', params: { assessmentId: assessment.submissionId }});
+                            }}
                             className="px-2 py-1 text-blue-500 text-[13px] font-medium hover:text-blue-600 transition-colors"
                           >
                             View Details

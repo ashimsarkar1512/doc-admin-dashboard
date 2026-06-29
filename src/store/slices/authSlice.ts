@@ -72,6 +72,8 @@ export const logout = createAsyncThunk('auth/logout', async () => {
   } finally {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
+    // Also clear the auth cookie manually if the backend didn't set it to expire
+    document.cookie = 'authToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
   }
 });
 

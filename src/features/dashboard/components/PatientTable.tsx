@@ -174,6 +174,8 @@ console.log(data)
                             if (showAssign) {
                               setAssigningAssessment(row);
                             } else {
+                              sessionStorage.setItem('currentPatientName', row.patientName || '');
+                              sessionStorage.setItem('currentPatientImage', row.patientImage || '');
                               navigate({
                                 to: "/dashboard/patient-management/$assessmentId/preview",
                                 params: { assessmentId: row.submissionId },
