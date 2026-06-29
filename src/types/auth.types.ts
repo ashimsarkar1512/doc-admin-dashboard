@@ -139,6 +139,7 @@ export interface UserProfile {
     name?: string;
     bio?: string;
     title?: string;
+    phone?: string;
     specialty?: string;
     officeLocation?: string;
     address?: string;
@@ -160,6 +161,7 @@ export interface UpdateUserProfilePayload {
   name?: string;
   bio?: string;
   title?: string;
+  phone?: string;
   specialty?: string;
   officeLocation?: string;
   address?: string;

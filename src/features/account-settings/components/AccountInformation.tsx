@@ -38,6 +38,7 @@ export function AccountInformation() {
       reset({
         name: profile.profile.name,
         title: profile.profile.title,
+        phone:profile.profile.phone,
         bio: profile.profile.bio,
         specialty: profile.profile.specialty,
         officeLocation: profile.profile.officeLocation,
@@ -132,7 +133,11 @@ export function AccountInformation() {
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <FormInput label="Email" value={profile?.email || ''} disabled />
-            <FormInput label="Contact Number" value={profile?.phone || ''} disabled />
+            <Controller
+              name="phone"
+              control={control}
+              render={({ field }) => <FormInput label="Contact Number" {...field} />}
+            />
           </div>
           
           <Controller
