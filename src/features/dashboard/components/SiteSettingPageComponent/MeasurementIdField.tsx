@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { updateGoogleAnalytics, type WebsiteSettings } from '@/api/endpoints/websitemanagement.api';
 import { Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface MeasurementIdProps {
   infoData: WebsiteSettings | null;
@@ -29,6 +30,7 @@ export default function MeasurementIdField({
         setSaving(true);
         setError(null);
         await updateGoogleAnalytics(payload);
+         toast.success("Google Analytics updated successfully ");
     } catch (err: any) {
         setError(err.message || 'Failed to save Measurement ID');
     } finally {
