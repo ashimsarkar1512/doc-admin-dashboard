@@ -3,19 +3,18 @@
 // export default function SiteSettingContactInfo() {
 //   return (
 //     <div>
-      
+
 //     </div>
 //   )
 // }
 
-
-
-
-
-
-import  { useState, useEffect } from 'react';
-import { updateContactInfo, type WebsiteSettings } from '@/api/endpoints/websitemanagement.api';
-import { Loader2 } from 'lucide-react';
+import { useState, useEffect } from "react";
+import {
+  updateContactInfo,
+  type WebsiteSettings,
+} from "@/api/endpoints/websitemanagement.api";
+import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 interface ContactInfoProps {
   infoData: WebsiteSettings | null;
@@ -26,7 +25,7 @@ function Field({
   id,
   value,
   onChange,
-  placeholder = '',
+  placeholder = "",
 }: {
   label: string;
   id: string;
@@ -51,21 +50,21 @@ function Field({
 }
 
 export default function SiteSettingContactInfo({ infoData }: ContactInfoProps) {
-  const [phone, setPhone] = useState('');
-  const [email, setEmail] = useState('');
-  const [openHours, setOpenHours] = useState('');
-  const [closedDays, setClosedDays] = useState('');
+  const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
+  const [openHours, setOpenHours] = useState("");
+  const [closedDays, setClosedDays] = useState("");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
+  const [, setSuccess] = useState<string | null>(null);
 
   useEffect(() => {
-    console.log('SiteSettingContactInfo infoData:', infoData);
+    console.log("SiteSettingContactInfo infoData:", infoData);
     if (infoData?.contactInfo) {
-      setPhone(infoData.contactInfo.phone || '');
-      setEmail(infoData.contactInfo.email || '');
-      setOpenHours(infoData.contactInfo.openHours || '');
-      setClosedDays(infoData.contactInfo.closedDays || '');
+      setPhone(infoData.contactInfo.phone || "");
+      setEmail(infoData.contactInfo.email || "");
+      setOpenHours(infoData.contactInfo.openHours || "");
+      setClosedDays(infoData.contactInfo.closedDays || "");
     }
   }, [infoData]);
 
@@ -82,9 +81,10 @@ export default function SiteSettingContactInfo({ infoData }: ContactInfoProps) {
       setError(null);
       setSuccess(null);
       await updateContactInfo(payload);
-      setSuccess('Contact info saved successfully!');
+          toast.success("Contact info  saved successfully!");
+      setSuccess("Contact info  saved successfully!");
     } catch (err: any) {
-      setError(err.message || 'Failed to save contact info');
+      setError(err.message || "Failed to save contact info");
     } finally {
       setSaving(false);
     }
@@ -125,14 +125,14 @@ export default function SiteSettingContactInfo({ infoData }: ContactInfoProps) {
       </div>
 
       {error && <p className="text-sm text-red-500">{error}</p>}
-      {success && <p className="text-sm text-green-500">{success}</p>}
+      {/* {success && <p className="text-sm text-green-500">{success}</p>} */}
 
       <button
         onClick={handleSave}
         disabled={saving}
         className="mt-2 px-4 py-2 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700 transition disabled:opacity-50"
       >
-        {saving ? <Loader2 className="animate-spin" size={16} /> : 'Save'}
+        {saving ? <Loader2 className="animate-spin" size={16} /> : "Save"}
       </button>
     </>
   );

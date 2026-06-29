@@ -51,6 +51,6 @@ export interface SystemHealthOverview {
 // ── API calls ─────────────────────────────────────────────────────────────────
 
 export const getSystemHealthOverview = async (): Promise<SystemHealthOverview> => {
-  const { data } = await axiosInstance.get('/compliance/system-health/overview');
+  const { data } = await axiosInstance.get('/compliance/system-health');
   return data;
 };

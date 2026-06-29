@@ -4,6 +4,7 @@
 import  { useState, useEffect } from 'react';
 import { updateSocialLinks,  type WebsiteSettings } from '@/api/endpoints/websitemanagement.api';
 import { Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
 
 type SocialKey = 'facebook' | 'instagram' | 'twitter' | 'linkedin';
 
@@ -82,6 +83,7 @@ export default function SiteSettingSocialLinks({
         setSaving(true);
         setError(null);
         await updateSocialLinks(payload);
+           toast.success("Social Links updated successfully ");
     } catch (err: any) {
         setError(err.message || 'Failed to save social links');
     } finally {

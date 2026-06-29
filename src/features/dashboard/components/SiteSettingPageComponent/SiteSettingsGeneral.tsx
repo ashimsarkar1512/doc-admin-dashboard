@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react';
-import { Upload } from 'lucide-react';
+import { useEffect, useState } from "react";
+import { Upload } from "lucide-react";
 // import { updateSiteSettings } from '@/api/endpoints/websitemanagement.api';
-import { uploadAttachment } from '@/api/endpoints/attachments.api';
-import { updateSiteSettings } from '@/api/endpoints/websitemanagement.api';
+import { uploadAttachment } from "@/api/endpoints/attachments.api";
+import { updateSiteSettings } from "@/api/endpoints/websitemanagement.api";
+import { toast } from "sonner";
 
 type Props = {
   infoData: any;
@@ -19,7 +20,7 @@ function UploadBox({
   label,
   sublabel,
   dark = false,
-  aspectClass = 'h-36',
+  aspectClass = "h-36",
   previewUrl,
   onFileSelected,
 }: {
@@ -30,19 +31,17 @@ function UploadBox({
   previewUrl?: string | null;
   onFileSelected: (file: File) => void;
 }) {
-  const inputId = `upload-${label.replace(/\s+/g, '-').toLowerCase()}`;
+  const inputId = `upload-${label.replace(/\s+/g, "-").toLowerCase()}`;
 
   return (
     <div>
       <p className="text-sm font-medium text-slate-700 mb-2">{label}</p>
 
-      {sublabel && (
-        <p className="text-xs text-slate-400 mb-2">{sublabel}</p>
-      )}
+      {sublabel && <p className="text-xs text-slate-400 mb-2">{sublabel}</p>}
 
       <div
         className={`${aspectClass} rounded-lg flex flex-col items-center justify-center gap-2 border border-slate-200 relative overflow-hidden ${
-          dark ? 'bg-[#1A2340]' : 'bg-slate-50'
+          dark ? "bg-[#1A2340]" : "bg-slate-50"
         }`}
       >
         {previewUrl && (
@@ -79,8 +78,8 @@ function UploadBox({
 // MAIN COMPONENT
 // ─────────────────────────────────────────────
 export default function SiteSettingsGeneral({ infoData }: Props) {
-  const [title, setTitle] = useState('');
-  const [metaDescription, setMetaDescription] = useState('');
+  const [title, setTitle] = useState("");
+  const [metaDescription, setMetaDescription] = useState("");
 
   // ── new files picked by user (not yet uploaded) ──
   const [whiteLogoFile, setWhiteLogoFile] = useState<File | null>(null);
@@ -101,8 +100,8 @@ export default function SiteSettingsGeneral({ infoData }: Props) {
 
   useEffect(() => {
     if (!infoData) return;
-    setTitle(infoData.title || '');
-    setMetaDescription(infoData.metaDescription || '');
+    setTitle(infoData.title || "");
+    setMetaDescription(infoData.metaDescription || "");
 
     setWhiteLogoUrl(infoData.whiteLogo?.fileUrl ?? null);
     setBlackLogoUrl(infoData.blackLogo?.fileUrl ?? null);
@@ -125,11 +124,21 @@ export default function SiteSettingsGeneral({ infoData }: Props) {
         faviconDarkAttachment,
         socialPreviewAttachment,
       ] = await Promise.all([
-        whiteLogoFile ? uploadAttachment(whiteLogoFile, 'PRODUCT_IMAGE') : Promise.resolve(undefined),
-        blackLogoFile ? uploadAttachment(blackLogoFile, 'PRODUCT_IMAGE') : Promise.resolve(undefined),
-        faviconLightFile ? uploadAttachment(faviconLightFile, 'PRODUCT_IMAGE') : Promise.resolve(undefined),
-        faviconDarkFile ? uploadAttachment(faviconDarkFile, 'PRODUCT_IMAGE') : Promise.resolve(undefined),
-        socialPreviewFile ? uploadAttachment(socialPreviewFile, 'PRODUCT_IMAGE') : Promise.resolve(undefined),
+        whiteLogoFile
+          ? uploadAttachment(whiteLogoFile, "PRODUCT_IMAGE")
+          : Promise.resolve(undefined),
+        blackLogoFile
+          ? uploadAttachment(blackLogoFile, "PRODUCT_IMAGE")
+          : Promise.resolve(undefined),
+        faviconLightFile
+          ? uploadAttachment(faviconLightFile, "PRODUCT_IMAGE")
+          : Promise.resolve(undefined),
+        faviconDarkFile
+          ? uploadAttachment(faviconDarkFile, "PRODUCT_IMAGE")
+          : Promise.resolve(undefined),
+        socialPreviewFile
+          ? uploadAttachment(socialPreviewFile, "PRODUCT_IMAGE")
+          : Promise.resolve(undefined),
       ]);
 
       // 2. Send plain JSON with ids (not files) to the settings endpoint
@@ -138,15 +147,23 @@ export default function SiteSettingsGeneral({ infoData }: Props) {
         metaDescription,
         ...(whiteLogoAttachment && { whiteLogoId: whiteLogoAttachment.id }),
         ...(blackLogoAttachment && { blackLogoId: blackLogoAttachment.id }),
-        ...(faviconLightAttachment && { faviconLightId: faviconLightAttachment.id }),
-        ...(faviconDarkAttachment && { faviconDarkId: faviconDarkAttachment.id }),
-        ...(socialPreviewAttachment && { socialPreviewId: socialPreviewAttachment.id }),
+        ...(faviconLightAttachment && {
+          faviconLightId: faviconLightAttachment.id,
+        }),
+        ...(faviconDarkAttachment && {
+          faviconDarkId: faviconDarkAttachment.id,
+        }),
+        ...(socialPreviewAttachment && {
+          socialPreviewId: socialPreviewAttachment.id,
+        }),
       };
 
-      console.log('🚀 Payload:', payload);
+      console.log("🚀 Payload:", payload);
 
       const updated = await updateSiteSettings(payload);
-
+      console.log(updated);
+      // here
+      toast.success("Settings updated successfully 🚀");
       // 3. Sync state with server response (new image urls etc.)
       setWhiteLogoUrl(updated.whiteLogo?.fileUrl ?? whiteLogoUrl);
       setBlackLogoUrl(updated.blackLogo?.fileUrl ?? blackLogoUrl);
@@ -160,7 +177,7 @@ export default function SiteSettingsGeneral({ infoData }: Props) {
       setFaviconDarkFile(null);
       setSocialPreviewFile(null);
     } catch (err: any) {
-      setError(err.message || 'Failed to save changes. Please try again.');
+      setError(err.message || "Failed to save changes. Please try again.");
       console.error(err);
     } finally {
       setSaving(false);
@@ -206,18 +223,16 @@ export default function SiteSettingsGeneral({ infoData }: Props) {
 
         {/* SERP Preview */}
         <div>
-          <p className="text-sm font-medium text-slate-700 mb-1.5">
-            Preview
-          </p>
+          <p className="text-sm font-medium text-slate-700 mb-1.5">Preview</p>
 
           <div className="border border-slate-200 rounded-lg p-4 bg-white">
             <div className="flex items-center gap-2 mb-1">
               <div className="w-5 h-5 rounded-full bg-blue-600 flex items-center justify-center text-white text-[9px] font-bold">
-                {title.charAt(0).toUpperCase() || 'W'}
+                {title.charAt(0).toUpperCase() || "W"}
               </div>
               <div>
                 <p className="text-xs font-medium text-slate-700 leading-none">
-                  {title || 'Site Title'}
+                  {title || "Site Title"}
                 </p>
                 <p className="text-[10px] text-slate-400">
                   https://weightlossmd.com
@@ -226,11 +241,11 @@ export default function SiteSettingsGeneral({ infoData }: Props) {
             </div>
 
             <p className="text-sm font-medium text-blue-700 mt-1 leading-tight">
-              {title || 'Site Title'}
+              {title || "Site Title"}
             </p>
 
             <p className="text-xs text-slate-500 mt-1 leading-relaxed">
-              {metaDescription || 'Write about your practice here...'}
+              {metaDescription || "Write about your practice here..."}
             </p>
           </div>
         </div>
@@ -238,13 +253,13 @@ export default function SiteSettingsGeneral({ infoData }: Props) {
 
       <Divider />
 
-      <h2>Site Images</h2>
+      <h2 className="text-black">Site Images</h2>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
         <UploadBox
-          label="Foster White Logo"
+          label="Foster White Logo "
           sublabel="Upload your website logo (recommended: 200x68px)"
-          dark={true}
+          // dark={true}
           aspectClass="h-40"
           previewUrl={
             whiteLogoFile ? URL.createObjectURL(whiteLogoFile) : whiteLogoUrl
@@ -266,12 +281,8 @@ export default function SiteSettingsGeneral({ infoData }: Props) {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div>
-          <p className="text-sm font-medium text-slate-700 mb-1">
-            Favicon
-          </p>
-          <p className="text-xs text-slate-400 mb-2">
-            64 × 64 pixels
-          </p>
+          <p className="text-sm font-medium text-slate-700 mb-1">Favicon</p>
+          <p className="text-xs text-slate-400 mb-2">64 × 64 pixels</p>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
@@ -293,7 +304,7 @@ export default function SiteSettingsGeneral({ infoData }: Props) {
               <p className="text-xs text-slate-500 mb-1.5">Dark</p>
               <UploadBox
                 label="Favicon Dark"
-                dark={true}
+                // dark={true}
                 aspectClass="h-28"
                 previewUrl={
                   faviconDarkFile
@@ -310,13 +321,11 @@ export default function SiteSettingsGeneral({ infoData }: Props) {
           <p className="text-sm font-medium text-slate-700 mb-1">
             Social Preview
           </p>
-          <p className="text-xs text-slate-400 mb-2">
-            1280 × 630 pixels
-          </p>
+          <p className="text-xs text-slate-400 mb-2">1280 × 630 pixels</p>
 
           <UploadBox
             label="Social Preview"
-            dark={true}
+            // dark={true}
             aspectClass="h-28"
             previewUrl={
               socialPreviewFile
@@ -335,7 +344,7 @@ export default function SiteSettingsGeneral({ infoData }: Props) {
         disabled={saving}
         className="mt-6 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
       >
-        {saving ? 'Saving...' : 'Save'}
+        {saving ? "Saving..." : "Save"}
       </button>
     </>
   );
