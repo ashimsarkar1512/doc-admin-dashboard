@@ -30,8 +30,10 @@ axiosInstance.interceptors.response.use(
   },
   (error) => {
     if (error.response && error.response.status === 401) {
-      // localStorage.removeItem('token');
-      // window.location.href = '/login';
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      document.cookie = 'authToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+      window.location.href = '/';
     }
 
     // Extract the server-side message so toasts show meaningful errors

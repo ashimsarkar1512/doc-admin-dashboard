@@ -1,7 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-
-
 // import { useState, useEffect } from 'react';
 // import { updateOfficeAddresses, type WebsiteSettings, type Office } from '@/api/endpoints/websitemanagement.api'; // adjust path
 // import { Loader2 } from 'lucide-react';
@@ -131,15 +129,26 @@
 //   );
 // }
 
-import { useState, useEffect } from 'react';
-import { updateOfficeAddress, type WebsiteSettings, type Office } from '@/api/endpoints/websitemanagement.api';
-import { Loader2 } from 'lucide-react';
+import { useState, useEffect } from "react";
+import {
+  updateOfficeAddress,
+  type WebsiteSettings,
+  type Office,
+} from "@/api/endpoints/websitemanagement.api";
+import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 interface OfficeAddressProps {
   infoData: WebsiteSettings | null;
 }
 
-function Toggle({ checked, onChange }: { checked: boolean; onChange: (v: boolean) => void }) {
+function Toggle({
+  checked,
+  onChange,
+}: {
+  checked: boolean;
+  onChange: (v: boolean) => void;
+}) {
   return (
     <button
       type="button"
@@ -147,12 +156,12 @@ function Toggle({ checked, onChange }: { checked: boolean; onChange: (v: boolean
       aria-checked={checked}
       onClick={() => onChange(!checked)}
       className={`relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none ${
-        checked ? 'bg-[#1447E6]' : 'bg-slate-200'
+        checked ? "bg-[#1447E6]" : "bg-slate-200"
       }`}
     >
       <span
         className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition duration-200 ${
-          checked ? 'translate-x-4' : 'translate-x-0'
+          checked ? "translate-x-4" : "translate-x-0"
         }`}
       />
     </button>
@@ -164,7 +173,7 @@ export default function OfficeAddressSection({ infoData }: OfficeAddressProps) {
   const [originalOffices, setOriginalOffices] = useState<Office[]>([]);
   const [savingIndex, setSavingIndex] = useState<number | null>(null);
   const [errors, setErrors] = useState<Record<number, string>>({});
-  const [success, setSuccess] = useState<Record<number, string>>({});
+  const [, setSuccess] = useState<Record<number, string>>({});
 
   useEffect(() => {
     if (infoData?.offices) {
@@ -175,7 +184,9 @@ export default function OfficeAddressSection({ infoData }: OfficeAddressProps) {
 
   const updateOffice = (index: number, changes: Partial<Office>) => {
     setOffices((prev) =>
-      prev.map((office, i) => (i === index ? { ...office, ...changes } : office))
+      prev.map((office, i) =>
+        i === index ? { ...office, ...changes } : office,
+      ),
     );
   };
 
@@ -194,8 +205,8 @@ export default function OfficeAddressSection({ infoData }: OfficeAddressProps) {
     const office = offices[index];
     try {
       setSavingIndex(index);
-      setErrors((prev) => ({ ...prev, [index]: '' }));
-      setSuccess((prev) => ({ ...prev, [index]: '' }));
+      setErrors((prev) => ({ ...prev, [index]: "" }));
+      setSuccess((prev) => ({ ...prev, [index]: "" }));
 
       const updated = await updateOfficeAddress(office.id, {
         name: office.name,
@@ -203,13 +214,22 @@ export default function OfficeAddressSection({ infoData }: OfficeAddressProps) {
         isActive: office.isActive,
       });
 
-      const updatedOffice = updated.offices.find((o) => o.id === office.id) ?? office;
+      const updatedOffice =
+        updated.offices.find((o) => o.id === office.id) ?? office;
 
-      setOffices((prev) => prev.map((o, i) => (i === index ? updatedOffice : o)));
-      setOriginalOffices((prev) => prev.map((o, i) => (i === index ? updatedOffice : o)));
-      setSuccess((prev) => ({ ...prev, [index]: 'Saved!' }));
+      setOffices((prev) =>
+        prev.map((o, i) => (i === index ? updatedOffice : o)),
+      );
+      setOriginalOffices((prev) =>
+        prev.map((o, i) => (i === index ? updatedOffice : o)),
+      );
+      setSuccess((prev) => ({ ...prev, [index]: "Saved!" }));
+      toast.success(`"${office.name}" updated successfully ✅`);
     } catch (err: any) {
-      setErrors((prev) => ({ ...prev, [index]: err.message || 'Failed to save changes.' }));
+      setErrors((prev) => ({
+        ...prev,
+        [index]: err.message || "Failed to save changes.",
+      }));
       console.error(err);
     } finally {
       setSavingIndex(null);
@@ -218,15 +238,20 @@ export default function OfficeAddressSection({ infoData }: OfficeAddressProps) {
 
   return (
     <>
-      <h2 className="text-lg font-semibold mb-3">Office address</h2>
+      <h2 className="text-lg font-semibold mb-3 text-black">Office address</h2>
 
       {offices.map((office, i) => (
         <div key={office.id ?? i} className="mb-3">
           <div className="grid grid-cols-[1fr_1fr_auto] gap-4 items-end">
             <div>
               <div className="flex items-center gap-2 mb-1.5">
-                <span className="text-sm font-medium text-slate-700">Office {i + 1}</span>
-                <Toggle checked={office.isActive} onChange={(v) => updateOffice(i, { isActive: v })} />
+                <span className="text-sm font-medium text-slate-700">
+                  Office {i + 1}
+                </span>
+                <Toggle
+                  checked={office.isActive}
+                  onChange={(v) => updateOffice(i, { isActive: v })}
+                />
               </div>
               <input
                 value={office.name}
@@ -236,7 +261,9 @@ export default function OfficeAddressSection({ infoData }: OfficeAddressProps) {
             </div>
 
             <div>
-              <p className="text-sm font-medium text-slate-700 mb-1.5">Address:</p>
+              <p className="text-sm font-medium text-slate-700 mb-1.5">
+                Address:
+              </p>
               <input
                 value={office.address}
                 onChange={(e) => updateOffice(i, { address: e.target.value })}
@@ -249,12 +276,20 @@ export default function OfficeAddressSection({ infoData }: OfficeAddressProps) {
               disabled={!isDirty(i) || savingIndex === i}
               className="px-4 py-2 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {savingIndex === i ? <Loader2 className="animate-spin" size={16} /> : 'Save'}
+              {savingIndex === i ? (
+                <Loader2 className="animate-spin" size={16} />
+              ) : (
+                "Save"
+              )}
             </button>
           </div>
 
-          {errors[i] && <p className="text-sm text-red-600 mt-1">{errors[i]}</p>}
-          {success[i] && <p className="text-sm text-green-500 mt-1">{success[i]}</p>}
+          {errors[i] && (
+            <p className="text-sm text-red-600 mt-1">{errors[i]}</p>
+          )}
+          {/* {success[i] && (
+            <p className="text-sm text-green-500 mt-1">{success[i]}</p>
+          )} */}
         </div>
       ))}
     </>

@@ -53,7 +53,7 @@ function fmtDateStr(d: string | null | undefined) {
 
 // ─── Export ALL payments PDF ──────────────────────────────────────────────────
 
-async function exportPaymentsPDF(search: string, status: string) {
+export async function exportPaymentsPDF(search: string, status: string) {
   const allData = await getPayments({
     limit: 1000,
     search: search || undefined,
@@ -160,7 +160,7 @@ async function exportPaymentsPDF(search: string, status: string) {
 
 // ─── Download SINGLE payment PDF ─────────────────────────────────────────────
 
-async function downloadSinglePaymentPDF(payment: PaymentDetail) {
+export async function downloadSinglePaymentPDF(payment: PaymentDetail) {
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
   const pw = doc.internal.pageSize.getWidth();
 
