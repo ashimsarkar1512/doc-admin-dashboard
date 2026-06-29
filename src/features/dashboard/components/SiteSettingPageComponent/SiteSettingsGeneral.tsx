@@ -259,7 +259,7 @@ export default function SiteSettingsGeneral({ infoData }: Props) {
         <UploadBox
           label="Foster White Logo "
           sublabel="Upload your website logo (recommended: 200x68px)"
-          dark={true}
+          // dark={true}
           aspectClass="h-40"
           previewUrl={
             whiteLogoFile ? URL.createObjectURL(whiteLogoFile) : whiteLogoUrl
@@ -304,7 +304,7 @@ export default function SiteSettingsGeneral({ infoData }: Props) {
               <p className="text-xs text-slate-500 mb-1.5">Dark</p>
               <UploadBox
                 label="Favicon Dark"
-                dark={true}
+                // dark={true}
                 aspectClass="h-28"
                 previewUrl={
                   faviconDarkFile
@@ -325,7 +325,7 @@ export default function SiteSettingsGeneral({ infoData }: Props) {
 
           <UploadBox
             label="Social Preview"
-            dark={true}
+            // dark={true}
             aspectClass="h-28"
             previewUrl={
               socialPreviewFile
