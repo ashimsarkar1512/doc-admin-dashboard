@@ -178,6 +178,16 @@ export default function PreviewDetailsPage() {
     "I understand that additional information may be requested before treatment is approved."
   ];
 
+  const pName = details.patient?.name || details.patientName || sessionStorage.getItem('currentPatientName') || "Unknown Patient";
+  const pImage = details.patient?.image || details.patientImage || sessionStorage.getItem('currentPatientImage') || null;
+  const pInitials = pName
+    .split(' ')
+    .filter(Boolean)
+    .map(w => w[0])
+    .slice(0, 2)
+    .join('')
+    .toUpperCase() || '??';
+
   return (
     <div className="w-full max-w-3xl mx-auto px-4 py-8">
       {/* Back button */}
@@ -195,12 +205,16 @@ export default function PreviewDetailsPage() {
           <div className="flex items-start justify-between flex-wrap gap-3 mb-4">
             <div className="flex items-center gap-3">
               {/* Avatar */}
-              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-400 to-blue-500 flex items-center justify-center shrink-0 overflow-hidden">
-                <span className="text-xs font-bold text-white">PM</span>
+              <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center shrink-0 overflow-hidden">
+                {pImage ? (
+                  <img src={pImage} alt={pName} className="w-full h-full object-cover" />
+                ) : (
+                  <span className="text-sm font-medium text-blue-700">{pInitials}</span>
+                )}
               </div>
               <div>
                 <p className="font-semibold text-slate-800 text-sm">
-                  Patient: {details.assessment.title}
+                  Patient: {pName}
                 </p>
                 <p className="text-xs text-slate-500">
                   Consultation id: {details.submissionCode}

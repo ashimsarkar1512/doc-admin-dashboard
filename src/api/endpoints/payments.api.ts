@@ -7,6 +7,8 @@ export interface GetPaymentsParams {
   search?: string;
   paymentType?: string;
   status?: string;
+  startDate?: string;
+  endDate?: string;
 }
 
 export const getPayments = async (

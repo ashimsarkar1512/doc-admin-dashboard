@@ -122,6 +122,12 @@ export interface AssessmentDetails {
   submissionCode: string;
   status: string;
   isEditable: boolean;
+  patientName?: string;
+  patientImage?: string | null;
+  patient?: {
+    name: string;
+    image?: string | null;
+  };
   assessment: AssessmentInfo;
   reviewedBy?: ReviewedBy | null;
   doctorNotes?: string | null;
