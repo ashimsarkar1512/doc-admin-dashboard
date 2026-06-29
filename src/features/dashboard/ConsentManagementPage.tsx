@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import {
   getConsents,
   getConsentStats,
-  exportConsents,
+
 } from "@/api/endpoints/consentManagement.api";
 import type {
   ConsentLog,
@@ -23,6 +23,10 @@ import {
 
 } from "lucide-react";
 import DatePicker from "@/components/shared/DatePicker";
+
+
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 
 import Swal from "sweetalert2";
 
@@ -143,37 +147,116 @@ export default function ConsentManagementPage() {
     refetchStats();
   };
 
-  const handleExport = async () => {
-    setIsExporting(true);
-    try {
-      const exportParams = {
-        ...(search.trim() && { search: search.trim() }),
-        ...(role && { role }),
-        ...(type && { type }),
-        ...(status && { status }),
-        ...(source && { source }),
-        ...(startDate && { startDate }),
-        ...(endDate && { endDate }),
-      };
-      const blob = await exportConsents(exportParams);
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = `consents-${new Date().toISOString().slice(0, 10)}.csv`;
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      window.URL.revokeObjectURL(url);
-    } catch {
-      Swal.fire({
-        icon: "error",
-        title: "Export failed",
-        text: "Could not export consents. Please try again.",
+ const handleExport = async () => {
+  setIsExporting(true);
+  try {
+    const doc = new jsPDF({ orientation: "landscape", unit: "pt", format: "a4" });
+
+    // ── Header ────────────────────────────────────────────────
+    doc.setFontSize(18);
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(15, 23, 42); // slate-900
+    doc.text("Consent Management Report", 40, 40);
+
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(100, 116, 139); // slate-500
+    doc.text(`Generated on: ${new Date().toLocaleString()}`, 40, 58);
+    doc.text(`Total records: ${meta?.total ?? consentLogs.length}`, 40, 72);
+
+    // ── Stat summary (optional, custom box) ──────────────────
+    if (stats) {
+      const statY = 95;
+      const statBoxes = [
+        { label: "Total", value: stats.total },
+        { label: "Granted", value: stats.granted },
+        { label: "Pending", value: stats.pending },
+        { label: "Revoked", value: stats.revoked },
+      ];
+      statBoxes.forEach((box, i) => {
+        const x = 40 + i * 140;
+        doc.setFillColor(241, 245, 249); // slate-100
+        doc.roundedRect(x, statY, 120, 50, 6, 6, "F");
+        doc.setFontSize(9);
+        doc.setTextColor(100, 116, 139);
+        doc.text(box.label.toUpperCase(), x + 12, statY + 18);
+        doc.setFontSize(16);
+        doc.setFont("helvetica", "bold");
+        doc.setTextColor(15, 23, 42);
+        doc.text(String(box.value ?? "—"), x + 12, statY + 38);
+        doc.setFont("helvetica", "normal");
       });
-    } finally {
-      setIsExporting(false);
     }
-  };
+
+    // ── Table ─────────────────────────────────────────────────
+    autoTable(doc, {
+      startY: stats ? 165 : 90,
+      head: [["User Name", "Email", "Type", "Status", "Source", "Consent Date"]],
+      body: consentLogs.map((item) => [
+        item.userName,
+        item.email,
+        item.type,
+        item.status,
+        item.source,
+        item.consentDate ? new Date(item.consentDate).toLocaleDateString() : "—",
+      ]),
+      styles: {
+        fontSize: 9,
+        cellPadding: 6,
+        textColor: [71, 85, 105], // slate-600
+      },
+      headStyles: {
+        fillColor: [15, 23, 42], // slate-900
+        textColor: [255, 255, 255],
+        fontStyle: "bold",
+      },
+      alternateRowStyles: {
+        fillColor: [248, 250, 252], // slate-50
+      },
+      // Color-coded status column (custom cell styling)
+      didParseCell: (data) => {
+        if (data.section === "body" && data.column.index === 3) {
+          const status = String(data.cell.raw).toUpperCase();
+          const colorMap: Record<string, [number, number, number]> = {
+            ACCEPTED: [22, 163, 74],
+            PENDING: [202, 138, 4],
+            REJECTED: [220, 38, 38],
+            REVOKED: [220, 38, 38],
+          };
+          if (colorMap[status]) {
+            data.cell.styles.textColor = colorMap[status];
+            data.cell.styles.fontStyle = "bold";
+          }
+        }
+      },
+    });
+
+
+     const pageCount = doc.getNumberOfPages();
+    for (let i = 1; i <= pageCount; i++) {
+      doc.setPage(i);
+      doc.setFontSize(8);
+      doc.setTextColor(148, 163, 184);
+      doc.text(
+        `Page ${i} of ${pageCount}`,
+        doc.internal.pageSize.getWidth() - 80,
+        doc.internal.pageSize.getHeight() - 20
+      );
+    }
+
+    doc.save(`consents-${new Date().toISOString().slice(0, 10)}.pdf`);
+  } catch (err) {
+    console.error(err);
+    Swal.fire({
+      icon: "error",
+      title: "Export failed",
+      text: "Could not export consents. Please try again.",
+    });
+  } finally {
+    setIsExporting(false);
+  }
+};
+
 
   // ── Derived values ─────────────────────────────────────────────────────────
 
@@ -236,7 +319,7 @@ export default function ConsentManagementPage() {
             ) : (
               <Download className="w-4 h-4" />
             )}
-            Export CSV
+            Export PDF
           </button>
         </div>
       </div>
@@ -328,7 +411,7 @@ export default function ConsentManagementPage() {
             handleFilterChange();
           }}
           placeholder="Start Date"
-          wrapperClassName="w-[140px]"
+          wrapperClassName="w-[165px]"
         />
 
         <DatePicker
@@ -338,7 +421,7 @@ export default function ConsentManagementPage() {
             handleFilterChange();
           }}
           placeholder="End Date"
-          wrapperClassName="w-[140px]"
+          wrapperClassName="w-[160px]"
         />
       </form>
 

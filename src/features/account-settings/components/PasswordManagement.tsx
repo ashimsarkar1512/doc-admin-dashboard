@@ -34,14 +34,14 @@ export function PasswordManagement() {
   };
 
   return (
-    <div className="border border-slate-200 rounded-xl bg-white shadow-sm overflow-hidden">
-      <div className="p-6 border-b border-slate-100 bg-slate-50/50 flex items-center gap-3">
-        <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-500">
+    <div className="border border-slate-200 rounded-2xl bg-white shadow-sm overflow-hidden">
+      <div className="p-5 border-b border-slate-100 flex items-center gap-3">
+        <div className="w-9 h-9 rounded-xl bg-blue-50 flex items-center justify-center text-blue-500 shrink-0">
           <Lock size={16} />
         </div>
         <div>
-          <h3 className="text-sm font-bold text-slate-800 leading-tight">Change Password</h3>
-          <p className="text-[12px] text-slate-500 leading-tight mt-0.5">Update your account password</p>
+          <h3 className="text-sm font-semibold text-slate-800 leading-tight">Change Password</h3>
+          <p className="text-[12px] text-slate-400 leading-tight mt-0.5">Update your account password</p>
         </div>
       </div>
       

@@ -4,7 +4,6 @@ import {
   Laptop,
   Loader2,
   MonitorSmartphone,
-  ShieldCheck,
   Smartphone,
 } from "lucide-react";
 import { useState } from "react";
@@ -35,18 +34,29 @@ export function SecurityAndDevice() {
     toggleMfa.mutate();
   };
 
+  const formatLastLogin = (dateStr: string) => {
+    const d = new Date(dateStr);
+    const month = d.toLocaleString("en-US", { month: "short" });
+    const day = d.getDate();
+    // const hours = d.getHours().toString().padStart(2, "0");
+    const minutes = d.getMinutes().toString().padStart(2, "0");
+    const ampm = d.getHours() >= 12 ? "pm" : "am";
+    const hour12 = d.getHours() % 12 || 12;
+    return `${month} ${day} - ${hour12.toString().padStart(2, "0")}:${minutes} ${ampm}`;
+  };
+
   if (profileLoading || sessionsLoading) {
     return (
-      <div className="border border-slate-200 rounded-xl bg-white shadow-sm overflow-hidden">
-        <div className="p-6 border-b border-slate-100 bg-slate-50/50 flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-500">
-            <MonitorSmartphone size={16} />
+      <div className="border border-slate-200 rounded-2xl bg-white shadow-sm overflow-hidden">
+        <div className="p-5 flex items-center gap-3 border-b border-slate-100">
+          <div className="w-9 h-9 rounded-xl bg-blue-50 flex items-center justify-center text-blue-500 shrink-0">
+            <MonitorSmartphone size={18} />
           </div>
           <div>
-            <h3 className="text-sm font-bold text-slate-800 leading-tight">
-              Security & Device
+            <h3 className="text-sm font-semibold text-slate-800 leading-tight">
+              Security &amp; Device
             </h3>
-            <p className="text-[12px] text-slate-500 leading-tight mt-0.5">
+            <p className="text-[12px] text-slate-400 leading-tight mt-0.5">
               The security checkup of your account
             </p>
           </div>
@@ -59,38 +69,34 @@ export function SecurityAndDevice() {
   }
 
   return (
-    <div className="border border-slate-200 rounded-xl bg-white shadow-sm overflow-hidden">
-      <div className="p-6 border-b border-slate-100 bg-slate-50/50 flex items-center gap-3">
-        <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-500">
-          <MonitorSmartphone size={16} />
+    <div className="border border-slate-200 rounded-2xl bg-white shadow-sm overflow-hidden">
+      {/* Card Header */}
+      <div className="p-5 flex items-center gap-3 border-b border-slate-100">
+        <div className="w-9 h-9 rounded-xl bg-blue-50 flex items-center justify-center text-blue-500 shrink-0">
+          <MonitorSmartphone size={18} />
         </div>
         <div>
-          <h3 className="text-sm font-bold text-slate-800 leading-tight">
-            Security & Device
+          <h3 className="text-sm font-semibold text-slate-800 leading-tight">
+            Security &amp; Device
           </h3>
-          <p className="text-[12px] text-slate-500 leading-tight mt-0.5">
+          <p className="text-[12px] text-slate-400 leading-tight mt-0.5">
             The security checkup of your account
           </p>
         </div>
       </div>
 
-      <div className="p-6 space-y-6">
-        {/* 2 Step Verification */}
-        <div className="flex items-center justify-between border border-slate-100 rounded-xl p-5 bg-slate-50/50">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center text-blue-500">
-              <ShieldCheck size={20} />
-            </div>
-            <div>
-              <h4 className="text-[15px] font-bold text-slate-800 leading-tight">
-                2 Step Verification
-              </h4>
-              <p className="text-sm text-slate-500 mt-1">
-                {profile?.mfaEnabled
-                  ? "2FA is currently enabled"
-                  : "2FA is currently disabled"}
-              </p>
-            </div>
+      <div className="p-5 space-y-4">
+        {/* 2 Step Verification — Figma style: plain row, no icon box */}
+        <div className="flex items-center justify-between py-1">
+          <div>
+            <h4 className="text-sm font-semibold text-slate-800 leading-tight">
+              2 Step Verification
+            </h4>
+            <p className="text-[12px] text-slate-400 mt-0.5">
+              {profile?.mfaEnabled
+                ? `Activated on phone ${profile?.profile?.phone?.replace(/(\d{3})\d+(\d{2})/, "$1*********$2") ?? "***"} since 20 May, 2026`
+                : "2FA is currently disabled"}
+            </p>
           </div>
           <ToggleSwitch
             checked={profile?.mfaEnabled || false}
@@ -99,81 +105,117 @@ export function SecurityAndDevice() {
           />
         </div>
 
-        {/* Device & Active Sessions */}
+        {/* Device & Active Sessions — warm cream box */}
         <div className="border border-amber-200 rounded-xl overflow-hidden">
-          <div className="p-5 bg-amber-50/30">
-            <h4 className="text-[15px] font-bold text-amber-900 mb-4">
-              Your Device & active sessions
+          <div className="bg-amber-50 px-4 pt-4 pb-2">
+            <h4 className="text-[13px] font-semibold text-amber-800 mb-3">
+              Your Device &amp; active sessions
             </h4>
 
-            <div className="space-y-3">
+            <div className="space-y-2">
               {sessions && sessions.length > 0 ? (
-                sessions.map((device) => (
-                  <div
-                    key={device.deviceName}
-                    className="border border-amber-200 rounded-lg bg-amber-50/50 p-4"
-                  >
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="flex items-center gap-2">
-                        {device.deviceName.toLowerCase().includes("mobile") ? (
-                          <Smartphone size={18} className="text-amber-700" />
-                        ) : (
-                          <Laptop size={18} className="text-amber-700" />
-                        )}
-                        <span className="font-bold text-amber-900 text-[15px]">
-                          {device.deviceName}{" "}
-                          {device.isActiveNow ? "- Active now" : ""}
-                        </span>
-                      </div>
+                sessions.map((device) => {
+                  const isExpanded = expandedDevices.includes(device.deviceName);
+                  const isMobile = device.deviceName.toLowerCase().includes("mobile")
+                    || device.deviceName.toLowerCase().includes("ios")
+                    || device.deviceName.toLowerCase().includes("android");
+
+                  return (
+                    <div
+                      key={device.deviceName}
+                      className="border border-amber-200 rounded-lg bg-white/60"
+                    >
+                      {/* Device row header */}
                       <div
-                        className="flex items-center gap-2 text-sm font-medium text-amber-700 cursor-pointer"
+                        className="flex items-center justify-between px-4 py-3 cursor-pointer"
                         onClick={() => toggleDeviceExpand(device.deviceName)}
                       >
-                        {expandedDevices.includes(device.deviceName) ? (
-                          <ChevronDown size={16} />
-                        ) : (
-                          <ChevronRight size={16} />
-                        )}
+                        <div className="flex items-center gap-2">
+                          {isMobile ? (
+                            <Smartphone size={16} className="text-amber-700" />
+                          ) : (
+                            <Laptop size={16} className="text-amber-700" />
+                          )}
+                          <span className="text-[13px] font-semibold text-amber-900">
+                            {device.deviceName}
+                            {device.isActiveNow && (
+                              <span className="font-normal"> - Active now</span>
+                            )}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2 text-[12px] text-amber-700 font-medium">
+                          <span>
+                            {device.sessions.length} session
+                            {device.sessions.length !== 1 ? "s" : ""} on{" "}
+                            {isMobile ? "iOS iPhone(s)" : "Windows computer(s)"}
+                          </span>
+                          {isExpanded ? (
+                            <ChevronDown size={14} />
+                          ) : (
+                            <ChevronRight size={14} />
+                          )}
+                        </div>
                       </div>
-                    </div>
 
-                    {expandedDevices.includes(device.deviceName) && (
-                      <div className="space-y-2 pl-7">
-                        {device.sessions.map((session) => (
-                          <div
-                            key={session.sessionId}
-                            className="flex flex-col gap-1 border-b border-amber-200/50 pb-2 last:border-0 last:pb-0"
-                          >
-                            <div className="flex items-center gap-2 text-sm">
-                              <span
-                                className={`text-xs px-2 py-0.5 rounded-full font-medium ${session.isCurrentSession ? "bg-green-500/10 text-green-700" : "bg-slate-200 text-slate-600"}`}
-                              >
-                                {session.isCurrentSession
-                                  ? "Current Session"
-                                  : "Previous"}
-                              </span>
-                              <span className="text-amber-800">
-                                IP Address: {session.ipAddress}
-                              </span>
+                      {/* Expanded sessions rows */}
+                      {isExpanded && device.sessions.length > 0 && (
+                        <div className="border-t border-amber-100">
+                          {device.sessions.map((session) => (
+                            <div
+                              key={session.sessionId}
+                              className="grid grid-cols-3 gap-2 px-4 py-2.5 border-b border-amber-100/60 last:border-0"
+                            >
+                              {/* Last login */}
+                              <div className="flex flex-col gap-0.5">
+                                <span className="text-[11px] text-amber-600 font-medium">
+                                  Last login:
+                                </span>
+                                <span className="text-[11px] text-amber-800">
+                                  {formatLastLogin(session.lastLogin)}
+                                </span>
+                              </div>
+                              {/* IP Address */}
+                              <div className="flex flex-col gap-0.5">
+                                <span className="text-[11px] text-amber-600 font-medium">
+                                  IP Address:
+                                </span>
+                                <span className="text-[11px] text-amber-800">
+                                  {session.ipAddress}
+                                </span>
+                              </div>
+                              {/* Session Due */}
+                              <div className="flex flex-col gap-0.5 items-end">
+                                <span className="text-[11px] text-amber-600 font-medium">
+                                  Session Due:
+                                </span>
+                                <span className="text-[11px] font-semibold text-amber-700">
+                                  {session.sessionDue}
+                                </span>
+                              </div>
                             </div>
-                            <div className="text-xs text-amber-700">
-                              Last login:{" "}
-                              {new Date(session.lastLogin).toLocaleString()} •
-                              Expires: {session.sessionDue}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                ))
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })
               ) : (
-                <div className="text-center text-amber-700 py-4">
+                <div className="text-center text-amber-700 py-4 text-sm">
                   No active sessions
                 </div>
               )}
             </div>
           </div>
+        </div>
+
+        {/* Update Password button — matches Figma bottom placement */}
+        <div className="pt-1">
+          <button
+            type="button"
+            className="px-5 py-2 bg-[#1447E6] text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
+          >
+            Update Password
+          </button>
         </div>
       </div>
     </div>

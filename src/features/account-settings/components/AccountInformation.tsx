@@ -75,9 +75,9 @@ export function AccountInformation() {
 
   if (isLoading) {
     return (
-      <div className="border border-slate-200 rounded-xl bg-white shadow-sm overflow-hidden">
-        <div className="p-6 border-b border-slate-100 bg-slate-50/50">
-          <h3 className="text-sm font-bold text-slate-800">Account Information</h3>
+      <div className="border border-slate-200 rounded-2xl bg-white shadow-sm overflow-hidden">
+        <div className="p-5 border-b border-slate-100">
+          <h3 className="text-sm font-semibold text-slate-800">Account Information</h3>
         </div>
         <div className="p-6 flex items-center justify-center">
           <Loader2 className="animate-spin h-6 w-6 text-blue-600" />
@@ -87,9 +87,9 @@ export function AccountInformation() {
   }
 
   return (
-    <div className="border border-slate-200 rounded-xl bg-white shadow-sm overflow-hidden">
-      <div className="p-6 border-b border-slate-100 bg-slate-50/50">
-        <h3 className="text-sm font-bold text-slate-800">Account Information</h3>
+    <div className="border border-slate-200 rounded-2xl bg-white shadow-sm overflow-hidden">
+      <div className="p-5 border-b border-slate-100">
+        <h3 className="text-sm font-semibold text-slate-800">Account Information</h3>
       </div>
       
       <div className="p-6 space-y-6">
