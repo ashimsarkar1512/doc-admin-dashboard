@@ -33,7 +33,7 @@ export default function SiteSettingsPage() {
 
   // Core fields
   const [data, setData] = useState<WebsiteSettings | null>(null);
-console.log(data)
+// console.log(data)
    useEffect(() => {
    const loadData = async () => {
      try {
@@ -71,7 +71,7 @@ console.log(data)
         )}
 
         {/* ── Site Settings ───────────────────────────────────────────── */}
-        <SectionHeading>Site Settings (shaikot)</SectionHeading>
+        <SectionHeading>Site Settings </SectionHeading>
 
         
         {/* testting start  */}

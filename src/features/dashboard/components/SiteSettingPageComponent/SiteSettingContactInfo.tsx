@@ -1,12 +1,4 @@
-// import React from 'react'
 
-// export default function SiteSettingContactInfo() {
-//   return (
-//     <div>
-
-//     </div>
-//   )
-// }
 
 import { useState, useEffect } from "react";
 import {
