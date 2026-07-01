@@ -204,6 +204,7 @@ console.log(data)
         isOpen={!!assigningAssessment}
         onClose={() => {
           setAssigningAssessment(null);
+          queryClient.invalidateQueries({ queryKey: ['recent-activity'] });
           queryClient.invalidateQueries({ queryKey: ['assessments'] });
         }}
         assessment={assigningAssessment}

@@ -18,7 +18,7 @@ export default function ForgotPasswordPage() {
     try {
       const res = await requestForgotPassword({ email });
       dispatch(setOtpPending({
-        userId: res.data.userId,
+        userId: res.data?.userId || '',
         challengeId: null,
         method: 'EMAIL',
         purpose: 'FORGOT_PASSWORD',

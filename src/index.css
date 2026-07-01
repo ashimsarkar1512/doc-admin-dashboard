@@ -193,6 +193,15 @@ code {
   }
 }
 
+/* Global scrollbar hide for all pages */
+::-webkit-scrollbar {
+  display: none;
+}
+* {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
 /* Hide scrollbar while preserving scroll functionality */
 .scrollbar-hide {
   -ms-overflow-style: none;  /* IE and Edge */

@@ -44,7 +44,7 @@ export default function LoginPage() {
           user: loginRes.data.user,
           accessToken: loginRes.data.accessToken,
         }));
-        
+
         toast.success(loginRes.message || 'Login successful');
         routerNavigate({ to: '/dashboard' });
       } else {
@@ -106,12 +106,20 @@ export default function LoginPage() {
                   <input
                     {...formStep1.register('email', {
                       required: 'Email is required',
-                      pattern: { value: /^\S+@\S+$/i, message: 'Invalid email' },
+                      pattern: { value: /^\S+@\S+$/i, message: 'Please enter a valid email address' },
                     })}
                     type="email"
                     placeholder="Enter your email"
-                    className="w-full bg-white/10 border border-white/10 rounded-2xl px-4 py-3 text-white placeholder-white/30 focus:outline-none focus:border-white/30 focus:bg-white/15 transition-all duration-200 text-sm"
+                    className={`w-full bg-white/10 border ${formStep1.formState.errors.email ? 'border-red-400 focus:border-red-400' : 'border-white/10 focus:border-white/30'} rounded-2xl px-4 py-3 text-white placeholder-white/30 focus:outline-none focus:bg-white/15 transition-all duration-200 text-sm`}
                   />
+                  {formStep1.formState.errors.email && (
+                    <div className="flex items-center gap-1.5 mt-1 text-red-400 pl-1">
+                      <svg className="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      <p className="text-xs font-medium">{formStep1.formState.errors.email.message}</p>
+                    </div>
+                  )}
                 </div>
 
                 <div className="space-y-1.5">
@@ -121,7 +129,7 @@ export default function LoginPage() {
                       {...formStep1.register('password', { required: 'Password is required' })}
                       type={showPassword ? 'text' : 'password'}
                       placeholder="Enter your password"
-                      className="w-full bg-white/10 border border-white/10 rounded-2xl px-4 py-3 text-white placeholder-white/30 focus:outline-none focus:border-white/30 focus:bg-white/15 transition-all duration-200 text-sm pr-11"
+                      className={`w-full bg-white/10 border ${formStep1.formState.errors.password ? 'border-red-400 focus:border-red-400' : 'border-white/10 focus:border-white/30'} rounded-2xl px-4 py-3 text-white placeholder-white/30 focus:outline-none focus:bg-white/15 transition-all duration-200 text-sm pr-11`}
                     />
                     <button
                       type="button"
@@ -132,6 +140,14 @@ export default function LoginPage() {
                       {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </button>
                   </div>
+                  {formStep1.formState.errors.password && (
+                    <div className="flex items-center gap-1.5 mt-1 text-red-400 pl-1">
+                      <svg className="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      <p className="text-xs font-medium">{formStep1.formState.errors.password.message}</p>
+                    </div>
+                  )}
                 </div>
               </div>
 
