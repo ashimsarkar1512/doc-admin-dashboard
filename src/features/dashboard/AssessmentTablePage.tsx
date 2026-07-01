@@ -415,6 +415,7 @@ export default function AssessmentTablePage() {
           setAssigningAssessment(null);
           // Refresh assessments list after assign
           queryClient.invalidateQueries({ queryKey: ['assessments'] });
+          queryClient.invalidateQueries({ queryKey: ['recent-activity'] });
         }}
         assessment={assigningAssessment}
       />

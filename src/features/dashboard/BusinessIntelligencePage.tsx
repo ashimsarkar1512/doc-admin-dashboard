@@ -1,22 +1,19 @@
-import { useEffect, useMemo, useRef, useState, useCallback } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell,
 } from 'recharts';
-import { ChevronDown, ArrowUpRight, AlertCircle, Search, Download, Eye, Calendar, Repeat } from 'lucide-react';
-import { usePayments } from '@/features/payments/hooks/usePayments';
-import type { PaymentSummary } from '@/features/payments/types';
-import { downloadSinglePaymentPDF, exportPaymentsPDF } from '@/features/payments/pages/PaymentsPage';
-import PaymentDetailModal from '@/features/payments/components/PaymentDetailModal';
-import DatePicker from '@/components/shared/DatePicker';
-import { getPaymentById } from '@/api/endpoints/payments.api';
+import { ChevronDown, ArrowUpRight, AlertCircle } from 'lucide-react';
 
 import {
   getBiStats, getRevenueTrend,
   getPatientGrowth, getApprovalVsDenial, getRevenueByService,
   type BiFilter,
 } from '@/api/endpoints/businessIntelligence.api';
+
+import { IntakeDropOffSection } from './components/IntakeDropOffSection';
+import { PaymentsSection } from './components/PaymentsSection';
 
 // ─── helpers ─────────────────────────────────────────────────────────────────
 
@@ -26,6 +23,8 @@ const fmtUSD = (n: number) =>
 const fmtPct = (n: number) => `${n % 1 === 0 ? n : n.toFixed(1)}%`;
 
 const FILTER_OPTIONS: { label: string; value: BiFilter }[] = [
+  { label: '--', value: '' },
+  { label: 'Today', value: 'today' },
   { label: 'Last 7 Days', value: 'last_7_days' },
   { label: 'Last Month', value: 'last_month' },
   { label: 'Last Year', value: 'last_year' },
@@ -116,8 +115,19 @@ function EmptyState({ message = 'No data for this period yet.' }: { message?: st
   );
 }
 
+function getFilterLabelText(filterValue: BiFilter) {
+  switch (filterValue) {
+    case 'today': return 'Today';
+    case 'last_7_days': return 'Last 7 days';
+    case 'last_month': return 'Last month';
+    case 'last_year': return 'Last year';
+    case '': 
+    default: return 'All time';
+  }
+}
+
 // Dark KPI card matching screenshot
-function KpiCard({ label, value }: { label: string; value: string }) {
+function KpiCard({ label, value, filterValue }: { label: string; value: string; filterValue: BiFilter }) {
   return (
     <div className="bg-slate-900 rounded-xl p-4 flex flex-col justify-between min-h-[88px]">
       <div className="flex items-center justify-between">
@@ -126,7 +136,7 @@ function KpiCard({ label, value }: { label: string; value: string }) {
       </div>
       <div>
         <div className="text-2xl font-bold text-white leading-none mt-1">{value}</div>
-        <div className="text-[10px] text-slate-500 mt-1">This month</div>
+        <div className="text-[10px] text-slate-500 mt-1">{getFilterLabelText(filterValue)}</div>
       </div>
     </div>
   );
@@ -146,413 +156,17 @@ function ChartTooltip({ active, payload, label }: { active?: boolean; payload?: 
   );
 }
 
-// ─── mock data & table components ────────────────────────────────────────────
-
-const DROP_OFF_MOCK = [
-  { id: 1, name: 'Jessica Martinez', initials: 'SJ', email: 'ateniese@mac.com', assessment: 'Weight Loss', type: 'New Patient', status: 'Drop-Off', ip: '192.168.1.45', date: '4/4/18' },
-  { id: 2, name: 'Emily Chen', initials: 'SJ', email: 'kspiteri@live.com', assessment: 'Skin Care', type: 'New Patient', status: 'Drop-Off', ip: '192.168.1.45', date: '5/19/12' },
-  { id: 3, name: 'Jessica Martinez', initials: 'SJ', email: 'juliano@yahoo.ca', assessment: 'Sexual Health', type: 'New Patient', status: 'Drop-Off', ip: '192.168.1.45', date: '4/4/18' },
-  { id: 4, name: 'David Wilson', initials: 'SJ', email: 'hwestiii@mac.com', assessment: 'Sleep', type: 'Repeat Patient', status: 'Drop-Off', ip: '192.168.1.45', date: '2/11/12' }
-];
-
-
-function IntakeDropOffSection() {
-  return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h3 className="text-[17px] font-bold text-slate-800">Intake Drop-Off</h3>
-        <button className="flex items-center gap-2 bg-[#1447E6] hover:bg-[#1038b3] text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
-          <Download size={16} />
-          Export CSV
-        </button>
-      </div>
-
-      <div className="flex flex-col sm:flex-row items-center gap-3">
-        <div className="relative flex-1 w-full">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-          <input 
-            type="text" 
-            placeholder="Search by name, transaction ID" 
-            className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder:text-slate-400"
-          />
-        </div>
-        <div className="flex items-center gap-3 w-full sm:w-auto">
-          <button className="flex items-center justify-between px-4 py-2.5 border border-slate-200 rounded-lg text-sm text-slate-600 bg-white min-w-[130px]">
-            All Category <ChevronDown size={16} className="text-slate-400 ml-2" />
-          </button>
-          <button className="flex items-center justify-between px-4 py-2.5 border border-slate-200 rounded-lg text-sm text-slate-600 bg-white min-w-[130px]">
-            All Type <ChevronDown size={16} className="text-slate-400 ml-2" />
-          </button>
-          <div className="flex items-center bg-white border border-slate-200 rounded-lg overflow-hidden h-[42px]">
-            <div className="flex items-center px-3 border-r border-slate-200 text-slate-600 text-sm gap-2">
-              2026-06-01 <Calendar size={14} className="text-slate-400" />
-            </div>
-            <div className="flex items-center px-3 text-slate-400 text-sm gap-2">
-              //-//-// <Calendar size={14} className="opacity-50" />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm text-left">
-            <thead className="bg-[#f1f5f9] text-slate-600 font-semibold text-[13px]">
-              <tr>
-                <th className="px-6 py-4 whitespace-nowrap rounded-tl-xl">User Name</th>
-                <th className="px-6 py-4 whitespace-nowrap">Email</th>
-                <th className="px-6 py-4 whitespace-nowrap">Assessment Name</th>
-                <th className="px-6 py-4 whitespace-nowrap">User Type</th>
-                <th className="px-6 py-4 whitespace-nowrap">Status</th>
-                <th className="px-6 py-4 whitespace-nowrap">IP Address</th>
-                <th className="px-6 py-4 whitespace-nowrap">Time Stamp</th>
-                <th className="px-6 py-4 whitespace-nowrap rounded-tr-xl text-center">Action</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
-              {DROP_OFF_MOCK.map((row) => (
-                <tr key={row.id} className="hover:bg-slate-50 transition-colors">
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-[#E0E7FF] text-[#4F46E5] flex items-center justify-center font-medium text-xs shrink-0">
-                        {row.initials}
-                      </div>
-                      <span className="font-medium text-slate-700">{row.name}</span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-slate-500">{row.email}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-slate-600">{row.assessment}</td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    {row.type === 'New Patient' ? (
-                      <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-[#E0E7FF] text-[#4F46E5]">
-                        {row.type}
-                      </span>
-                    ) : (
-                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-[#F3E8FF] text-[#9333EA]">
-                        <Repeat size={10} /> {row.type}
-                      </span>
-                    )}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-500">
-                      {row.status}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-slate-500">{row.ip}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-slate-500">{row.date}</td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center justify-center gap-3">
-                      <button className="text-slate-400 hover:text-slate-600"><Eye size={16} /></button>
-                      <button className="text-emerald-500 hover:text-emerald-600"><Download size={16} /></button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-const STATUS_OPTIONS = [
-  { label: 'All Status', value: '' },
-  { label: 'Completed', value: 'COMPLETED' },
-  { label: 'Pending', value: 'PENDING' },
-  { label: 'Processing', value: 'PROCESSING' },
-  { label: 'Failed', value: 'FAILED' },
-  { label: 'Refunded', value: 'REFUNDED' },
-  { label: 'Cancelled', value: 'CANCELLED' },
-];
-
-const TYPE_OPTIONS = [
-  { label: 'All Type', value: '' },
-  { label: 'Product', value: 'PRODUCT' },
-  { label: 'Fees', value: 'FEES' },
-  { label: 'Subscription', value: 'SUBSCRIPTION' },
-];
-
-function statusLabel(s: string) {
-  return s.charAt(0) + s.slice(1).toLowerCase();
-}
-
-function StatusBadge({ status }: { status: string }) {
-  const map: Record<string, string> = {
-    COMPLETED: 'bg-[#DCFCE7] text-[#166534]',
-    PENDING: 'bg-amber-50 text-amber-700',
-    FAILED: 'bg-red-50 text-red-600',
-    REFUNDED: 'bg-[#FFEDD5] text-[#9A3412]',
-    CANCELLED: 'bg-slate-100 text-slate-500',
-    PROCESSING: 'bg-blue-50 text-blue-700',
-  };
-  const cls = map[status] ?? 'bg-slate-100 text-slate-500';
-  return (
-    <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${cls}`}>
-      {statusLabel(status)}
-    </span>
-  );
-}
-
-function Pagination({ currentPage, totalPages, total, handlePageChange }: any) {
-  if (totalPages <= 0) return null;
-  return (
-    <div className="flex flex-wrap items-center justify-between gap-3 mt-4 px-1 pb-1">
-      <p className="text-sm text-slate-500">
-        Showing <span className="font-medium text-slate-700">{(currentPage - 1) * 5 + 1}</span> to <span className="font-medium text-slate-700">{Math.min(currentPage * 5, total)}</span> of <span className="font-medium text-slate-700">{total}</span> results
-      </p>
-      <div className="flex items-center gap-1">
-        <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1} className="px-3 py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-medium text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
-          ‹ Prev
-        </button>
-        {Array.from({ length: totalPages }, (_, i) => i + 1)
-          .filter((p) => p === 1 || p === totalPages || Math.abs(p - currentPage) <= 1)
-          .reduce<(number | '...')[]>((acc, p, idx, arr) => {
-            if (idx > 0 && typeof arr[idx - 1] === 'number' && (p as number) - (arr[idx - 1] as number) > 1) acc.push('...');
-            acc.push(p);
-            return acc;
-          }, [])
-          .map((item, idx) =>
-            item === '...' ? (
-              <span key={`e-${idx}`} className="px-2 py-1.5 text-xs text-slate-400">…</span>
-            ) : (
-              <button
-                key={item}
-                onClick={() => handlePageChange(item as number)}
-                className={`w-8 h-8 rounded-lg border text-xs font-semibold transition-colors ${currentPage === item ? 'bg-[#1447E6] border-[#1447E6] text-white' : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'}`}
-              >
-                {item}
-              </button>
-            )
-          )}
-        <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages} className="px-3 py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-medium text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
-          Next ›
-        </button>
-      </div>
-    </div>
-  );
-}
-
-function PaymentsSection() {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [debouncedSearch, setDebouncedSearch] = useState('');
-  const [statusFilter, setStatusFilter] = useState('');
-  const [typeFilter, setTypeFilter] = useState('');
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
-  
-  const [statusOpen, setStatusOpen] = useState(false);
-  const [typeOpen, setTypeOpen] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [viewPaymentId, setViewPaymentId] = useState<string | null>(null);
-  const [downloadingId, setDownloadingId] = useState<string | null>(null);
-  const [isExporting, setIsExporting] = useState(false);
-
-  const debounceTimers = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
-  const debounce = useCallback(
-    (setter: (v: string) => void, value: string, key: string) => {
-      if (debounceTimers.current[key]) clearTimeout(debounceTimers.current[key]);
-      debounceTimers.current[key] = setTimeout(() => {
-        setter(value);
-        setCurrentPage(1);
-      }, 400);
-    },
-    []
-  );
-
-  const { data, isLoading, isError, error } = usePayments({
-    page: currentPage,
-    limit: 5,
-    search: debouncedSearch || undefined,
-    status: statusFilter || undefined,
-    paymentType: typeFilter || undefined,
-    startDate: startDate || undefined,
-    endDate: endDate || undefined,
-  });
-
-  const payments = data?.payments ?? [];
-  const meta = data?.meta;
-  const totalPages = meta?.totalPages ?? 0;
-
-  const fmt = (val: number) =>
-    new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(val);
-
-  const fmtDate = (d: string) =>
-    new Date(d).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\//g, '/');
-
-  const handleExportAll = async () => {
-    setIsExporting(true);
-    try {
-      await exportPaymentsPDF(debouncedSearch, statusFilter);
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setIsExporting(false);
-    }
-  };
-
-  const handleDownloadSingle = async (id: string) => {
-    setDownloadingId(id);
-    try {
-      const res = await getPaymentById(id);
-      await downloadSinglePaymentPDF(res.data);
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setDownloadingId(null);
-    }
-  };
-
-  return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h3 className="text-[17px] font-bold text-slate-800">Payments</h3>
-        <button disabled={isExporting} onClick={handleExportAll} className="flex items-center gap-2 bg-[#1447E6] hover:bg-[#1038b3] disabled:opacity-70 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
-          {isExporting ? <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white" /> : <Download size={16} />}
-          Export PDF
-        </button>
-      </div>
-
-      <div className="flex flex-col sm:flex-row items-center gap-3">
-        <div className="relative flex-1 w-full">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-          <input 
-            type="text" 
-            value={searchTerm}
-            onChange={(e) => {
-              setSearchTerm(e.target.value);
-              debounce(setDebouncedSearch, e.target.value, 'search');
-            }}
-            placeholder="Search by name, transaction ID" 
-            className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder:text-slate-400"
-          />
-        </div>
-        <div className="flex items-center gap-3 w-full sm:w-auto">
-          <div className="relative">
-            <button onClick={() => setTypeOpen(!typeOpen)} className="flex items-center justify-between px-4 py-2.5 border border-slate-200 rounded-lg text-sm text-slate-600 bg-white min-w-[130px]">
-              {TYPE_OPTIONS.find(o => o.value === typeFilter)?.label || 'All Type'} <ChevronDown size={16} className="text-slate-400 ml-2" />
-            </button>
-            {typeOpen && (
-              <div className="absolute z-20 top-full mt-1 right-0 w-full bg-white border border-slate-200 rounded-lg shadow-lg py-1">
-                {TYPE_OPTIONS.map((opt) => (
-                  <button key={opt.value} onClick={() => { setTypeFilter(opt.value); setTypeOpen(false); setCurrentPage(1); }} className="w-full text-left px-4 py-2 text-sm hover:bg-blue-50 text-slate-600">
-                    {opt.label}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-
-          <div className="relative">
-            <button onClick={() => setStatusOpen(!statusOpen)} className="flex items-center justify-between px-4 py-2.5 border border-slate-200 rounded-lg text-sm text-slate-600 bg-white min-w-[130px]">
-              {STATUS_OPTIONS.find(o => o.value === statusFilter)?.label || 'All Status'} <ChevronDown size={16} className="text-slate-400 ml-2" />
-            </button>
-            {statusOpen && (
-              <div className="absolute z-20 top-full mt-1 right-0 w-full bg-white border border-slate-200 rounded-lg shadow-lg py-1">
-                {STATUS_OPTIONS.map((opt) => (
-                  <button key={opt.value} onClick={() => { setStatusFilter(opt.value); setStatusOpen(false); setCurrentPage(1); }} className="w-full text-left px-4 py-2 text-sm hover:bg-blue-50 text-slate-600">
-                    {opt.label}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-
-          <div className="flex items-center bg-white border border-slate-200 rounded-lg overflow-hidden h-[42px] min-w-[280px]">
-            <DatePicker 
-              value={startDate} 
-              onChange={e => { setStartDate(e.target.value); setCurrentPage(1); }} 
-              className="border-none rounded-none border-r border-slate-200 bg-transparent text-slate-600 focus:ring-0 w-[140px]" 
-              wrapperClassName="w-[140px]"
-            />
-            <DatePicker 
-              value={endDate} 
-              onChange={e => { setEndDate(e.target.value); setCurrentPage(1); }} 
-              className="border-none rounded-none bg-transparent text-slate-600 focus:ring-0 w-[140px]" 
-              wrapperClassName="w-[140px]"
-            />
-          </div>
-        </div>
-      </div>
-
-      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm text-left">
-            <thead className="bg-[#f1f5f9] text-slate-600 font-semibold text-[13px]">
-              <tr>
-                <th className="px-6 py-4 whitespace-nowrap rounded-tl-xl">Payment From</th>
-                <th className="px-6 py-4 whitespace-nowrap">Card Number</th>
-                <th className="px-6 py-4 whitespace-nowrap">Transaction ID</th>
-                <th className="px-6 py-4 whitespace-nowrap">Payment Type</th>
-                <th className="px-6 py-4 whitespace-nowrap">Payment</th>
-                <th className="px-6 py-4 whitespace-nowrap">Date</th>
-                <th className="px-6 py-4 whitespace-nowrap">Status</th>
-                <th className="px-6 py-4 whitespace-nowrap rounded-tr-xl text-center">Action</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
-              {isError ? (
-                <tr><td colSpan={8} className="px-6 py-10 text-center text-red-500">Error: {(error as any)?.message || 'Something went wrong'}</td></tr>
-              ) : isLoading ? (
-                <tr>
-                  <td colSpan={8} className="px-6 py-10 text-center text-slate-500">Loading...</td>
-                </tr>
-              ) : payments.length === 0 ? (
-                <tr>
-                  <td colSpan={8} className="px-6 py-10 text-center text-slate-500">No payments found.</td>
-                </tr>
-              ) : payments.map((row: PaymentSummary) => (
-                <tr key={row.id} className="hover:bg-slate-50 transition-colors">
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-[#E0E7FF] text-[#4F46E5] flex items-center justify-center font-medium text-xs shrink-0">
-                        {row.patientName?.substring(0, 2).toUpperCase() || 'NA'}
-                      </div>
-                      <span className="font-medium text-slate-700">{row.patientName || 'Unknown'}</span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-slate-500 font-mono text-xs">**** **** {row.last4}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-slate-500 font-mono text-xs">{row.transactionId}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-slate-600">{statusLabel(row.paymentType)}</td>
-                  <td className="px-6 py-4 whitespace-nowrap font-medium text-slate-700">{fmt(row.amount)}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-slate-500">{fmtDate(row.date)}</td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <StatusBadge status={row.status} />
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center justify-center gap-3">
-                      <button onClick={() => setViewPaymentId(row.id)} className="text-slate-400 hover:text-slate-600"><Eye size={16} /></button>
-                      <button disabled={downloadingId === row.id} onClick={() => handleDownloadSingle(row.id)} className="text-emerald-500 hover:text-emerald-600 disabled:opacity-50">
-                        {downloadingId === row.id ? <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-emerald-600" /> : <Download size={16} />}
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-      <Pagination currentPage={currentPage} totalPages={totalPages} total={meta?.total ?? 0} handlePageChange={setCurrentPage} />
-      
-      <PaymentDetailModal
-        isOpen={!!viewPaymentId}
-        paymentId={viewPaymentId}
-        onClose={() => setViewPaymentId(null)}
-      />
-    </div>
-  );
-}
-
 // ─── Main Page ────────────────────────────────────────────────────────────────
 
-
 export default function BusinessIntelligencePage() {
+  const [kpiFilter, setKpiFilter] = useState<BiFilter>('last_7_days');
   const [trendFilter, setTrendFilter] = useState<BiFilter>('last_7_days');
   const [growthFilter, setGrowthFilter] = useState<BiFilter>('last_7_days');
+  const [approvalFilter, setApprovalFilter] = useState<BiFilter>('last_7_days');
+  const [serviceFilter, setServiceFilter] = useState<BiFilter>('last_7_days');
 
   const { data: stats, isLoading: l1, isError: e1 } =
-    useQuery({ queryKey: ['bi-stats'], queryFn: getBiStats });
+    useQuery({ queryKey: ['bi-stats', kpiFilter], queryFn: () => getBiStats(kpiFilter) });
 
   const { data: revenueTrend, isLoading: l2, isError: e2 } =
     useQuery({ queryKey: ['bi-trend', trendFilter], queryFn: () => getRevenueTrend(trendFilter) });
@@ -561,10 +175,10 @@ export default function BusinessIntelligencePage() {
     useQuery({ queryKey: ['bi-growth', growthFilter], queryFn: () => getPatientGrowth(growthFilter) });
 
   const { data: approvalData, isLoading: l4, isError: e4 } =
-    useQuery({ queryKey: ['bi-approval'], queryFn: getApprovalVsDenial });
+    useQuery({ queryKey: ['bi-approval', approvalFilter], queryFn: () => getApprovalVsDenial(approvalFilter) });
 
   const { data: revenueByService, isLoading: l5, isError: e5 } =
-    useQuery({ queryKey: ['bi-by-service'], queryFn: getRevenueByService });
+    useQuery({ queryKey: ['bi-by-service', serviceFilter], queryFn: () => getRevenueByService(serviceFilter) });
 
   const maxService = useMemo(
     () => Math.max(...(revenueByService?.map((s) => s.totalAmount) ?? [1]), 1),
@@ -596,6 +210,9 @@ export default function BusinessIntelligencePage() {
         { label: 'Active Patients', value: String(stats.activePatients) },
         { label: 'Subscription Churn', value: fmtPct(stats.subscriptionChurn) },
         { label: 'Avg LTV', value: fmtUSD(stats.avgLTV) },
+        { label: 'Refill Rate', value: fmtPct(stats.refillRate) },
+        { label: 'Intake Drop-Off', value: String(stats.intakeDropOff) },
+        { label: 'Provider Turnaround', value: String(stats.providerTurnaround) },
       ]
     : null;
 
@@ -603,17 +220,22 @@ export default function BusinessIntelligencePage() {
     <div className="w-full bg-slate-50 p-5 md:p-8 min-h-screen space-y-6">
 
       {/* ── KPI grid ── */}
+      <div className="flex items-center justify-between">
+        <h2 className="text-[17px] font-bold text-slate-800">Key Performance Indicators</h2>
+        <FilterDropdown value={kpiFilter} onChange={setKpiFilter} />
+      </div>
+
       {l1 ? (
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          {Array.from({ length: 8 }).map((_, i) => <Skeleton key={i} h="h-20" />)}
+        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-3">
+          {Array.from({ length: 11 }).map((_, i) => <Skeleton key={i} h="h-20" />)}
         </div>
       ) : e1 ? (
         <div className="bg-white rounded-xl border border-slate-200">
           <ErrorState message="Couldn't load your KPI stats. Try refreshing the page." />
         </div>
       ) : kpis ? (
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          {kpis.map((k) => <KpiCard key={k.label} label={k.label} value={k.value} />)}
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
+          {kpis.map((k) => <KpiCard key={k.label} label={k.label} value={k.value} filterValue={kpiFilter} />)}
         </div>
       ) : null}
 
@@ -692,9 +314,7 @@ export default function BusinessIntelligencePage() {
         <div className="bg-white rounded-xl border border-slate-200 p-5">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-sm font-semibold text-slate-800">Approval vs Denial</h3>
-            <span className="flex items-center gap-1 text-xs text-slate-400 cursor-default">
-              This year <ChevronDown size={12} />
-            </span>
+            <FilterDropdown value={approvalFilter} onChange={setApprovalFilter} />
           </div>
           {l4 ? (
             <Skeleton h="h-52" />
@@ -757,7 +377,7 @@ export default function BusinessIntelligencePage() {
                       </Pie>
                       <Tooltip
                         contentStyle={{ fontSize: 11, borderRadius: 8, border: '1px solid #e2e8f0' }}
-                        formatter={(v: any, name: any) => [`${Number(v).toFixed(1)}%`, String(name)]}
+                        formatter={(v: unknown, name: unknown) => [`${Number(v || 0).toFixed(1)}%`, String(name || '')]}
                       />
                     </PieChart>
                   </ResponsiveContainer>
@@ -798,7 +418,10 @@ export default function BusinessIntelligencePage() {
 
       {/* ── Top Services by Revenue ── */}
       <div className="bg-white rounded-xl border border-slate-200 p-5">
-        <h3 className="text-base font-semibold text-slate-800 mb-5">Top Services by Revenue</h3>
+        <div className="flex items-center justify-between mb-5">
+          <h3 className="text-base font-semibold text-slate-800">Top Services by Revenue</h3>
+          <FilterDropdown value={serviceFilter} onChange={setServiceFilter} />
+        </div>
         {l5 ? (
           <div className="space-y-4">{Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} h="h-5" />)}</div>
         ) : e5 ? (

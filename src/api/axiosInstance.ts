@@ -4,8 +4,7 @@ import { API_BASE_URL } from './config';
 export const axiosInstance = axios.create({
   baseURL: API_BASE_URL,
   headers: {
-    'Content-Type': 'application/json',
-    'ngrok-skip-browser-warning': 'true',  
+    'Content-Type': 'application/json', 
   },
 });
 
@@ -33,7 +32,10 @@ axiosInstance.interceptors.response.use(
       localStorage.removeItem('token');
       localStorage.removeItem('user');
       document.cookie = 'authToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-      window.location.href = '/';
+      // Only redirect if we are not already on the login page
+      if (window.location.pathname !== '/' && window.location.pathname !== '/login') {
+        window.location.href = '/';
+      }
     }
 
     // Extract the server-side message so toasts show meaningful errors
