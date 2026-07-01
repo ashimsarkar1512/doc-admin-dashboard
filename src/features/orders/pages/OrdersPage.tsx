@@ -1,39 +1,51 @@
-import { useState, useEffect } from 'react';
-import { Search, Filter, Package, Truck, CheckCircle, XCircle, ChevronLeft, ChevronRight, Loader2, User } from 'lucide-react';
-import { OrderCard } from '../components/OrderCard';
-import { OrderDetailsModal } from '../components/OrderDetailsModal';
-import type { OrderSummary } from '../types';
-import { useOrders } from '../hooks/useOrders';
+import { useState, useEffect } from "react";
+import {
+  Search,
+  Filter,
+  Package,
+  Truck,
+  CheckCircle,
+  XCircle,
+  ChevronLeft,
+  ChevronRight,
+  Loader2,
+  User,
+} from "lucide-react";
+import { OrderCard } from "../components/OrderCard";
+import { OrderDetailsModal } from "../components/OrderDetailsModal";
+import type { OrderSummary } from "../types";
+import { useOrders } from "../hooks/useOrders";
 
 const statusTabs = [
-  { id: 'all', label: 'All Orders', icon: Package },
-  { id: 'PENDING', label: 'Pending', icon: Package },
-  { id: 'CONFIRMED', label: 'Confirmed', icon: Package },
-  { id: 'PROCESSING', label: 'Processing', icon: Package },
-  { id: 'SHIPPED', label: 'Shipped', icon: Truck },
-  { id: 'DELIVERED', label: 'Delivered', icon: CheckCircle },
-  { id: 'CANCELLED', label: 'Cancelled', icon: XCircle },
+  { id: "all", label: "All Orders", icon: Package },
+  { id: "PENDING", label: "Pending", icon: Package },
+  { id: "CONFIRMED", label: "Confirmed", icon: Package },
+  { id: "PROCESSING", label: "Processing", icon: Package },
+  { id: "SHIPPED", label: "Shipped", icon: Truck },
+  { id: "DELIVERED", label: "Delivered", icon: CheckCircle },
+  { id: "CANCELLED", label: "Cancelled", icon: XCircle },
 ];
 
 export default function OrdersPage() {
-  const [activeTab, setActiveTab] = useState<string>('all');
-  const [searchQuery, setSearchQuery] = useState<string>('');
-  const [debouncedSearch, setDebouncedSearch] = useState<string>('');
-  const [doctorSearchQuery, setDoctorSearchQuery] = useState<string>('');
-  const [debouncedDoctorSearch, setDebouncedDoctorSearch] = useState<string>('');
-  const [dateRange, setDateRange] = useState<string>('ALL');
+  const [activeTab, setActiveTab] = useState<string>("all");
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [debouncedSearch, setDebouncedSearch] = useState<string>("");
+  const [doctorSearchQuery, setDoctorSearchQuery] = useState<string>("");
+  const [debouncedDoctorSearch, setDebouncedDoctorSearch] =
+    useState<string>("");
+  const [dateRange, setDateRange] = useState<string>("ALL");
   const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
   const [page, setPage] = useState<number>(1);
   const limit = 10;
-  
+
   const dateRangeOptions = [
-    { value: 'ALL', label: 'All Time' },
-    { value: 'TODAY', label: 'Today' },
-    { value: 'LAST_7_DAYS', label: 'Last 7 Days' },
-    { value: 'LAST_MONTH', label: 'Last Month' },
-    { value: 'LAST_YEAR', label: 'Last Year' },
+    { value: "ALL", label: "All Time" },
+    { value: "TODAY", label: "Today" },
+    { value: "LAST_7_DAYS", label: "Last 7 Days" },
+    { value: "LAST_MONTH", label: "Last Month" },
+    { value: "LAST_YEAR", label: "Last Year" },
   ];
-  
+
   const [selectedOrder, setSelectedOrder] = useState<OrderSummary | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
@@ -52,8 +64,8 @@ export default function OrdersPage() {
     limit,
     search: debouncedSearch || undefined,
     doctorName: debouncedDoctorSearch || undefined,
-    status: activeTab !== 'all' ? activeTab : undefined,
-    dateRange: dateRange !== 'ALL' ? dateRange : undefined,
+    status: activeTab !== "all" ? activeTab : undefined,
+    dateRange: dateRange !== "ALL" ? dateRange : undefined,
   });
 
   const orders = data?.orders || [];
@@ -77,8 +89,6 @@ export default function OrdersPage() {
 
   return (
     <div className="w-full px-4 py-5 md:px-6 md:py-6">
-      
-
       {/* Tabs */}
       <div className="flex gap-4 mb-6 overflow-x-auto pb-2">
         {statusTabs.map((tab) => {
@@ -88,9 +98,9 @@ export default function OrdersPage() {
               key={tab.id}
               onClick={() => handleTabChange(tab.id)}
               className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all whitespace-nowrap ${
-                activeTab === tab.id 
-                  ? 'bg-blue-600 text-white shadow-sm' 
-                  : 'text-slate-600 hover:bg-slate-100'
+                activeTab === tab.id
+                  ? "bg-blue-600 text-white shadow-sm"
+                  : "text-slate-600 hover:bg-slate-100"
               }`}
             >
               <Icon className="h-4 w-4" />
@@ -125,12 +135,14 @@ export default function OrdersPage() {
           </div>
         </div>
         <div className="flex gap-3 relative">
-          <button 
+          <button
             onClick={() => setIsFilterOpen(!isFilterOpen)}
             className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-slate-200 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50 transition-all"
           >
             <Filter className="h-4 w-4" />
-            {dateRange === 'ALL' ? 'Filter' : dateRangeOptions.find(o => o.value === dateRange)?.label}
+            {dateRange === "ALL"
+              ? "Filter"
+              : dateRangeOptions.find((o) => o.value === dateRange)?.label}
           </button>
 
           {isFilterOpen && (
@@ -141,8 +153,8 @@ export default function OrdersPage() {
                   onClick={() => handleDateRangeChange(option.value)}
                   className={`w-full text-left px-4 py-2 text-sm transition-colors ${
                     dateRange === option.value
-                      ? 'bg-blue-50 text-blue-600 font-medium'
-                      : 'text-slate-700 hover:bg-slate-50'
+                      ? "bg-blue-50 text-blue-600 font-medium"
+                      : "text-slate-700 hover:bg-slate-50"
                   }`}
                 >
                   {option.label}
@@ -159,7 +171,9 @@ export default function OrdersPage() {
           <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
         </div>
       ) : isError ? (
-        <div className="text-center py-20 text-red-500">Failed to load orders. Please try again.</div>
+        <div className="text-center py-20 text-red-500">
+          Failed to load orders. Please try again.
+        </div>
       ) : orders.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-6">
           {orders.map((order) => (
@@ -175,9 +189,13 @@ export default function OrdersPage() {
           <div className="h-16 w-16 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 mb-4">
             <Package className="h-8 w-8" />
           </div>
-          <h3 className="font-semibold text-slate-800 text-lg mb-2">No orders found</h3>
+          <h3 className="font-semibold text-slate-800 text-lg mb-2">
+            No orders found
+          </h3>
           <p className="text-slate-500 text-sm max-w-sm">
-            {searchQuery ? `No orders match your search "${searchQuery}"` : "There are no orders in this status yet"}
+            {searchQuery
+              ? `No orders match your search "${searchQuery}"`
+              : "There are no orders in this status yet"}
           </p>
         </div>
       )}
@@ -186,10 +204,11 @@ export default function OrdersPage() {
       {meta && meta.totalPages > 1 && (
         <div className="flex items-center justify-between border-t border-slate-200 pt-4">
           <p className="text-sm text-slate-500">
-            Showing <span className="font-medium">{(page - 1) * limit + 1}</span> to{' '}
+            Showing{" "}
+            <span className="font-medium">{(page - 1) * limit + 1}</span> to{" "}
             <span className="font-medium">
               {Math.min(page * limit, meta.total)}
-            </span>{' '}
+            </span>{" "}
             of <span className="font-medium">{meta.total}</span> results
           </p>
           <div className="flex items-center gap-2">
