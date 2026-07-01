@@ -65,7 +65,7 @@ export function NotificationDropdown() {
         onClick={() => setIsOpen(!isOpen)}
         className="relative flex items-center justify-center w-9 h-9 rounded-xl text-slate-500 hover:text-slate-700 transition-all duration-200"
       >
-        <Bell size={18} strokeWidth={1.8} />
+        <Bell size={30} strokeWidth={1.5} />
         {unreadCount > 0 && (
           <span className="absolute top-1.5 right-1.5 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-red-500 text-[9px] font-bold text-white ring-2 ring-white">
             {unreadCount > 9 ? "9+" : unreadCount}

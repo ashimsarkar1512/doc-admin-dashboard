@@ -19,14 +19,14 @@ export const ProductCard: React.FC<ProductCardProps> = ({
     <div className="group bg-white rounded-2xl   transition-all duration-200 flex flex-col justify-between overflow-hidden h-full">
       <div>
         {/* Dark Charcoal Image Header */}
-        <div className="relative h-[200px] w-full bg-[#2A2D31] flex items-center justify-center overflow-hidden rounded-t-2xl">
+        <div className="relative h-[279px] w-full bg-[#2A2D31] flex items-center justify-center overflow-hidden rounded-t-2xl">
           {product.images &&
             product.images.length > 0 &&
             product.images[0]?.fileUrl && (
               <img
                 src={product.images[0].fileUrl}
                 alt={product.name}
-                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                className="w-[250px] object-cover transition-transform duration-500 group-hover:scale-105"
               />
             )}
         </div>

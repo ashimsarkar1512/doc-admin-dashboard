@@ -153,9 +153,14 @@ export default function ProductsPage() {
     setFormStock(product.stockQuantity);
 
     if (product.variants && product.variants.length > 0) {
+      const firstVar = product.variants[0];
+      setFormSize(firstVar.size || "");
+      setFormPrice(String(firstVar.price));
+      setFormStock(firstVar.stockQuantity);
+
       setVariants(
-        product.variants.map((v) => ({
-          size: v.size,
+        product.variants.slice(1).map((v) => ({
+          size: v.size || "",
           price: String(v.price),
           stockQuantity: v.stockQuantity,
         })),
@@ -230,6 +235,19 @@ export default function ProductsPage() {
       setIsUploadingImage(false);
     }
 
+    const finalVariants = [
+      {
+        size: (formSize || "").trim(),
+        price: Number(formPrice),
+        stockQuantity: Number(formStock),
+      },
+      ...variants.map((v) => ({
+        size: (v.size || "").trim(),
+        price: Number(v.price),
+        stockQuantity: Number(v.stockQuantity),
+      })),
+    ];
+
     const payload: CreateProductPayload | UpdateProductPayload = {
       name: formName,
       price: Number(formPrice),
@@ -237,11 +255,7 @@ export default function ProductsPage() {
       description: formDescription,
       categoryId: formCategory,
       images: finalImageId ? [finalImageId] : undefined,
-      variants: variants.map((v) => ({
-        size: v.size,
-        price: Number(v.price),
-        stockQuantity: Number(v.stockQuantity),
-      })),
+      variants: finalVariants,
     };
 
     saveMutation.mutate(payload);
@@ -302,7 +316,7 @@ export default function ProductsPage() {
           </span>
         </div>
       ) : filteredProducts.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:lg:grid-cols-4 gap-6">
           {filteredProducts.map((product) => (
             <ProductCard
               key={product.id}
