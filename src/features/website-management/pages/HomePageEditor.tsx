@@ -1,4 +1,3 @@
-
 import { Save, Loader2 } from 'lucide-react';
 import { HomepageProvider, useHomepage } from '../context/HomepageContext';
 import { HeroSection } from '../components/home/HeroSection';
@@ -8,6 +7,8 @@ import { ProvidersSection } from '../components/home/ProvidersSection';
 import { HowItWorksSection } from '../components/home/HowItWorksSection';
 import { TestimonialSection } from '../components/home/TestimonialSection';
 import { FaqSection } from '../components/home/FaqSection';
+
+
 import { useAppSelector } from '@/store/hooks';
 import { useUserProfile } from '@/features/account-settings/hooks/useAccountSettings';
 
@@ -39,6 +40,7 @@ function HomePageEditorInner() {
       </button>
     );
   };
+
 
   if (isLoading) {
     return (

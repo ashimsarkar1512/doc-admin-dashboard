@@ -2,6 +2,7 @@ import { SectionCard } from '../shared/SectionCard';
 import { FormInput } from '../shared/FormInput';
 import { FormTextarea } from '../shared/FormTextarea';
 import { useHomepage } from '../../context/HomepageContext';
+import { SaveSectionButton } from '../shared/SaveSectionButton';
 
 export function TestimonialSection() {
   const { form, setField } = useHomepage();
@@ -64,6 +65,7 @@ export function TestimonialSection() {
           </div>
         </div>
       </div>
+      <SaveSectionButton section="TESTIMONIAL" />
     </SectionCard>
   );
 }

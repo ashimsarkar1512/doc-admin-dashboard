@@ -2,6 +2,7 @@ import { SectionCard } from '../shared/SectionCard';
 import { FormInput } from '../shared/FormInput';
 import { FormTextarea } from '../shared/FormTextarea';
 import { useHomepage } from '../../context/HomepageContext';
+import { SaveSectionButton } from '../shared/SaveSectionButton';
 
 export function HowItWorksSection() {
   const { form, setField } = useHomepage();
@@ -90,6 +91,7 @@ export function HowItWorksSection() {
           </div>
         </div>
       </div>
+      <SaveSectionButton section="HOW_IT_WORKS" />
     </SectionCard>
   );
 }

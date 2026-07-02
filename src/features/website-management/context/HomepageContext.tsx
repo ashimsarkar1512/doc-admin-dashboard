@@ -1,8 +1,15 @@
-import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
-import { 
-  getHomepageContent, 
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
+import {
+  getHomepageContent,
   uploadAttachment,
   updateHeroSection,
   updateAssessmentSection,
@@ -10,49 +17,96 @@ import {
   updateProvidersSection,
   updateHowItWorksSection,
   updateTestimonialSection,
-  updateFaqSection
-} from '@/api/endpoints/homepage.api';
-import { normaliseHomepage } from '../types/homepage.types';
-import type { HomepageFormState } from '../types/homepage.types';
+  updateFaqSection,
+} from "@/api/endpoints/homepage.api";
+import { normaliseHomepage } from "../types/homepage.types";
+import type { HomepageFormState } from "../types/homepage.types";
 
-export const HOMEPAGE_QUERY_KEY = ['admin', 'homepage-content'] as const;
+export const HOMEPAGE_QUERY_KEY = ["admin", "homepage-content"] as const;
+
+export type SectionName = 'HERO' | 'ASSESSMENT' | 'ABOUT' | 'PROVIDERS' | 'HOW_IT_WORKS' | 'TESTIMONIAL' | 'FAQ';
 
 interface HomepageContextValue {
   form: HomepageFormState;
   isLoading: boolean;
   isSaving: boolean;
   isDirty: boolean;
-  setField: <K extends keyof HomepageFormState>(key: K, value: HomepageFormState[K]) => void;
+  setField: <K extends keyof HomepageFormState>(
+    key: K,
+    value: HomepageFormState[K],
+  ) => void;
   heroImageRef: React.MutableRefObject<File | null>;
   heroBadgeImageRef: React.MutableRefObject<File | null>;
   aboutMediaRef: React.MutableRefObject<File | null>;
   faqCardMediaRef: React.MutableRefObject<File | null>;
+  saveSection: (section: SectionName) => void;
+  savingSection: SectionName | undefined;
   save: () => void;
 }
 
 const HomepageContext = createContext<HomepageContextValue | null>(null);
 
 const EMPTY: HomepageFormState = {
-  heroMediaId: '', heroMediaUrl: '',
-  heroBadgeImageId: '', heroBadgeImageUrl: '',
-  heroTitle: '', heroDescription: '', heroButtonText: '', heroButtonLink: '', heroButtonNewTab: true,
-  assessmentTitle: '', assessmentDescription: '',
-  aboutTitle: '', aboutDescription: '',
-  aboutFeaturedService1Id: '', aboutFeaturedService2Id: '', aboutFeaturedService3Id: '',
-  aboutButtonText: '', aboutButtonLink: '', aboutButtonNewTab: true,
-  aboutMediaId: '', aboutMediaUrl: '',
-  providersTitle: '', providersButtonText: '', providersButtonLink: '', providersButtonNewTab: true,
-  howItWorksTitle: '',
-  howItWorksStep1Title: '', howItWorksStep1Description: '',
-  howItWorksStep2Title: '', howItWorksStep2Description: '',
-  howItWorksStep3Title: '', howItWorksStep3Description: '',
-  howItWorksStep4Title: '', howItWorksStep4Description: '',
-  testimonialTitle: '', testimonialCardTitle: '', testimonialCardDescription: '',
-  testimonialButtonText: '', testimonialButtonLink: '', testimonialButtonNewTab: true,
-  faqTitle: '', faqCardTitle: '', faqCardDescription: '', faqButtonText: '', faqButtonLink: '', faqButtonNewTab: true,
-  faqCardMediaId: '', faqCardMediaUrl: '',
-  faqQuestion1: '', faqAnswer1: '', faqQuestion2: '', faqAnswer2: '', faqQuestion3: '', faqAnswer3: '',
-  faqQuestion4: '', faqAnswer4: '', faqQuestion5: '', faqAnswer5: '', faqQuestion6: '', faqAnswer6: '',
+  heroMediaId: "",
+  heroMediaUrl: "",
+  heroBadgeImageId: "",
+  heroBadgeImageUrl: "",
+  heroTitle: "",
+  heroDescription: "",
+  heroButtonText: "",
+  heroButtonLink: "",
+  heroButtonNewTab: true,
+  assessmentTitle: "",
+  assessmentDescription: "",
+  aboutTitle: "",
+  aboutDescription: "",
+  aboutFeaturedService1Id: "",
+  aboutFeaturedService2Id: "",
+  aboutFeaturedService3Id: "",
+  aboutButtonText: "",
+  aboutButtonLink: "",
+  aboutButtonNewTab: true,
+  aboutMediaId: "",
+  aboutMediaUrl: "",
+  providersTitle: "",
+  providersButtonText: "",
+  providersButtonLink: "",
+  providersButtonNewTab: true,
+  howItWorksTitle: "",
+  howItWorksStep1Title: "",
+  howItWorksStep1Description: "",
+  howItWorksStep2Title: "",
+  howItWorksStep2Description: "",
+  howItWorksStep3Title: "",
+  howItWorksStep3Description: "",
+  howItWorksStep4Title: "",
+  howItWorksStep4Description: "",
+  testimonialTitle: "",
+  testimonialCardTitle: "",
+  testimonialCardDescription: "",
+  testimonialButtonText: "",
+  testimonialButtonLink: "",
+  testimonialButtonNewTab: true,
+  faqTitle: "",
+  faqCardTitle: "",
+  faqCardDescription: "",
+  faqButtonText: "",
+  faqButtonLink: "",
+  faqButtonNewTab: true,
+  faqCardMediaId: "",
+  faqCardMediaUrl: "",
+  faqQuestion1: "",
+  faqAnswer1: "",
+  faqQuestion2: "",
+  faqAnswer2: "",
+  faqQuestion3: "",
+  faqAnswer3: "",
+  faqQuestion4: "",
+  faqAnswer4: "",
+  faqQuestion5: "",
+  faqAnswer5: "",
+  faqQuestion6: "",
+  faqAnswer6: "",
 };
 
 export function HomepageProvider({ children }: { children: React.ReactNode }) {
@@ -81,38 +135,69 @@ export function HomepageProvider({ children }: { children: React.ReactNode }) {
     }
   }, [serverData]);
 
-  const { mutate, isPending: isSaving } = useMutation({
-    mutationFn: async () => {
+  const { mutate, isPending: isSaving, variables: savingSection } = useMutation({
+    mutationFn: async (section?: SectionName) => {
       let finalForm = { ...form };
 
-      // Upload files if present
-      if (heroImageRef.current) {
-        const { id } = await uploadAttachment(heroImageRef.current, 'HERO_IMAGE');
-        finalForm.heroMediaId = id;
+      // Handle individual section saves
+      if (section === 'HERO') {
+        if (heroImageRef.current) {
+          const { id } = await uploadAttachment(heroImageRef.current, "HERO_IMAGE");
+          finalForm.heroMediaId = id;
+        }
+        if (heroBadgeImageRef.current) {
+          const { id } = await uploadAttachment(heroBadgeImageRef.current, "HERO_BADGE_IMAGE");
+          finalForm.heroBadgeImageId = id;
+        }
+        await updateHeroSection(finalForm);
+      } else if (section === 'ASSESSMENT') {
+        await updateAssessmentSection(finalForm);
+      } else if (section === 'ABOUT') {
+        if (aboutMediaRef.current) {
+          const { id } = await uploadAttachment(aboutMediaRef.current, "PUBLIC");
+          finalForm.aboutMediaId = id;
+        }
+        await updateAboutSection(finalForm);
+      } else if (section === 'PROVIDERS') {
+        await updateProvidersSection(finalForm);
+      } else if (section === 'HOW_IT_WORKS') {
+        await updateHowItWorksSection(finalForm);
+      } else if (section === 'TESTIMONIAL') {
+        await updateTestimonialSection(finalForm);
+      } else if (section === 'FAQ') {
+        if (faqCardMediaRef.current) {
+          const { id } = await uploadAttachment(faqCardMediaRef.current, "PUBLIC");
+          finalForm.faqCardMediaId = id;
+        }
+        await updateFaqSection(finalForm);
+      } else if (!section) {
+        // Handle global save
+        if (heroImageRef.current) {
+          const { id } = await uploadAttachment(heroImageRef.current, "HERO_IMAGE");
+          finalForm.heroMediaId = id;
+        }
+        if (heroBadgeImageRef.current) {
+          const { id } = await uploadAttachment(heroBadgeImageRef.current, "HERO_BADGE_IMAGE");
+          finalForm.heroBadgeImageId = id;
+        }
+        if (aboutMediaRef.current) {
+          const { id } = await uploadAttachment(aboutMediaRef.current, "PUBLIC");
+          finalForm.aboutMediaId = id;
+        }
+        if (faqCardMediaRef.current) {
+          const { id } = await uploadAttachment(faqCardMediaRef.current, "PUBLIC");
+          finalForm.faqCardMediaId = id;
+        }
+        await Promise.all([
+          updateHeroSection(finalForm),
+          updateAssessmentSection(finalForm),
+          updateAboutSection(finalForm),
+          updateProvidersSection(finalForm),
+          updateHowItWorksSection(finalForm),
+          updateTestimonialSection(finalForm),
+          updateFaqSection(finalForm),
+        ]);
       }
-      if (heroBadgeImageRef.current) {
-        const { id } = await uploadAttachment(heroBadgeImageRef.current, 'HERO_BADGE_IMAGE');
-        finalForm.heroBadgeImageId = id;
-      }
-      if (aboutMediaRef.current) {
-        const { id } = await uploadAttachment(aboutMediaRef.current, 'ABOUT_MEDIA');
-        finalForm.aboutMediaId = id;
-      }
-      if (faqCardMediaRef.current) {
-        const { id } = await uploadAttachment(faqCardMediaRef.current, 'FAQ_MEDIA');
-        finalForm.faqCardMediaId = id;
-      }
-
-      // Execute all PUT requests concurrently
-      await Promise.all([
-        updateHeroSection(finalForm),
-        updateAssessmentSection(finalForm),
-        updateAboutSection(finalForm),
-        updateProvidersSection(finalForm),
-        updateHowItWorksSection(finalForm),
-        updateTestimonialSection(finalForm),
-        updateFaqSection(finalForm)
-      ]);
 
       return getHomepageContent();
     },
@@ -124,30 +209,42 @@ export function HomepageProvider({ children }: { children: React.ReactNode }) {
       setIsDirty(false);
       heroImageRef.current = null;
       heroBadgeImageRef.current = null;
-      toast.success('Homepage saved successfully!');
+      toast.success("Homepage saved successfully!");
     },
     onError: () => {
-      toast.error('Failed to save homepage. Please try again.');
+      toast.error("Failed to save homepage. Please try again.");
     },
   });
 
   // ── Setters ───────────────────────────────────────────────────────────────
   const setField = useCallback(
-    <K extends keyof HomepageFormState>(key: K, value: HomepageFormState[K]) => {
+    <K extends keyof HomepageFormState>(
+      key: K,
+      value: HomepageFormState[K],
+    ) => {
       setForm((prev) => ({ ...prev, [key]: value }));
       setIsDirty(true);
     },
     [],
   );
 
-  const save = useCallback(() => mutate(), [mutate]);
+  const saveSection = useCallback((section: SectionName) => mutate(section), [mutate]);
+  const save = useCallback(() => mutate(undefined), [mutate]);
 
   return (
     <HomepageContext.Provider
       value={{
-        form, isLoading, isSaving, isDirty,
+        form,
+        isLoading,
+        isSaving,
+        isDirty,
         setField,
-        heroImageRef, heroBadgeImageRef, aboutMediaRef, faqCardMediaRef,
+        heroImageRef,
+        heroBadgeImageRef,
+        aboutMediaRef,
+        faqCardMediaRef,
+        saveSection,
+        savingSection,
         save,
       }}
     >
@@ -158,6 +255,7 @@ export function HomepageProvider({ children }: { children: React.ReactNode }) {
 
 export function useHomepage() {
   const ctx = useContext(HomepageContext);
-  if (!ctx) throw new Error('useHomepage must be used inside <HomepageProvider>');
+  if (!ctx)
+    throw new Error("useHomepage must be used inside <HomepageProvider>");
   return ctx;
 }

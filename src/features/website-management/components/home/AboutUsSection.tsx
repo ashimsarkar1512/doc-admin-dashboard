@@ -4,6 +4,7 @@ import { SectionCard } from '../shared/SectionCard';
 import { FormInput } from '../shared/FormInput';
 import { FormTextarea } from '../shared/FormTextarea';
 import { useHomepage } from '../../context/HomepageContext';
+import { SaveSectionButton } from '../shared/SaveSectionButton';
 
 export function AboutUsSection() {
   const { form, setField, aboutMediaRef, isLoading } = useHomepage();
@@ -133,6 +134,7 @@ export function AboutUsSection() {
           </div>
         </div>
       </div>
+      <SaveSectionButton section="ABOUT" />
     </SectionCard>
   );
 }
