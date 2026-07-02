@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import { getAssessmentDetails, type AssessmentDetails } from "@/api/endpoints/dashboard/assessments";
+import { getAssessmentDetails } from "@/api/endpoints/dashboard/assessments";
 
 // --- Sub-components ---
 
@@ -68,58 +68,96 @@ function GrayCheckbox({ text }: { text: string }) {
 }
 
 // --- Helper to render dynamic questions ---
-function RenderQuestion({ question, isSubQuestion = false }: { question: any, isSubQuestion?: boolean }) {
+function RenderQuestion({
+  question,
+  isSubQuestion = false,
+}: {
+  question: any;
+  isSubQuestion?: boolean;
+}) {
   // Skip if it's just info only with no patient answer needed
-  if (question.type === 'INFORMATION_ONLY') {
+  if (question.type === "INFORMATION_ONLY") {
     return (
-      <div className={isSubQuestion ? 'mt-4 pl-4 border-l-2 border-slate-200' : ''}>
+      <div
+        className={isSubQuestion ? "mt-4 pl-4 border-l-2 border-slate-200" : ""}
+      >
         {!isSubQuestion ? (
           <SectionCard key={question.id}>
-            {question.heading && <p className="text-xs text-slate-500 font-medium mb-1">{question.heading}</p>}
+            {question.heading && (
+              <p className="text-xs text-slate-500 font-medium mb-1">
+                {question.heading}
+              </p>
+            )}
             <Question text={question.questionText} />
-            {question.description && <p className="text-xs text-slate-500">{question.description}</p>}
+            {question.description && (
+              <p className="text-xs text-slate-500">{question.description}</p>
+            )}
           </SectionCard>
         ) : (
           <div key={question.id}>
-            {question.heading && <p className="text-xs text-slate-500 font-medium mb-1">{question.heading}</p>}
+            {question.heading && (
+              <p className="text-xs text-slate-500 font-medium mb-1">
+                {question.heading}
+              </p>
+            )}
             <Question text={question.questionText} />
-            {question.description && <p className="text-xs text-slate-500">{question.description}</p>}
+            {question.description && (
+              <p className="text-xs text-slate-500">{question.description}</p>
+            )}
           </div>
         )}
       </div>
     );
   }
 
-  const isSingleChoice = question.type === 'SINGLE_CHOICE' || question.type === 'RADIO' || question.type === 'YES_NO';
-  const hasOptions = question.patientAnswer?.selectedOptions && question.patientAnswer.selectedOptions.length > 0;
+  const isSingleChoice =
+    question.type === "SINGLE_CHOICE" ||
+    question.type === "RADIO" ||
+    question.type === "YES_NO";
+  const hasOptions =
+    question.patientAnswer?.selectedOptions &&
+    question.patientAnswer.selectedOptions.length > 0;
   const hasTextResponse = !!question.patientAnswer?.textResponse;
-  
+
   // Handle file URL parsing (it can be an object with fileUrl or a direct string)
-  let fileUrl = '';
-  let fileName = 'View attached file';
+  let fileUrl = "";
+  let fileName = "View attached file";
   let isImage = false;
 
   if (question.patientAnswer?.file) {
-    if (typeof question.patientAnswer.file === 'object' && question.patientAnswer.file.fileUrl) {
+    if (
+      typeof question.patientAnswer.file === "object" &&
+      question.patientAnswer.file.fileUrl
+    ) {
       fileUrl = question.patientAnswer.file.fileUrl;
       fileName = question.patientAnswer.file.fileName || fileName;
-      if (question.patientAnswer.file.fileType?.startsWith('image/') || /\.(jpeg|jpg|gif|png|webp)(\?.*)?$/i.test(fileName) || /\.(jpeg|jpg|gif|png|webp)(\?.*)?$/i.test(fileUrl)) {
-         isImage = true;
+      if (
+        question.patientAnswer.file.fileType?.startsWith("image/") ||
+        /\.(jpeg|jpg|gif|png|webp)(\?.*)?$/i.test(fileName) ||
+        /\.(jpeg|jpg|gif|png|webp)(\?.*)?$/i.test(fileUrl)
+      ) {
+        isImage = true;
       }
-    } else if (typeof question.patientAnswer.file === 'string') {
-      fileUrl = question.patientAnswer.file.replace(/`/g, '');
+    } else if (typeof question.patientAnswer.file === "string") {
+      fileUrl = question.patientAnswer.file.replace(/`/g, "");
       if (/\.(jpeg|jpg|gif|png|webp)(\?.*)?$/i.test(fileUrl)) {
-         isImage = true;
+        isImage = true;
       }
     }
   }
 
   const content = (
     <div key={question.id}>
-      {question.heading && <p className="text-xs text-slate-500 font-medium mb-1">{question.heading}</p>}
+      {question.heading && (
+        <p className="text-xs text-slate-500 font-medium mb-1">
+          {question.heading}
+        </p>
+      )}
       <Question text={question.questionText} />
-      {question.description && <p className="text-xs text-slate-500">{question.description}</p>}
-      
+      {question.description && (
+        <p className="text-xs text-slate-500">{question.description}</p>
+      )}
+
       <div className="space-y-2 mt-4">
         {/* Text Response */}
         {hasTextResponse && (
@@ -131,9 +169,18 @@ function RenderQuestion({ question, isSubQuestion = false }: { question: any, is
         {fileUrl && (
           <div className="mt-3">
             {isImage ? (
-              <a href={fileUrl} target="_blank" rel="noreferrer" className="block w-full max-w-[320px] rounded-xl overflow-hidden border border-slate-200 hover:border-slate-300 hover:shadow-md transition-all group relative bg-white">
+              <a
+                href={fileUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="block w-full max-w-[320px] rounded-xl overflow-hidden border border-slate-200 hover:border-slate-300 hover:shadow-md transition-all group relative bg-white"
+              >
                 <div className="h-44 bg-slate-50/80 flex items-center justify-center relative overflow-hidden p-3">
-                  <img src={fileUrl} alt={fileName} className="w-full h-full object-contain drop-shadow-sm transition-transform duration-500 group-hover:scale-[1.02]" />
+                  <img
+                    src={fileUrl}
+                    alt={fileName}
+                    className="w-full h-full object-contain drop-shadow-sm transition-transform duration-500 group-hover:scale-[1.02]"
+                  />
                   <div className="absolute inset-0 bg-slate-900/0 group-hover:bg-slate-900/5 transition-colors flex items-center justify-center">
                     <div className="bg-white/95 text-slate-800 text-[11px] font-semibold px-3 py-1.5 rounded-full opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all shadow-sm backdrop-blur-sm">
                       Click to expand
@@ -141,17 +188,44 @@ function RenderQuestion({ question, isSubQuestion = false }: { question: any, is
                   </div>
                 </div>
                 <div className="px-3 py-2.5 flex items-center justify-between gap-3 border-t border-slate-100 bg-white">
-                  <span className="text-xs font-medium text-slate-700 truncate">{fileName}</span>
-                  <svg className="w-3.5 h-3.5 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                  <span className="text-xs font-medium text-slate-700 truncate">
+                    {fileName}
+                  </span>
+                  <svg
+                    className="w-3.5 h-3.5 text-slate-400 shrink-0"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                    />
                   </svg>
                 </div>
               </a>
             ) : (
-              <a href={fileUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-3 p-2.5 pr-4 rounded-xl border border-slate-200 bg-white hover:border-blue-300 hover:bg-blue-50/50 hover:shadow-sm transition-all max-w-[280px] group outline-none">
+              <a
+                href={fileUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-3 p-2.5 pr-4 rounded-xl border border-slate-200 bg-white hover:border-blue-300 hover:bg-blue-50/50 hover:shadow-sm transition-all max-w-[280px] group outline-none"
+              >
                 <div className="w-9 h-9 rounded-lg bg-slate-100 group-hover:bg-blue-100 text-slate-500 group-hover:text-blue-600 flex items-center justify-center shrink-0 transition-colors">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                    />
                   </svg>
                 </div>
                 <span className="text-xs font-medium text-slate-700 group-hover:text-blue-700 truncate flex-1">
@@ -164,32 +238,40 @@ function RenderQuestion({ question, isSubQuestion = false }: { question: any, is
         {/* Selected Options (Checkboxes/Radio) */}
         {hasOptions && (
           <div className="space-y-4">
-            {question.patientAnswer?.selectedOptions.map((opt: any, idx: number) => {
-              const displayLabel = opt.label || opt.id || 'Unknown';
-              
-              // Find the original option to check for subQuestions
-              const originalOption = question.options?.find((o: any) => o.id === opt.id);
-              const subQuestions = originalOption?.subQuestions || [];
+            {question.patientAnswer?.selectedOptions.map(
+              (opt: any, idx: number) => {
+                const displayLabel = opt.label || opt.id || "Unknown";
 
-              return (
-                <div key={idx} className="space-y-3">
-                  {isSingleChoice ? (
-                    <RadioAnswer label={displayLabel} />
-                  ) : (
-                    <CheckboxAnswer label={displayLabel} />
-                  )}
-                  
-                  {/* Recursively render sub-questions if they exist */}
-                  {subQuestions.length > 0 && (
-                    <div className="ml-6 space-y-4">
-                      {subQuestions.map((subQ: any) => (
-                        <RenderQuestion key={subQ.id} question={subQ} isSubQuestion={true} />
-                      ))}
-                    </div>
-                  )}
-                </div>
-              );
-            })}
+                // Find the original option to check for subQuestions
+                const originalOption = question.options?.find(
+                  (o: any) => o.id === opt.id,
+                );
+                const subQuestions = originalOption?.subQuestions || [];
+
+                return (
+                  <div key={idx} className="space-y-3">
+                    {isSingleChoice ? (
+                      <RadioAnswer label={displayLabel} />
+                    ) : (
+                      <CheckboxAnswer label={displayLabel} />
+                    )}
+
+                    {/* Recursively render sub-questions if they exist */}
+                    {subQuestions.length > 0 && (
+                      <div className="ml-6 space-y-4">
+                        {subQuestions.map((subQ: any) => (
+                          <RenderQuestion
+                            key={subQ.id}
+                            question={subQ}
+                            isSubQuestion={true}
+                          />
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                );
+              },
+            )}
           </div>
         )}
       </div>
@@ -197,7 +279,7 @@ function RenderQuestion({ question, isSubQuestion = false }: { question: any, is
   );
 
   return (
-    <div className={isSubQuestion ? 'pl-4 border-l-2 border-slate-200' : ''}>
+    <div className={isSubQuestion ? "pl-4 border-l-2 border-slate-200" : ""}>
       {isSubQuestion ? content : <SectionCard>{content}</SectionCard>}
     </div>
   );
@@ -227,7 +309,9 @@ export default function PreviewDetailsPage() {
   if (error || !data?.success) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4 px-4">
-        <p className="text-lg font-semibold text-red-600">Failed to load details</p>
+        <p className="text-lg font-semibold text-red-600">
+          Failed to load details
+        </p>
         <p className="text-sm text-slate-500">Please try again</p>
         <button
           onClick={() => navigate({ to: "/dashboard/assessment-table" })}
@@ -240,32 +324,42 @@ export default function PreviewDetailsPage() {
   }
 
   const details = data.data;
-  const statusDisplay = (details?.status || '')
-    .split(' ')
+  const statusDisplay = (details?.status || "")
+    .split(" ")
     .filter(Boolean)
-    .map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
-    .join(' ');
-  const isRejected = details?.status === 'REJECTED' || details?.status === 'DECLINED';
-  
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+    .join(" ");
+  const isRejected =
+    details?.status === "REJECTED" || details?.status === "DECLINED";
+
   const formatCurrency = (amount: number) => `$${amount.toFixed(2)}`;
-  
+
   const complianceChecks = [
     "I have reviewed and agree to the Terms of Service and Privacy Policy.",
     "I certify that all information provided is accurate and complete.",
     "I understand that providing false or misleading information may result in denial of treatment.",
     "I understand that treatment recommendations are based on the information I have provided.",
-    "I understand that additional information may be requested before treatment is approved."
+    "I understand that additional information may be requested before treatment is approved.",
   ];
 
-  const pName = details.patient?.name || details.patientName || sessionStorage.getItem('currentPatientName') || "Unknown Patient";
-  const pImage = details.patient?.image || details.patientImage || sessionStorage.getItem('currentPatientImage') || null;
-  const pInitials = pName
-    .split(' ')
-    .filter(Boolean)
-    .map(w => w[0])
-    .slice(0, 2)
-    .join('')
-    .toUpperCase() || '??';
+  const pName =
+    details.patient?.name ||
+    details.patientName ||
+    sessionStorage.getItem("currentPatientName") ||
+    "Unknown Patient";
+  const pImage =
+    details.patient?.image ||
+    details.patientImage ||
+    sessionStorage.getItem("currentPatientImage") ||
+    null;
+  const pInitials =
+    pName
+      .split(" ")
+      .filter(Boolean)
+      .map((w) => w[0])
+      .slice(0, 2)
+      .join("")
+      .toUpperCase() || "??";
 
   return (
     <div className="w-full max-w-3xl mx-auto px-4 py-8">
@@ -286,9 +380,15 @@ export default function PreviewDetailsPage() {
               {/* Avatar */}
               <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center shrink-0 overflow-hidden">
                 {pImage ? (
-                  <img src={pImage} alt={pName} className="w-full h-full object-cover" />
+                  <img
+                    src={pImage}
+                    alt={pName}
+                    className="w-full h-full object-cover"
+                  />
                 ) : (
-                  <span className="text-sm font-medium text-blue-700">{pInitials}</span>
+                  <span className="text-sm font-medium text-blue-700">
+                    {pInitials}
+                  </span>
                 )}
               </div>
               <div>
@@ -305,30 +405,34 @@ export default function PreviewDetailsPage() {
                 )}
               </div>
             </div>
-            
+
             <div className="flex items-center gap-2">
               <span className="text-xs font-medium text-slate-700 bg-slate-100 px-3 py-1 rounded-full">
                 {details.assessment.category}
               </span>
-              <span className={`text-xs font-semibold px-3 py-1 rounded-full ${
-                isRejected ? 'bg-red-50 text-red-600 border border-red-100' :
-                details.status === 'APPROVED' ? 'bg-green-50 text-green-600 border border-green-100' :
-                'bg-orange-50 text-orange-600 border border-orange-100'
-              }`}>
+              <span
+                className={`text-xs font-semibold px-3 py-1 rounded-full ${
+                  isRejected
+                    ? "bg-red-50 text-red-600 border border-red-100"
+                    : details.status === "APPROVED"
+                      ? "bg-green-50 text-green-600 border border-green-100"
+                      : "bg-orange-50 text-orange-600 border border-orange-100"
+                }`}
+              >
                 {statusDisplay}
               </span>
             </div>
           </div>
-          
+
           {/* Hero Image */}
           {details.assessment.thumbnail && (
             <div className="w-full h-48 rounded-xl overflow-hidden bg-slate-50 border border-slate-100 p-2 mt-4 flex items-center justify-center">
               <img
-                src={details.assessment.thumbnail.replace(/`/g, '')}
+                src={details.assessment.thumbnail.replace(/`/g, "")}
                 alt={details.assessment.title}
                 className="w-full h-full object-contain drop-shadow-sm"
                 onError={(e) => {
-                  (e.target as HTMLImageElement).style.display = 'none';
+                  (e.target as HTMLImageElement).style.display = "none";
                 }}
               />
             </div>
@@ -339,14 +443,13 @@ export default function PreviewDetailsPage() {
         </SectionCard>
 
         {/* Render all dynamic questions */}
-        {details.questions.map(q => (
+        {details.questions.map((q) => (
           <RenderQuestion key={q.id} question={q} />
         ))}
 
         {/* Compliance Confirmation */}
         <div className="bg-white border border-[#E5E7EB] rounded-xl p-5 space-y-3">
           <div className="flex items-center gap-2 mb-1">
-          
             <p className="text-sm font-semibold text-slate-800">
               Compliance Confirmation
             </p>
@@ -361,7 +464,10 @@ export default function PreviewDetailsPage() {
           <p className="font-semibold text-slate-800 mb-1">Payment Summary</p>
           <p className="text-xs text-slate-500 mb-4">
             Patient selected{" "}
-            {details.paymentSummary.products.length === 1 ? "one product" : `${details.paymentSummary.products.length} products`}:
+            {details.paymentSummary.products.length === 1
+              ? "one product"
+              : `${details.paymentSummary.products.length} products`}
+            :
           </p>
 
           <div className="flex flex-col sm:flex-row gap-6">
@@ -371,11 +477,11 @@ export default function PreviewDetailsPage() {
                 <div key={i} className="flex items-center gap-3">
                   <div className="w-12 h-12 bg-[#2A2D31] rounded-lg overflow-hidden shrink-0 flex items-center justify-center">
                     <img
-                      src={p.image.replace(/`/g, '')}
+                      src={p.image.replace(/`/g, "")}
                       alt={p.name}
                       className="w-full h-full object-contain p-1"
                       onError={(e) => {
-                        (e.target as HTMLImageElement).style.display = 'none';
+                        (e.target as HTMLImageElement).style.display = "none";
                       }}
                     />
                   </div>
@@ -408,21 +514,33 @@ export default function PreviewDetailsPage() {
               </div>
               <div className="flex justify-between text-slate-600">
                 <span>Service Fees</span>
-                <span>{formatCurrency(details.paymentSummary.serviceFees)}</span>
+                <span>
+                  {formatCurrency(details.paymentSummary.serviceFees)}
+                </span>
               </div>
               <div className="flex justify-between text-slate-600">
                 <span>Shipping charge</span>
-                <span>{formatCurrency(details.paymentSummary.shippingCharge)}</span>
+                <span>
+                  {formatCurrency(details.paymentSummary.shippingCharge)}
+                </span>
               </div>
               <div className="flex justify-between text-slate-600">
                 <span>Discount</span>
-                <span className={details.paymentSummary.discount > 0 ? "text-red-500" : ""}>
-                  {details.paymentSummary.discount > 0 ? `- ${formatCurrency(details.paymentSummary.discount)}` : formatCurrency(details.paymentSummary.discount)}
+                <span
+                  className={
+                    details.paymentSummary.discount > 0 ? "text-red-500" : ""
+                  }
+                >
+                  {details.paymentSummary.discount > 0
+                    ? `- ${formatCurrency(details.paymentSummary.discount)}`
+                    : formatCurrency(details.paymentSummary.discount)}
                 </span>
               </div>
               <div className="flex justify-between font-bold text-slate-800 border-t border-[#E5E7EB] pt-2 mt-1">
                 <span>Total</span>
-                <span className="text-[#1447E6]">{formatCurrency(details.paymentSummary.total)}</span>
+                <span className="text-[#1447E6]">
+                  {formatCurrency(details.paymentSummary.total)}
+                </span>
               </div>
             </div>
           </div>
@@ -431,13 +549,15 @@ export default function PreviewDetailsPage() {
         {/* Decline Reason (if doctorNotes exist) */}
         {details.doctorNotes && (
           <div className="bg-amber-50 border border-amber-200 rounded-xl p-5">
-            <p className="font-semibold text-slate-800 text-sm">Assessment Notes</p>
-            {details.reviewedBy && (
-              <p className="text-xs text-slate-500 mt-1">By: {details.reviewedBy.name}</p>
-            )}
-            <p className="text-sm text-slate-600 mt-4">
-              {details.doctorNotes}
+            <p className="font-semibold text-slate-800 text-sm">
+              Assessment Notes
             </p>
+            {details.reviewedBy && (
+              <p className="text-xs text-slate-500 mt-1">
+                By: {details.reviewedBy.name}
+              </p>
+            )}
+            <p className="text-sm text-slate-600 mt-4">{details.doctorNotes}</p>
           </div>
         )}
       </div>
