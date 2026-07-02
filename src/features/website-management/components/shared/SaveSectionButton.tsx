@@ -7,8 +7,8 @@ interface SaveSectionButtonProps {
 }
 
 export function SaveSectionButton({ section }: SaveSectionButtonProps) {
-  const { isDirty, saveSection, savingSection } = useHomepage();
-  const isSaving = savingSection === section;
+  const { isDirty, isSaving: isContextSaving, saveSection, savingSection } = useHomepage();
+  const isSaving = isContextSaving && savingSection === section;
 
   return (
     <div className="pt-4 flex justify-end border-t border-slate-100 mt-6">

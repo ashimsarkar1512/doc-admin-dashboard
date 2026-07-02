@@ -138,6 +138,10 @@ export const useNotificationSocket = () => {
     socket.on('notification', (data) => {
       // Refresh the list and unread count
       queryClient.invalidateQueries({ queryKey: ['notifications'] });
+      
+      // Also refresh contact leads since new contact leads might trigger a notification
+      queryClient.invalidateQueries({ queryKey: ['contact-leads'] });
+      queryClient.invalidateQueries({ queryKey: ['contact-leads-unread-count'] });
 
       // Display a toast
       toast(data.title, {
