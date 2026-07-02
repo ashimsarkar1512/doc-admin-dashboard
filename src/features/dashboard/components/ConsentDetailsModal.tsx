@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react";
+
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   getConsentById,
-  updateConsent,
+
   deleteConsent,
 } from "@/api/endpoints/consentManagement.api";
 import Dialog from "@/components/shared/Dialog";
@@ -10,17 +10,16 @@ import {
   Loader2,
   Trash2,
   X,
-  Save,
+
   User,
   Mail,
   Activity,
   Globe,
   Smartphone,
-  CheckCircle2,
-  XCircle,
+
   Clock,
   ShieldAlert,
-  Edit3
+
 } from "lucide-react";
 import Swal from "sweetalert2";
 

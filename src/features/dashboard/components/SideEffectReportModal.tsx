@@ -6,7 +6,7 @@ import {
   deleteSideEffectReport,
   type UpdateSideEffectReportPayload,
 } from "@/api/endpoints/reportSideEffect.api";
-import { getAllCategories, getAllDoctors } from "@/api/endpoints/dashboard/patientManagement";
+
 import Dialog from "@/components/shared/Dialog";
 import {
   Download,
@@ -84,17 +84,17 @@ export default function SideEffectReportModal({
   });
 
   // Fetch Services (Categories) and Providers (Doctors) for dropdowns
-  const { data: categories = [] } = useQuery({
-    queryKey: ["all-categories"],
-    queryFn: getAllCategories,
-    enabled: isEditing,
-  });
+  // const { data: categories = [] } = useQuery({
+  //   queryKey: ["all-categories"],
+  //   queryFn: getAllCategories,
+  //   enabled: isEditing,
+  // });
 
-  const { data: doctors = [] } = useQuery({
-    queryKey: ["all-doctors"],
-    queryFn: getAllDoctors,
-    enabled: isEditing,
-  });
+  // const { data: doctors = [] } = useQuery({
+  //   queryKey: ["all-doctors"],
+  //   queryFn: getAllDoctors,
+  //   enabled: isEditing,
+  // });
 
   // Reset state when closed or opened
   useEffect(() => {
