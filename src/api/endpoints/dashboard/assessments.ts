@@ -7,6 +7,7 @@ export interface Assessment {
   patientImage: string | null;
   patientId: string;
   provider: string;
+  payment:number
   patientType: 'New Patient' | 'Repeat Patient' | string;
   categoryName: string;
   status: 'PENDING' | 'APPROVED' | 'REJECTED' | 'REQUESTED REFILL' | string;

@@ -7,6 +7,7 @@ export interface Patient {
   email: string;
   contactNumber: string;
   activeConsultation: number;
+  payment:number
   status: 'ACTIVE' | 'BANNED' | 'BLOCKED' | 'DISABLED' | 'DELETED' | string;
   joiningDate: string;
 }
@@ -62,6 +63,7 @@ export interface Assessment {
   assessmentName?: string | null;
   status: string;
   date: string;
+  payment:number
 }
 
 export interface GetDoctorsResponse {
