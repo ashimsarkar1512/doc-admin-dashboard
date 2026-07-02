@@ -130,7 +130,7 @@ export default function AssessmentsPage() {
       </div>
 
       {/* Category Filter */}
-      <div className="flex flex-wrap items-center gap-2 bg-white p-5 rounded-2xl border border-gray-150 shadow-sm overflow-x-auto whitespace-nowrap scrollbar-hide">
+      <div className="flex flex-wrap items-center gap-2 bg-white p-5 rounded-2xl  shadow-sm overflow-x-auto whitespace-nowrap scrollbar-hide">
         <button
           onClick={() => setCategoryNameFilter('')}
           className={`px-4 py-2 rounded-full text-xs font-medium transition-all duration-150 cursor-pointer ${
