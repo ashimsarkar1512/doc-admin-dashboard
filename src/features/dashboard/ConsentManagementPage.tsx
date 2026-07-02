@@ -16,13 +16,19 @@ import {
   ChevronRight,
   Loader2,
   AlertCircle,
-
   Download,
   RefreshCw,
   Eye,
-
+  Trash2,
+  Globe,
+  Smartphone,
+  CheckCircle2,
+  XCircle
 } from "lucide-react";
 import DatePicker from "@/components/shared/DatePicker";
+import ConsentDetailsModal from "./components/ConsentDetailsModal";
+import { deleteConsent } from "@/api/endpoints/consentManagement.api";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 
 import jsPDF from "jspdf";
@@ -112,6 +118,54 @@ export default function ConsentManagementPage() {
     ...(source && { source }),
     ...(startDate && { startDate }),
     ...(endDate && { endDate }),
+  };
+
+  const queryClient = useQueryClient();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedConsentId, setSelectedConsentId] = useState<string | null>(null);
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => deleteConsent(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["consents"] });
+      queryClient.invalidateQueries({ queryKey: ["consents-stats"] });
+      Swal.fire({
+        title: "Deleted!",
+        text: "The consent log has been deleted successfully.",
+        icon: "success",
+        timer: 2000,
+        showConfirmButton: false,
+        customClass: { container: "!z-[99999]" },
+      });
+    },
+    onError: (error: unknown) => {
+      const msg =
+        (error as { response?: { data?: { message?: string } } })?.response
+          ?.data?.message ?? "Failed to delete consent.";
+      Swal.fire({
+        title: "Error!",
+        text: msg,
+        icon: "error",
+        customClass: { container: "!z-[99999]" },
+      });
+    },
+  });
+
+  const handleDelete = async (id: string) => {
+    const result = await Swal.fire({
+      title: "Delete Consent Log?",
+      text: "This action cannot be undone.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, Delete",
+      cancelButtonText: "Cancel",
+      reverseButtons: true,
+      confirmButtonColor: "#dc2626",
+      customClass: { container: "!z-[99999]" },
+    });
+    if (result.isConfirmed) {
+      deleteMutation.mutate(id);
+    }
   };
 
   // ── Data fetching ──────────────────────────────────────────────────────────
@@ -450,6 +504,9 @@ export default function ConsentManagementPage() {
               <table className="w-full text-left text-sm text-slate-600 whitespace-nowrap">
                 <thead className="bg-slate-50 border-b border-slate-200">
                   <tr>
+                    <th className="px-5 py-4 w-12 text-center text-slate-300">
+                      <div className="w-4 h-4 rounded border border-slate-300 mx-auto" />
+                    </th>
                     {[
                       "User Name",
                       "Email",
@@ -475,6 +532,9 @@ export default function ConsentManagementPage() {
                         key={item.id}
                         className="hover:bg-slate-50 transition-colors"
                       >
+                        <td className="px-5 py-4 w-12 text-center text-slate-300">
+                           <div className="w-4 h-4 rounded border border-slate-300 mx-auto" />
+                        </td>
                         {/* User Name */}
                         <td className="px-5 py-4 whitespace-nowrap">
                           <div className="flex items-center gap-2.5">
@@ -492,45 +552,86 @@ export default function ConsentManagementPage() {
 
                         {/* Type */}
                         <td className="px-5 py-4 whitespace-nowrap">
-                          {item.type}
+                          <span className={`inline-flex px-3 py-1 rounded-full text-[11px] font-semibold ${
+                            {
+                              DATA_PROCESSING: "bg-blue-50 text-blue-600",
+                              MARKETING: "bg-purple-50 text-purple-600",
+                              ANALYTICS: "bg-teal-50 text-teal-600",
+                              AI_TRAINING: "bg-green-50 text-green-600",
+                            }[item.type?.toUpperCase()] ?? "bg-slate-100 text-slate-600"
+                          }`}>
+                            {item.type?.replace(/_/g, " ").replace(/\w\S*/g, (txt) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase())}
+                          </span>
                         </td>
 
                         {/* Status */}
                         <td className="px-5 py-4 whitespace-nowrap">
-                          <span
-                            className={`inline-flex px-2.5 py-1 rounded-full text-xs font-semibold uppercase ${
-                              {
-                                ACCEPTED: "bg-green-50 text-green-600",
-                                PENDING: "bg-yellow-50 text-yellow-600",
-                                REJECTED: "bg-red-50 text-red-600",
-                                REVOKED: "bg-red-50 text-red-600",
-                              }[item.status?.toUpperCase()] ??
-                              "bg-slate-100 text-slate-600"
-                            }`}
-                          >
-                            {item.status}
-                          </span>
+                          {item.status?.toUpperCase() === "ACCEPTED" && (
+                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-semibold bg-green-50 text-green-600">
+                              <CheckCircle2 className="w-3.5 h-3.5" /> Accepted
+                            </span>
+                          )}
+                          {(item.status?.toUpperCase() === "REVOKED" || item.status?.toUpperCase() === "REJECTED") && (
+                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-semibold bg-red-50 text-red-600">
+                              <XCircle className="w-3.5 h-3.5" /> {item.status.charAt(0).toUpperCase() + item.status.slice(1).toLowerCase()}
+                            </span>
+                          )}
+                          {item.status?.toUpperCase() === "PENDING" && (
+                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-semibold bg-yellow-50 text-yellow-600">
+                              <AlertCircle className="w-3.5 h-3.5" /> Pending
+                            </span>
+                          )}
                         </td>
 
                         {/* Source */}
                         <td className="px-5 py-4 whitespace-nowrap text-slate-500">
-                          {item.source}
+                          <div className="flex items-center gap-2">
+                            {item.source?.toUpperCase() === "WEB" ? (
+                              <Globe className="w-4 h-4 text-blue-500" />
+                            ) : (
+                              <Smartphone className="w-4 h-4 text-purple-500" />
+                            )}
+                            <span className="capitalize">{item.source?.toLowerCase()}</span>
+                          </div>
                         </td>
 
                         {/* Consent Date */}
                         <td className="px-5 py-4 whitespace-nowrap text-slate-500">
-                          {item.consentDate ? new Date(item.consentDate).toLocaleDateString() : "—"}
+                          {item.consentDate ? (
+                            <>
+                              {new Date(item.consentDate).toLocaleDateString("en-CA")} <span className="text-slate-400">{new Date(item.consentDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })}</span>
+                            </>
+                          ) : "—"}
                         </td>
 
                         {/* Action */}
                         <td className="px-5 py-4 whitespace-nowrap">
-                          <button
-                            onClick={() => console.log('View details for', item)}
-                            title="View Details"
-                            className="p-1.5 text-blue-500 hover:text-blue-700 hover:bg-blue-50 rounded transition-colors"
-                          >
-                            <Eye className="w-4 h-4" />
-                          </button>
+                          <div className="flex items-center gap-2">
+                            <button
+                              onClick={() => {
+                                setSelectedConsentId(item.id);
+                                setIsModalOpen(true);
+                              }}
+                              title="View Details"
+                              className="p-1.5 text-blue-500 hover:text-blue-700 hover:bg-blue-50 rounded transition-colors"
+                            >
+                              <Eye className="w-4 h-4" />
+                            </button>
+                            <button
+                              title="Download"
+                              className="p-1.5 text-green-500 hover:text-green-700 hover:bg-green-50 rounded transition-colors"
+                            >
+                              <Download className="w-4 h-4" />
+                            </button>
+                            <button
+                              onClick={() => handleDelete(item.id)}
+                              disabled={deleteMutation.isPending}
+                              title="Delete"
+                              className="p-1.5 text-red-500 hover:text-red-700 hover:bg-red-50 rounded transition-colors"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     );
@@ -576,6 +677,14 @@ export default function ConsentManagementPage() {
       </div>
 
       {/* ── Detail Modal ──────────────────────────────────────────────────── */}
+      <ConsentDetailsModal
+        isOpen={isModalOpen}
+        onClose={() => {
+          setIsModalOpen(false);
+          setSelectedConsentId(null);
+        }}
+        consentId={selectedConsentId}
+      />
    
     </div>
   );
