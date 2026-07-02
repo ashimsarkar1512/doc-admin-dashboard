@@ -43,8 +43,12 @@ export default function ViewMessageModal({
           {/* Contact Details Card */}
           <div className="bg-slate-50 border border-slate-100 rounded-xl p-5 space-y-4">
             <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Contact Information</h4>
-            
-            <div className="flex items-start gap-3">
+
+
+             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+
+
+              <div className="flex items-start gap-3">
               <div className="mt-0.5 bg-white p-2 rounded-lg shadow-sm border border-slate-100 text-blue-500">
                 <User className="w-4 h-4" />
               </div>
@@ -53,8 +57,6 @@ export default function ViewMessageModal({
                 <p className="text-sm font-medium text-slate-800">{lead.fullName}</p>
               </div>
             </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
               <div className="flex items-start gap-3">
                 <div className="mt-0.5 bg-white p-2 rounded-lg shadow-sm border border-slate-100 text-amber-500">
                   <Mail className="w-4 h-4" />
@@ -64,7 +66,11 @@ export default function ViewMessageModal({
                   <p className="text-sm font-medium text-slate-800 truncate" title={lead.email}>{lead.email}</p>
                 </div>
               </div>
-              <div className="flex items-start gap-3">
+              
+            </div>
+            
+            
+<div className="flex items-start gap-3">
                 <div className="mt-0.5 bg-white p-2 rounded-lg shadow-sm border border-slate-100 text-green-500">
                   <Phone className="w-4 h-4" />
                 </div>
@@ -73,7 +79,7 @@ export default function ViewMessageModal({
                   <p className="text-sm font-medium text-slate-800">{lead.phone}</p>
                 </div>
               </div>
-            </div>
+           
           </div>
 
           {/* Inquiry Details Card */}
