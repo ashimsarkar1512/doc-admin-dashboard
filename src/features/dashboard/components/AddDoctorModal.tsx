@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Upload, Loader2, User } from 'lucide-react';
+import { Upload, Loader2, User, Eye, EyeOff } from 'lucide-react';
 import { toast } from 'sonner';
 import Dialog from '@/components/shared/Dialog';
 import { uploadAttachment } from '@/api/endpoints/attachments.api';
@@ -39,6 +39,7 @@ const EMPTY = {
 export default function AddDoctorModal({ isOpen, onClose, onSuccess }: Props) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [form, setForm] = useState(EMPTY);
+  const [showPassword, setShowPassword] = useState(false);
 
   const [thumbnailPreview, setThumbnailPreview] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
@@ -189,7 +190,23 @@ export default function AddDoctorModal({ isOpen, onClose, onSuccess }: Props) {
         {/* Password */}
         <div className="space-y-0.5">
           <label className="text-[13px] font-medium text-gray-700">Password <span className="text-red-500">*</span></label>
-          <input type="password" required value={form.password} onChange={set('password')} placeholder="Min. 8 characters" className={INPUT_CLS} />
+          <div className="relative">
+            <input 
+              type={showPassword ? "text" : "password"} 
+              required 
+              value={form.password} 
+              onChange={set('password')} 
+              placeholder="Min. 8 characters" 
+              className={INPUT_CLS} 
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute inset-y-0 right-3 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
+            >
+              {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+            </button>
+          </div>
         </div>
 
         {/* Status */}

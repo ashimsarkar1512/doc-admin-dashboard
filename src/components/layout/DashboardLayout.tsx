@@ -1960,14 +1960,12 @@ export default function DashboardLayout() {
           {/* Page Title */}
           <div className="flex flex-col justify-center h-20 flex-1 min-w-0">
             <h1
-              className="text-[14px] md:text-[20px] font-semibold text-slate-900 tracking-[-0.2px] truncate"
-              style={{ margin: 0, lineHeight: "1.2" }}
+              className="m-0 text-[#101828] font-['Quicksand'] text-[16px] md:text-[20px] font-[600] leading-[30px] tracking-[-0.2px] truncate"
             >
               {pageTitle}
             </h1>
             <p
-              className="text-[11px] md:text-[13px] text-slate-400 truncate"
-              style={{ margin: 0, marginTop: "4px", lineHeight: "1.2" }}
+              className="m-0 mt-0.5 text-[#6A7282] font-['Quicksand'] text-[12px] md:text-[14px] font-[400] leading-[20px] truncate"
             >
               {pageSubtitle}
             </p>
