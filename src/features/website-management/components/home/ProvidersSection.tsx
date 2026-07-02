@@ -1,6 +1,7 @@
 import { SectionCard } from '../shared/SectionCard';
 import { FormInput } from '../shared/FormInput';
 import { useHomepage } from '../../context/HomepageContext';
+import { SaveSectionButton } from '../shared/SaveSectionButton';
 
 export function ProvidersSection() {
   const { form, setField } = useHomepage();
@@ -45,6 +46,7 @@ export function ProvidersSection() {
           </div>
         </div>
       </div>
+      <SaveSectionButton section="PROVIDERS" />
     </SectionCard>
   );
 }

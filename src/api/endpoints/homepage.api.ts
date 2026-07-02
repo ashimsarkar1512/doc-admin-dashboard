@@ -2,11 +2,11 @@ import { axiosInstance } from '@/api/axiosInstance';
 import type { HomepageContentResponse, HomepageFormState } from '../../features/website-management/types/homepage.types';
 
 const BASE = '/admin/homepage-content';
-
+const getPublicBase = '/public/homepage-content' 
 // ─── GET ────────────────────────────────────────────────────────────────────
 
 export async function getHomepageContent(): Promise<HomepageContentResponse> {
-  const { data } = await axiosInstance.get<HomepageContentResponse>(BASE);
+  const { data } = await axiosInstance.get<HomepageContentResponse>(getPublicBase);
   return data;
 }
 

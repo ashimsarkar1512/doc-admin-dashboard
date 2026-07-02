@@ -4,6 +4,7 @@ import { SectionCard } from '../shared/SectionCard';
 import { FormInput } from '../shared/FormInput';
 import { FormTextarea } from '../shared/FormTextarea';
 import { useHomepage } from '../../context/HomepageContext';
+import { SaveSectionButton } from '../shared/SaveSectionButton';
 
 export function HeroSection() {
   const { form, setField, heroImageRef, heroBadgeImageRef, isLoading } = useHomepage();
@@ -166,6 +167,7 @@ export function HeroSection() {
           </div>
         </div>
       </div>
+      <SaveSectionButton section="HERO" />
     </SectionCard>
   );
 }

@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { X,  Calendar, Mail, Phone, Activity,} from 'lucide-react';
+import { X,  Calendar, Mail, Phone, Activity, DollarSign,} from 'lucide-react';
 import { getPatientDetails } from '@/api/endpoints/dashboard/patientManagement';
 
 interface ViewPatientModalProps {
@@ -137,6 +137,16 @@ export default function ViewPatientModal({ isOpen, onClose, patientId }: ViewPat
                           day: 'numeric'
                         })}
                       </p>
+                    </div>
+                  </div>
+                  {/* for payment  */}
+                     <div className="flex items-start gap-3 p-3 border border-slate-100 rounded-lg">
+                    <div className="p-2 bg-amber-50 text-amber-600 rounded-lg shrink-0">
+                      <DollarSign size={18} />
+                    </div>
+                    <div>
+                      <p className="text-xs text-slate-400 font-medium uppercase tracking-wider">Payment</p>
+                      <p className="text-sm text-slate-700 font-semibold">{patient.payment}</p>
                     </div>
                   </div>
                 </div>

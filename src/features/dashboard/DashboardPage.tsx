@@ -1,21 +1,18 @@
 import MetricCard from '@/components/shared/cards/MetricCard';
 import { PatientTable } from './components/PatientTable';
 import { useDashboardStats } from '@/hooks/useDashboardStats';
+import PageHeader from '@/components/shared/PageHeader';
 
 export default function DashboardPage() {
   const { data, isLoading } = useDashboardStats();
   console.log('Dashboard stats:', data);
 
   return (
-    <div className="w-full p-4 md:px-6">
-      <div className="mb-6">
-        <h1 className="text-2xl sm:text-3xl font-bold text-slate-800 tracking-tight">
-          Welcome to your Dashboard!
-        </h1>
-        <p className="text-sm text-slate-500 font-medium">
-          Latest patient assessments and their statuses
-        </p>
-      </div>
+    <div className="w-full p-4 md:px-6 md:pt-4">
+      <PageHeader 
+        title="Welcome to your Dashboard!"
+        subtitle="Latest patient assessments and their statuses"
+      />
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 w-full">
         <MetricCard label="Total Patients" value={isLoading ? '...' : (data?.totalPatients ?? 0)} />

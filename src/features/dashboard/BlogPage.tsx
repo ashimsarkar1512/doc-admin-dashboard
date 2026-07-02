@@ -202,7 +202,7 @@ export default function BlogPage() {
   };
 
   return (
-    <div className="p-6 mx-auto space-y-6">
+    <div className="p-4 md:p-6 md:pt-4 mx-auto space-y-6">
       {/* Header Area */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>

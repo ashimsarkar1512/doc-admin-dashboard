@@ -2,6 +2,7 @@ import { SectionCard } from '../shared/SectionCard';
 import { FormInput } from '../shared/FormInput';
 import { FormTextarea } from '../shared/FormTextarea';
 import { useHomepage } from '../../context/HomepageContext';
+import { SaveSectionButton } from '../shared/SaveSectionButton';
 
 export function AssessmentSection() {
   const { form, setField } = useHomepage();
@@ -23,6 +24,7 @@ export function AssessmentSection() {
           placeholder="Comprehensive care for a wide range of everyday conditions…"
         />
       </div>
+      <SaveSectionButton section="ASSESSMENT" />
     </SectionCard>
   );
 }

@@ -305,7 +305,7 @@ export default function SideEffectReportPage() {
         ) : (
           <>
             <div className="overflow-x-auto">
-              <table className="w-full text-left text-sm text-slate-600">
+              <table className="w-full text-left text-sm text-slate-600 whitespace-nowrap">
                 <thead className="bg-slate-50 border-b border-slate-200">
                   <tr>
                     <th className="px-5 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider whitespace-nowrap">
