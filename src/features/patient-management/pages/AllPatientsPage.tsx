@@ -1,6 +1,8 @@
 import { useState, useRef, useCallback } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Search, ChevronDown, Eye, Ban, Trash2,  UserCircle2, CheckCircle2, FileDown } from 'lucide-react';
+import html2canvas from 'html2canvas';
+import PageHeader from '@/components/shared/PageHeader';
 import Swal from 'sweetalert2';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
@@ -411,10 +413,8 @@ const handleStatusUpdate = (id: string, newStatus: string, name: string, actionT
   });
 };
   return (
-    <div className="w-full min-h-screen bg-slate-50 p-6 md:p-8">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-5 gap-4">
-        <h1 className="text-xl font-semibold text-slate-800">Patient Management</h1>
-      </div>
+    <div className="w-full min-h-screen bg-slate-50 p-4 md:p-6 md:pt-4">
+      <PageHeader title="Patient Management" />
 
       <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
         <div className="flex items-center gap-3 flex-wrap">

@@ -1,7 +1,8 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
-import { Search, ChevronDown, RefreshCw,} from 'lucide-react';
+import { Search, ChevronDown, RefreshCw } from 'lucide-react';
+import PageHeader from '@/components/shared/PageHeader';
 import { getAssessments, getCategories, type Assessment, type Category } from '@/api/endpoints/dashboard/assessments';
 import AssignDoctorModal from './components/AssignDoctorModal';
 import { useQueryClient } from '@tanstack/react-query';
@@ -235,11 +236,8 @@ export default function AssessmentTablePage() {
   }));
 
   return (
-    <div className="w-full min-h-screen bg-slate-50 p-6 md:p-8">
-      {/* Page title */}
-      <h1 className="text-xl font-semibold text-slate-800 tracking-tight mb-6">
-        All Assessments
-      </h1>
+    <div className="w-full min-h-screen bg-slate-50 p-4 md:p-6 md:pt-4">
+      <PageHeader title="All Assessments" />
 
       {/* Toolbar */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">

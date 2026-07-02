@@ -13,6 +13,7 @@ import ViewDiscountModal from "./components/Discount/ViewDiscountModal";
 import CreateDiscountModal from "./components/Discount/CreateDiscountModal";
 import DeleteDiscountModal from "./components/Discount/DeleteDiscountModal";
 import { usePermissions } from '@/hooks/usePermissions';
+import PageHeader from '@/components/shared/PageHeader';
 
 export default function DiscountsPage() {
   const [page, setPage] = useState(1);
@@ -80,27 +81,22 @@ export default function DiscountsPage() {
     });
 
   return (
-    <div className="w-full p-4 md:p-8">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-slate-800 tracking-tight">
-            Discounts & Marketing
-          </h1>
-          <p className="text-sm text-slate-500 font-medium mt-1">
-            Manage promotional codes and marketing campaigns
-          </p>
-        </div>
-        {canManageDiscounts && (
-          <button
-            onClick={() => setIsCreateModalOpen(true)}
-            className="flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-semibold transition-colors whitespace-nowrap"
-          >
-            <Plus className="w-4 h-4" />
-            Create Custom Discount
-          </button>
-        )}
-      </div>
+    <div className="w-full p-4 md:p-6 md:pt-4">
+      <PageHeader 
+        title="Discounts & Marketing" 
+        subtitle="Manage promotional codes and marketing campaigns"
+        action={
+          canManageDiscounts && (
+            <button
+              onClick={() => setIsCreateModalOpen(true)}
+              className="flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-semibold transition-colors whitespace-nowrap"
+            >
+              <Plus className="w-4 h-4" />
+              Create Custom Discount
+            </button>
+          )
+        }
+      />
 
       {/* Search + Filter */}
       <div className="flex flex-col sm:flex-row gap-3 mb-5">

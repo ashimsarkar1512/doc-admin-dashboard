@@ -7,6 +7,7 @@ import AddDoctorModal from './components/AddDoctorModal';
 import ViewDoctorModal from './components/ViewDoctorModal';
 import EditDoctorModal from './components/EditDoctorModal';
 import { usePermissions } from '@/hooks/usePermissions';
+import PageHeader from '@/components/shared/PageHeader';
 
 const STATUS_OPTIONS = [
   { label: 'All Status', value: '' },
@@ -208,20 +209,21 @@ const handleDelete = (id: string, name: string) => {
 
   return (
     <>
-      <div className="w-full p-6 md:p-8">
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
-          <h1 className="text-xl font-semibold text-slate-800">Doctor Management</h1>
-          {canManageDoctors && (
-            <button
-              onClick={() => setIsAddModalOpen(true)}
-              className="flex items-center gap-2 bg-[#1447E6] text-white px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors shadow-sm whitespace-nowrap"
-            >
-              <Plus size={16} />
-              Add New Doctor
-            </button>
-          )}
-        </div>
+      <div className="w-full p-4 md:p-6 md:pt-4">
+        <PageHeader 
+          title="Doctor Management" 
+          action={
+            canManageDoctors && (
+              <button
+                onClick={() => setIsAddModalOpen(true)}
+                className="flex items-center gap-2 bg-[#1447E6] text-white px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors shadow-sm whitespace-nowrap"
+              >
+                <Plus size={16} />
+                Add New Doctor
+              </button>
+            )
+          } 
+        />
 
         {/* Toolbar */}
         <div className="flex flex-wrap items-center justify-between gap-3 mb-4">

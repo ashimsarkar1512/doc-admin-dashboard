@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 import type { Assessment } from '@/types';
 import MetricCard from '@/components/shared/cards/MetricCard';
 import AssessmentCard from '@/components/shared/cards/AssessmentCard';
+import PageHeader from '@/components/shared/PageHeader';
 import AssessmentFormDialog from './components/AssessmentFormDialog';
 import { getAssessments, getAssessmentStats } from '@/api/endpoints/assessments.api';
 import { getCategories } from '@/api/endpoints/categories.api';
@@ -94,7 +95,7 @@ export default function AssessmentsPage() {
   };
 
   return (
-    <div className="p-6 md:p-10 w-full space-y-10 font-sans">
+    <div className="p-4 md:p-6 md:pt-4 w-full space-y-8 font-sans">
 
       {/* Metric Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6">
@@ -156,25 +157,21 @@ export default function AssessmentsPage() {
       </div>
 
       {/* Section Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="space-y-1">
-          <h2 className="text-xl md:text-2xl font-bold text-gray-900 tracking-tight">
-            Assessment Management
-          </h2>
-          <p className="text-xs md:text-sm text-gray-400 font-light">
-            Create and manage assessment forms and questions.
-          </p>
-        </div>
-        {canManageAssessments && (
-          <button
-            onClick={handleOpenCreate}
-            className="inline-flex items-center gap-2 bg-[#2563EB] hover:bg-blue-700 text-white px-5 py-3 rounded-xl font-bold text-sm transition-all shadow-sm shadow-blue-600/10 cursor-pointer self-start sm:self-auto"
-          >
-            <Plus className="h-4 w-4" />
-            <span>Create Assessment</span>
-          </button>
-        )}
-      </div>
+      <PageHeader
+        title="Assessment Management"
+        subtitle="Create and manage assessment forms and questions."
+        action={
+          canManageAssessments && (
+            <button
+              onClick={handleOpenCreate}
+              className="inline-flex items-center gap-2 bg-[#2563EB] hover:bg-blue-700 text-white px-5 py-3 rounded-xl font-bold text-sm transition-all shadow-sm shadow-blue-600/10 cursor-pointer self-start sm:self-auto"
+            >
+              <Plus className="h-4 w-4" />
+              <span>Create Assessment</span>
+            </button>
+          )
+        }
+      />
 
       {/* Cards Grid */}
       {isLoading ? (
