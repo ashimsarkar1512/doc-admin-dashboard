@@ -43,22 +43,36 @@ function Avatar({
 }
 
 function StatusBadge({ status }: { status: string }) {
-  const s = status.toUpperCase();
-  if (s === "APPROVED")
+  const s = status ? status.toUpperCase() : "PENDING";
+  
+  const displayStatus = (status || "Pending")
+    .split(' ')
+    .filter(Boolean)
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(' ');
+
+  if (s === "APPROVED" || s === "ACCEPTED" || s === "COMPLETED")
     return (
       <span className="inline-block rounded-lg bg-[#DCFCE7] px-3 py-1 text-xs font-medium text-[#016630]">
-        Approved
+        {displayStatus}
       </span>
     );
-  if (s === "DECLINED")
+  if (s === "DECLINED" || s === "REJECTED")
     return (
       <span className="inline-block rounded-lg bg-[#FFE2E2] px-3 py-1 text-xs font-medium text-[#9F0712]">
-        Declined
+        {displayStatus}
       </span>
     );
+  if (s === "REQUESTED REFILL")
+    return (
+      <span className="inline-block rounded-lg bg-[#EFF6FF] px-3 py-1 text-xs font-medium text-[#3B82F6]">
+        {displayStatus}
+      </span>
+    );
+    
   return (
     <span className="inline-block rounded-lg bg-[#FFEDD4] px-3 py-1 text-xs font-medium text-[#9F2D00]">
-      Pending
+      {displayStatus}
     </span>
   );
 }
@@ -73,6 +87,10 @@ export function PatientTable() {
   const { data, isLoading } = useQuery({
   queryKey: ["recent-activity"],
   queryFn: () => getRecentActivity(),
+  staleTime: 0,
+  refetchOnMount: true,
+  refetchOnWindowFocus: true,
+  refetchInterval: 15000,
 });
 console.log(data)
   const [selected, setSelected] = useState<Assessment | null>(null);

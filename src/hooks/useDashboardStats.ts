@@ -11,4 +11,8 @@ export const useRecentActivity = () =>
   useQuery({
     queryKey: ['recent-activity'],
     queryFn: getRecentActivity,
+    staleTime: 0,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    refetchInterval: 15000,
   });

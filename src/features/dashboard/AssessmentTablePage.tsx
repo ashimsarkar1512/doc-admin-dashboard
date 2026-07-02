@@ -47,7 +47,10 @@ function PatientTypeBadge({ type }: { type: string }) {
 const STATUS_STYLES: Record<string, string> = {
   PENDING: 'bg-[#FFF7ED] text-[#F97316] border border-[#FFEDD5]',
   APPROVED: 'bg-[#F0FDF4] text-[#22C55E] border border-[#DCFCE7]',
+  ACCEPTED: 'bg-[#F0FDF4] text-[#22C55E] border border-[#DCFCE7]',
+  COMPLETED: 'bg-[#F0FDF4] text-[#22C55E] border border-[#DCFCE7]',
   REJECTED: 'bg-[#FEF2F2] text-[#EF4444] border border-[#FEE2E2]',
+  DECLINED: 'bg-[#FEF2F2] text-[#EF4444] border border-[#FEE2E2]',
   'REQUESTED REFILL': 'bg-[#EFF6FF] text-[#3B82F6] border border-[#DBEAFE]',
 };
 
