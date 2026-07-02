@@ -193,7 +193,6 @@ export default function DashboardLayout() {
     queryKey: ["contact-leads-unread-count"],
     queryFn: () => getContactLeads({ read: false, limit: 1 }),
     enabled: isAuthenticated,
-    refetchInterval: 30000, // Refresh every 30 seconds instead of 5
     staleTime: 1000 * 60 * 2, // 2 minutes
     refetchOnWindowFocus: false, // Don't refetch on window focus
     retry: 0, // Don't retry on failure since it's causing CORS errors
@@ -980,7 +979,7 @@ export default function DashboardLayout() {
         </header>
 
         {/* Scrollable Content */}
-        <main className="flex-1 overflow-y-auto w-full bg-[#FAFAFA]">
+        <main className="flex-1 overflow-y-auto overflow-x-hidden w-full bg-[#FAFAFA]">
           <Outlet />
         </main>
       </div>

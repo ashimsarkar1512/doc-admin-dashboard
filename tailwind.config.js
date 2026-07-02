@@ -8,8 +8,8 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ["Geist Variable", "system-ui", "sans-serif"],
-        heading: ["Geist Variable", "system-ui", "sans-serif"],
+        sans: ["Quicksand Variable", "system-ui", "sans-serif"],
+        heading: ["Quicksand Variable", "system-ui", "sans-serif"],
         mono: ["ui-monospace", "Consolas", "monospace"],
       },
       borderRadius: {

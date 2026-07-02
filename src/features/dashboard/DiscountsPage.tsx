@@ -140,7 +140,7 @@ export default function DiscountsPage() {
         ) : (
           <>
             <div className="overflow-x-auto">
-              <table className="w-full text-left text-sm text-slate-600">
+              <table className="w-full text-left text-sm text-slate-600 whitespace-nowrap">
                 <thead className="bg-slate-50 border-b border-slate-200">
                   <tr>
                     <th className="px-6 py-4 font-semibold text-slate-700">Discount Code</th>
