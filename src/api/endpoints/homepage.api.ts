@@ -6,8 +6,8 @@ const getPublicBase = '/public/homepage-content'
 // ─── GET ────────────────────────────────────────────────────────────────────
 
 export async function getHomepageContent(): Promise<HomepageContentResponse> {
-  const { data } = await axiosInstance.get<HomepageContentResponse>(getPublicBase);
-  return data;
+  const { data } = await axiosInstance.get<any>(getPublicBase);
+  return data.data;
 }
 
 // ─── POST (Upload) ──────────────────────────────────────────────────────────
