@@ -1,6 +1,6 @@
 
 import Dialog from '@/components/shared/Dialog';
-import { Mail, Trash2 } from 'lucide-react';
+import { Mail, Trash2, User, Phone, Briefcase, MessageSquare } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { getContactLeadById } from '@/api/endpoints/contact-leads.api';
 import type { ContactLead } from '@/api/endpoints/contact-leads.api';
@@ -40,38 +40,75 @@ export default function ViewMessageModal({
         </div>
       ) : (
         <div className="space-y-6">
-          <div>
-            <label className="text-sm font-semibold text-slate-900 block mb-1">Full Name:</label>
-            <p className="text-slate-600 text-sm">{lead.fullName}</p>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className="text-sm font-semibold text-slate-900 block mb-1">Email:</label>
-              <p className="text-slate-600 text-sm">{lead.email}</p>
+          {/* Contact Details Card */}
+          <div className="bg-slate-50 border border-slate-100 rounded-xl p-5 space-y-4">
+            <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Contact Information</h4>
+            
+            <div className="flex items-start gap-3">
+              <div className="mt-0.5 bg-white p-2 rounded-lg shadow-sm border border-slate-100 text-blue-500">
+                <User className="w-4 h-4" />
+              </div>
+              <div>
+                <p className="text-xs font-semibold text-slate-500 mb-0.5">Full Name</p>
+                <p className="text-sm font-medium text-slate-800">{lead.fullName}</p>
+              </div>
             </div>
-            <div>
-              <label className="text-sm font-semibold text-slate-900 block mb-1">Contact number:</label>
-              <p className="text-slate-600 text-sm">{lead.phone}</p>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+              <div className="flex items-start gap-3">
+                <div className="mt-0.5 bg-white p-2 rounded-lg shadow-sm border border-slate-100 text-amber-500">
+                  <Mail className="w-4 h-4" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-xs font-semibold text-slate-500 mb-0.5">Email Address</p>
+                  <p className="text-sm font-medium text-slate-800 truncate" title={lead.email}>{lead.email}</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <div className="mt-0.5 bg-white p-2 rounded-lg shadow-sm border border-slate-100 text-green-500">
+                  <Phone className="w-4 h-4" />
+                </div>
+                <div>
+                  <p className="text-xs font-semibold text-slate-500 mb-0.5">Contact Number</p>
+                  <p className="text-sm font-medium text-slate-800">{lead.phone}</p>
+                </div>
+              </div>
             </div>
           </div>
 
-          <div>
-            <label className="text-sm font-semibold text-slate-900 block mb-1">What service you are interested in?</label>
-            <p className="text-slate-600 text-sm">{lead.service}</p>
+          {/* Inquiry Details Card */}
+          <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm space-y-5">
+            <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Inquiry Details</h4>
+            
+            <div className="flex items-start gap-3">
+              <div className="mt-0.5 bg-blue-50 p-2 rounded-lg text-blue-600">
+                <Briefcase className="w-4 h-4" />
+              </div>
+              <div>
+                <p className="text-xs font-semibold text-slate-500 mb-0.5">Service of Interest</p>
+                <p className="text-sm font-medium text-slate-800">{lead.service}</p>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-3">
+              <div className="mt-0.5 bg-purple-50 p-2 rounded-lg text-purple-600">
+                <MessageSquare className="w-4 h-4" />
+              </div>
+              <div className="flex-1">
+                <p className="text-xs font-semibold text-slate-500 mb-0.5">Message</p>
+                <div className="bg-slate-50 border border-slate-100 rounded-lg p-4 mt-1.5">
+                  <p className="text-slate-700 text-sm whitespace-pre-wrap leading-relaxed">{lead.message}</p>
+                </div>
+              </div>
+            </div>
           </div>
 
-          <div>
-            <label className="text-sm font-semibold text-slate-900 block mb-1">Message:</label>
-            <p className="text-slate-600 text-sm whitespace-pre-wrap leading-relaxed">{lead.message}</p>
-          </div>
-
-          <div className="flex gap-4 pt-4 mt-2 border-t border-slate-100">
+          <div className="flex gap-4 pt-2">
             <button
               onClick={() => {
                 onDelete(lead.id);
               }}
-              className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 border border-red-200 text-red-600 rounded-lg hover:bg-red-50 hover:border-red-300 transition-colors font-medium text-sm"
+              className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 border-2 border-red-100 text-red-600 rounded-xl hover:bg-red-50 hover:border-red-200 transition-colors font-medium text-sm"
             >
               <Trash2 className="w-4 h-4" />
               Delete lead
@@ -80,7 +117,7 @@ export default function ViewMessageModal({
               onClick={() => {
                 onRespond(lead);
               }}
-              className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium text-sm"
+              className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-xl hover:bg-blue-700 hover:shadow-md transition-all font-medium text-sm shadow-sm"
             >
               Send response
               <Mail className="w-4 h-4" />
