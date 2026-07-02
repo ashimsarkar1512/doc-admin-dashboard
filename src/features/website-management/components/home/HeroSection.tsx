@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { Upload, X } from 'lucide-react';
 import { SectionCard } from '../shared/SectionCard';
 import { FormInput } from '../shared/FormInput';
@@ -8,6 +8,7 @@ import { SaveSectionButton } from '../shared/SaveSectionButton';
 
 export function HeroSection() {
   const { form, setField, heroImageRef, heroBadgeImageRef, isLoading } = useHomepage();
+  const [badgeError, setBadgeError] = useState<string | null>(null);
 
   const heroInputRef = useRef<HTMLInputElement>(null);
   const badgeInputRef = useRef<HTMLInputElement>(null);
@@ -23,6 +24,21 @@ export function HeroSection() {
 
   const handleBadgeImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] ?? null;
+    
+    if (file) {
+      if (file.type !== 'image/png' && file.type !== 'image/svg+xml') {
+        setBadgeError('Please upload a PNG or SVG image.');
+        e.target.value = '';
+        return;
+      }
+      if (file.size > 1024 * 1024) {
+        setBadgeError('Image size must be less than 1MB.');
+        e.target.value = '';
+        return;
+      }
+    }
+
+    setBadgeError(null);
     heroBadgeImageRef.current = file;
     if (file) {
       setField('heroBadgeImageUrl', URL.createObjectURL(file));
@@ -87,7 +103,10 @@ export function HeroSection() {
               )}
             </div>
             <div className="flex items-center gap-4">
-              <div className="text-[11px] text-slate-500 max-w-[150px]">Upload transparent logos (png, svg)</div>
+              <div>
+                <div className="text-[11px] text-slate-500 max-w-[150px]">Upload transparent logos (png, svg, max 1MB)</div>
+                {badgeError && <div className="text-[11px] text-red-500 mt-1 max-w-[150px]">{badgeError}</div>}
+              </div>
               <button
                 type="button"
                 onClick={() => badgeInputRef.current?.click()}
