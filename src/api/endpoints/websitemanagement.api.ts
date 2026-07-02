@@ -110,7 +110,7 @@ export interface UpdateGoogleAnalyticsParams {
 
 export const getWebsiteSettings = async (): Promise<WebsiteSettings> => {
   const { data } = await axiosInstance.get<WebsiteSettings>(
-    '/admin/website-settings'
+    '/public/website-settings'
   );
   return data;
 };

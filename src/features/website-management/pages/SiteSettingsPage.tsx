@@ -74,7 +74,7 @@ export default function SiteSettingsPage() {
         <SectionHeading>Site Settings </SectionHeading>
 
         
-        {/* testting start  */}
+        {/* testing start  */}
         <SiteSettingsGeneral infoData={data}/>
          <Divider />
 

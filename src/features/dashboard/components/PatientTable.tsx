@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
-import { Eye, Repeat } from "lucide-react";
+import { DollarSign, Eye, Repeat } from "lucide-react";
 import RecentActivityDetailModal from "./RecentActivityDetailModal";
 import AssignDoctorModal from "./AssignDoctorModal";
-import {  type Assessment } from "@/api/endpoints/dashboard/patientManagement";
+import { type Assessment } from "@/api/endpoints/dashboard/patientManagement";
 import { getRecentActivity } from "@/api/endpoints/dashboard/overview";
 
 function Avatar({
@@ -71,12 +71,13 @@ export function PatientTable() {
   //   queryFn: () => getAllAssessments(),
   // });
   const { data, isLoading } = useQuery({
-  queryKey: ["recent-activity"],
-  queryFn: () => getRecentActivity(),
-});
-console.log(data)
+    queryKey: ["recent-activity"],
+    queryFn: () => getRecentActivity(),
+  });
+  console.log(data);
   const [selected, setSelected] = useState<Assessment | null>(null);
-  const [assigningAssessment, setAssigningAssessment] = useState<Assessment | null>(null);
+  const [assigningAssessment, setAssigningAssessment] =
+    useState<Assessment | null>(null);
 
   const shouldShowAssignButton = (row: Assessment) => {
     return !row.provider;
@@ -89,36 +90,69 @@ console.log(data)
           <table className="w-full text-left text-sm">
             <thead>
               <tr className="border-b border-slate-200 bg-slate-50">
-                <th className="px-6 py-3 font-medium text-slate-500 text-sm">Patient</th>
-                <th className="px-6 py-3 font-medium text-slate-500 text-sm">Assessment</th>
-                <th className="px-6 py-3 font-medium text-slate-500 text-sm">Patient Type</th>
-                <th className="px-6 py-3 font-medium text-slate-500 text-sm">Provider</th>
-                <th className="px-6 py-3 font-medium text-slate-500 text-sm">Status</th>
-                <th className="px-6 py-3 font-medium text-slate-500 text-sm">Date</th>
-                <th className="px-6 py-3 font-medium text-slate-500 text-sm text-center">Action</th>
+                <th className="px-6 py-3 font-medium text-slate-500 text-sm">
+                  Patient
+                </th>
+                <th className="px-6 py-3 font-medium text-slate-500 text-sm">
+                  Assessment
+                </th>
+                <th className="px-6 py-3 font-medium text-slate-500 text-sm">
+                  Patient Type
+                </th>
+                <th className="px-6 py-3 font-medium text-slate-500 text-sm">
+                  Payment
+                </th>
+                <th className="px-6 py-3 font-medium text-slate-500 text-sm">
+                  Provider
+                </th>
+                <th className="px-6 py-3 font-medium text-slate-500 text-sm">
+                  Status
+                </th>
+                <th className="px-6 py-3 font-medium text-slate-500 text-sm">
+                  Date
+                </th>
+                <th className="px-6 py-3 font-medium text-slate-500 text-sm text-center">
+                  Action
+                </th>
               </tr>
             </thead>
             <tbody>
               {isLoading && (
                 <tr>
-                  <td colSpan={8} className="px-6 py-10 text-center text-slate-400">Loading...</td>
+                  <td
+                    colSpan={8}
+                    className="px-6 py-10 text-center text-slate-400"
+                  >
+                    Loading...
+                  </td>
                 </tr>
               )}
-              {!isLoading && (!data|| data.length === 0) && (
+              {!isLoading && (!data || data.length === 0) && (
                 <tr>
-                  <td colSpan={8} className="px-6 py-10 text-center text-slate-400">No recent activity</td>
+                  <td
+                    colSpan={8}
+                    className="px-6 py-10 text-center text-slate-400"
+                  >
+                    No recent activity
+                  </td>
                 </tr>
               )}
               {data?.map((row: Assessment) => {
                 const showAssign = shouldShowAssignButton(row);
                 return (
-                  <tr key={row.submissionId} className="border-b border-slate-100 last:border-b-0">
+                  <tr
+                    key={row.submissionId}
+                    className="border-b border-slate-100 last:border-b-0"
+                  >
                     {/* Patient */}
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
-                        <Avatar image={row.patientImage} name={row.patientName} />
+                        <Avatar
+                          image={row.patientImage}
+                          name={row.patientName}
+                        />
                         <span className="font-medium text-slate-700 whitespace-nowrap">
-                          {row.patientName ?? '—'}
+                          {row.patientName ?? "—"}
                         </span>
                       </div>
                     </td>
@@ -130,7 +164,7 @@ console.log(data)
 
                     {/* Patient Type */}
                     <td className="px-6 py-4">
-                      {row.patientType === 'New Patient' ? (
+                      {row.patientType === "New Patient" ? (
                         <span className="inline-flex items-center gap-1 rounded-lg bg-[#DBEAFE] px-3 py-1 text-xs font-medium text-[#2563EB] whitespace-nowrap">
                           New Patient
                         </span>
@@ -141,10 +175,15 @@ console.log(data)
                         </span>
                       )}
                     </td>
-
+                    {/* payment */}
+                    <td className="px-6 py-4 text-slate-600 whitespace-nowrap">
+                      <div className="flex items-center justify-center gap-1">
+                        <DollarSign className="w-3 h-3" /><span>{row.payment}</span>
+                      </div>
+                    </td>
                     {/* Provider */}
                     <td className="px-6 py-4 text-slate-600 whitespace-nowrap">
-                      {row.provider ?? '—'}
+                      {row.provider ?? "—"}
                     </td>
 
                     {/* Status */}
@@ -154,7 +193,11 @@ console.log(data)
 
                     {/* Date */}
                     <td className="px-6 py-4 text-slate-500 whitespace-nowrap">
-                      {new Date(row.date).toLocaleDateString('en-US', { year: '2-digit', month: 'numeric', day: 'numeric' })}
+                      {new Date(row.date).toLocaleDateString("en-US", {
+                        year: "2-digit",
+                        month: "numeric",
+                        day: "numeric",
+                      })}
                     </td>
 
                     {/* Action */}
@@ -174,8 +217,14 @@ console.log(data)
                             if (showAssign) {
                               setAssigningAssessment(row);
                             } else {
-                              sessionStorage.setItem('currentPatientName', row.patientName || '');
-                              sessionStorage.setItem('currentPatientImage', row.patientImage || '');
+                              sessionStorage.setItem(
+                                "currentPatientName",
+                                row.patientName || "",
+                              );
+                              sessionStorage.setItem(
+                                "currentPatientImage",
+                                row.patientImage || "",
+                              );
                               navigate({
                                 to: "/dashboard/patient-management/$assessmentId/preview",
                                 params: { assessmentId: row.submissionId },
@@ -184,11 +233,11 @@ console.log(data)
                           }}
                           className={
                             showAssign
-                              ? 'rounded-lg bg-[#1447E6] px-4 py-1.5 text-xs font-medium text-white hover:bg-[#1338C3] transition-colors whitespace-nowrap min-w-[100px]'
-                              : 'rounded-lg bg-slate-100 px-4 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-200 transition-colors whitespace-nowrap min-w-[100px]'
+                              ? "rounded-lg bg-[#1447E6] px-4 py-1.5 text-xs font-medium text-white hover:bg-[#1338C3] transition-colors whitespace-nowrap min-w-[100px]"
+                              : "rounded-lg bg-slate-100 px-4 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-200 transition-colors whitespace-nowrap min-w-[100px]"
                           }
                         >
-                          {showAssign ? 'Assign' : 'View Details'}
+                          {showAssign ? "Assign" : "View Details"}
                         </button>
                       </div>
                     </td>
@@ -199,13 +248,16 @@ console.log(data)
           </table>
         </div>
       </div>
-      <RecentActivityDetailModal activity={selected} onClose={() => setSelected(null)} />
+      <RecentActivityDetailModal
+        activity={selected}
+        onClose={() => setSelected(null)}
+      />
       <AssignDoctorModal
         isOpen={!!assigningAssessment}
         onClose={() => {
           setAssigningAssessment(null);
-          queryClient.invalidateQueries({ queryKey: ['recent-activity'] });
-          queryClient.invalidateQueries({ queryKey: ['assessments'] });
+          queryClient.invalidateQueries({ queryKey: ["recent-activity"] });
+          queryClient.invalidateQueries({ queryKey: ["assessments"] });
         }}
         assessment={assigningAssessment}
       />

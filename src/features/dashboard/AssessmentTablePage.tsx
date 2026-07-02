@@ -208,6 +208,7 @@ export default function AssessmentTablePage() {
   });
 
   const assessments = data?.data ?? [];
+  console.log(assessments)
   const meta = data?.meta;
   const totalPages = meta?.totalPages ?? 1;
 
@@ -235,7 +236,7 @@ export default function AssessmentTablePage() {
     <div className="w-full min-h-screen bg-slate-50 p-6 md:p-8">
       {/* Page title */}
       <h1 className="text-xl font-semibold text-slate-800 tracking-tight mb-6">
-        All Assessments
+        All Assessments 
       </h1>
 
       {/* Toolbar */}
@@ -335,7 +336,7 @@ export default function AssessmentTablePage() {
                     </td>
 
                     {/* Payment */}
-                    <td className="px-6 py-4 text-center text-slate-700 font-medium">$99</td>
+                    <td className="px-6 py-4 text-center text-slate-700 font-medium">${assessment.payment?.toFixed(2)}</td>
 
                     {/* Status */}
                     <td className="px-6 py-4 text-center">
