@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
+import PageHeader from '@/components/shared/PageHeader';
 
 export default function PaymentsPage() {
   const { data, isLoading } = useQuery({
@@ -13,11 +14,8 @@ export default function PaymentsPage() {
   });
 
   return (
-    <div className="w-full p-4 md:p-8">
-      <div className="mb-8">
-        <h1 className="text-2xl sm:text-3xl font-bold text-slate-800 tracking-tight">Payments</h1>
-        <p className="text-sm text-slate-500 font-medium mt-1">Manage transactions and billing</p>
-      </div>
+    <div className="w-full p-4 md:p-6 md:pt-4">
+      <PageHeader title="Payments" subtitle="Manage transactions and billing" />
       <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
         {isLoading ? (
           <div className="p-8 flex justify-center items-center"><p className="text-slate-500">Loading payments...</p></div>
