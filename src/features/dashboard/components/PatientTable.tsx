@@ -151,7 +151,7 @@ export function PatientTable() {
                   </td>
                 </tr>
               )}
-              {data?.map((row: Assessment) => {
+              {data?.map((row: any) => {
                 const showAssign = shouldShowAssignButton(row);
                 return (
                   <tr
