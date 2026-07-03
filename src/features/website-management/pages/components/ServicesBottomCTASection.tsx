@@ -1,4 +1,3 @@
-import React from 'react';
 
 export interface CtaData {
   id?: string;
@@ -54,12 +53,12 @@ export default function ServicesBottomCTASection({ data, onChange }: Props) {
           <label className="block text-sm font-medium text-slate-700 mb-2 md:hidden">Button target:</label>
           <span className="hidden md:block text-sm font-medium text-slate-700 mb-2">Button target:</span>
           <div className="flex items-center gap-2">
-            <input 
-              type="checkbox" 
-              id="blank-target-cta" 
+            <input
+              type="checkbox"
+              id="blank-target-cta"
               checked={data.openInNewTab}
               onChange={(e) => onChange({ openInNewTab: e.target.checked })}
-              className="w-4 h-4 text-[#1447E6] rounded border-slate-300 focus:ring-[#1447E6] focus:ring-offset-0 cursor-pointer" 
+              className="w-4 h-4 text-[#1447E6] rounded border-slate-300 focus:ring-[#1447E6] focus:ring-offset-0 cursor-pointer"
             />
             <label htmlFor="blank-target-cta" className="text-sm text-slate-700 cursor-pointer select-none">Blank (open in new tab)</label>
           </div>
