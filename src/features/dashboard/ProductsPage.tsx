@@ -154,7 +154,7 @@ export default function ProductsPage() {
       [{ indent: "-1" }, { indent: "+1" }],
       [{ align: [] }],
       ["blockquote", "code-block"],
-      ["link", "image", "video"],
+      ["link"],
       ["clean"],
     ],
   };
