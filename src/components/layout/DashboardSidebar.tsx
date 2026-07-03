@@ -389,12 +389,6 @@ export function DashboardSidebar({
                           )}
                         </div>
 
-                        <Link
-                          to={"/dashboard/about-us" as any}
-                          className="flex items-center gap-3 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold"
-                        >
-                          About Us
-                        </Link>
                       </div>
                     )}
                   </div>

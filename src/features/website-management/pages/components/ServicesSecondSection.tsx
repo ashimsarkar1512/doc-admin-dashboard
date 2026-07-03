@@ -1,46 +1,67 @@
 import React, { useRef, useState } from 'react';
 import { Upload, X, FileVideo, FileImage } from 'lucide-react';
 import { toast } from 'sonner';
+import { uploadAttachment } from '@/api/endpoints/attachments.api';
 
-export default function ServicesSecondSection() {
+export interface SecondData {
+  sectionTitle: string;
+  sectionDescription: string;
+  ctaButtonText: string;
+  url: string;
+  buttonTarget: boolean;
+  featuredMediaId: string;
+  featuredMediaName?: string | null;
+  featuredMediaType?: 'image' | 'video' | null;
+}
+
+interface Props {
+  data: SecondData;
+  onChange: (data: Partial<SecondData>) => void;
+}
+
+export default function ServicesSecondSection({ data, onChange }: Props) {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [fileName, setFileName] = useState<string | null>(null);
-  const [mediaType, setMediaType] = useState<'image' | 'video' | null>(null);
-  const [mediaUrl, setMediaUrl] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
 
   const handleUploadClick = () => {
     fileInputRef.current?.click();
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const url = URL.createObjectURL(file);
-    const isVideo = file.type.startsWith('video/');
-
-    if (isVideo) {
-      setFileName(file.name);
-      setMediaType('video');
-      setMediaUrl(url);
-      toast.success('Video uploaded successfully.');
-    } else {
-      setFileName(file.name);
-      setMediaType('image');
-      setMediaUrl(url);
-      toast.success('Image uploaded successfully.');
-    }
-
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
+    try {
+      setIsUploading(true);
+      const isVideo = file.type.startsWith('video/');
+      const context = isVideo ? 'SECOND_SECTION_VIDEO' : 'SECOND_SECTION_IMAGE';
+      
+      const uploadedFile = await uploadAttachment(file, context);
+      
+      onChange({
+        featuredMediaId: uploadedFile.id,
+        featuredMediaName: uploadedFile.fileName,
+        featuredMediaType: isVideo ? 'video' : 'image',
+      });
+      
+      toast.success(`${isVideo ? 'Video' : 'Image'} uploaded successfully.`);
+    } catch (error) {
+      toast.error('Failed to upload file.');
+      console.error(error);
+    } finally {
+      setIsUploading(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
     }
   };
 
   const clearMedia = () => {
-    if (mediaUrl) URL.revokeObjectURL(mediaUrl);
-    setFileName(null);
-    setMediaType(null);
-    setMediaUrl(null);
+    onChange({
+      featuredMediaId: '',
+      featuredMediaName: null,
+      featuredMediaType: null,
+    });
   };
 
   return (
@@ -51,7 +72,9 @@ export default function ServicesSecondSection() {
         <label className="block text-sm font-medium text-slate-700 mb-2">Section Title:</label>
         <input
           type="text"
-          defaultValue="Weight Loss Shots at WLMD"
+          value={data.sectionTitle}
+          onChange={(e) => onChange({ sectionTitle: e.target.value })}
+          placeholder="Weight Loss Shots at WLMD"
           className="w-full border border-slate-300 rounded-lg px-4 py-2.5 text-sm text-slate-700 focus:outline-none focus:border-[#1447E6] focus:ring-1 focus:ring-[#1447E6] transition-shadow"
         />
       </div>
@@ -60,7 +83,9 @@ export default function ServicesSecondSection() {
         <label className="block text-sm font-medium text-slate-700 mb-2">Section Description:</label>
         <textarea
           rows={5}
-          defaultValue="We provide injectable treatments as part of our medically supervised weight management programs in Colorado. Options may include lipotropic injections and vitamin B-12, available to eligible patients after evaluation by a licensed provider. Treatment plans are tailored to individual medical histories and goals. If suitable, injectable therapies can be part of a comprehensive program that includes nutrition guidance and ongoing support. Hormone therapy may also be considered based on clinical evaluation. All treatments are supervised and comply with federal and state regulations. Results vary by individual, and no specific outcomes are guaranteed. This information is for educational purposes and does not constitute medical advice."
+          value={data.sectionDescription}
+          onChange={(e) => onChange({ sectionDescription: e.target.value })}
+          placeholder="Enter description here..."
           className="w-full border border-slate-300 rounded-lg px-4 py-2.5 text-sm text-slate-700 focus:outline-none focus:border-[#1447E6] focus:ring-1 focus:ring-[#1447E6] resize-none transition-shadow"
         />
       </div>
@@ -70,7 +95,9 @@ export default function ServicesSecondSection() {
           <label className="block text-sm font-medium text-slate-700 mb-2">CTA Button Text:</label>
           <input
             type="text"
-            defaultValue="Book Appointment"
+            value={data.ctaButtonText}
+            onChange={(e) => onChange({ ctaButtonText: e.target.value })}
+            placeholder="Book Appointment"
             className="w-full border border-slate-300 rounded-lg px-4 py-2.5 text-sm text-slate-700 focus:outline-none focus:border-[#1447E6] focus:ring-1 focus:ring-[#1447E6] transition-shadow"
           />
         </div>
@@ -78,7 +105,9 @@ export default function ServicesSecondSection() {
           <label className="block text-sm font-medium text-slate-700 mb-2">URL:</label>
           <input
             type="text"
-            defaultValue="https://weightlossmd.com/contact"
+            value={data.url}
+            onChange={(e) => onChange({ url: e.target.value })}
+            placeholder="https://weightlossmd.com/contact"
             className="w-full border border-slate-300 rounded-lg px-4 py-2.5 text-sm text-slate-700 focus:outline-none focus:border-[#1447E6] focus:ring-1 focus:ring-[#1447E6] transition-shadow"
           />
         </div>
@@ -86,7 +115,13 @@ export default function ServicesSecondSection() {
           <label className="block text-sm font-medium text-slate-700 mb-2 md:hidden">Button target:</label>
           <span className="hidden md:block text-sm font-medium text-slate-700 mb-2">Button target:</span>
           <div className="flex items-center gap-2">
-            <input type="checkbox" id="blank-target-second" defaultChecked className="w-4 h-4 text-[#1447E6] rounded border-slate-300 focus:ring-[#1447E6] focus:ring-offset-0 cursor-pointer" />
+            <input 
+              type="checkbox" 
+              id="blank-target-second" 
+              checked={data.buttonTarget}
+              onChange={(e) => onChange({ buttonTarget: e.target.checked })}
+              className="w-4 h-4 text-[#1447E6] rounded border-slate-300 focus:ring-[#1447E6] focus:ring-offset-0 cursor-pointer" 
+            />
             <label htmlFor="blank-target-second" className="text-sm text-slate-700 cursor-pointer select-none">Blank (open in new tab)</label>
           </div>
         </div>
@@ -103,22 +138,23 @@ export default function ServicesSecondSection() {
           />
           <button 
             onClick={handleUploadClick}
-            className="flex items-center gap-2 bg-[#1447E6] text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
+            disabled={isUploading}
+            className="flex items-center gap-2 bg-[#1447E6] text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Upload size={16} />
-            Upload
+            {isUploading ? 'Uploading...' : 'Upload'}
           </button>
           <span className="text-xs text-slate-500">Recommended: JPG, PNG, MP4, 1200 x 630 pixels</span>
         </div>
         
-        {fileName && (
+        {data.featuredMediaName && (
           <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 w-max">
-            {mediaType === 'video' ? (
+            {data.featuredMediaType === 'video' ? (
               <FileVideo size={16} className="text-[#1447E6]" />
             ) : (
               <FileImage size={16} className="text-[#1447E6]" />
             )}
-            <span className="text-sm text-slate-700 font-medium">{fileName}</span>
+            <span className="text-sm text-slate-700 font-medium">{data.featuredMediaName}</span>
             <button 
               onClick={clearMedia}
               className="text-red-500 hover:text-red-600 transition-colors ml-2" 

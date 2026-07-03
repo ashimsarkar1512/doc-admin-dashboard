@@ -1,42 +1,48 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Trash2 } from 'lucide-react';
+import type { ServicePageFaq } from '@/api/endpoints/service-page.api';
 
-interface FAQ {
-  id: string;
-  question: string;
-  answer: string;
+export interface FaqData {
+  sectionTitle: string;
+  faqs: (ServicePageFaq & { id: string })[];
 }
 
-export default function ServicesFAQSection() {
-  const [faqs, setFaqs] = useState<FAQ[]>([
-    {
-      id: crypto.randomUUID(),
-      question: "What is Semaglutide?",
-      answer: "We offer medically supervised weight loss programs that may include GLP-1 medications such as semaglutide and tirzepatide, appetite suppressants, B12 injections, lipotropic injections, nutritional guidance, and personalized wellness support. Treatment plans are customized based on your health goals and medical history."
-    }
-  ]);
+interface Props {
+  data: FaqData;
+  onChange: (data: Partial<FaqData>) => void;
+}
 
+export default function ServicesFAQSection({ data, onChange }: Props) {
+  
   const handleAddQuestion = () => {
-    setFaqs([
-      ...faqs,
-      {
-        id: crypto.randomUUID(),
-        question: "",
-        answer: ""
-      }
-    ]);
+    onChange({
+      faqs: [
+        ...data.faqs,
+        {
+          id: crypto.randomUUID(),
+          question: "",
+          answer: ""
+        }
+      ]
+    });
   };
 
   const handleRemoveQuestion = (id: string) => {
-    setFaqs(faqs.filter(faq => faq.id !== id));
+    onChange({
+      faqs: data.faqs.filter(faq => faq.id !== id)
+    });
   };
 
   const handleQuestionChange = (id: string, value: string) => {
-    setFaqs(faqs.map(faq => faq.id === id ? { ...faq, question: value } : faq));
+    onChange({
+      faqs: data.faqs.map(faq => faq.id === id ? { ...faq, question: value } : faq)
+    });
   };
 
   const handleAnswerChange = (id: string, value: string) => {
-    setFaqs(faqs.map(faq => faq.id === id ? { ...faq, answer: value } : faq));
+    onChange({
+      faqs: data.faqs.map(faq => faq.id === id ? { ...faq, answer: value } : faq)
+    });
   };
 
   return (
@@ -47,13 +53,15 @@ export default function ServicesFAQSection() {
         <label className="block text-sm font-medium text-slate-700 mb-2">Section Title:</label>
         <input 
           type="text" 
-          defaultValue="Popular Facts & Questions"
+          value={data.sectionTitle}
+          onChange={(e) => onChange({ sectionTitle: e.target.value })}
+          placeholder="Popular Facts & Questions"
           className="w-full border border-slate-300 rounded-lg px-4 py-2.5 text-sm text-slate-700 focus:outline-none focus:border-[#1447E6] focus:ring-1 focus:ring-[#1447E6] transition-shadow"
         />
       </div>
 
       <div className="space-y-4 mb-4">
-        {faqs.map((faq, index) => (
+        {data.faqs.map((faq, index) => (
           <div key={faq.id} className="border border-slate-200 rounded-xl p-5 relative bg-white shadow-[0_0px_10px_-3px_rgba(0,0,0,0.05)]">
             <button 
               onClick={() => handleRemoveQuestion(faq.id)}

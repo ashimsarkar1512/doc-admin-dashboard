@@ -1,42 +1,63 @@
 import React, { useRef, useState } from 'react';
 import { Upload, X } from 'lucide-react';
 import { toast } from 'sonner';
+import { uploadAttachment } from '@/api/endpoints/attachments.api';
 
-export default function ServicesHeroSection() {
+interface HeroData {
+  pageTitle: string;
+  bannerImageId: string;
+  mediaUrl: string | null;
+  mediaType: 'image' | 'video' | null;
+}
+
+interface Props {
+  data: HeroData;
+  onChange: (data: Partial<HeroData>) => void;
+}
+
+export default function ServicesHeroSection({ data, onChange }: Props) {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [mediaUrl, setMediaUrl] = useState<string | null>(null);
-  const [mediaType, setMediaType] = useState<'image' | 'video' | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
 
   const handleUploadClick = () => {
     fileInputRef.current?.click();
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const url = URL.createObjectURL(file);
-    const isVideo = file.type.startsWith('video/');
-
-    if (isVideo) {
-      setMediaUrl(url);
-      setMediaType('video');
-      toast.success('Video uploaded successfully.');
-    } else {
-      setMediaUrl(url);
-      setMediaType('image');
-      toast.success('Image uploaded successfully.');
-    }
-    
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
+    try {
+      setIsUploading(true);
+      const isVideo = file.type.startsWith('video/');
+      const context = isVideo ? 'HERO_VIDEO' : 'HERO_IMAGE'; // Context identifier for backend
+      
+      const uploadedFile = await uploadAttachment(file, context);
+      
+      onChange({
+        bannerImageId: uploadedFile.id,
+        mediaUrl: uploadedFile.fileUrl,
+        mediaType: isVideo ? 'video' : 'image',
+      });
+      
+      toast.success(`${isVideo ? 'Video' : 'Image'} uploaded successfully.`);
+    } catch (error) {
+      toast.error('Failed to upload file.');
+      console.error(error);
+    } finally {
+      setIsUploading(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
     }
   };
 
   const clearMedia = () => {
-    if (mediaUrl) URL.revokeObjectURL(mediaUrl);
-    setMediaUrl(null);
-    setMediaType(null);
+    onChange({
+      bannerImageId: '',
+      mediaUrl: null,
+      mediaType: null,
+    });
   };
 
   return (
@@ -46,16 +67,16 @@ export default function ServicesHeroSection() {
         <label className="block text-sm font-medium text-slate-700 mb-2">Banner Image:</label>
         <div className="flex flex-col sm:flex-row gap-6 items-start sm:items-center">
           <div className="w-[300px] h-[160px] bg-slate-100 rounded-[16px] overflow-hidden relative border border-slate-200">
-            {mediaUrl ? (
+            {data.mediaUrl ? (
               <>
-                {mediaType === 'video' ? (
-                  <video src={mediaUrl} className="w-full h-full object-cover" autoPlay loop muted playsInline />
+                {data.mediaType === 'video' ? (
+                  <video src={data.mediaUrl} className="w-full h-full object-cover" autoPlay loop muted playsInline />
                 ) : (
                   <div 
                     className="w-full h-full"
                     style={{
                       borderRadius: '16px',
-                      background: `linear-gradient(180deg, rgba(0, 0, 0, 0.00) 0%, rgba(0, 0, 0, 0.70) 100%), url(${mediaUrl}) lightgray 50% / cover no-repeat`
+                      background: `linear-gradient(180deg, rgba(0, 0, 0, 0.00) 0%, rgba(0, 0, 0, 0.70) 100%), url(${data.mediaUrl}) lightgray 50% / cover no-repeat`
                     }}
                   />
                 )}
@@ -67,8 +88,14 @@ export default function ServicesHeroSection() {
                 </button>
               </>
             ) : (
-              <div className="w-full h-full bg-gradient-to-tr from-cyan-600 to-cyan-300 flex items-center justify-center relative">
-                <div className="absolute transform -rotate-12 inset-0 m-auto w-3/4 h-3/4 opacity-30 bg-white rounded-full blur-xl"></div>
+              <div className="w-full h-full bg-slate-200 flex items-center justify-center relative">
+                <span className="text-slate-500 font-semibold text-xl">No Image</span>
+              </div>
+            )}
+            
+            {isUploading && (
+              <div className="absolute inset-0 bg-white/70 flex items-center justify-center">
+                <span className="text-sm font-medium text-slate-700">Uploading...</span>
               </div>
             )}
           </div>
@@ -82,10 +109,11 @@ export default function ServicesHeroSection() {
             />
             <button 
               onClick={handleUploadClick}
-              className="flex items-center gap-2 bg-[#1447E6] text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 w-max transition-colors"
+              disabled={isUploading}
+              className="flex items-center gap-2 bg-[#1447E6] text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 w-max transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Upload size={16} />
-              Upload
+              {isUploading ? 'Uploading...' : 'Upload'}
             </button>
           </div>
         </div>
@@ -95,7 +123,9 @@ export default function ServicesHeroSection() {
         <label className="block text-sm font-medium text-slate-700 mb-2">Page title:</label>
         <input
           type="text"
-          defaultValue="Take control of your body with our weight loss service"
+          value={data.pageTitle}
+          onChange={(e) => onChange({ pageTitle: e.target.value })}
+          placeholder="Take control of your body with our weight loss service"
           className="w-full border border-slate-300 rounded-lg px-4 py-2.5 text-sm text-slate-700 focus:outline-none focus:border-[#1447E6] focus:ring-1 focus:ring-[#1447E6] transition-shadow"
         />
       </div>
