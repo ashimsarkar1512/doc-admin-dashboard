@@ -46,7 +46,11 @@ export const ProductCard: React.FC<ProductCardProps> = ({
               {product.name}
             </h3>
             <p className="text-gray-500 font-light text-[13px] leading-relaxed line-clamp-2">
-              {product.description}
+              {(() => {
+                if (!product.description) return "";
+                const doc = new DOMParser().parseFromString(product.description, "text/html");
+                return doc.body.textContent || "";
+              })()}
             </p>
           </div>
 

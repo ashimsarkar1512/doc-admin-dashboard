@@ -1,11 +1,13 @@
 import React, { useState } from "react";
-import { Plus, Search, AlertCircle, Upload, Trash2, ChevronDown } from "lucide-react";
+import { Plus, Search, AlertCircle, Upload, Trash2, ChevronDown, FileText } from "lucide-react";
 import Swal from 'sweetalert2';
 import { toast } from "sonner";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import type { Product } from "@/types";
 import ProductCard from "@/components/shared/cards/ProductCard";
 import Dialog from "@/components/shared/Dialog";
+import ReactQuill from "react-quill-new";
+import "react-quill-new/dist/quill.snow.css";
 import {
   getProducts,
   createProduct,
@@ -139,6 +141,31 @@ export default function ProductsPage() {
     setVariants([]);
     setIsModalOpen(true);
   };
+
+  const quillModules = {
+    toolbar: [
+      [{ font: [] }],
+      [{ header: [1, 2, 3, 4, 5, 6, false] }],
+      [{ size: ["small", false, "large", "huge"] }],
+      ["bold", "italic", "underline", "strike"],
+      [{ color: [] }, { background: [] }],
+      [{ script: "sub" }, { script: "super" }],
+      [{ list: "ordered" }, { list: "bullet" }],
+      [{ indent: "-1" }, { indent: "+1" }],
+      [{ align: [] }],
+      ["blockquote", "code-block"],
+      ["link", "image", "video"],
+      ["clean"],
+    ],
+  };
+
+  const stripHtml = (html: string) => {
+    if (!html) return "";
+    const doc = new DOMParser().parseFromString(html, "text/html");
+    return doc.body.textContent || "";
+  };
+
+  const wordCount = stripHtml(formDescription).trim() ? stripHtml(formDescription).trim().split(/\s+/).length : 0;
 
   // Open modal for Edit
   const handleOpenEdit = (product: Product) => {
@@ -632,20 +659,6 @@ export default function ProductsPage() {
               </button>
             </div>
 
-            {/* Description */}
-            <div className="space-y-1.5">
-              <label className="text-sm font-medium text-gray-800">
-                Description:
-              </label>
-              <textarea
-                value={formDescription}
-                onChange={(e) => setFormDescription(e.target.value)}
-                placeholder="Write here..."
-                rows={2}
-                className="w-full px-4 py-2.5 rounded-[10px] border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-sm text-black placeholder-gray-400 resize-none"
-              />
-            </div>
-
             {/* Category selection */}
             <div className="space-y-1.5">
               <label className="text-sm font-medium text-gray-800">
@@ -682,6 +695,26 @@ export default function ProductsPage() {
                     />
                   </svg>
                 </div>
+              </div>
+            </div>
+
+            {/* Description */}
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <label className="flex items-center gap-1.5 text-sm font-medium text-gray-800">
+                  <FileText size={14} className="text-gray-400" />
+                  Description:
+                </label>
+                <span className="text-xs text-gray-400">{wordCount} {wordCount === 1 ? "word" : "words"}</span>
+              </div>
+              <div className="bg-white [&_.quill]:flex [&_.quill]:flex-col [&_.quill]:h-[300px] [&_.quill]:mb-12 [&_.ql-toolbar]:rounded-t-xl [&_.ql-toolbar]:border-gray-200 [&_.ql-toolbar]:bg-gray-50 [&_.ql-container]:rounded-b-xl [&_.ql-container]:border-gray-200 [&_.ql-container]:flex-1 [&_.ql-editor]:text-sm [&_.ql-editor]:text-gray-700">
+                <ReactQuill
+                  theme="snow"
+                  value={formDescription}
+                  onChange={setFormDescription}
+                  modules={quillModules}
+                  placeholder="Write product description here..."
+                />
               </div>
             </div>
           </div>
