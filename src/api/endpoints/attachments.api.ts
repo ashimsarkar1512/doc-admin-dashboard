@@ -27,6 +27,12 @@ export interface UploadAttachmentResponse {
   data: AttachmentResponse;
 }
 
+export interface UploadMultipleAttachmentsResponse {
+  success: boolean;
+  message: string;
+  data: AttachmentResponse[];
+}
+
 /**
  * Upload a single file with a given context.
  * POST /api/v1/attachments/upload
@@ -51,4 +57,38 @@ export async function uploadAttachment(
   );
 
   return data.data;
+}
+
+/**
+ * Upload multiple files with a given context.
+ * POST /api/v1/attachments/upload
+ * multipart/form-data: { context, files[] }
+ */
+export async function uploadMultipleAttachments(
+  files: File[],
+  context: AttachmentContext
+): Promise<AttachmentResponse[]> {
+  const formData = new FormData();
+  formData.append('context', context);
+  files.forEach((file) => formData.append('files', file));
+
+  const { data } = await axiosInstance.post<UploadMultipleAttachmentsResponse>(
+    '/attachments/upload',
+    formData,
+    {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    }
+  );
+
+  return data.data;
+}
+
+/**
+ * Delete an attachment by ID.
+ * DELETE /api/v1/attachments/{id}
+ */
+export async function deleteAttachment(id: string): Promise<void> {
+  await axiosInstance.delete(`/attachments/${id}`);
 }

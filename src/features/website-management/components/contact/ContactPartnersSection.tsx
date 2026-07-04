@@ -1,61 +1,26 @@
-import React, { useRef, useState } from "react";
+import React, { useRef } from "react";
 import { Upload, Trash2 } from "lucide-react";
 import { SectionCard } from "../shared/SectionCard";
 import { FormInput } from "../shared/FormInput";
+import { useContactPageContext } from "../../context/ContactPageContext";
 
-interface Props {
-  setIsDirty: (dirty: boolean) => void;
-}
-
-interface PartnerLogo {
-  id: string;
-  url: string;
-  name: string;
-}
-
-export function ContactPartnersSection({ setIsDirty }: Props) {
-  const [title, setTitle] = useState("Our partner pharmacies");
-  const [logos, setLogos] = useState<PartnerLogo[]>([]);
-  const [isUploading, setIsUploading] = useState(false);
+export function ContactPartnersSection() {
+  const { form, setField, addPartners, removePartner } = useContactPageContext();
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setTitle(e.target.value);
-    setIsDirty(true);
-  };
 
   const handleUploadClick = () => {
     fileInputRef.current?.click();
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
 
-    setIsUploading(true);
+    addPartners(files);
 
-    // Simulate upload delay
-    setTimeout(() => {
-      const objectUrl = URL.createObjectURL(file);
-      setLogos((prev) => [
-        ...prev,
-        {
-          id: Math.random().toString(36).substring(7),
-          url: objectUrl,
-          name: file.name,
-        },
-      ]);
-      setIsUploading(false);
-      setIsDirty(true);
-      if (fileInputRef.current) {
-        fileInputRef.current.value = "";
-      }
-    }, 1000);
-  };
-
-  const removeLogo = (id: string) => {
-    setLogos((prev) => prev.filter((logo) => logo.id !== id));
-    setIsDirty(true);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
   };
 
   return (
@@ -63,8 +28,8 @@ export function ContactPartnersSection({ setIsDirty }: Props) {
       <div className="space-y-6">
         <FormInput
           label="Section Title:"
-          value={title}
-          onChange={handleTitleChange}
+          value={form.partnersSectionTitle}
+          onChange={(e) => setField("partnersSectionTitle", e.target.value)}
           placeholder="Our partner pharmacies"
         />
 
@@ -78,15 +43,15 @@ export function ContactPartnersSection({ setIsDirty }: Props) {
               ref={fileInputRef}
               onChange={handleFileChange}
               accept="image/*"
+              multiple
               className="hidden"
             />
             <button
               onClick={handleUploadClick}
-              disabled={isUploading}
-              className="flex items-center gap-2 bg-[#1447E6] text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 w-max transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center gap-2 bg-[#1447E6] text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 w-max transition-colors"
             >
               <Upload size={16} />
-              {isUploading ? "Uploading..." : "Upload"}
+              Upload
             </button>
             <span className="text-xs text-slate-400">
               Recommended: JPG, PNG, MP4, 1200 x 630 pixels
@@ -94,22 +59,22 @@ export function ContactPartnersSection({ setIsDirty }: Props) {
           </div>
 
           {/* List of uploaded logos */}
-          {logos.length > 0 && (
+          {form.partners.length > 0 && (
             <div className="flex flex-col border-t border-slate-100">
-              {logos.map((logo) => (
+              {form.partners.map((partner) => (
                 <div
-                  key={logo.id}
+                  key={partner.id}
                   className="flex items-center gap-6 py-4 border-b border-slate-100"
                 >
                   <div className="w-40 h-12 flex items-center justify-start overflow-hidden">
                     <img
-                      src={logo.url}
-                      alt={logo.name}
+                      src={partner.imageUrl}
+                      alt="Partner Logo"
                       className="max-w-full max-h-full object-contain"
                     />
                   </div>
                   <button
-                    onClick={() => removeLogo(logo.id)}
+                    onClick={() => removePartner(partner.id)}
                     className="text-red-500 hover:text-red-700 p-1.5 rounded-lg hover:bg-red-50 transition-colors"
                   >
                     <Trash2 size={16} />

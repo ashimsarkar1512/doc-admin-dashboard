@@ -1,42 +1,27 @@
-import { useState } from "react";
 import { SectionCard } from "../shared/SectionCard";
 import { FormInput } from "../shared/FormInput";
 import { FormTextarea } from "../shared/FormTextarea";
+import { useMedicalTeamContext } from "../../context/MedicalTeamContext";
 
-interface Props {
-  setIsDirty: (dirty: boolean) => void;
-}
-
-export function MedicalProviderSection({ setIsDirty }: Props) {
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-
-  const handleChangeTitle = (val: string) => {
-    setTitle(val);
-    setIsDirty(true);
-  };
-
-  const handleChangeDescription = (val: string) => {
-    setDescription(val);
-    setIsDirty(true);
-  };
+export function MedicalProviderSection() {
+  const { form, setField } = useMedicalTeamContext();
 
   return (
     <SectionCard title="Provider Section">
       <div className="space-y-5">
         <FormInput
-          label="Section Title:"
-          value={title}
-          onChange={(e) => handleChangeTitle(e.target.value)}
-          placeholder="Our Licensed Provider Network"
+          label="Provider Title:"
+          value={form.providerTitle}
+          onChange={(e) => setField("providerTitle", e.target.value)}
+          placeholder="Provider Title"
         />
 
         <FormTextarea
-          label="Section Description:"
+          label="Provider Description:"
           className="h-24"
-          value={description}
-          onChange={(e) => handleChangeDescription(e.target.value)}
-          placeholder="Every provider in our network is credentialed, licensed in your state, and trained in evidence-based obesity and metabolic medicine."
+          value={form.providerDescription}
+          onChange={(e) => setField("providerDescription", e.target.value)}
+          placeholder="Provider Description"
         />
       </div>
     </SectionCard>
