@@ -1,12 +1,15 @@
-import React from 'react';
-import { Save, Loader2 } from 'lucide-react';
+import React from "react";
+import { Save, Loader2 } from "lucide-react";
 
 interface SaveLocalSectionButtonProps {
   onClick: () => void;
   isSaving: boolean;
 }
 
-export function SaveLocalSectionButton({ onClick, isSaving }: SaveLocalSectionButtonProps) {
+export function SaveLocalSectionButton({
+  onClick,
+  isSaving,
+}: SaveLocalSectionButtonProps) {
   return (
     <div className="pt-4 flex justify-end border-t border-slate-100 mt-6">
       <button
@@ -20,7 +23,7 @@ export function SaveLocalSectionButton({ onClick, isSaving }: SaveLocalSectionBu
         ) : (
           <Save size={16} />
         )}
-        {isSaving ? 'Saving...' : 'Save Changes'}
+        {isSaving ? "Saving..." : "Save Changes"}
       </button>
     </div>
   );
