@@ -218,6 +218,14 @@ const pagesRoute = createRoute({
   component: HomePageEditor,
 });
 
+import EligibilityPage from "@/features/website-management/pages/EligibilityPage";
+const eligibilityRoute = createRoute({
+  getParentRoute: () => dashboardLayoutRoute,
+  path: "/pages/eligibility",
+  component: EligibilityPage,
+});
+
+
 import ServicesPage from "@/features/dashboard/ServicesPage";
 const servicesRoute = createRoute({
   getParentRoute: () => dashboardLayoutRoute,
@@ -344,6 +352,7 @@ const routeTree = rootRoute.addChildren([
     employeePermissionsIdRoute,
     websiteManagementRoute,
     pagesRoute,
+    eligibilityRoute,
     servicesRoute,
     siteSettingsRoute,
     complianceCenterRoute,
