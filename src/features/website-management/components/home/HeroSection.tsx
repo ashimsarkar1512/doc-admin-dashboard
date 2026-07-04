@@ -51,7 +51,7 @@ export function HeroSection() {
         {/* Hero Image */}
         <div>
           <label className="block text-sm font-medium text-slate-700 mb-2">Hero Media</label>
-          <div className="flex items-end gap-4">
+          <div className="flex flex-col sm:flex-row sm:items-end gap-4">
             <div className="w-48 h-28 rounded-lg overflow-hidden border border-slate-200 bg-slate-50 flex items-center justify-center">
               {form.heroMediaUrl ? (
                 <img src={form.heroMediaUrl} className="w-full h-full object-cover" alt="Hero" />
@@ -94,7 +94,7 @@ export function HeroSection() {
         {/* Badge Image */}
         <div>
           <label className="block text-sm font-medium text-slate-700 mb-2">Certificate / Badge Image:</label>
-          <div className="flex items-end gap-4">
+          <div className="flex flex-col sm:flex-row sm:items-end gap-4">
             <div className="w-48 h-20 rounded-lg overflow-hidden border border-slate-200 bg-slate-50 flex items-center justify-center">
               {form.heroBadgeImageUrl ? (
                 <img src={form.heroBadgeImageUrl} className="w-full h-full object-contain p-2" alt="Badge" />
@@ -153,7 +153,7 @@ export function HeroSection() {
         />
 
         {/* Hero CTA */}
-        <div className="flex flex-wrap items-end gap-4">
+        <div className="flex flex-col sm:flex-row flex-wrap sm:items-end gap-4">
           <div className="flex-1 min-w-[160px]">
             <FormInput
               label="CTA Button Text:"

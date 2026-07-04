@@ -96,6 +96,9 @@ export default function DashboardLayout() {
         can={can}
         hasComplianceAccess={hasComplianceAccess}
         handleSignOut={handleSignOut}
+        unreadCount={unreadCount}
+        pendingOrdersCount={pendingOrdersCount}
+        categories={categories}
       />
 
       {/* Desktop Sidebar */}

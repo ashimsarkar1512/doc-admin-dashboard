@@ -61,9 +61,9 @@ export function DashboardSidebar({
 
   return (
     <aside
-      className={`hidden md:flex ${
-        collapsed ? "md:w-16" : "md:w-64"
-      } h-full border-r border-slate-200 bg-white flex-col shrink-0 transition-all duration-300 relative`}
+      className={`hidden xl:flex ${
+        collapsed ? "xl:w-16" : "xl:w-64"
+      } h-full border-r border-slate-200 bg-white flex-col shrink-0 transition-all duration-300 relative z-20`}
     >
       {/* Floating collapse toggle */}
       <button
@@ -97,7 +97,7 @@ export function DashboardSidebar({
       <nav
         className={`flex-1 overflow-y-auto py-6 space-y-0.5 ${
           collapsed ? "px-2" : "px-3"
-        } scrollbar-hide`}
+        } scrollbar-thin scrollbar-thumb-slate-200 hover:scrollbar-thumb-slate-300`}
       >
         <Link
           to="/dashboard"
@@ -128,13 +128,16 @@ export function DashboardSidebar({
 
         {can("view:patient_management") &&
           (collapsed ? (
-            <Link
-              to="/dashboard/patients"
-              className="flex items-center justify-center p-2.5 rounded-md text-slate-600 hover:bg-slate-100 [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active_svg]:text-[#1447E6]"
+            <button
+              onClick={() => {
+                dispatch(toggleSidebar());
+                setPatientMenuOpen(true);
+              }}
+              className="flex items-center justify-center p-2.5 w-full rounded-md text-slate-600 hover:bg-slate-100 transition-colors"
               title="Patient Management"
             >
               <Users size={20} className="text-slate-400 shrink-0" />
-            </Link>
+            </button>
           ) : (
             <div>
               <button
@@ -285,13 +288,16 @@ export function DashboardSidebar({
 
         {can("view:website_management") &&
           (collapsed ? (
-            <Link
-              to="/dashboard/website-management"
-              className="flex items-center justify-center p-2.5 rounded-md text-slate-600 hover:bg-slate-100 [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active_svg]:text-[#1447E6]"
+            <button
+              onClick={() => {
+                dispatch(toggleSidebar());
+                setWebsiteMenuOpen(true);
+              }}
+              className="flex items-center justify-center p-2.5 w-full rounded-md text-slate-600 hover:bg-slate-100 transition-colors"
               title="Website Management"
             >
               <Globe size={20} className="text-slate-400 shrink-0" />
-            </Link>
+            </button>
           ) : (
             <div>
               <button
@@ -340,9 +346,16 @@ export function DashboardSidebar({
                       <div className="pl-4 mt-1 space-y-1">
                         <Link
                           to="/dashboard/pages"
+                          activeOptions={{ exact: true }}
                           className="flex items-center gap-3 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold"
                         >
                           Home
+                        </Link>
+                        <Link
+                          to="/dashboard/pages/about-us"
+                          className="flex items-center gap-3 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold"
+                        >
+                          About Us
                         </Link>
 
                         <div>
@@ -408,13 +421,16 @@ export function DashboardSidebar({
 
         {hasComplianceAccess &&
           (collapsed ? (
-            <Link
-              to="/dashboard/employee-permissions"
-              className="flex items-center justify-center p-2.5 rounded-md text-slate-600 hover:bg-slate-100 [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active_svg]:text-[#1447E6]"
-              title="Compliance & Access "
+            <button
+              onClick={() => {
+                dispatch(toggleSidebar());
+                setComplianceMenuOpen(true);
+              }}
+              className="flex items-center justify-center p-2.5 w-full rounded-md text-slate-600 hover:bg-slate-100 transition-colors"
+              title="Compliance & Access"
             >
               <ShieldCheck size={20} className="text-slate-400 shrink-0" />
-            </Link>
+            </button>
           ) : (
             <div>
               <button
