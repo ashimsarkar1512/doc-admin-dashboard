@@ -335,6 +335,13 @@ export function DashboardMobileSidebar({
                         >
                           Medical Team
                         </Link>
+                        <Link
+                          to="/dashboard/pages/how-it-works"
+                          onClick={() => setMobileSidebarOpen(false)}
+                          className="flex items-center gap-3 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold"
+                        >
+                          How It Works
+                        </Link>
 
                         <div>
                           <button
