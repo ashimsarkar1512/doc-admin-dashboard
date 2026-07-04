@@ -232,6 +232,13 @@ const contactRoute = createRoute({
   component: ContactPageEditor,
 });
 
+import MedicalTeamPageEditor from "@/features/website-management/pages/MedicalTeamPageEditor";
+const medicalTeamRoute = createRoute({
+  getParentRoute: () => dashboardLayoutRoute,
+  path: "/pages/medical-team",
+  component: MedicalTeamPageEditor,
+});
+
 import ServicesPage from "@/features/dashboard/ServicesPage";
 const servicesRoute = createRoute({
   getParentRoute: () => dashboardLayoutRoute,
@@ -360,6 +367,7 @@ const routeTree = rootRoute.addChildren([
     pagesRoute,
     aboutUsRoute,
     contactRoute,
+    medicalTeamRoute,
     servicesRoute,
     siteSettingsRoute,
     complianceCenterRoute,

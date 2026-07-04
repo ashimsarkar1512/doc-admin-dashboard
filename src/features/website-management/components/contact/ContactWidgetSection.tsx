@@ -10,7 +10,9 @@ interface Props {
 export function ContactWidgetSection({ setIsDirty }: Props) {
   const [title, setTitle] = useState("Office Hours");
   const [opening, setOpening] = useState("Monday - Friday: 9 AM - 6 PM");
-  const [offDay, setOffDay] = useState("Our Office is closed from 2 PM to 3 PM for lunch during the week.");
+  const [offDay, setOffDay] = useState(
+    "Our Office is closed from 2 PM to 3 PM for lunch during the week.",
+  );
   const [phone, setPhone] = useState("(720) 279-1164");
   const [email, setEmail] = useState("Info@wlmd.net");
 
@@ -20,12 +22,12 @@ export function ContactWidgetSection({ setIsDirty }: Props) {
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleChange = (setter: React.Dispatch<React.SetStateAction<string>>) => (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    setter(e.target.value);
-    setIsDirty(true);
-  };
+  const handleChange =
+    (setter: React.Dispatch<React.SetStateAction<string>>) =>
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setter(e.target.value);
+      setIsDirty(true);
+    };
 
   const handleUploadClick = () => {
     fileInputRef.current?.click();
@@ -36,7 +38,7 @@ export function ContactWidgetSection({ setIsDirty }: Props) {
     if (!file) return;
 
     setIsUploading(true);
-    
+
     // Simulate upload delay
     setTimeout(() => {
       const objectUrl = URL.createObjectURL(file);
@@ -97,7 +99,9 @@ export function ContactWidgetSection({ setIsDirty }: Props) {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-3">Widget Image:</label>
+          <label className="block text-sm font-medium text-slate-700 mb-3">
+            Widget Image:
+          </label>
           <div className="flex flex-col gap-3">
             <div className="flex items-center gap-3">
               <input
@@ -115,13 +119,17 @@ export function ContactWidgetSection({ setIsDirty }: Props) {
                 <Upload size={16} />
                 {isUploading ? "Uploading..." : "Upload"}
               </button>
-              <span className="text-xs text-slate-400">Recommended: JPG, PNG, MP4, 1200 x 630 pixels</span>
+              <span className="text-xs text-slate-400">
+                Recommended: JPG, PNG, MP4, 1200 x 630 pixels
+              </span>
             </div>
 
             {mediaUrl && (
               <div className="flex items-center gap-2 mt-2">
                 <div className="flex items-center gap-1.5 text-sm text-slate-600 bg-slate-50 px-3 py-1.5 rounded border border-slate-100">
-                  <span className="truncate max-w-[200px]">{mediaName || "Section image.webp"}</span>
+                  <span className="truncate max-w-[200px]">
+                    {mediaName || "Section image.webp"}
+                  </span>
                   <button
                     onClick={clearMedia}
                     className="text-red-500 hover:text-red-700 transition-colors p-0.5 rounded-md hover:bg-red-50"
