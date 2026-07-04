@@ -218,6 +218,13 @@ const pagesRoute = createRoute({
   component: HomePageEditor,
 });
 
+import AboutUsPageEditor from "@/features/website-management/pages/AboutUsPageEditor";
+const aboutUsRoute = createRoute({
+  getParentRoute: () => dashboardLayoutRoute,
+  path: "/pages/about-us",
+  component: AboutUsPageEditor,
+});
+
 import EligibilityPage from "@/features/website-management/pages/EligibilityPage";
 const eligibilityRoute = createRoute({
   getParentRoute: () => dashboardLayoutRoute,
@@ -225,6 +232,19 @@ const eligibilityRoute = createRoute({
   component: EligibilityPage,
 });
 
+import CoveragePage from "@/features/website-management/pages/CoveragePage";
+const coverageRoute = createRoute({
+  getParentRoute: () => dashboardLayoutRoute,
+  path: "/pages/coverage",
+  component: CoveragePage,
+});
+
+import FaqPage from "@/features/website-management/pages/FaqPage";
+const faqRoute = createRoute({
+  getParentRoute: () => dashboardLayoutRoute,
+  path: "/pages/faq",
+  component: FaqPage,
+});
 
 import ServicesPage from "@/features/dashboard/ServicesPage";
 const servicesRoute = createRoute({
@@ -352,7 +372,10 @@ const routeTree = rootRoute.addChildren([
     employeePermissionsIdRoute,
     websiteManagementRoute,
     pagesRoute,
+    aboutUsRoute,
     eligibilityRoute,
+    coverageRoute,
+    faqRoute,
     servicesRoute,
     siteSettingsRoute,
     complianceCenterRoute,

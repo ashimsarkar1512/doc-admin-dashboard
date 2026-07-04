@@ -54,9 +54,9 @@ function HomePageEditorInner() {
   }
 
   return (
-    <div className="p-7 max-w-7xl mx-auto space-y-8 min-h-full font-sans pb-20">
+    <div className="p-4 sm:p-7 max-w-7xl mx-auto space-y-8 min-h-full font-sans pb-20">
       {/* Header */}
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
         <div>
           <h2 className="text-xl font-bold text-slate-800">Home Page Content</h2>
           {isDirty && (
