@@ -357,6 +357,24 @@ export function DashboardSidebar({
                         >
                           About Us
                         </Link>
+                        <Link
+                          to="/dashboard/pages/contact"
+                          className="flex items-center gap-3 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold"
+                        >
+                          Contact
+                        </Link>
+                        <Link
+                          to="/dashboard/pages/medical-team"
+                          className="flex items-center gap-3 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold"
+                        >
+                          Medical Team
+                        </Link>
+                        <Link
+                          to="/dashboard/pages/how-it-works"
+                          className="flex items-center gap-3 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold"
+                        >
+                          How It Works
+                        </Link>
 
                         <div>
                           <button
@@ -382,7 +400,7 @@ export function DashboardSidebar({
                                   .replace(/\s*&\s*/g, "-")
                                   .replace(/\s+/g, "-");
                                 const isActive = location.href.includes(
-                                  `/dashboard/services?${slug}`
+                                  `/dashboard/services?${slug}`,
                                 );
                                 return (
                                   <Link
@@ -401,7 +419,6 @@ export function DashboardSidebar({
                             </div>
                           )}
                         </div>
-
                       </div>
                     )}
                   </div>

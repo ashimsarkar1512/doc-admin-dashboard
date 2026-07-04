@@ -1,17 +1,17 @@
-import React, { useEffect, useState } from 'react';
 import { useLocation } from "@tanstack/react-router";
-import { Save, Loader2 } from 'lucide-react';
+import { Loader2, Save } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
 import ServicesHeroSection from '../website-management/pages/components/ServicesHeroSection';
 
 
-import { getAllCategories } from '@/api/endpoints/stateCoverage.api';
-import { getServicePage, updateServicePage } from '@/api/endpoints/service-page.api';
 import { getCtaSections, updateCtaSection } from '@/api/endpoints/cta-section.api';
-import ServicesSecondSection, { type SecondData } from '../website-management/pages/components/ServicesSecondSection';
-import ServicesFAQSection, { type FaqData } from '../website-management/pages/components/ServicesFAQSection';
+import { getServicePage, updateServicePage } from '@/api/endpoints/service-page.api';
+import { getAllCategories } from '@/api/endpoints/stateCoverage.api';
 import ServicesBottomCTASection, { type CtaData } from '../website-management/pages/components/ServicesBottomCTASection';
+import ServicesFAQSection, { type FaqData } from '../website-management/pages/components/ServicesFAQSection';
+import ServicesSecondSection, { type SecondData } from '../website-management/pages/components/ServicesSecondSection';
 
 const defaultHero = { pageTitle: '', bannerImageId: '', mediaUrl: null as string | null, mediaType: null as 'image' | 'video' | null };
 const defaultSecond: SecondData = { sectionTitle: '', sectionDescription: '', ctaButtonText: '', url: '', buttonTarget: false, featuredMediaId: '', featuredMediaName: null, featuredMediaType: null };

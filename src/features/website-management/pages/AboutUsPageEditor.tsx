@@ -1,10 +1,9 @@
-import React, { useState } from 'react';
-import { Save, Loader2 } from 'lucide-react';
-import { AboutUsHeroSection } from '../components/about-us/AboutUsHeroSection';
-import { AboutUsBodySection } from '../components/about-us/AboutUsBodySection';
-import { AboutUsFeaturesSection } from '../components/about-us/AboutUsFeaturesSection';
-import { AboutUsFaqSection } from '../components/about-us/AboutUsFaqSection';
-
+import React, { useState } from "react";
+import { Save, Loader2 } from "lucide-react";
+import { AboutUsHeroSection } from "../components/about-us/AboutUsHeroSection";
+import { AboutUsBodySection } from "../components/about-us/AboutUsBodySection";
+import { AboutUsFeaturesSection } from "../components/about-us/AboutUsFeaturesSection";
+import { AboutUsFaqSection } from "../components/about-us/AboutUsFaqSection";
 
 export default function AboutUsPageEditor() {
   const [isSaving, setIsSaving] = useState(false);
@@ -30,7 +29,7 @@ export default function AboutUsPageEditor() {
       ) : (
         <Save size={16} />
       )}
-      {isSaving ? 'Saving…' : 'Save Changes'}
+      {isSaving ? "Saving…" : "Save Changes"}
     </button>
   );
 
@@ -41,7 +40,9 @@ export default function AboutUsPageEditor() {
         <div>
           <h2 className="text-xl font-bold text-[#101828]">Page: About Us</h2>
           {isDirty && (
-            <p className="text-xs text-amber-500 font-medium mt-0.5">You have unsaved changes</p>
+            <p className="text-xs text-amber-500 font-medium mt-0.5">
+              You have unsaved changes
+            </p>
           )}
         </div>
         <SaveButton />
@@ -50,15 +51,15 @@ export default function AboutUsPageEditor() {
       {/* Sections */}
       <div className="space-y-6">
         <AboutUsHeroSection />
-        <AboutUsBodySection 
-          cardTitle="Body Section 1" 
-          defaultTitle="About us" 
+        <AboutUsBodySection
+          cardTitle="Body Section 1"
+          defaultTitle="About us"
         />
-        <AboutUsBodySection 
-          cardTitle="Body Section 2" 
-          defaultTitle="Incorporate and oversee Various Athletics, Administrators, and Trainers." 
-          showTag={true} 
-          showCta={true} 
+        <AboutUsBodySection
+          cardTitle="Body Section 2"
+          defaultTitle="Incorporate and oversee Various Athletics, Administrators, and Trainers."
+          showTag={true}
+          showCta={true}
         />
         <AboutUsFeaturesSection />
         <AboutUsFaqSection />

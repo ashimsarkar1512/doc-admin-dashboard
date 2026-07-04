@@ -1,24 +1,7 @@
 import { useState } from "react";
 import { Link, useLocation } from "@tanstack/react-router";
 import {
-  X,
   ChevronDown,
-  LayoutGrid,
-  Stethoscope,
-  Users,
-  ClipboardList,
-  Package,
-  MessageSquare,
-  BadgeDollarSign,
-  Folders,
-  ShoppingBag,
-  BookOpen,
-  Star,
-  Tag,
-  Globe,
-  UserCog,
-  ShieldCheck,
-  ScrollText,
   FileText,
   AlertTriangle,
   Map,
@@ -26,7 +9,24 @@ import {
   BarChart2,
   Folder,
   Activity,
+  BadgeDollarSign,
+  BookOpen,
+  ClipboardList,
+  Folders,
+  Globe,
+  LayoutGrid,
   LogOut,
+  MessageSquare,
+  Package,
+  ScrollText,
+  ShieldCheck,
+  ShoppingBag,
+  Star,
+  Stethoscope,
+  Tag,
+  UserCog,
+  Users,
+  X,
 } from "lucide-react";
 
 interface Props {
@@ -100,7 +100,7 @@ export function DashboardMobileSidebar({
             <LayoutGrid size={20} className="shrink-0" />
             <span>Dashboard</span>
           </Link>
-          
+
           {can("view:doctor_management") && (
             <Link
               to="/dashboard/providers"
@@ -321,10 +321,33 @@ export function DashboardMobileSidebar({
                         >
                           About Us
                         </Link>
+                        <Link
+                          to="/dashboard/pages/contact"
+                          onClick={() => setMobileSidebarOpen(false)}
+                          className="flex items-center gap-3 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold"
+                        >
+                          Contact
+                        </Link>
+                        <Link
+                          to="/dashboard/pages/medical-team"
+                          onClick={() => setMobileSidebarOpen(false)}
+                          className="flex items-center gap-3 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold"
+                        >
+                          Medical Team
+                        </Link>
+                        <Link
+                          to="/dashboard/pages/how-it-works"
+                          onClick={() => setMobileSidebarOpen(false)}
+                          className="flex items-center gap-3 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold"
+                        >
+                          How It Works
+                        </Link>
 
                         <div>
                           <button
-                            onClick={() => setServicesMenuOpen(!servicesMenuOpen)}
+                            onClick={() =>
+                              setServicesMenuOpen(!servicesMenuOpen)
+                            }
                             className="w-full flex items-center justify-between px-3 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors"
                           >
                             <span>Services</span>
@@ -344,7 +367,7 @@ export function DashboardMobileSidebar({
                                   .replace(/\s*&\s*/g, "-")
                                   .replace(/\s+/g, "-");
                                 const isActive = location.href.includes(
-                                  `/dashboard/services?${slug}`
+                                  `/dashboard/services?${slug}`,
                                 );
                                 return (
                                   <Link
@@ -367,7 +390,7 @@ export function DashboardMobileSidebar({
                       </div>
                     )}
                   </div>
-                  
+
                   <Link
                     to="/dashboard/account-settings"
                     onClick={() => setMobileSidebarOpen(false)}
