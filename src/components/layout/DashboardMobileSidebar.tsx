@@ -1,32 +1,32 @@
 import { useState } from "react";
 import { Link, useLocation } from "@tanstack/react-router";
 import {
-  X,
-  ChevronDown,
-  LayoutGrid,
-  Stethoscope,
-  Users,
-  ClipboardList,
-  Package,
-  MessageSquare,
-  BadgeDollarSign,
-  Folders,
-  ShoppingBag,
-  BookOpen,
-  Star,
-  Tag,
-  Globe,
-  UserCog,
-  ShieldCheck,
-  ScrollText,
-  FileText,
-  AlertTriangle,
-  Map,
-  Pill,
-  BarChart2,
-  Folder,
   Activity,
+  AlertTriangle,
+  BadgeDollarSign,
+  BarChart2,
+  BookOpen,
+  ChevronDown,
+  ClipboardList,
+  FileText,
+  Folder,
+  Folders,
+  Globe,
+  LayoutGrid,
   LogOut,
+  Map,
+  MessageSquare,
+  Package,
+  Pill,
+  ScrollText,
+  ShieldCheck,
+  ShoppingBag,
+  Star,
+  Stethoscope,
+  Tag,
+  UserCog,
+  Users,
+  X
 } from "lucide-react";
 
 interface Props {
@@ -70,9 +70,8 @@ export function DashboardMobileSidebar({
 
       {/* Mobile Sidebar - fixed overlay, never affects layout */}
       <div
-        className={`fixed inset-y-0 left-0 z-50 w-72 bg-white shadow-2xl flex flex-col transform transition-transform duration-300 ease-in-out xl:hidden ${
-          mobileSidebarOpen ? "translate-x-0" : "-translate-x-full"
-        }`}
+        className={`fixed inset-y-0 left-0 z-50 w-72 bg-white shadow-2xl flex flex-col transform transition-transform duration-300 ease-in-out md:hidden ${mobileSidebarOpen ? "translate-x-0" : "-translate-x-full"
+          }`}
       >
         {/* Mobile sidebar header */}
         <div className="flex items-center justify-between px-5 h-20 border-b border-slate-100 shrink-0">
