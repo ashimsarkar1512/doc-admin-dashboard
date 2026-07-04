@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Save, Loader2 } from "lucide-react";
 import { AboutUsHeroSection } from "../components/about-us/AboutUsHeroSection";
 import { AboutUsBodySection } from "../components/about-us/AboutUsBodySection";
