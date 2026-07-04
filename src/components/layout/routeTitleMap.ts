@@ -66,6 +66,34 @@ export const routeTitleMap: Record<string, { title: string; subtitle: string }> 
   },
   "/dashboard/pages": {
     title: "Website Management",
+    subtitle: "Manage your website pages",
+  },
+  "/dashboard/pages/home": {
+    title: "Home Page",
+    subtitle: "Manage the Home page content",
+  },
+  "/dashboard/pages/how-it-works": {
+    title: "How It Works Page",
+    subtitle: "Manage the How It Works page content",
+  },
+  "/dashboard/pages/contact": {
+    title: "Contact Page",
+    subtitle: "Manage the Contact page content",
+  },
+  "/dashboard/pages/medical-team": {
+    title: "Medical Team Page",
+    subtitle: "Manage the Medical Team page content",
+  },
+  "/dashboard/pages/about-us": {
+    title: "About Us Page",
+    subtitle: "Manage the About Us page content",
+  },
+  "/dashboard/pages/eligibility": {
+    title: "Website Management",
+    subtitle: "Manage your website",
+  },
+  "/dashboard/pages/coverage": {
+    title: "Website Management",
     subtitle: "Manage your website",
   },
   "/dashboard/pages/about-us": {
@@ -102,7 +130,7 @@ export const routeTitleMap: Record<string, { title: string; subtitle: string }> 
   },
   "/dashboard/services": {
     title: "Website Management",
-    subtitle: "Manage your website",
+    subtitle: "Manage your website services",
   },
   "/dashboard/account-settings": {
     title: "Account Settings",

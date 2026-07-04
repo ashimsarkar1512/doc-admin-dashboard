@@ -1,36 +1,17 @@
-import { useState } from "react";
 import { SectionCard } from "../shared/SectionCard";
 import { FormInput } from "../shared/FormInput";
+import { useHowItWorksContext } from "../../context/HowItWorksContext";
 
-interface Props {
-  setIsDirty: (dirty: boolean) => void;
-}
-
-export function HowItWorksCtaSection({ setIsDirty }: Props) {
-  const [title, setTitle] = useState("Contact Us at Weight Loss MD Today");
-  const [buttonText, setButtonText] = useState("Book a consultation");
-  const [url, setUrl] = useState("https://weightlossmd.com/contact");
-  const [newTab, setNewTab] = useState(true);
-
-  const handleChange =
-    (setter: React.Dispatch<React.SetStateAction<string>>) =>
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      setter(e.target.value);
-      setIsDirty(true);
-    };
-
-  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setNewTab(e.target.checked);
-    setIsDirty(true);
-  };
+export function HowItWorksCtaSection() {
+  const { form, setField } = useHowItWorksContext();
 
   return (
     <SectionCard title="Bottom CTA Section:">
       <div className="space-y-5">
         <FormInput
           label="Section Title:"
-          value={title}
-          onChange={handleChange(setTitle)}
+          value={form.ctaTitle}
+          onChange={(e) => setField("ctaTitle", e.target.value)}
           placeholder="Contact Us at Weight Loss MD Today"
         />
 
@@ -38,16 +19,16 @@ export function HowItWorksCtaSection({ setIsDirty }: Props) {
           <div className="flex-1 min-w-[160px]">
             <FormInput
               label="CTA Button Text:"
-              value={buttonText}
-              onChange={handleChange(setButtonText)}
+              value={form.ctaButtonText}
+              onChange={(e) => setField("ctaButtonText", e.target.value)}
               placeholder="Book a consultation"
             />
           </div>
           <div className="flex-1 min-w-[160px]">
             <FormInput
               label="URL:"
-              value={url}
-              onChange={handleChange(setUrl)}
+              value={form.ctaUrl}
+              onChange={(e) => setField("ctaUrl", e.target.value)}
               placeholder="https://weightlossmd.com/contact"
             />
           </div>
@@ -59,8 +40,8 @@ export function HowItWorksCtaSection({ setIsDirty }: Props) {
               <input
                 type="checkbox"
                 className="w-4 h-4 rounded text-[#1447E6] focus:ring-[#1447E6] border-slate-300"
-                checked={newTab}
-                onChange={handleCheckboxChange}
+                checked={form.ctaNewTab}
+                onChange={(e) => setField("ctaNewTab", e.target.checked)}
               />
               <span className="text-sm font-medium text-slate-700 whitespace-nowrap">
                 Blank (open in new tab)

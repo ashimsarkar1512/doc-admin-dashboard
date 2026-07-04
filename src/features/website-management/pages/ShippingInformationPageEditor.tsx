@@ -393,14 +393,17 @@ export default function ShippingInformationPageEditor() {
                           className="w-full border border-slate-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#1447E6]/20 focus:border-[#1447E6] transition-all"
                         />
                       </div>
-                      <div>
-                        <label className="block text-sm font-semibold text-[#272628] mb-1.5">Partner Logo Image:</label>
-                        <div className="flex items-center gap-4">
-                          <label className="flex items-center gap-2 px-4 py-2 bg-[#1447E6] text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors cursor-pointer">
-                            <Upload size={16} /> Upload
-                            <input 
-                              type="file" 
-                              className="hidden" 
+                      <div className="flex-1">
+                        <label className="block text-sm font-semibold text-[#272628] mb-1.5">Pharmacy Logo:</label>
+                        <div className="relative">
+                          <label className="h-10 border border-slate-200 rounded-lg px-4 py-2 text-sm text-slate-500 bg-slate-50 flex items-center justify-between cursor-pointer hover:bg-slate-100 transition-colors w-full">
+                            <span className="truncate mr-2">
+                              {pharmacy.logoUrl ? "Change logo..." : "Upload image..."}
+                            </span>
+                            <Upload size={16} className="text-slate-400 shrink-0" />
+                            <input
+                              type="file"
+                              className="hidden"
                               accept="image/*,video/mp4"
                               onChange={async (e) => {
                                 const file = e.target.files?.[0];
@@ -413,19 +416,15 @@ export default function ShippingInformationPageEditor() {
                                     toast.error("Failed to upload image.");
                                   }
                                 }
-                                // Reset the value so the same file can be uploaded again if needed
-                                if (e.target) {
-                                  e.target.value = '';
-                                }
+                                if (e.target) e.target.value = '';
                               }}
                             />
                           </label>
-                          <span className="text-xs text-slate-500">Recommended: JPG, PNG, MP4, 1200 x 630 pixels</span>
                         </div>
                         {pharmacy.logoUrl && (
-                          <div className="mt-3 flex items-center gap-3">
-                            <div className="h-10 bg-white border border-slate-200 rounded flex items-center justify-center overflow-hidden">
-                              <img src={pharmacy.logoUrl} alt="Logo" className="h-full w-auto object-contain p-1 max-w-[150px]" />
+                          <div className="mt-3 relative inline-block">
+                            <div className="h-14 bg-white border border-slate-200 rounded-lg flex items-center justify-center p-2 overflow-hidden">
+                              <img src={pharmacy.logoUrl} alt="Logo" className="h-full w-auto object-contain max-w-[120px]" />
                             </div>
                             <button
                               type="button"
@@ -433,9 +432,9 @@ export default function ShippingInformationPageEditor() {
                                 setPharmacies(prev => prev.map(p => p.id === pharmacy.id ? { ...p, logoUrl: "", logoId: null } : p));
                                 setIsDirty(true);
                               }}
-                              className="text-red-500 hover:text-red-700"
+                              className="absolute -top-2 -right-2 bg-white rounded-full p-1 shadow-md border border-slate-100 text-red-500 hover:text-red-700 hover:bg-red-50 transition-colors"
                             >
-                              <Trash2 size={16} />
+                              <Trash2 size={14} />
                             </button>
                           </div>
                         )}

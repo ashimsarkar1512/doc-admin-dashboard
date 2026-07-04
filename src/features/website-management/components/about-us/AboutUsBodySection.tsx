@@ -1,67 +1,68 @@
-import React, { useRef, useState } from 'react';
-import { Upload, X, FileText } from 'lucide-react';
 import { SectionCard } from '../shared/SectionCard';
 import { FormInput } from '../shared/FormInput';
 import { FormTextarea } from '../shared/FormTextarea';
 import { SaveLocalSectionButton } from './AboutUsSaveButton';
+import { MediaUpload } from '../shared/MediaUpload';
+
+export interface AboutUsBodySectionData {
+  tag?: string;
+  title: string;
+  description: string;
+  buttonText?: string;
+  buttonUrl?: string;
+  targetBlank?: boolean;
+  mediaUrl: string | null;
+  mediaName: string | null;
+  mediaFile?: File | null; // For uploading
+}
 
 interface AboutUsBodySectionProps {
   cardTitle: string;
   defaultTitle: string;
   showTag?: boolean;
   showCta?: boolean;
+  acceptVideo?: boolean;
+  data: AboutUsBodySectionData;
+  onChange: (updates: Partial<AboutUsBodySectionData>) => void;
+  onSave: () => void;
+  isSaving: boolean;
 }
 
-export function AboutUsBodySection({ cardTitle, defaultTitle, showTag = false, showCta = false }: AboutUsBodySectionProps) {
-  const [tag, setTag] = useState('');
-  const [title, setTitle] = useState(defaultTitle);
-  const [description, setDescription] = useState('');
-  const [mediaUrl, setMediaUrl] = useState('');
-  const [mediaName, setMediaName] = useState('');
-  const [buttonText, setButtonText] = useState('');
-  const [buttonLink, setButtonLink] = useState('');
-  const [newTab, setNewTab] = useState(true);
-  const [isSaving, setIsSaving] = useState(false);
-
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const handleSave = () => {
-    setIsSaving(true);
-    setTimeout(() => setIsSaving(false), 500);
-  };
-
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setMediaUrl(URL.createObjectURL(file));
-      setMediaName(file.name);
-    }
-  };
-
+export function AboutUsBodySection({ 
+  cardTitle, 
+  defaultTitle, 
+  showTag = false, 
+  showCta = false,
+  acceptVideo = false,
+  data,
+  onChange,
+  onSave,
+  isSaving
+}: AboutUsBodySectionProps) {
   return (
     <SectionCard title={cardTitle}>
       <div className="space-y-5">
         {showTag && (
           <FormInput
             label="Section Tag:"
-            value={tag}
-            onChange={(e) => setTag(e.target.value)}
+            value={data.tag || ''}
+            onChange={(e) => onChange({ tag: e.target.value })}
             placeholder="e.g. Our Mission"
           />
         )}
 
         <FormInput
           label="Section Title:"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
+          value={data.title}
+          onChange={(e) => onChange({ title: e.target.value })}
           placeholder={defaultTitle}
         />
 
         <FormTextarea
           label="Section Description:"
           className="h-24"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
+          value={data.description}
+          onChange={(e) => onChange({ description: e.target.value })}
           placeholder="Enter description here..."
         />
 
@@ -70,16 +71,16 @@ export function AboutUsBodySection({ cardTitle, defaultTitle, showTag = false, s
             <div className="flex-1 min-w-[160px]">
               <FormInput
                 label="CTA Button Text:"
-                value={buttonText}
-                onChange={(e) => setButtonText(e.target.value)}
+                value={data.buttonText || ''}
+                onChange={(e) => onChange({ buttonText: e.target.value })}
                 placeholder="Contact Us"
               />
             </div>
             <div className="flex-1 min-w-[160px]">
               <FormInput
                 label="URL:"
-                value={buttonLink}
-                onChange={(e) => setButtonLink(e.target.value)}
+                value={data.buttonUrl || ''}
+                onChange={(e) => onChange({ buttonUrl: e.target.value })}
                 placeholder="https://..."
               />
             </div>
@@ -89,8 +90,8 @@ export function AboutUsBodySection({ cardTitle, defaultTitle, showTag = false, s
                 <input
                   type="checkbox"
                   className="w-4 h-4 rounded text-[#1447E6] focus:ring-[#1447E6] border-slate-300"
-                  checked={newTab}
-                  onChange={(e) => setNewTab(e.target.checked)}
+                  checked={data.targetBlank ?? true}
+                  onChange={(e) => onChange({ targetBlank: e.target.checked })}
                 />
                 <span className="text-sm font-medium text-[#272628] whitespace-nowrap">
                   Blank (open in new tab)
@@ -102,45 +103,17 @@ export function AboutUsBodySection({ cardTitle, defaultTitle, showTag = false, s
 
         <div>
           <label className="block text-sm font-semibold text-[#272628] mb-2">Featured Media:</label>
-          <div className="flex items-center gap-4">
-            <button
-              type="button"
-              onClick={() => fileInputRef.current?.click()}
-              className="flex items-center gap-2 px-5 py-2 bg-[#1447E6] text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors shadow-sm"
-            >
-              <Upload size={16} /> Upload
-            </button>
-            <div className="text-[11px] text-slate-500">
-              Recommended: JPG, PNG, WEBP, MP4, 1200 x 630 pixels
-            </div>
-          </div>
-          {mediaUrl && (
-            <div className="flex items-center gap-2 mt-3 pl-1">
-              <FileText size={14} className="text-[#1447E6]" />
-              <span className="text-sm text-slate-600">{mediaName}</span>
-              <button
-                type="button"
-                onClick={() => {
-                  setMediaUrl('');
-                  setMediaName('');
-                }}
-                className="text-red-500 hover:text-red-600 ml-1"
-                title="Remove image"
-              >
-                <X size={14} />
-              </button>
-            </div>
-          )}
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/*,video/mp4"
-            className="hidden"
-            onChange={handleImageChange}
+          <MediaUpload
+            mediaUrl={data.mediaUrl}
+            mediaName={data.mediaName}
+            onUpload={(url, name, file) => onChange({ mediaUrl: url, mediaName: name, mediaFile: file })}
+            onRemove={() => onChange({ mediaUrl: null, mediaName: null, mediaFile: null })}
+            recommendedText={acceptVideo ? "Recommended: JPG, PNG, WEBP, MP4, 1200 x 630 pixels" : "Recommended: JPG, PNG, WEBP, 1200 x 630 pixels"}
+            acceptVideo={acceptVideo}
           />
         </div>
       </div>
-      <SaveLocalSectionButton onClick={handleSave} isSaving={isSaving} />
+      <SaveLocalSectionButton onClick={onSave} isSaving={isSaving} />
     </SectionCard>
   );
 }

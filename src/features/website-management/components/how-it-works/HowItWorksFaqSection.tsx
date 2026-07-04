@@ -1,77 +1,40 @@
-import { useState } from "react";
 import { Trash2 } from "lucide-react";
 import { SectionCard } from "../shared/SectionCard";
 import { FormInput } from "../shared/FormInput";
 import { FormTextarea } from "../shared/FormTextarea";
+import { useHowItWorksContext } from "../../context/HowItWorksContext";
+import type { FaqItem } from "../../context/HowItWorksContext";
 
-interface Props {
-  setIsDirty: (dirty: boolean) => void;
-}
-
-interface FaqItem {
-  id: string;
-  question: string;
-  answer: string;
-}
-
-export function HowItWorksFaqSection({ setIsDirty }: Props) {
-  const [title, setTitle] = useState("Process Questions");
-
-  const [faqs, setFaqs] = useState<FaqItem[]>([
-    {
-      id: "1",
-      question: "Do I need to be a patient of record before starting?",
-      answer:
-        "No. Your assessment creates a new patient relationship with your assigned provider - who reviews your health information to establish this relationship as part of the clinical process.",
-    },
-    {
-      id: "2",
-      question: "What if my provider requests more information?",
-      answer: "",
-    },
-    {
-      id: "3",
-      question: "Is payment taken before or after approval?",
-      answer: "",
-    },
-    {
-      id: "4",
-      question: "How quickly can I receive my medication?",
-      answer: "",
-    },
-  ]);
-
-  const handleTitleChange = (val: string) => {
-    setTitle(val);
-    setIsDirty(true);
-  };
+export function HowItWorksFaqSection() {
+  const { form, setField } = useHowItWorksContext();
 
   const handleFaqChange = (
     id: string,
     field: keyof Omit<FaqItem, "id">,
     value: string,
   ) => {
-    setFaqs((prev) =>
-      prev.map((faq) => (faq.id === id ? { ...faq, [field]: value } : faq)),
+    setField(
+      "faqs",
+      form.faqs.map((faq) => (faq.id === id ? { ...faq, [field]: value } : faq))
     );
-    setIsDirty(true);
   };
 
   const addFaq = () => {
-    setFaqs((prev) => [
-      ...prev,
+    setField("faqs", [
+      ...form.faqs,
       {
-        id: Math.random().toString(36).substring(7),
+        id: crypto.randomUUID(),
         question: "",
         answer: "",
       },
     ]);
-    setIsDirty(true);
   };
 
   const removeFaq = (id: string) => {
-    setFaqs((prev) => prev.filter((faq) => faq.id !== id));
-    setIsDirty(true);
+    setField(
+      "faqs",
+      form.faqs.filter((faq) => faq.id !== id)
+    );
   };
 
   return (
@@ -79,13 +42,13 @@ export function HowItWorksFaqSection({ setIsDirty }: Props) {
       <div className="space-y-6">
         <FormInput
           label="Section Title:"
-          value={title}
-          onChange={(e) => handleTitleChange(e.target.value)}
+          value={form.faqSectionTitle}
+          onChange={(e) => setField("faqSectionTitle", e.target.value)}
           placeholder="Process Questions"
         />
 
         <div className="space-y-4">
-          {faqs.map((faq) => (
+          {form.faqs.map((faq) => (
             <div
               key={faq.id}
               className="p-4 border border-slate-200 rounded-lg space-y-4 bg-white relative"

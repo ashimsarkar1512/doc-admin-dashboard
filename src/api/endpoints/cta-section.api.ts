@@ -18,7 +18,7 @@ export interface UpdateCtaSectionDto {
   ctaButtonText?: string;
   url?: string;
   openInNewTab?: boolean;
-  categoryId?: string;
+  categoryId?: string | null;
 }
 
 export const getCtaSections = async (pageType: string, categoryId?: string) => {
