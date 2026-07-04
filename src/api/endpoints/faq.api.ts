@@ -1,29 +1,39 @@
-import { axiosInstance } from "@/api/axiosInstance";
+import { axiosInstance } from '@/api/axiosInstance';
 
 export interface FaqItem {
-  id: string;
-  faqId: string;
+  id?: string;
+  faqId?: string;
   question: string;
   answer: string;
-  order: number;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface FaqSection {
-  id: string;
-  sectionTitle: string;
-  pageType: string;
-  createdAt: string;
-  updatedAt: string;
-  faqs: FaqItem[];
+  order?: number;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface FaqSectionResponse {
-  success: boolean;
-  message: string;
-  data: FaqSection;
+  id: string;
+  sectionTitle: string;
+  pageType: string;
+  createdAt?: string;
+  updatedAt?: string;
+  faqs: FaqItem[];
 }
+
+export const getFaqByPageType = async (pageType: string): Promise<{ data: FaqSectionResponse }> => {
+  const { data } = await axiosInstance.get(`/faq?pageType=${pageType}`);
+  return data;
+};
+
+export const updateFaq = async (
+  payload: {
+    pageType: string;
+    sectionTitle: string;
+    faqs: { question: string; answer: string }[];
+  }
+): Promise<{ data: FaqSectionResponse }> => {
+  const { data } = await axiosInstance.patch(`/faq`, payload);
+  return data;
+};
 
 export interface UpdateFaqItemDto {
   question: string;
@@ -38,14 +48,14 @@ export interface UpdateFaqSectionDto {
 
 export const getFaqSection = async (
   pageType: string
-): Promise<FaqSectionResponse> => {
+): Promise<{ success: boolean; message: string; data: FaqSectionResponse }> => {
   const { data } = await axiosInstance.get(`/faq?pageType=${pageType}`);
   return data;
 };
 
 export const updateFaqSection = async (
   payload: UpdateFaqSectionDto
-): Promise<FaqSectionResponse> => {
+): Promise<{ success: boolean; message: string; data: FaqSectionResponse }> => {
   const { data } = await axiosInstance.patch("/faq", payload);
   return data;
 };

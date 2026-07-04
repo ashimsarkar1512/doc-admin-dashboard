@@ -195,8 +195,8 @@ export default function FaqPage() {
       faqSection?.faqs?.length
         ? faqSection.faqs
             .slice()
-            .sort((a, b) => a.order - b.order)
-            .map((faq) => ({
+            .sort((a: any, b: any) => a.order - b.order)
+            .map((faq: any) => ({
               id: faq.id,
               question: faq.question || "",
               answer: faq.answer || "",

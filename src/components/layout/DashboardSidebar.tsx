@@ -352,28 +352,6 @@ export function DashboardSidebar({
                           Home
                         </Link>
                         <Link
-                          to="/dashboard/pages/eligibility"
-                          activeOptions={{ exact: true }}
-                          className="flex items-center gap-3 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold"
-                        >
-                          Egilibility
-                        </Link>
-                         <Link
-                          to={"/dashboard/pages/coverage" as never}
-                          activeOptions={{ exact: true }}
-                          className="flex items-center gap-3 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold"
-                        >
-                          Coverage
-                        </Link>
-                          <Link
-                          to={"/dashboard/pages/faq" as never}
-                          activeOptions={{ exact: true }}
-                          className="flex items-center gap-3 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold"
-                        >
-                          Faq
-                        </Link>
-
-                        <Link
                           to="/dashboard/pages/about-us"
                           className="flex items-center gap-3 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold"
                         >
@@ -396,6 +374,30 @@ export function DashboardSidebar({
                           className="flex items-center gap-3 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold"
                         >
                           How It Works
+                        </Link>
+                        <Link
+                          to="/dashboard/pages/billing-and-cancellation"
+                          className="flex items-center gap-3 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold"
+                        >
+                          Billing & Cancellation
+                        </Link>
+                        <Link
+                          to="/dashboard/pages/report-side-effect"
+                          className="flex items-center gap-3 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold"
+                        >
+                          Report Side Effect
+                        </Link>
+                        <Link
+                          to="/dashboard/pages/request-record"
+                          className="flex items-center gap-3 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold"
+                        >
+                          Request Record
+                        </Link>
+                        <Link
+                          to="/dashboard/pages/shipping-information"
+                          className="flex items-center gap-3 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold"
+                        >
+                          Shipping Information
                         </Link>
                         <Link
                           to="/dashboard/pages/lab-testing"
@@ -445,15 +447,13 @@ export function DashboardSidebar({
                                   .toLowerCase()
                                   .replace(/\s*&\s*/g, "-")
                                   .replace(/\s+/g, "-");
-                                if (slug === 'lab-testing') return null;
-                                  
-                                const linkTo = `/dashboard/services?${slug}`;
-                                  
-                                const isActive = location.href.includes(linkTo);
+                                const isActive = location.href.includes(
+                                  `/dashboard/services?${slug}`,
+                                );
                                 return (
                                   <Link
                                     key={category.id}
-                                    to={linkTo as any}
+                                    to={`/dashboard/services?${slug}` as any}
                                     className={`flex items-center gap-3 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
                                       isActive
                                         ? "bg-[#EFF6FF] text-[#1447E6] font-semibold"

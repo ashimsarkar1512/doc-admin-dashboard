@@ -1,23 +1,23 @@
 import { useState } from "react";
 import { Link, useLocation } from "@tanstack/react-router";
 import {
-  Activity,
-  AlertTriangle,
-  BadgeDollarSign,
-  BarChart2,
-  BookOpen,
   ChevronDown,
-  ClipboardList,
   FileText,
+  AlertTriangle,
+  Map,
+  Pill,
+  BarChart2,
   Folder,
+  Activity,
+  BadgeDollarSign,
+  BookOpen,
+  ClipboardList,
   Folders,
   Globe,
   LayoutGrid,
   LogOut,
-  Map,
   MessageSquare,
   Package,
-  Pill,
   ScrollText,
   ShieldCheck,
   ShoppingBag,
@@ -315,28 +315,11 @@ export function DashboardMobileSidebar({
                           Home
                         </Link>
                         <Link
-                          to="/dashboard/pages/eligibility"
+                          to="/dashboard/pages/about-us"
                           onClick={() => setMobileSidebarOpen(false)}
-                          activeOptions={{ exact: true }}
                           className="flex items-center gap-3 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold"
                         >
-                          Eligibility
-                        </Link>
-                           <Link
-                          to="/dashboard/pages/coverage"
-                          onClick={() => setMobileSidebarOpen(false)}
-                          activeOptions={{ exact: true }}
-                          className="flex items-center gap-3 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold"
-                        >
-                          Coverage
-                        </Link>
-                           <Link
-                          to="/dashboard/pages/faq"
-                          onClick={() => setMobileSidebarOpen(false)}
-                          activeOptions={{ exact: true }}
-                          className="flex items-center gap-3 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold"
-                        >
-                          Faq
+                          About Us
                         </Link>
                         <Link
                           to="/dashboard/pages/contact"
@@ -360,32 +343,32 @@ export function DashboardMobileSidebar({
                           How It Works
                         </Link>
                         <Link
-                          to="/dashboard/pages/lab-testing"
+                          to="/dashboard/pages/billing-and-cancellation"
                           onClick={() => setMobileSidebarOpen(false)}
                           className="flex items-center gap-3 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold"
                         >
-                          Lab Testing
+                          Billing & Cancellation
                         </Link>
                         <Link
-                          to="/dashboard/pages/privacy-policy"
+                          to="/dashboard/pages/report-side-effect"
                           onClick={() => setMobileSidebarOpen(false)}
                           className="flex items-center gap-3 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold"
                         >
-                          Privacy Policy
+                          Report Side Effect
                         </Link>
                         <Link
-                          to="/dashboard/pages/terms-of-service"
+                          to="/dashboard/pages/request-record"
                           onClick={() => setMobileSidebarOpen(false)}
                           className="flex items-center gap-3 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold"
                         >
-                          Terms of Service
+                          Request Record
                         </Link>
                         <Link
-                          to="/dashboard/pages/hipaa-notice"
+                          to="/dashboard/pages/shipping-information"
                           onClick={() => setMobileSidebarOpen(false)}
                           className="flex items-center gap-3 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold"
                         >
-                          HIPAA Notice
+                          Shipping Information
                         </Link>
 
                         <div>
@@ -411,15 +394,13 @@ export function DashboardMobileSidebar({
                                   .toLowerCase()
                                   .replace(/\s*&\s*/g, "-")
                                   .replace(/\s+/g, "-");
-                                if (slug === 'lab-testing') return null;
-                                  
-                                const linkTo = `/dashboard/services?${slug}`;
-                                  
-                                const isActive = location.href.includes(linkTo);
+                                const isActive = location.href.includes(
+                                  `/dashboard/services?${slug}`,
+                                );
                                 return (
                                   <Link
                                     key={category.id}
-                                    to={linkTo as any}
+                                    to={`/dashboard/services?${slug}` as any}
                                     onClick={() => setMobileSidebarOpen(false)}
                                     className={`flex items-center gap-3 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
                                       isActive
@@ -449,6 +430,7 @@ export function DashboardMobileSidebar({
               )}
             </div>
           )}
+
           {hasComplianceAccess && <hr className="my-2 border-slate-100" />}
 
           {hasComplianceAccess && (
