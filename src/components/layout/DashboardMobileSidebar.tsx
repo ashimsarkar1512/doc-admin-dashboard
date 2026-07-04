@@ -359,6 +359,34 @@ export function DashboardMobileSidebar({
                         >
                           How It Works
                         </Link>
+                        <Link
+                          to="/dashboard/pages/billing-and-cancellation"
+                          onClick={() => setMobileSidebarOpen(false)}
+                          className="flex items-center gap-3 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold"
+                        >
+                          Billing & Cancellation
+                        </Link>
+                        <Link
+                          to="/dashboard/pages/report-side-effect"
+                          onClick={() => setMobileSidebarOpen(false)}
+                          className="flex items-center gap-3 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold"
+                        >
+                          Report Side Effect
+                        </Link>
+                        <Link
+                          to="/dashboard/pages/request-record"
+                          onClick={() => setMobileSidebarOpen(false)}
+                          className="flex items-center gap-3 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold"
+                        >
+                          Request Record
+                        </Link>
+                        <Link
+                          to="/dashboard/pages/shipping-information"
+                          onClick={() => setMobileSidebarOpen(false)}
+                          className="flex items-center gap-3 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold"
+                        >
+                          Shipping Information
+                        </Link>
 
                         <div>
                           <button
