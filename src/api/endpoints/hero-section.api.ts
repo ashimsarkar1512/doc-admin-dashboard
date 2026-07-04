@@ -1,4 +1,4 @@
-﻿import { axiosInstance } from '@/api/axiosInstance';
+import { axiosInstance } from '@/api/axiosInstance';
 
 export interface HeroSection {
   id: string;
@@ -47,7 +47,7 @@ export async function updateHeroSection(
   params: UpdateHeroSectionRequest
 ): Promise<HeroSection> {
   const { data } = await axiosInstance.patch<UpdateHeroSectionResponse>(
-    /hero-section/,
+    `/hero-section/${id}`,
     params
   );
   return data.data;
