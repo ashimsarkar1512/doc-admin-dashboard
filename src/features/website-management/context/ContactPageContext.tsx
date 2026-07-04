@@ -216,7 +216,14 @@ export function ContactPageProvider({ children }: { children: React.ReactNode })
       setIsDirty(false);
       widgetImageRef.current = null;
       
-      // Fetch fresh data
+      // Invalidate queries to mark cache as stale and trigger a background refetch
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: CONTACT_HERO_QUERY_KEY }),
+        queryClient.invalidateQueries({ queryKey: CONTACT_WIDGET_QUERY_KEY }),
+        queryClient.invalidateQueries({ queryKey: CONTACT_PARTNERS_QUERY_KEY })
+      ]);
+      
+      // Fetch fresh data (now that cache is stale, this will wait for the network request to finish)
       const [newHeroRes, newWidgetRes, newPartnersRes] = await Promise.all([
         queryClient.fetchQuery({ queryKey: CONTACT_HERO_QUERY_KEY, queryFn: () => getHeroSections("ContactUs") }),
         queryClient.fetchQuery({ queryKey: CONTACT_WIDGET_QUERY_KEY, queryFn: getContactSideWidget }),

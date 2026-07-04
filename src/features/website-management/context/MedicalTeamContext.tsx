@@ -180,6 +180,13 @@ export function MedicalTeamProvider({
       toast.success("Medical Team page updated successfully");
       setIsDirty(false);
       
+      // Invalidate queries to mark cache as stale and trigger a background refetch
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: MEDICAL_TEAM_HERO_QUERY_KEY }),
+        queryClient.invalidateQueries({ queryKey: MEDICAL_TEAM_PROVIDER_QUERY_KEY }),
+        queryClient.invalidateQueries({ queryKey: MEDICAL_TEAM_CTA_QUERY_KEY })
+      ]);
+      
       const [newHeroRes, newProviderRes, newCtaRes] = await Promise.all([
         queryClient.fetchQuery({ queryKey: MEDICAL_TEAM_HERO_QUERY_KEY, queryFn: () => getHeroSections("MedicalTeam") }),
         queryClient.fetchQuery({ queryKey: MEDICAL_TEAM_PROVIDER_QUERY_KEY, queryFn: getMedicalTeamSection }),
