@@ -40,13 +40,19 @@ export default function ShippingInformationPageEditor() {
             setPartnerTitle(data.partnerPharmacySection.title || "");
             setPartnerDescription(data.partnerPharmacySection.description || "");
             if (data.partnerPharmacySection.partners) {
-              setPharmacies(data.partnerPharmacySection.partners.map(p => ({
-                id: p.id || Math.random().toString(),
-                name: p.name,
-                address: p.address,
-                logoId: p.logoId || null,
-                logoUrl: p.logo || ""
-              })));
+              setPharmacies(data.partnerPharmacySection.partners.map(p => {
+                let extractedLogoUrl = "";
+                if (p.logo) {
+                  extractedLogoUrl = typeof p.logo === 'string' ? p.logo : (p.logo as any).fileUrl || "";
+                }
+                return {
+                  id: p.id || Math.random().toString(),
+                  name: p.name,
+                  address: p.address,
+                  logoId: p.logoId || null,
+                  logoUrl: extractedLogoUrl
+                };
+              }));
             }
           }
           if (data.shippingTimelineSection) {
@@ -193,7 +199,7 @@ export default function ShippingInformationPageEditor() {
           partners: pharmacies.map(p => ({
             name: p.name,
             address: p.address,
-            logoId: p.logoUrl || null
+            logoId: p.logoId || null
           }))
         },
         shippingTimelineSection: {
@@ -356,91 +362,83 @@ export default function ShippingInformationPageEditor() {
             <div className="space-y-4">
               {pharmacies.map((pharmacy, index) => (
                 <div key={pharmacy.id} className="p-4 border border-slate-200 rounded-lg space-y-4 bg-white relative">
-                  <div className="flex gap-4 items-start">
-                    <div className="flex-1 space-y-4">
-                      <div className="flex items-start gap-4">
-                        <div className="flex-1">
-                          <label className="block text-sm font-semibold text-[#272628] mb-1.5">Partner Name:</label>
-                          <input
-                            type="text"
-                            value={pharmacy.name}
-                            onChange={(e) => {
-                              setPharmacies(prev => prev.map(p => p.id === pharmacy.id ? { ...p, name: e.target.value } : p));
-                              setIsDirty(true);
-                            }}
-                            placeholder={index === 0 ? "Olympia Pharmaceuticals" : index === 1 ? "CasaPharma RX" : index === 2 ? "Vios Compounding Pharmacy" : index === 3 ? "AnazaoHealth" : index === 4 ? "Belmar" : "Write here..."}
-                            className="w-full border border-slate-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#1447E6]/20 focus:border-[#1447E6] transition-all"
-                          />
-                        </div>
+                  <div className="flex items-start gap-4">
+                    <div className="flex-1">
+                      <label className="block text-sm font-semibold text-[#272628] mb-1.5">Partner Name:</label>
+                      <input
+                        type="text"
+                        value={pharmacy.name}
+                        onChange={(e) => {
+                          setPharmacies(prev => prev.map(p => p.id === pharmacy.id ? { ...p, name: e.target.value } : p));
+                          setIsDirty(true);
+                        }}
+                        placeholder={index === 0 ? "Olympia Pharmaceuticals" : index === 1 ? "CasaPharma RX" : index === 2 ? "Vios Compounding Pharmacy" : index === 3 ? "AnazaoHealth" : index === 4 ? "Belmar" : "Write here..."}
+                        className="w-full border border-slate-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#1447E6]/20 focus:border-[#1447E6] transition-all"
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => removePharmacy(pharmacy.id)}
+                      className="mt-8 text-red-500 hover:text-red-700 shrink-0"
+                      title="Remove Pharmacy"
+                    >
+                      <Trash2 size={16} strokeWidth={2} />
+                    </button>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-[#272628] mb-1.5">Address:</label>
+                    <input
+                      type="text"
+                      value={pharmacy.address}
+                      onChange={(e) => {
+                        setPharmacies(prev => prev.map(p => p.id === pharmacy.id ? { ...p, address: e.target.value } : p));
+                        setIsDirty(true);
+                      }}
+                      placeholder={index === 0 ? "503B Outsourcer + 503A Pharmacy" : "503A Pharmacy"}
+                      className="w-full border border-slate-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#1447E6]/20 focus:border-[#1447E6] transition-all"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-[#272628] mb-1.5">Partner Logo Image:</label>
+                    <div className="flex items-center gap-3">
+                      <label className="bg-[#2B54E6] text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 cursor-pointer hover:bg-blue-700 transition-colors">
+                        <Upload size={16} /> Upload
+                        <input
+                          type="file"
+                          className="hidden"
+                          accept="image/*,video/mp4"
+                          onChange={async (e) => {
+                            const file = e.target.files?.[0];
+                            if (file) {
+                              try {
+                                const uploadedFile = await uploadAttachment(file, 'OTHERS');
+                                setPharmacies(prev => prev.map(p => p.id === pharmacy.id ? { ...p, logoUrl: uploadedFile.fileUrl, logoId: uploadedFile.id } : p));
+                                setIsDirty(true);
+                              } catch (error) {
+                                toast.error("Failed to upload image.");
+                              }
+                            }
+                            if (e.target) e.target.value = '';
+                          }}
+                        />
+                      </label>
+                      <span className="text-xs text-slate-500">Recommended: JPG, PNG, MP4, 1200 x 630 pixels</span>
+                    </div>
+                    {pharmacy.logoUrl && (
+                      <div className="mt-4 flex items-center gap-4">
+                        <img src={pharmacy.logoUrl} alt="Logo" className="h-8 object-contain" />
                         <button
                           type="button"
-                          onClick={() => removePharmacy(pharmacy.id)}
-                          className="mt-7 text-red-500 hover:text-red-700 hover:bg-red-50 w-8 h-8 flex items-center justify-center rounded-md transition-colors shrink-0"
-                          title="Remove Pharmacy"
-                        >
-                          <Trash2 size={16} strokeWidth={2} />
-                        </button>
-                      </div>
-                      <div>
-                        <label className="block text-sm font-semibold text-[#272628] mb-1.5">Address:</label>
-                        <input
-                          type="text"
-                          value={pharmacy.address}
-                          onChange={(e) => {
-                            setPharmacies(prev => prev.map(p => p.id === pharmacy.id ? { ...p, address: e.target.value } : p));
+                          onClick={() => {
+                            setPharmacies(prev => prev.map(p => p.id === pharmacy.id ? { ...p, logoUrl: "", logoId: null } : p));
                             setIsDirty(true);
                           }}
-                          placeholder={index === 0 ? "503B Outsourcer + 503A Pharmacy" : "503A Pharmacy"}
-                          className="w-full border border-slate-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#1447E6]/20 focus:border-[#1447E6] transition-all"
-                        />
+                          className="text-red-500 hover:text-red-700"
+                        >
+                          <Trash2 size={16} />
+                        </button>
                       </div>
-                      <div className="flex-1">
-                        <label className="block text-sm font-semibold text-[#272628] mb-1.5">Pharmacy Logo:</label>
-                        <div className="relative">
-                          <label className="h-10 border border-slate-200 rounded-lg px-4 py-2 text-sm text-slate-500 bg-slate-50 flex items-center justify-between cursor-pointer hover:bg-slate-100 transition-colors w-full">
-                            <span className="truncate mr-2">
-                              {pharmacy.logoUrl ? "Change logo..." : "Upload image..."}
-                            </span>
-                            <Upload size={16} className="text-slate-400 shrink-0" />
-                            <input
-                              type="file"
-                              className="hidden"
-                              accept="image/*,video/mp4"
-                              onChange={async (e) => {
-                                const file = e.target.files?.[0];
-                                if (file) {
-                                  try {
-                                    const uploadedFile = await uploadAttachment(file, 'OTHERS');
-                                    setPharmacies(prev => prev.map(p => p.id === pharmacy.id ? { ...p, logoUrl: uploadedFile.fileUrl, logoId: uploadedFile.id } : p));
-                                    setIsDirty(true);
-                                  } catch (error) {
-                                    toast.error("Failed to upload image.");
-                                  }
-                                }
-                                if (e.target) e.target.value = '';
-                              }}
-                            />
-                          </label>
-                        </div>
-                        {pharmacy.logoUrl && (
-                          <div className="mt-3 relative inline-block">
-                            <div className="h-14 bg-white border border-slate-200 rounded-lg flex items-center justify-center p-2 overflow-hidden">
-                              <img src={pharmacy.logoUrl} alt="Logo" className="h-full w-auto object-contain max-w-[120px]" />
-                            </div>
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setPharmacies(prev => prev.map(p => p.id === pharmacy.id ? { ...p, logoUrl: "", logoId: null } : p));
-                                setIsDirty(true);
-                              }}
-                              className="absolute -top-2 -right-2 bg-white rounded-full p-1 shadow-md border border-slate-100 text-red-500 hover:text-red-700 hover:bg-red-50 transition-colors"
-                            >
-                              <Trash2 size={14} />
-                            </button>
-                          </div>
-                        )}
-                      </div>
-                    </div>
+                    )}
                   </div>
                 </div>
               ))}
