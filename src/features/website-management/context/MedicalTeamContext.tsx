@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 import {
-  getHeroSections,
+  getHeroSectionByPage,
   updateHeroSection,
 } from "@/api/endpoints/hero-section.api";
 import {
@@ -79,7 +79,7 @@ export function MedicalTeamProvider({
   // Fetch Hero
   const { data: heroData, isLoading: isLoadingHero } = useQuery({
     queryKey: MEDICAL_TEAM_HERO_QUERY_KEY,
-    queryFn: () => getHeroSections("MedicalTeam"),
+    queryFn: () => getHeroSectionByPage("MedicalTeam"),
     staleTime: 5 * 60 * 1000,
   });
 
@@ -100,9 +100,9 @@ export function MedicalTeamProvider({
   const isLoading = isLoadingHero || isLoadingProvider || isLoadingCta;
 
   const initForm = useCallback(() => {
-    if (!heroData?.data || !providerData?.data || !ctaData?.data) return;
+    if (!heroData || !providerData?.data || !ctaData?.data) return;
 
-    const hero = Array.isArray(heroData.data) ? heroData.data[0] : heroData.data;
+    const hero = Array.isArray(heroData) ? heroData[0] : heroData;
     const cta = Array.isArray(ctaData.data) ? ctaData.data[0] : ctaData.data;
     const provider = providerData.data;
 
@@ -126,7 +126,7 @@ export function MedicalTeamProvider({
   // Seed form state when all data arrives
   useEffect(() => {
     if (
-      heroData?.data &&
+      heroData &&
       providerData?.data &&
       ctaData?.data &&
       !isInitialized
@@ -188,12 +188,12 @@ export function MedicalTeamProvider({
       ]);
       
       const [newHeroRes, newProviderRes, newCtaRes] = await Promise.all([
-        queryClient.fetchQuery({ queryKey: MEDICAL_TEAM_HERO_QUERY_KEY, queryFn: () => getHeroSections("MedicalTeam") }),
+        queryClient.fetchQuery({ queryKey: MEDICAL_TEAM_HERO_QUERY_KEY, queryFn: () => getHeroSectionByPage("MedicalTeam") }),
         queryClient.fetchQuery({ queryKey: MEDICAL_TEAM_PROVIDER_QUERY_KEY, queryFn: getMedicalTeamSection }),
         queryClient.fetchQuery({ queryKey: MEDICAL_TEAM_CTA_QUERY_KEY, queryFn: () => getCtaSections("MedicalTeam") }),
       ]);
 
-      const hero = Array.isArray(newHeroRes.data) ? newHeroRes.data[0] : newHeroRes.data;
+      const hero = Array.isArray(newHeroRes) ? newHeroRes[0] : newHeroRes;
       const cta = Array.isArray(newCtaRes.data) ? newCtaRes.data[0] : newCtaRes.data;
       const provider = newProviderRes.data;
 

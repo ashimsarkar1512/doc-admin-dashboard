@@ -3,7 +3,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Loader2, Save } from "lucide-react";
 import { toast } from "sonner";
 import {
-  getHeroSections,
+  getHeroSectionByPage,
   updateHeroSection,
 } from "@/api/endpoints/hero-section.api";
 import {
@@ -26,7 +26,7 @@ import { WeightConditionsSectionForm } from "./components/eligibility/WeightCond
 
 const DEFAULT_POINTS = [
   "No history of MTC or MEN2 syndrome (for GLP-1 medications)",
-  "BMI ≥ 27 with at least one weight-related condition, or BMI ≥ 30",
+  "BMI Ã¢â€°Â¥ 27 with at least one weight-related condition, or BMI Ã¢â€°Â¥ 30",
   "No active eating disorders",
   "Not pregnant, breastfeeding, or planning pregnancy",
   "Age 18 or older",
@@ -78,7 +78,7 @@ export default function EligibilityPage() {
     "Personal or family history of medullary thyroid carcinoma (MTC)",
     "Active pancreatitis or history of chronic pancreatitis",
     "Multiple Endocrine Neoplasia syndrome type 2 (MEN2)",
-    "Severe renal impairment (eGFR < 30 mL/min/1.73 m²)",
+    "Severe renal impairment (eGFR < 30 mL/min/1.73 mÃ‚Â²)",
     "Current use of insulin (in some cases)",
     "Current or recent pregnancy",
     "Current use of insulin (in some cases)",
@@ -117,7 +117,7 @@ export default function EligibilityPage() {
     {
       question: "How is BMI calculated?",
       answer:
-        "BMI is weight (kg) ÷ height (m²). You can use our free BMI calculator during your assessment. Providers may also consider waist circumference and body composition.",
+        "BMI is weight (kg) ÃƒÂ· height (mÃ‚Â²). You can use our free BMI calculator during your assessment. Providers may also consider waist circumference and body composition.",
     },
     {
       question: "Do I need labs before starting?",
@@ -150,7 +150,7 @@ export default function EligibilityPage() {
 
   const { data: heroData, refetch: refetchHeroData } = useQuery({
     queryKey: ELIGIBILITY_HERO_QUERY_KEY,
-    queryFn: () => getHeroSections(PAGE_TYPE),
+    queryFn: () => getHeroSectionByPage(PAGE_TYPE),
     staleTime: 5 * 60 * 1000,
   });
 
@@ -168,9 +168,9 @@ export default function EligibilityPage() {
     });
 
   useEffect(() => {
-    if (!heroData?.data || isHeroInitialized) return;
+    if (!heroData || isHeroInitialized) return;
 
-    const hero = Array.isArray(heroData.data) ? heroData.data[0] : heroData.data;
+    const hero = Array.isArray(heroData) ? heroData[0] : heroData;
     if (!hero) return;
 
     setHeroId(hero.id || "");

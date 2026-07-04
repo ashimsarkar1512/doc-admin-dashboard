@@ -3,7 +3,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Loader2, Plus, Save, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import {
-  getHeroSections,
+  getHeroSectionByPage,
   updateHeroSection,
 } from "@/api/endpoints/hero-section.api";
 import {
@@ -143,7 +143,7 @@ export default function FaqPage() {
 
   const { data: heroData, refetch: refetchHeroData } = useQuery({
     queryKey: FAQ_HERO_QUERY_KEY,
-    queryFn: () => getHeroSections(PAGE_TYPE),
+    queryFn: () => getHeroSectionByPage(PAGE_TYPE),
     staleTime: 5 * 60 * 1000,
   });
 
@@ -160,9 +160,9 @@ export default function FaqPage() {
   });
 
   useEffect(() => {
-    if (!heroData?.data || isHeroInitialized) return;
+    if (!heroData || isHeroInitialized) return;
 
-    const hero = Array.isArray(heroData.data) ? heroData.data[0] : heroData.data;
+    const hero = Array.isArray(heroData) ? heroData[0] : heroData;
     if (!hero) return;
 
     setHeroId(hero?.id || "");

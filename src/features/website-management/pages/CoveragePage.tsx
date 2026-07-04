@@ -3,7 +3,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Loader2, Save } from "lucide-react";
 import { toast } from "sonner";
 import {
-    getHeroSections,
+    getHeroSectionByPage,
     updateHeroSection,
 } from "@/api/endpoints/hero-section.api";
 import {
@@ -136,7 +136,7 @@ export default function CoveragePage() {
 
     const { data: heroData } = useQuery({
         queryKey: COVERAGE_HERO_QUERY_KEY,
-        queryFn: () => getHeroSections("Coverage"),
+        queryFn: () => getHeroSectionByPage("Coverage"),
         staleTime: 5 * 60 * 1000,
     });
 
@@ -153,9 +153,9 @@ export default function CoveragePage() {
     });
 
     useEffect(() => {
-        if (!heroData?.data || !ctaData?.data || !coverageSectionData?.data || isInitialized) return;
+        if (!heroData || !ctaData?.data || !coverageSectionData?.data || isInitialized) return;
 
-        const hero = Array.isArray(heroData.data) ? heroData.data[0] : heroData.data;
+        const hero = Array.isArray(heroData) ? heroData[0] : heroData;
         const cta = Array.isArray(ctaData.data) ? ctaData.data[0] : ctaData.data;
         const coverageSection = coverageSectionData.data;
 
