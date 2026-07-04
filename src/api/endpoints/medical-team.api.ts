@@ -1,4 +1,4 @@
-import { axiosInstance } from '@/api/axiosInstance';
+import { axiosInstance } from "@/api/axiosInstance";
 
 export interface MedicalTeamSectionResponse {
   id: string;
@@ -13,12 +13,21 @@ export interface UpdateMedicalTeamSectionDto {
   description: string;
 }
 
-export const getMedicalTeamSection = async (): Promise<{ data: MedicalTeamSectionResponse }> => {
-  const { data } = await axiosInstance.get('/website-manage/medical-team-section');
+export const getMedicalTeamSection = async (): Promise<{
+  data: MedicalTeamSectionResponse;
+}> => {
+  const { data } = await axiosInstance.get(
+    "/website-manage/medical-team-section",
+  );
   return data;
 };
 
-export const updateMedicalTeamSection = async (payload: UpdateMedicalTeamSectionDto): Promise<{ data: MedicalTeamSectionResponse }> => {
-  const { data } = await axiosInstance.patch('/website-manage/medical-team-section', payload);
+export const updateMedicalTeamSection = async (
+  payload: UpdateMedicalTeamSectionDto,
+): Promise<{ data: MedicalTeamSectionResponse }> => {
+  const { data } = await axiosInstance.patch(
+    "/website-manage/medical-team-section",
+    payload,
+  );
   return data;
 };

@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useState, useCallback } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
@@ -99,6 +99,30 @@ export function MedicalTeamProvider({
 
   const isLoading = isLoadingHero || isLoadingProvider || isLoadingCta;
 
+  const initForm = useCallback(() => {
+    if (!heroData?.data || !providerData?.data || !ctaData?.data) return;
+
+    const hero = Array.isArray(heroData.data) ? heroData.data[0] : heroData.data;
+    const cta = Array.isArray(ctaData.data) ? ctaData.data[0] : ctaData.data;
+    const provider = providerData.data;
+
+    setForm({
+      heroId: hero?.id || "",
+      heroTitle: hero?.title || "",
+      heroDescription: hero?.description || "",
+      providerId: provider?.id || "",
+      providerTitle: provider?.title || "",
+      providerDescription: provider?.description || "",
+      ctaId: cta?.id || "",
+      ctaTitle: cta?.sectionTitle || "",
+      ctaButtonText: cta?.ctaButtonText || "",
+      ctaUrl: cta?.url || "",
+      ctaNewTab: cta?.openInNewTab ?? true,
+    });
+    setIsInitialized(true);
+    setIsDirty(false);
+  }, [heroData, providerData, ctaData]);
+
   // Seed form state when all data arrives
   useEffect(() => {
     if (
@@ -107,29 +131,9 @@ export function MedicalTeamProvider({
       ctaData?.data &&
       !isInitialized
     ) {
-      const hero = Array.isArray(heroData.data)
-        ? heroData.data[0]
-        : heroData.data;
-      const cta = Array.isArray(ctaData.data) ? ctaData.data[0] : ctaData.data;
-      const provider = providerData.data;
-
-      setForm({
-        heroId: hero?.id || "",
-        heroTitle: hero?.title || "",
-        heroDescription: hero?.description || "",
-        providerId: provider?.id || "",
-        providerTitle: provider?.title || "",
-        providerDescription: provider?.description || "",
-        ctaId: cta?.id || "",
-        ctaTitle: cta?.sectionTitle || "",
-        ctaButtonText: cta?.ctaButtonText || "",
-        ctaUrl: cta?.url || "",
-        ctaNewTab: cta?.openInNewTab ?? true,
-      });
-      setIsInitialized(true);
-      setIsDirty(false);
+      setTimeout(initForm, 0);
     }
-  }, [heroData, providerData, ctaData, isInitialized]);
+  }, [heroData, providerData, ctaData, isInitialized, initForm]);
 
   const { mutate: save, isPending: isSaving } = useMutation({
     mutationFn: async () => {
@@ -172,14 +176,33 @@ export function MedicalTeamProvider({
 
       await Promise.all(promises);
     },
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success("Medical Team page updated successfully");
       setIsDirty(false);
-      queryClient.invalidateQueries({ queryKey: MEDICAL_TEAM_HERO_QUERY_KEY });
-      queryClient.invalidateQueries({
-        queryKey: MEDICAL_TEAM_PROVIDER_QUERY_KEY,
+      
+      const [newHeroRes, newProviderRes, newCtaRes] = await Promise.all([
+        queryClient.fetchQuery({ queryKey: MEDICAL_TEAM_HERO_QUERY_KEY, queryFn: () => getHeroSections("MedicalTeam") }),
+        queryClient.fetchQuery({ queryKey: MEDICAL_TEAM_PROVIDER_QUERY_KEY, queryFn: getMedicalTeamSection }),
+        queryClient.fetchQuery({ queryKey: MEDICAL_TEAM_CTA_QUERY_KEY, queryFn: () => getCtaSections("MedicalTeam") }),
+      ]);
+
+      const hero = Array.isArray(newHeroRes.data) ? newHeroRes.data[0] : newHeroRes.data;
+      const cta = Array.isArray(newCtaRes.data) ? newCtaRes.data[0] : newCtaRes.data;
+      const provider = newProviderRes.data;
+
+      setForm({
+        heroId: hero?.id || "",
+        heroTitle: hero?.title || "",
+        heroDescription: hero?.description || "",
+        providerId: provider?.id || "",
+        providerTitle: provider?.title || "",
+        providerDescription: provider?.description || "",
+        ctaId: cta?.id || "",
+        ctaTitle: cta?.sectionTitle || "",
+        ctaButtonText: cta?.ctaButtonText || "",
+        ctaUrl: cta?.url || "",
+        ctaNewTab: cta?.openInNewTab ?? true,
       });
-      queryClient.invalidateQueries({ queryKey: MEDICAL_TEAM_CTA_QUERY_KEY });
     },
     onError: (error: any) => {
       toast.error(error?.message || "Failed to save Medical Team page");
