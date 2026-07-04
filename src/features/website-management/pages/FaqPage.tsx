@@ -1,5 +1,25 @@
-import { useState, type ReactNode } from "react";
-import { Plus, Save, Trash2 } from "lucide-react";
+import { useEffect, useState, type ReactNode } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Loader2, Plus, Save, Trash2 } from "lucide-react";
+import { toast } from "sonner";
+import {
+  getHeroSections,
+  updateHeroSection,
+} from "@/api/endpoints/hero-section.api";
+import {
+  getCtaSections,
+  updateCtaSection,
+} from "@/api/endpoints/cta-section.api";
+import {
+  getFaqSection,
+  updateFaqSection,
+} from "@/api/endpoints/faq.api";
+
+interface FaqFormItem {
+  id: string;
+  question: string;
+  answer: string;
+}
 
 function SectionCard({
   title,
@@ -9,7 +29,7 @@ function SectionCard({
   children: ReactNode;
 }) {
   return (
-    <section className="rounded-xl rounded-[10px] border border-[#D1D5DC] bg-white p-4 md:p-5">
+    <section className="rounded-[10px] border border-[#D1D5DC] bg-white p-4 md:p-5">
       <div className="font-['Quicksand'] text-[18px] font-semibold leading-[20px] tracking-[0px] text-[#272628]">
         {title}
       </div>
@@ -70,19 +90,29 @@ function TextAreaInput({
   );
 }
 
-function SaveButton() {
+function SaveButton({
+  onClick,
+  isSaving,
+}: {
+  onClick: () => void;
+  isSaving: boolean;
+}) {
   return (
     <button
       type="button"
-      className="flex items-center gap-2 rounded-lg bg-[#1447E6] px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-blue-700"
+      onClick={onClick}
+      disabled={isSaving}
+      className="flex w-fit items-center gap-2 rounded-lg bg-[#1447E6] px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
     >
-      <Save size={16} />
+      {isSaving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
       Save Changes
     </button>
   );
 }
 
 export default function FaqPage() {
+  const PAGE_TYPE = "Faq";
+  const queryClient = useQueryClient();
   const [heroTitle, setHeroTitle] = useState("Frequently Asked Questions");
   const [heroDescription, setHeroDescription] = useState(
     "Find answers to common questions about our programs, medications, and process."
@@ -90,25 +120,7 @@ export default function FaqPage() {
   const [searchPlaceholder, setSearchPlaceholder] = useState(
     "Search from questions..."
   );
-  const [faqs, setFaqs] = useState([
-    {
-      question: "How much weight can I expect to lose?",
-      answer:
-        "No. Your assessment creates a new patient relationship with your assigned provider, who reviews your health information to establish the relationship as part of the clinical process.",
-    },
-    {
-      question: "How long will I be on treatment?",
-      answer: "",
-    },
-    {
-      question: "What are common side effects of semaglutide?",
-      answer: "",
-    },
-    {
-      question: "How is tirzepatide different from semaglutide?",
-      answer: "",
-    },
-  ]);
+  const [faqs, setFaqs] = useState<FaqFormItem[]>([]);
   const [bottomCtaTitle, setBottomCtaTitle] = useState(
     "Contact Us at Weight Loss MD Today"
   );
@@ -119,6 +131,80 @@ export default function FaqPage() {
     "https://weightlossmd.com/contact"
   );
   const [bottomCtaNewTab, setBottomCtaNewTab] = useState(true);
+  const [heroId, setHeroId] = useState("");
+  const [ctaId, setCtaId] = useState("");
+  const [isHeroInitialized, setIsHeroInitialized] = useState(false);
+  const [isCtaInitialized, setIsCtaInitialized] = useState(false);
+  const [isFaqInitialized, setIsFaqInitialized] = useState(false);
+
+  const FAQ_HERO_QUERY_KEY = ["faq-hero-section"];
+  const FAQ_CTA_QUERY_KEY = ["cta-section", PAGE_TYPE];
+  const FAQ_SECTION_QUERY_KEY = ["faq-section", PAGE_TYPE];
+
+  const { data: heroData, refetch: refetchHeroData } = useQuery({
+    queryKey: FAQ_HERO_QUERY_KEY,
+    queryFn: () => getHeroSections(PAGE_TYPE),
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const { data: ctaData, refetch: refetchCtaData } = useQuery({
+    queryKey: FAQ_CTA_QUERY_KEY,
+    queryFn: () => getCtaSections(PAGE_TYPE),
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const { data: faqSectionData, refetch: refetchFaqSectionData } = useQuery({
+    queryKey: FAQ_SECTION_QUERY_KEY,
+    queryFn: () => getFaqSection(PAGE_TYPE),
+    staleTime: 5 * 60 * 1000,
+  });
+
+  useEffect(() => {
+    if (!heroData?.data || isHeroInitialized) return;
+
+    const hero = Array.isArray(heroData.data) ? heroData.data[0] : heroData.data;
+    if (!hero) return;
+
+    setHeroId(hero?.id || "");
+    setHeroTitle(hero?.title || "");
+    setHeroDescription(hero?.description || "");
+    setIsHeroInitialized(true);
+  }, [heroData, isHeroInitialized]);
+
+  useEffect(() => {
+    if (!ctaData?.data || isCtaInitialized) return;
+
+    const cta = Array.isArray(ctaData.data) ? ctaData.data[0] : ctaData.data;
+    if (!cta) return;
+
+    setCtaId(cta?.id || "");
+    setBottomCtaTitle(cta?.sectionTitle || "");
+    setBottomCtaButtonText(cta?.ctaButtonText || "");
+    setBottomCtaUrl(cta?.url || "");
+    setBottomCtaNewTab(cta?.openInNewTab ?? true);
+    setIsCtaInitialized(true);
+  }, [ctaData, isCtaInitialized]);
+
+  useEffect(() => {
+    if (!faqSectionData?.data || isFaqInitialized) return;
+
+    const faqSection = faqSectionData.data;
+
+    setSearchPlaceholder(faqSection?.sectionTitle || "");
+    setFaqs(
+      faqSection?.faqs?.length
+        ? faqSection.faqs
+            .slice()
+            .sort((a, b) => a.order - b.order)
+            .map((faq) => ({
+              id: faq.id,
+              question: faq.question || "",
+              answer: faq.answer || "",
+            }))
+        : []
+    );
+    setIsFaqInitialized(true);
+  }, [faqSectionData, isFaqInitialized]);
 
   const updateFaq = (
     index: number,
@@ -133,11 +219,77 @@ export default function FaqPage() {
   };
 
   const addFaq = () => {
-    setFaqs((current) => [...current, { question: "", answer: "" }]);
+    setFaqs((current) => [
+      ...current,
+      { id: crypto.randomUUID(), question: "", answer: "" },
+    ]);
   };
 
   const removeFaq = (index: number) => {
     setFaqs((current) => current.filter((_, faqIndex) => faqIndex !== index));
+  };
+
+  const saveMutation = useMutation({
+    mutationFn: async () => {
+      const promises: Promise<unknown>[] = [];
+
+      if (heroId) {
+        promises.push(
+          updateHeroSection(heroId, {
+            page: PAGE_TYPE,
+            title: heroTitle,
+            description: heroDescription,
+          })
+        );
+      }
+
+      if (ctaId) {
+        promises.push(
+          updateCtaSection(ctaId, {
+            page: PAGE_TYPE,
+            sectionTitle: bottomCtaTitle,
+            ctaButtonText: bottomCtaButtonText,
+            url: bottomCtaUrl,
+            openInNewTab: bottomCtaNewTab,
+            categoryId: null,
+          })
+        );
+      }
+
+      promises.push(
+        updateFaqSection({
+          pageType: PAGE_TYPE,
+          sectionTitle: searchPlaceholder,
+          faqs: faqs.map((faq) => ({
+            question: faq.question,
+            answer: faq.answer,
+          })),
+        })
+      );
+
+      await Promise.all(promises);
+    },
+    onSuccess: async () => {
+      toast.success("FAQ page updated successfully");
+      setIsHeroInitialized(false);
+      setIsCtaInitialized(false);
+      setIsFaqInitialized(false);
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: FAQ_HERO_QUERY_KEY }),
+        queryClient.invalidateQueries({ queryKey: FAQ_CTA_QUERY_KEY }),
+        queryClient.invalidateQueries({ queryKey: FAQ_SECTION_QUERY_KEY }),
+        refetchHeroData(),
+        refetchCtaData(),
+        refetchFaqSectionData(),
+      ]);
+    },
+    onError: () => {
+      toast.error("Failed to update FAQ page");
+    },
+  });
+
+  const handleSave = () => {
+    saveMutation.mutate();
   };
 
   return (
@@ -148,7 +300,7 @@ export default function FaqPage() {
             <h1 className="font-['Quicksand'] text-[18px] font-semibold leading-[28px] tracking-[0px] text-[#101828] md:text-[20px] md:leading-[30px]">
               Page: FAQ
             </h1>
-            <SaveButton />
+            <SaveButton onClick={handleSave} isSaving={saveMutation.isPending} />
           </div>
 
           <div className="flex flex-col gap-y-5 lg:gap-y-6.5">
@@ -180,7 +332,7 @@ export default function FaqPage() {
               <div className="mt-4 flex flex-col gap-y-3">
                 {faqs.map((faq, index) => (
                   <div
-                    key={`${index}-${faq.question}`}
+                    key={faq.id}
                     className="rounded-[10px] border border-[#D1D5DC] p-3 md:p-4"
                   >
                     <div className="space-y-2">
@@ -264,7 +416,7 @@ export default function FaqPage() {
             </SectionCard>
 
             <div className="pt-1">
-              <SaveButton />
+              <SaveButton onClick={handleSave} isSaving={saveMutation.isPending} />
             </div>
           </div>
         </div>

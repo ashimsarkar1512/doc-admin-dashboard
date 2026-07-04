@@ -1,5 +1,24 @@
-import { useState, type ReactNode } from "react";
-import { Plus, Trash2 } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Loader2, Save } from "lucide-react";
+import { toast } from "sonner";
+import {
+  getHeroSections,
+  updateHeroSection,
+} from "@/api/endpoints/hero-section.api";
+import {
+  getCtaSections,
+  updateCtaSection,
+} from "@/api/endpoints/cta-section.api";
+import { BmiQualificationSectionForm } from "./components/eligibility/BmiQualificationSectionForm";
+import { BottomCtaSectionForm } from "./components/eligibility/BottomCtaSectionForm";
+import { DisclaimerSectionForm } from "./components/eligibility/DisclaimerSectionForm";
+import { FaqSectionForm } from "./components/eligibility/FaqSectionForm";
+import { GeneralEligibilitySectionForm } from "./components/eligibility/GeneralEligibilitySectionForm";
+import { HeroSectionForm } from "./components/eligibility/HeroSectionForm";
+import { SimpleListSectionForm } from "./components/eligibility/SimpleListSectionForm";
+import type { EligibilityFaqItem } from "./components/eligibility/types";
+import { WeightConditionsSectionForm } from "./components/eligibility/WeightConditionsSectionForm";
 
 const DEFAULT_POINTS = [
   "No history of MTC or MEN2 syndrome (for GLP-1 medications)",
@@ -10,73 +29,9 @@ const DEFAULT_POINTS = [
   "Willing to complete required monitoring",
 ];
 
-function SectionCard({
-  title,
-  children,
-}: {
-  title: string;
-  children: ReactNode;
-}) {
-  return (
-    <section className="rounded-xl border border-[#D1D5DC] bg-white rounded-[10px] p-4 md:p-5 flex flex-col gap-y-4 lg:gap-y-5">
-      <div className="font-['Quicksand'] text-[18px] leading-[20px] font-semibold tracking-[0px] text-[#272628]">{title}</div>
-
-      <div className="font-['Quicksand'] text-[14px] leading-none border-[#D1D5DC] font-normal tracking-[0px] text-[#272628] mt-2">{children}</div>
-    </section>
-  );
-}
-
-function FieldLabel({ children }: { children: ReactNode }) {
-  return (
-    <label className="block font-['Quicksand'] text-[14px] leading-[20px] font-semibold tracking-[0px] text-[#272628]">
-      {children}
-    </label>
-  );
-}
-
-function TextInput({
-  value,
-  onChange,
-  placeholder,
-}: {
-  value: string;
-  onChange: (value: string) => void;
-  placeholder?: string;
-}) {
-  return (
-    <input
-      type="text"
-      value={value}
-      onChange={(event) => onChange(event.target.value)}
-      placeholder={placeholder}
-      className="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-    />
-  );
-}
-
-function TextAreaInput({
-  value,
-  onChange,
-  rows = 4,
-  placeholder,
-}: {
-  value: string;
-  onChange: (value: string) => void;
-  rows?: number;
-  placeholder?: string;
-}) {
-  return (
-    <textarea
-      value={value}
-      onChange={(event) => onChange(event.target.value)}
-      rows={rows}
-      placeholder={placeholder}
-      className="w-full resize-none rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-    />
-  );
-}
-
 export default function EligibilityPage() {
+  const PAGE_TYPE = "Eligiblity";
+  const queryClient = useQueryClient();
   const [heroTitle, setHeroTitle] = useState("Am I Eligible?");
   const [heroDescription, setHeroDescription] = useState(
     "Learn the medical criteria our licensed providers use to evaluate candidacy for GLP-1 weight loss treatment."
@@ -154,7 +109,7 @@ export default function EligibilityPage() {
   const [faqSectionTitle, setFaqSectionTitle] = useState(
     "Eligibility Questions"
   );
-  const [faqs, setFaqs] = useState([
+  const [faqs, setFaqs] = useState<EligibilityFaqItem[]>([
     {
       question: "How is BMI calculated?",
       answer:
@@ -179,6 +134,51 @@ export default function EligibilityPage() {
     "https://weightlossmd.com/contact"
   );
   const [bottomCtaNewTab, setBottomCtaNewTab] = useState(true);
+  const [heroId, setHeroId] = useState("");
+  const [ctaId, setCtaId] = useState("");
+  const [isHeroInitialized, setIsHeroInitialized] = useState(false);
+  const [isCtaInitialized, setIsCtaInitialized] = useState(false);
+
+  const ELIGIBILITY_HERO_QUERY_KEY = ["eligibility-hero-section"];
+  const ELIGIBILITY_CTA_QUERY_KEY = ["eligibility-cta-section"];
+
+  const { data: heroData, refetch: refetchHeroData } = useQuery({
+    queryKey: ELIGIBILITY_HERO_QUERY_KEY,
+    queryFn: () => getHeroSections(PAGE_TYPE),
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const { data: ctaData, refetch: refetchCtaData } = useQuery({
+    queryKey: ELIGIBILITY_CTA_QUERY_KEY,
+    queryFn: () => getCtaSections(PAGE_TYPE),
+    staleTime: 5 * 60 * 1000,
+  });
+
+  useEffect(() => {
+    if (!heroData?.data || isHeroInitialized) return;
+
+    const hero = Array.isArray(heroData.data) ? heroData.data[0] : heroData.data;
+    if (!hero) return;
+
+    setHeroId(hero.id || "");
+    setHeroTitle(hero.title || "");
+    setHeroDescription(hero.description || "");
+    setIsHeroInitialized(true);
+  }, [heroData, isHeroInitialized]);
+
+  useEffect(() => {
+    if (!ctaData?.data || isCtaInitialized) return;
+
+    const cta = Array.isArray(ctaData.data) ? ctaData.data[0] : ctaData.data;
+    if (!cta) return;
+
+    setCtaId(cta.id || "");
+    setBottomCtaTitle(cta.sectionTitle || "");
+    setBottomCtaButtonText(cta.ctaButtonText || "");
+    setBottomCtaUrl(cta.url || "");
+    setBottomCtaNewTab(cta.openInNewTab ?? true);
+    setIsCtaInitialized(true);
+  }, [ctaData, isCtaInitialized]);
 
   const updatePoint = (index: number, value: string) => {
     setPoints((current) =>
@@ -245,11 +245,58 @@ export default function EligibilityPage() {
     setFaqs((current) => current.filter((_, faqIndex) => faqIndex !== index));
   };
 
+  const saveMutation = useMutation({
+    mutationFn: async () => {
+      const promises: Promise<unknown>[] = [];
+
+      if (heroId) {
+        promises.push(
+          updateHeroSection(heroId, {
+            page: PAGE_TYPE,
+            title: heroTitle,
+            description: heroDescription,
+          })
+        );
+      }
+
+      if (ctaId) {
+        promises.push(
+          updateCtaSection(ctaId, {
+            page: PAGE_TYPE,
+            sectionTitle: bottomCtaTitle,
+            ctaButtonText: bottomCtaButtonText,
+            url: bottomCtaUrl,
+            openInNewTab: bottomCtaNewTab,
+            categoryId: null,
+          })
+        );
+      }
+
+      await Promise.all(promises);
+    },
+    onSuccess: async () => {
+      toast.success("Eligibility page updated successfully");
+      setIsHeroInitialized(false);
+      setIsCtaInitialized(false);
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ELIGIBILITY_HERO_QUERY_KEY }),
+        queryClient.invalidateQueries({ queryKey: ELIGIBILITY_CTA_QUERY_KEY }),
+        refetchHeroData(),
+        refetchCtaData(),
+      ]);
+    },
+    onError: () => {
+      toast.error("Failed to update eligibility page");
+    },
+  });
+
+  const handleSave = () => {
+    saveMutation.mutate();
+  };
+
   return (
     <div className="w-full bg-[#f8fafc] p-4 md:p-6">
       <div className="mx-auto flex flex-col gap-4 lg:flex-row">
-
-
         <div className="min-w-0 flex-1 space-y-3">
           <div className="flex flex-col gap-y-3 sm:flex-row sm:items-center sm:justify-between">
             <h1 className="font-['Quicksand'] text-[18px] leading-[28px] font-semibold text-[#101828] tracking-[0px] md:text-[20px] md:leading-[30px]">
@@ -257,442 +304,125 @@ export default function EligibilityPage() {
             </h1>
             <div className="">
               <button
-                type="submit"
-                // disabled={updateProfile.isPending}
+                type="button"
+                onClick={handleSave}
+                disabled={saveMutation.isPending}
                 className="flex items-center gap-2 px-6 py-2 bg-[#1447E6] text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors shadow-sm disabled:opacity-50"
               >
-                {/* {updateProfile.isPending ? <Loader2 className="animate-spin" size={16} /> : <Save size={16} />}  */}
-
+                {saveMutation.isPending ? (
+                  <Loader2 className="animate-spin" size={16} />
+                ) : (
+                  <Save size={16} />
+                )}
                 Save Changes
               </button>
             </div>
           </div>
           <div className="flex flex-col gap-y-5 lg:gap-y-6.5">
-            <SectionCard title="Hero Section">
-              <div className="space-y-2">
-                <FieldLabel>Hero title:</FieldLabel>
-                <TextInput
-                  value={heroTitle}
-                  onChange={setHeroTitle}
-                />
-              </div>
-
-              <div className="space-y-2 mt-2">
-                <FieldLabel>Hero Description:</FieldLabel>
-                <TextAreaInput
-                  value={heroDescription}
-                  onChange={setHeroDescription}
-                  rows={4}
-                />
-              </div>
-            </SectionCard>
-
-            <SectionCard title="General Eligibility Criteria Section">
-              <div className="flex flex-col gap-y-2">
-                <FieldLabel>Section Title:</FieldLabel>
-                <TextInput
-                  value={sectionTitle}
-                  onChange={setSectionTitle}
-                />
-              </div>
-              <div className="w-full h-px bg-[#D1D5DC] mt-4 mb-4"></div>
-
-              <div className="space-y-3">
-                {points.map((point, index) => (
-                  <div key={`${index}-${point}`} className="flex items-end gap-2">
-                    <div className="flex flex-col gap-y-2 w-full">
-                      <FieldLabel>{`Point ${index + 1}:`}</FieldLabel>
-                      <TextInput
-                        value={point}
-                        onChange={(value) => updatePoint(index, value)}
-                      />
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => removePoint(index)}
-                      className="mb-0.5 inline-flex h-10 w-10 items-center justify-center rounded-lg text-rose-500 transition hover:bg-rose-50 disabled:cursor-not-allowed disabled:opacity-40"
-                      disabled={points.length === 1}
-                      aria-label={`Remove point ${index + 1}`}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </button>
-                  </div>
-                ))}
-              </div>
-
-              <button
-                type="button"
-                onClick={addPoint}
-                className="inline-flex items-center gap-1.5 text-sm font-medium text-[#2563eb] transition hover:text-[#1d4ed8] mt-4 mb-4"
-              >
-                <Plus className="h-4 w-4" />
-                Add More
-              </button>
-              <div className="w-full h-px bg-[#D1D5DC] mb-4"></div>
-              <div className="flex flex-col gap-y-2">
-                <FieldLabel>Reminder:</FieldLabel>
-                <TextAreaInput
-                  value={reminder}
-                  onChange={setReminder}
-                  rows={3}
-                />
-              </div>
-            </SectionCard>
-
-            <SectionCard title="BMI Qualification Section">
-              <div className="flex flex-col gap-y-2">
-                <FieldLabel>Section Title:</FieldLabel>
-                <TextInput
-                  value={bmiSectionTitle}
-                  onChange={setBmiSectionTitle}
-                />
-              </div>
-
-              <div className="flex flex-col gap-y-2 mt-2">
-                <FieldLabel>BMI 27+:</FieldLabel>
-                <TextInput value={bmi27Title} onChange={setBmi27Title} />
-              </div>
-
-              <div className="flex flex-col gap-y-2 mt-2">
-                <FieldLabel>Description:</FieldLabel>
-                <TextAreaInput
-                  value={bmi27Description}
-                  onChange={setBmi27Description}
-                  rows={2}
-                />
-              </div>
-
-              <div className="w-full h-px bg-[#D1D5DC] mb-4 mt-4" />
-
-              <div className="flex flex-col gap-y-2">
-                <FieldLabel>BMI 30+:</FieldLabel>
-                <TextInput value={bmi30Title} onChange={setBmi30Title} />
-              </div>
-
-              <div className="flex flex-col gap-y-2 mt-2">
-                <FieldLabel>Description:</FieldLabel>
-                <TextAreaInput
-                  value={bmi30Description}
-                  onChange={setBmi30Description}
-                  rows={2}
-                />
-              </div>
-            </SectionCard>
-
-            <SectionCard title="Weight Conditions Section">
-              <div className="flex flex-col gap-y-2">
-                <FieldLabel>Section Title:</FieldLabel>
-                <TextInput
-                  value={weightConditionsTitle}
-                  onChange={setWeightConditionsTitle}
-                />
-              </div>
-              <div className="w-full h-px bg-[#D1D5DC] mb-4 mt-4" />
-              <div className="flex flex-col gap-y-2 ">
-                <FieldLabel>Write Condition:</FieldLabel>
-                <TextInput
-                  value={newCondition}
-                  onChange={setNewCondition}
-                  placeholder="Write here..."
-                />
-              </div>
-
-              <div className="flex flex-wrap gap-2 mt-2.5">
-                {weightConditions.map((condition, index) => (
-                  <div
-                    key={`${condition}-${index}`}
-                    className="inline-flex items-center gap-2 rounded-full border border-[#1A5C8A1F/0.12] bg-[#EBEEF2] px-[18px] py-2.5"
-                  >
-                    <span className="font-['Quicksand'] text-[12px] leading-[16px] font-normal tracking-[0px] text-[#667085]">
-                      {condition}
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => removeCondition(index)}
-                      className="text-[#E7000B] transition hover:text-rose-600"
-                      aria-label={`Remove ${condition}`}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </button>
-                  </div>
-                ))}
-              </div>
-
-              {/* <button
-                type="button"
-                onClick={addCondition}
-                className="inline-flex w-fit items-center gap-1.5 text-sm font-medium text-[#2563eb] transition hover:text-[#1d4ed8]"
-              >
-                <Plus className="h-4 w-4" />
-                Add Condition
-              </button> */}
-            </SectionCard>
-
-            <SectionCard title="Contraindications Section">
-              <div className="flex flex-col gap-y-2">
-                <FieldLabel>Section Title:</FieldLabel>
-                <TextInput
-                  value={contraindicationsTitle}
-                  onChange={setContraindicationsTitle}
-                />
-              </div>
-              <div className="w-full h-px bg-[#D1D5DC] mb-4 mt-4" />
-              <div className="flex flex-col gap-y-2">
-                <FieldLabel>Write Contraindications:</FieldLabel>
-                <TextInput
-                  value={newContraindication}
-                  onChange={setNewContraindication}
-                  placeholder="Write here..."
-                />
-              </div>
-
-              <div className="mt-2.5 flex flex-col gap-y-5">
-                {contraindications.map((item, index) => (
-                  <div
-                    key={`${item}-${index}`}
-                    className="flex items-center gap-3"
-                  >
-                    <span className="font-['Quicksand'] text-[14px] leading-[20px] font-normal tracking-[0px] text-[#272628]">
-                      {item}
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => removeContraindication(index)}
-                      className="shrink-0 text-[#E7000B] transition hover:text-rose-600"
-                      aria-label={`Remove ${item}`}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </button>
-                  </div>
-                ))}
-              </div>
-
-              {/* <button
-                type="button"
-                onClick={addContraindication}
-                className="inline-flex w-fit items-center gap-1.5 text-sm font-medium text-[#2563eb] transition hover:text-[#1d4ed8]"
-              >
-                <Plus className="h-4 w-4" />
-                Add Contraindication
-              </button> */}
-            </SectionCard>
-
-            <SectionCard title="Required Lab Work Section">
-              <div className="flex flex-col gap-y-2">
-                <FieldLabel>Section Title:</FieldLabel>
-                <TextInput
-                  value={requiredLabWorkTitle}
-                  onChange={setRequiredLabWorkTitle}
-                />
-              </div>
-              <div className="w-full h-px bg-[#D1D5DC] mb-2 mt-4" />
-              <div className="flex flex-col gap-y-2">
-                <FieldLabel>Write Contraindications:</FieldLabel>
-                <TextInput
-                  value={newLabWork}
-                  onChange={setNewLabWork}
-                  placeholder="Write here..."
-                />
-              </div>
-
-              <div className="mt-2.5 flex flex-col gap-y-5">
-                {requiredLabWorkItems.map((item, index) => (
-                  <div
-                    key={`${item}-${index}`}
-                    className="flex items-center gap-3"
-                  >
-                    <span className="font-['Quicksand'] text-[14px] leading-[20px] font-normal tracking-[0px] text-[#272628]">
-                      {item}
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => removeRequiredLabWork(index)}
-                      className="shrink-0 text-[#E7000B] transition hover:text-rose-600"
-                      aria-label={`Remove ${item}`}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </button>
-                  </div>
-                ))}
-              </div>
-
-              {/* <button
-                type="button"
-                onClick={addRequiredLabWork}
-                className="inline-flex w-fit items-center gap-1.5 text-sm font-medium text-[#2563eb] transition hover:text-[#1d4ed8]"
-              >
-                <Plus className="h-4 w-4" />
-                Add Required Lab Work
-              </button> */}
-            </SectionCard>
-
-            <SectionCard title="Ongoing Monitoring Section">
-              <div className="flex flex-col gap-y-2">
-                <FieldLabel>Section Title:</FieldLabel>
-                <TextInput
-                  value={ongoingMonitoringTitle}
-                  onChange={setOngoingMonitoringTitle}
-                />
-              </div>
-              <div className="w-full h-px bg-[#D1D5DC] mb-2 mt-4" />
-              <div className="flex flex-col gap-y-2">
-                <FieldLabel>Write Contraindications:</FieldLabel>
-                <TextInput
-                  value={newOngoingMonitoring}
-                  onChange={setNewOngoingMonitoring}
-                  placeholder="Write here..."
-                />
-              </div>
-
-              <div className="mt-2.5 flex flex-col gap-y-5">
-                {ongoingMonitoringItems.map((item, index) => (
-                  <div
-                    key={`${item}-${index}`}
-                    className="flex items-center gap-3"
-                  >
-                    <span className="font-['Quicksand'] text-[14px] leading-[20px] font-normal tracking-[0px] text-[#272628]">
-                      {item}
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => removeOngoingMonitoring(index)}
-                      className="shrink-0 text-[#E7000B] transition hover:text-rose-600"
-                      aria-label={`Remove ${item}`}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </SectionCard>
-
-            <SectionCard title="Disclaimer Section">
-              <div className="flex flex-col gap-y-2">
-                <FieldLabel>Disclaimer Title:</FieldLabel>
-                <TextInput
-                  value={disclaimerTitle}
-                  onChange={setDisclaimerTitle}
-                />
-              </div>
-
-              <div className="flex flex-col gap-y-2 mt-2">
-                <FieldLabel>Description:</FieldLabel>
-                <TextAreaInput
-                  value={disclaimerDescription}
-                  onChange={setDisclaimerDescription}
-                  rows={3}
-                />
-              </div>
-            </SectionCard>
-
-            <SectionCard title="FAQ’s Section">
-              <div className="flex flex-col gap-y-2">
-                <FieldLabel>Section Title:</FieldLabel>
-                <TextInput
-                  value={faqSectionTitle}
-                  onChange={setFaqSectionTitle}
-                />
-              </div>
-
-              <div className="w-full h-px bg-[#D1D5DC] mb-4 mt-4" />
-
-              <div className="flex flex-col gap-y-3">
-                {faqs.map((faq, index) => (
-                  <div
-                    key={`${index}-${faq.question}`}
-                    className="rounded-[10px] border border-[#D1D5DC] p-3 md:p-4"
-                  >
-                    <div className="flex items-end gap-2">
-                      <div className="flex-1 space-y-2">
-                        <FieldLabel>Question:</FieldLabel>
-                        <TextInput
-                          value={faq.question}
-                          onChange={(value) => updateFaq(index, "question", value)}
-                          placeholder="Write..."
-                        />
-                      </div>
-                    </div>
-
-                    <div className="mt-3 flex items-end gap-2">
-                      <div className="flex-1 space-y-2">
-                        <FieldLabel>Answer:</FieldLabel>
-                        <TextAreaInput
-                          value={faq.answer}
-                          onChange={(value) => updateFaq(index, "answer", value)}
-                          rows={2}
-                          placeholder="Write..."
-                        />
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => removeFaq(index)}
-                        className="mb-1 shrink-0 text-[#E7000B] transition hover:text-rose-600"
-                        aria-label={`Remove FAQ ${index + 1}`}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              <button
-                type="button"
-                onClick={addFaq}
-                className="inline-flex w-fit items-center gap-1 text-sm font-medium text-[#2563eb] transition hover:text-[#1d4ed8] mt-4"
-              >
-                <Plus className="h-4 w-4" />
-                Add More
-              </button>
-            </SectionCard>
-
-            <SectionCard title="Bottom CTA Section:">
-              <div className="flex flex-col gap-y-2">
-                <FieldLabel>Section Title:</FieldLabel>
-                <TextInput
-                  value={bottomCtaTitle}
-                  onChange={setBottomCtaTitle}
-                />
-              </div>
-
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-3 mt-2">
-                <div className="flex flex-col gap-y-2">
-                  <FieldLabel>CTA Button Text:</FieldLabel>
-                  <TextInput
-                    value={bottomCtaButtonText}
-                    onChange={setBottomCtaButtonText}
-                  />
-                </div>
-
-                <div className="flex flex-col gap-y-2">
-                  <FieldLabel>URL:</FieldLabel>
-                  <TextInput
-                    value={bottomCtaUrl}
-                    onChange={setBottomCtaUrl}
-                  />
-                </div>
-
-                <div className="flex flex-col gap-y-2">
-                  <FieldLabel>Button target:</FieldLabel>
-                  <label className="mt-3 inline-flex items-center gap-3 font-['Quicksand'] text-[14px] leading-[20px] font-normal tracking-[0px] text-[#272628]">
-                    <input
-                      type="checkbox"
-                      checked={bottomCtaNewTab}
-                      onChange={(event) => setBottomCtaNewTab(event.target.checked)}
-                      className="h-5 w-5 rounded border border-[#D1D5DC] text-[#1447E6] focus:ring-2 focus:ring-blue-100"
-                    />
-                    Blank (open in new tab)
-                  </label>
-                </div>
-              </div>
-            </SectionCard>
+            <HeroSectionForm
+              heroTitle={heroTitle}
+              heroDescription={heroDescription}
+              setHeroTitle={setHeroTitle}
+              setHeroDescription={setHeroDescription}
+            />
+            <GeneralEligibilitySectionForm
+              sectionTitle={sectionTitle}
+              setSectionTitle={setSectionTitle}
+              points={points}
+              updatePoint={updatePoint}
+              removePoint={removePoint}
+              addPoint={addPoint}
+              reminder={reminder}
+              setReminder={setReminder}
+            />
+            <BmiQualificationSectionForm
+              bmiSectionTitle={bmiSectionTitle}
+              setBmiSectionTitle={setBmiSectionTitle}
+              bmi27Title={bmi27Title}
+              setBmi27Title={setBmi27Title}
+              bmi27Description={bmi27Description}
+              setBmi27Description={setBmi27Description}
+              bmi30Title={bmi30Title}
+              setBmi30Title={setBmi30Title}
+              bmi30Description={bmi30Description}
+              setBmi30Description={setBmi30Description}
+            />
+            <WeightConditionsSectionForm
+              weightConditionsTitle={weightConditionsTitle}
+              setWeightConditionsTitle={setWeightConditionsTitle}
+              newCondition={newCondition}
+              setNewCondition={setNewCondition}
+              weightConditions={weightConditions}
+              removeCondition={removeCondition}
+            />
+            <SimpleListSectionForm
+              cardTitle="Contraindications Section"
+              sectionLabel="Section Title:"
+              sectionTitle={contraindicationsTitle}
+              setSectionTitle={setContraindicationsTitle}
+              inputLabel="Write Contraindications:"
+              inputValue={newContraindication}
+              setInputValue={setNewContraindication}
+              items={contraindications}
+              removeItem={removeContraindication}
+            />
+            <SimpleListSectionForm
+              cardTitle="Required Lab Work Section"
+              sectionLabel="Section Title:"
+              sectionTitle={requiredLabWorkTitle}
+              setSectionTitle={setRequiredLabWorkTitle}
+              inputLabel="Write Contraindications:"
+              inputValue={newLabWork}
+              setInputValue={setNewLabWork}
+              items={requiredLabWorkItems}
+              removeItem={removeRequiredLabWork}
+            />
+            <SimpleListSectionForm
+              cardTitle="Ongoing Monitoring Section"
+              sectionLabel="Section Title:"
+              sectionTitle={ongoingMonitoringTitle}
+              setSectionTitle={setOngoingMonitoringTitle}
+              inputLabel="Write Contraindications:"
+              inputValue={newOngoingMonitoring}
+              setInputValue={setNewOngoingMonitoring}
+              items={ongoingMonitoringItems}
+              removeItem={removeOngoingMonitoring}
+            />
+            <DisclaimerSectionForm
+              disclaimerTitle={disclaimerTitle}
+              setDisclaimerTitle={setDisclaimerTitle}
+              disclaimerDescription={disclaimerDescription}
+              setDisclaimerDescription={setDisclaimerDescription}
+            />
+            <FaqSectionForm
+              faqSectionTitle={faqSectionTitle}
+              setFaqSectionTitle={setFaqSectionTitle}
+              faqs={faqs}
+              updateFaq={updateFaq}
+              removeFaq={removeFaq}
+              addFaq={addFaq}
+            />
+            <BottomCtaSectionForm
+              bottomCtaTitle={bottomCtaTitle}
+              setBottomCtaTitle={setBottomCtaTitle}
+              bottomCtaButtonText={bottomCtaButtonText}
+              setBottomCtaButtonText={setBottomCtaButtonText}
+              bottomCtaUrl={bottomCtaUrl}
+              setBottomCtaUrl={setBottomCtaUrl}
+              bottomCtaNewTab={bottomCtaNewTab}
+              setBottomCtaNewTab={setBottomCtaNewTab}
+            />
             <button
-                type="submit"
-                // disabled={updateProfile.isPending}
+                type="button"
+                onClick={handleSave}
+                disabled={saveMutation.isPending}
                 className="flex items-center gap-2 px-6 py-2 bg-[#1447E6] w-fit text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors shadow-sm disabled:opacity-50"
               >
-                {/* {updateProfile.isPending ? <Loader2 className="animate-spin" size={16} /> : <Save size={16} />}  */}
-
+                {saveMutation.isPending ? (
+                  <Loader2 className="animate-spin" size={16} />
+                ) : (
+                  <Save size={16} />
+                )}
                 Save Changes
               </button>
           </div>
