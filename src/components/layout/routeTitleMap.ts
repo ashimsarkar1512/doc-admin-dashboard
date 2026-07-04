@@ -88,6 +88,10 @@ export const routeTitleMap: Record<string, { title: string; subtitle: string }> 
     title: "About Us Page",
     subtitle: "Manage the About Us page content",
   },
+  "/dashboard/pages/eligibility": {
+    title: "Eligibility Page",
+    subtitle: "Manage the Eligibility page content",
+  },
 
   "/dashboard/pages/billing-and-cancellation": {
     title: "Website Management",

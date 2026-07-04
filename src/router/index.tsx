@@ -225,6 +225,13 @@ const aboutUsRoute = createRoute({
   component: AboutUsPageEditor,
 });
 
+import EligibilityPage from "@/features/website-management/pages/EligibilityPage";
+const eligibilityRoute = createRoute({
+  getParentRoute: () => dashboardLayoutRoute,
+  path: "/pages/eligibility",
+  component: EligibilityPage,
+});
+
 import ContactPageEditor from "@/features/website-management/pages/ContactPageEditor";
 const contactRoute = createRoute({
   getParentRoute: () => dashboardLayoutRoute,
@@ -429,6 +436,7 @@ const routeTree = rootRoute.addChildren([
     websiteManagementRoute,
     pagesRoute,
     aboutUsRoute,
+    eligibilityRoute,
     contactRoute,
     medicalTeamRoute,
     howItWorksRoute,

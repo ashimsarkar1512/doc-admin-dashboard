@@ -322,6 +322,13 @@ export function DashboardMobileSidebar({
                           About Us
                         </Link>
                         <Link
+                          to="/dashboard/pages/eligibility"
+                          onClick={() => setMobileSidebarOpen(false)}
+                          className="flex items-center gap-3 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold"
+                        >
+                          Eligibility
+                        </Link>
+                        <Link
                           to="/dashboard/pages/contact"
                           onClick={() => setMobileSidebarOpen(false)}
                           className="flex items-center gap-3 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold"
