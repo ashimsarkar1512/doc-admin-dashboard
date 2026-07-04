@@ -52,3 +52,11 @@ export async function uploadAttachment(
 
   return data.data;
 }
+
+/**
+ * Delete an attachment by ID.
+ * DELETE /api/v1/attachments/:id
+ */
+export async function deleteAttachment(id: string): Promise<void> {
+  await axiosInstance.delete(`/attachments/${id}`);
+}

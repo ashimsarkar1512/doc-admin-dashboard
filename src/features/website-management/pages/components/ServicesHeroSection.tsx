@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { Upload, X } from 'lucide-react';
 import { toast } from 'sonner';
-import { uploadAttachment } from '@/api/endpoints/attachments.api';
+import { uploadAttachment, deleteAttachment } from '@/api/endpoints/attachments.api';
 
 interface HeroData {
   pageTitle: string;
@@ -30,7 +30,7 @@ export default function ServicesHeroSection({ data, onChange }: Props) {
     try {
       setIsUploading(true);
       const isVideo = file.type.startsWith('video/');
-      const context = isVideo ? 'HERO_VIDEO' : 'HERO_IMAGE'; // Context identifier for backend
+      const context = 'HERO_IMAGE'; // Context identifier for backend
       
       const uploadedFile = await uploadAttachment(file, context);
       
@@ -52,7 +52,16 @@ export default function ServicesHeroSection({ data, onChange }: Props) {
     }
   };
 
-  const clearMedia = () => {
+  const clearMedia = async () => {
+    if (data.bannerImageId) {
+      try {
+        await deleteAttachment(data.bannerImageId);
+      } catch (error) {
+        console.error('Failed to delete media:', error);
+        toast.error('Failed to delete media from server.');
+      }
+    }
+
     onChange({
       bannerImageId: '',
       mediaUrl: null,
