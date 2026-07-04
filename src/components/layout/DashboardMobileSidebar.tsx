@@ -26,7 +26,7 @@ import {
   Tag,
   UserCog,
   Users,
-  X
+  X,
 } from "lucide-react";
 
 interface Props {
@@ -70,8 +70,9 @@ export function DashboardMobileSidebar({
 
       {/* Mobile Sidebar - fixed overlay, never affects layout */}
       <div
-        className={`fixed inset-y-0 left-0 z-50 w-72 bg-white shadow-2xl flex flex-col transform transition-transform duration-300 ease-in-out md:hidden ${mobileSidebarOpen ? "translate-x-0" : "-translate-x-full"
-          }`}
+        className={`fixed inset-y-0 left-0 z-50 w-72 bg-white shadow-2xl flex flex-col transform transition-transform duration-300 ease-in-out xl:hidden ${
+          mobileSidebarOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
       >
         {/* Mobile sidebar header */}
         <div className="flex items-center justify-between px-5 h-20 border-b border-slate-100 shrink-0">
@@ -99,7 +100,7 @@ export function DashboardMobileSidebar({
             <LayoutGrid size={20} className="shrink-0" />
             <span>Dashboard</span>
           </Link>
-          
+
           {can("view:doctor_management") && (
             <Link
               to="/dashboard/providers"
@@ -320,10 +321,40 @@ export function DashboardMobileSidebar({
                         >
                           About Us
                         </Link>
+                        <Link
+                          to="/dashboard/pages/lab-testing"
+                          onClick={() => setMobileSidebarOpen(false)}
+                          className="flex items-center gap-3 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold"
+                        >
+                          Lab Testing
+                        </Link>
+                        <Link
+                          to="/dashboard/pages/privacy-policy"
+                          onClick={() => setMobileSidebarOpen(false)}
+                          className="flex items-center gap-3 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold"
+                        >
+                          Privacy Policy
+                        </Link>
+                        <Link
+                          to="/dashboard/pages/terms-of-service"
+                          onClick={() => setMobileSidebarOpen(false)}
+                          className="flex items-center gap-3 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold"
+                        >
+                          Terms of Service
+                        </Link>
+                        <Link
+                          to="/dashboard/pages/hipaa-notice"
+                          onClick={() => setMobileSidebarOpen(false)}
+                          className="flex items-center gap-3 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold"
+                        >
+                          HIPAA Notice
+                        </Link>
 
                         <div>
                           <button
-                            onClick={() => setServicesMenuOpen(!servicesMenuOpen)}
+                            onClick={() =>
+                              setServicesMenuOpen(!servicesMenuOpen)
+                            }
                             className="w-full flex items-center justify-between px-3 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors"
                           >
                             <span>Services</span>
@@ -342,13 +373,16 @@ export function DashboardMobileSidebar({
                                   .toLowerCase()
                                   .replace(/\s*&\s*/g, "-")
                                   .replace(/\s+/g, "-");
-                                const isActive = location.href.includes(
-                                  `/dashboard/services?${slug}`
-                                );
+                                  
+                                if (slug === 'lab-testing') return null;
+                                  
+                                const linkTo = `/dashboard/services?${slug}`;
+                                  
+                                const isActive = location.href.includes(linkTo);
                                 return (
                                   <Link
                                     key={category.id}
-                                    to={`/dashboard/services?${slug}` as any}
+                                    to={linkTo as any}
                                     onClick={() => setMobileSidebarOpen(false)}
                                     className={`flex items-center gap-3 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
                                       isActive
@@ -366,7 +400,7 @@ export function DashboardMobileSidebar({
                       </div>
                     )}
                   </div>
-                  
+
                   <Link
                     to="/dashboard/account-settings"
                     onClick={() => setMobileSidebarOpen(false)}
