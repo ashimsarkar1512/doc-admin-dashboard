@@ -20,9 +20,13 @@ function ContactPageEditorContent() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
         <div>
-          <h2 className="text-xl font-bold text-[#101828]">Page: Contact</h2>
+          <div className="text-[15px] text-slate-800 font-medium flex items-center gap-2">
+            <span className="text-slate-700 font-semibold">Pages</span>
+            <span className="text-slate-500 font-normal">&gt;</span>
+            <span className="text-slate-900 font-bold">Contact</span>
+          </div>
           {isDirty && (
-            <p className="text-xs text-amber-500 font-medium mt-0.5">
+            <p className="text-xs text-amber-500 font-medium mt-1">
               You have unsaved changes
             </p>
           )}

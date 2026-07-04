@@ -1,87 +1,41 @@
-import { useState } from "react";
 import { Trash2 } from "lucide-react";
 import { SectionCard } from "../shared/SectionCard";
 import { FormInput } from "../shared/FormInput";
 import { FormTextarea } from "../shared/FormTextarea";
+import { useHowItWorksContext } from "../../context/HowItWorksContext";
+import type { StepItem } from "../../context/HowItWorksContext";
 
-interface Props {
-  setIsDirty: (dirty: boolean) => void;
-}
-
-interface Step {
-  id: string;
-  title: string;
-  timeline: string;
-  description: string;
-}
-
-export function HowItWorksJourneySection({ setIsDirty }: Props) {
-  const [title, setTitle] = useState("Your Patient Journey");
-  const [description, setDescription] = useState(
-    "Six structured steps from assessment to ongoing care.",
-  );
-
-  const [steps, setSteps] = useState<Step[]>([
-    {
-      id: "1",
-      title: "Medical Review by Provider",
-      timeline: "< 10 minutes",
-      description:
-        "Fill out a comprehensive health questionnaire covering your medical history, current medications, weight history, and health goals. Your information is protected by HIPAA encryption.",
-    },
-    {
-      id: "2",
-      title: "Complete Assessment",
-      timeline: "Within 24 hours",
-      description:
-        "A licensed provider in your state reviews your consultation details (and may request additional information), and determines medical appropriateness for treatment.",
-    },
-    {
-      id: "3",
-      title: "Treatment Approval",
-      timeline: "Within 24 hours",
-      description:
-        "If medically appropriate, your provider issues an e-prescription to our partner pharmacy. Payment does not guarantee approval -- all decisions are clinical.",
-    },
-  ]);
-
-  const handleTitleChange = (val: string) => {
-    setTitle(val);
-    setIsDirty(true);
-  };
-
-  const handleDescriptionChange = (val: string) => {
-    setDescription(val);
-    setIsDirty(true);
-  };
+export function HowItWorksJourneySection() {
+  const { form, setField } = useHowItWorksContext();
 
   const handleStepChange = (
     id: string,
-    field: keyof Omit<Step, "id">,
+    field: keyof Omit<StepItem, "id">,
     value: string,
   ) => {
-    setSteps((prev) =>
-      prev.map((step) => (step.id === id ? { ...step, [field]: value } : step)),
+    setField(
+      "steps",
+      form.steps.map((step) => (step.id === id ? { ...step, [field]: value } : step))
     );
-    setIsDirty(true);
   };
 
   const addStep = () => {
-    setSteps((prev) => [
-      ...prev,
+    setField("steps", [
+      ...form.steps,
       {
-        id: Math.random().toString(36).substring(7),
+        id: crypto.randomUUID(),
         title: "",
         timeline: "",
         description: "",
       },
     ]);
-    setIsDirty(true);
   };
 
   const removeStep = (id: string) => {
-    setSteps((prev) => prev.filter((step) => step.id !== id));
-    setIsDirty(true);
+    setField(
+      "steps",
+      form.steps.filter((step) => step.id !== id)
+    );
   };
 
   return (
@@ -89,21 +43,21 @@ export function HowItWorksJourneySection({ setIsDirty }: Props) {
       <div className="space-y-6">
         <FormInput
           label="Section Title:"
-          value={title}
-          onChange={(e) => handleTitleChange(e.target.value)}
+          value={form.sectionTitle}
+          onChange={(e) => setField("sectionTitle", e.target.value)}
           placeholder="Your Patient Journey"
         />
 
         <FormTextarea
           label="Section Description:"
           className="h-20"
-          value={description}
-          onChange={(e) => handleDescriptionChange(e.target.value)}
+          value={form.sectionDescription}
+          onChange={(e) => setField("sectionDescription", e.target.value)}
           placeholder="Six structured steps from assessment to ongoing care."
         />
 
         <div className="space-y-4">
-          {steps.map((step, index) => (
+          {form.steps.map((step, index) => (
             <div
               key={step.id}
               className="p-5 border border-slate-200 rounded-xl space-y-4 bg-white"
