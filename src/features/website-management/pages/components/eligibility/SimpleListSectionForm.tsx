@@ -1,4 +1,4 @@
-import { Trash2 } from "lucide-react";
+import { Plus, Trash2 } from "lucide-react";
 import { FieldLabel, SectionCard, TextInput } from "./shared";
 
 interface SimpleListSectionFormProps {
@@ -9,6 +9,8 @@ interface SimpleListSectionFormProps {
   inputLabel: string;
   inputValue: string;
   setInputValue: (value: string) => void;
+  addItemLabel: string;
+  addItem: () => void;
   items: string[];
   removeItem: (index: number) => void;
 }
@@ -21,6 +23,8 @@ export function SimpleListSectionForm({
   inputLabel,
   inputValue,
   setInputValue,
+  addItemLabel,
+  addItem,
   items,
   removeItem,
 }: SimpleListSectionFormProps) {
@@ -39,6 +43,15 @@ export function SimpleListSectionForm({
           placeholder="Write here..."
         />
       </div>
+
+      <button
+        type="button"
+        onClick={addItem}
+        className="inline-flex w-fit items-center gap-1.5 pt-4 text-sm font-medium text-[#2563eb] transition hover:text-[#1d4ed8]"
+      >
+        <Plus className="h-4 w-4" />
+        {addItemLabel}
+      </button>
 
       <div className="mt-2.5 flex flex-col gap-y-5">
         {items.map((item, index) => (

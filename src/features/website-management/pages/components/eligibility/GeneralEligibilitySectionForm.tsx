@@ -32,7 +32,7 @@ export function GeneralEligibilitySectionForm({
 
       <div className="space-y-3">
         {points.map((point, index) => (
-          <div key={`${index}-${point}`} className="flex items-end gap-2">
+          <div key={index} className="flex items-end gap-2">
             <div className="flex w-full flex-col gap-y-2">
               <FieldLabel>{`Point ${index + 1}:`}</FieldLabel>
               <TextInput

@@ -10,6 +10,10 @@ import {
   getCtaSections,
   updateCtaSection,
 } from "@/api/endpoints/cta-section.api";
+import {
+  getEligibilityContent,
+  updateEligibilityContent,
+} from "@/api/endpoints/eligiblity.api";
 import { BmiQualificationSectionForm } from "./components/eligibility/BmiQualificationSectionForm";
 import { BottomCtaSectionForm } from "./components/eligibility/BottomCtaSectionForm";
 import { DisclaimerSectionForm } from "./components/eligibility/DisclaimerSectionForm";
@@ -138,9 +142,11 @@ export default function EligibilityPage() {
   const [ctaId, setCtaId] = useState("");
   const [isHeroInitialized, setIsHeroInitialized] = useState(false);
   const [isCtaInitialized, setIsCtaInitialized] = useState(false);
+  const [isEligibilityInitialized, setIsEligibilityInitialized] = useState(false);
 
   const ELIGIBILITY_HERO_QUERY_KEY = ["eligibility-hero-section"];
   const ELIGIBILITY_CTA_QUERY_KEY = ["eligibility-cta-section"];
+  const ELIGIBILITY_CONTENT_QUERY_KEY = ["eligibility-content"];
 
   const { data: heroData, refetch: refetchHeroData } = useQuery({
     queryKey: ELIGIBILITY_HERO_QUERY_KEY,
@@ -153,6 +159,13 @@ export default function EligibilityPage() {
     queryFn: () => getCtaSections(PAGE_TYPE),
     staleTime: 5 * 60 * 1000,
   });
+
+  const { data: eligibilityContentData, refetch: refetchEligibilityContent } =
+    useQuery({
+      queryKey: ELIGIBILITY_CONTENT_QUERY_KEY,
+      queryFn: getEligibilityContent,
+      staleTime: 5 * 60 * 1000,
+    });
 
   useEffect(() => {
     if (!heroData?.data || isHeroInitialized) return;
@@ -180,6 +193,42 @@ export default function EligibilityPage() {
     setIsCtaInitialized(true);
   }, [ctaData, isCtaInitialized]);
 
+  useEffect(() => {
+    if (!eligibilityContentData?.data || isEligibilityInitialized) return;
+
+    const eligibility = eligibilityContentData.data;
+
+    setSectionTitle(eligibility.generalTitle || "");
+    setPoints(
+      eligibility.generalPoints?.length
+        ? eligibility.generalPoints.map((item) => item.point || "")
+        : [""]
+    );
+    setReminder(eligibility.generalBottomDesc || "");
+    setBmiSectionTitle(eligibility.qualificationTitle || "");
+    setBmi27Title(eligibility.qualificationbmi27Text || "");
+    setBmi27Description(eligibility.qualification27Description || "");
+    setBmi30Title(eligibility.qualificationbmi30Text || "");
+    setBmi30Description(eligibility.qualification30Description || "");
+    setWeightConditionsTitle(eligibility.weightConditionSecTitle || "");
+    setWeightConditions(eligibility.weightConditions || []);
+    setContraindicationsTitle(eligibility.contraindicationsSectionTitle || "");
+    setContraindications(eligibility.contraindicationsSectionWrite || []);
+    setRequiredLabWorkTitle(eligibility.requiredlabWorkSectionTitle || "");
+    setRequiredLabWorkItems(
+      eligibility.requiredlabWorkSectionContraindications || []
+    );
+    setOngoingMonitoringTitle(eligibility.ongoingMonitoringSectionTitle || "");
+    setOngoingMonitoringItems(
+      eligibility.ongoingMonitoringSectionContraindication || []
+    );
+    setDisclaimerTitle(eligibility.disclaimerSectionTitle || "");
+    setDisclaimerDescription(eligibility.disclaimerSectionDes || "");
+    setFaqSectionTitle(eligibility.faqTitle || "");
+    setFaqs(eligibility.faqs || []);
+    setIsEligibilityInitialized(true);
+  }, [eligibilityContentData, isEligibilityInitialized]);
+
   const updatePoint = (index: number, value: string) => {
     setPoints((current) =>
       current.map((point, pointIndex) => (pointIndex === index ? value : point))
@@ -200,6 +249,14 @@ export default function EligibilityPage() {
     );
   };
 
+  const addCondition = () => {
+    const value = newCondition.trim();
+    if (!value) return;
+
+    setWeightConditions((current) => [...current, value]);
+    setNewCondition("");
+  };
+
   // const addContraindication = () => {
   //   const value = newContraindication.trim();
   //   if (!value) return;
@@ -213,16 +270,40 @@ export default function EligibilityPage() {
     );
   };
 
+  const addContraindication = () => {
+    const value = newContraindication.trim();
+    if (!value) return;
+
+    setContraindications((current) => [...current, value]);
+    setNewContraindication("");
+  };
+
   const removeRequiredLabWork = (index: number) => {
     setRequiredLabWorkItems((current) =>
       current.filter((_, itemIndex) => itemIndex !== index)
     );
   };
 
+  const addRequiredLabWork = () => {
+    const value = newLabWork.trim();
+    if (!value) return;
+
+    setRequiredLabWorkItems((current) => [...current, value]);
+    setNewLabWork("");
+  };
+
   const removeOngoingMonitoring = (index: number) => {
     setOngoingMonitoringItems((current) =>
       current.filter((_, itemIndex) => itemIndex !== index)
     );
+  };
+
+  const addOngoingMonitoring = () => {
+    const value = newOngoingMonitoring.trim();
+    if (!value) return;
+
+    setOngoingMonitoringItems((current) => [...current, value]);
+    setNewOngoingMonitoring("");
   };
 
   const updateFaq = (
@@ -272,17 +353,50 @@ export default function EligibilityPage() {
         );
       }
 
+      promises.push(
+        updateEligibilityContent({
+          generalTitle: sectionTitle,
+          generalPoints: points.map((point) => ({
+            point,
+            status: true,
+          })),
+          generalBottomDesc: reminder,
+          qualificationTitle: bmiSectionTitle,
+          qualificationbmi27Text: bmi27Title,
+          qualification27Description: bmi27Description,
+          qualificationbmi30Text: bmi30Title,
+          qualification30Description: bmi30Description,
+          weightConditionSecTitle: weightConditionsTitle,
+          weightConditions,
+          contraindicationsSectionTitle: contraindicationsTitle,
+          contraindicationsSectionWrite: contraindications,
+          requiredlabWorkSectionTitle: requiredLabWorkTitle,
+          requiredlabWorkSectionContraindications: requiredLabWorkItems,
+          ongoingMonitoringSectionTitle: ongoingMonitoringTitle,
+          ongoingMonitoringSectionContraindication: ongoingMonitoringItems,
+          disclaimerSectionTitle: disclaimerTitle,
+          disclaimerSectionDes: disclaimerDescription,
+          faqTitle: faqSectionTitle,
+          faqs,
+        })
+      );
+
       await Promise.all(promises);
     },
     onSuccess: async () => {
       toast.success("Eligibility page updated successfully");
       setIsHeroInitialized(false);
       setIsCtaInitialized(false);
+      setIsEligibilityInitialized(false);
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: ELIGIBILITY_HERO_QUERY_KEY }),
         queryClient.invalidateQueries({ queryKey: ELIGIBILITY_CTA_QUERY_KEY }),
+        queryClient.invalidateQueries({
+          queryKey: ELIGIBILITY_CONTENT_QUERY_KEY,
+        }),
         refetchHeroData(),
         refetchCtaData(),
+        refetchEligibilityContent(),
       ]);
     },
     onError: () => {
@@ -353,6 +467,7 @@ export default function EligibilityPage() {
               newCondition={newCondition}
               setNewCondition={setNewCondition}
               weightConditions={weightConditions}
+              addCondition={addCondition}
               removeCondition={removeCondition}
             />
             <SimpleListSectionForm
@@ -363,6 +478,8 @@ export default function EligibilityPage() {
               inputLabel="Write Contraindications:"
               inputValue={newContraindication}
               setInputValue={setNewContraindication}
+              addItemLabel="Add Contraindication"
+              addItem={addContraindication}
               items={contraindications}
               removeItem={removeContraindication}
             />
@@ -374,6 +491,8 @@ export default function EligibilityPage() {
               inputLabel="Write Contraindications:"
               inputValue={newLabWork}
               setInputValue={setNewLabWork}
+              addItemLabel="Add Required Lab Work"
+              addItem={addRequiredLabWork}
               items={requiredLabWorkItems}
               removeItem={removeRequiredLabWork}
             />
@@ -385,6 +504,8 @@ export default function EligibilityPage() {
               inputLabel="Write Contraindications:"
               inputValue={newOngoingMonitoring}
               setInputValue={setNewOngoingMonitoring}
+              addItemLabel="Add Ongoing Monitoring"
+              addItem={addOngoingMonitoring}
               items={ongoingMonitoringItems}
               removeItem={removeOngoingMonitoring}
             />

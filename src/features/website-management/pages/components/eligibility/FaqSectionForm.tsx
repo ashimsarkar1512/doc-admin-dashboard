@@ -31,7 +31,7 @@ export function FaqSectionForm({
       <div className="flex flex-col gap-y-3">
         {faqs.map((faq, index) => (
           <div
-            key={`${index}-${faq.question}`}
+            key={index}
             className="rounded-[10px] border border-[#D1D5DC] p-3 md:p-4"
           >
             <div className="flex items-end gap-2">
@@ -71,7 +71,7 @@ export function FaqSectionForm({
       <button
         type="button"
         onClick={addFaq}
-        className="mt-4 inline-flex w-fit items-center gap-1 text-sm font-medium text-[#2563eb] transition hover:text-[#1d4ed8]"
+        className="inline-flex w-fit items-center gap-1 pt-4 text-sm font-medium text-[#2563eb] transition hover:text-[#1d4ed8]"
       >
         <Plus className="h-4 w-4" />
         Add More

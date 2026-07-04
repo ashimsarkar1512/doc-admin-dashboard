@@ -1,4 +1,4 @@
-import { Trash2 } from "lucide-react";
+import { Plus, Trash2 } from "lucide-react";
 import { FieldLabel, SectionCard, TextInput } from "./shared";
 
 interface WeightConditionsSectionFormProps {
@@ -7,6 +7,7 @@ interface WeightConditionsSectionFormProps {
   newCondition: string;
   setNewCondition: (value: string) => void;
   weightConditions: string[];
+  addCondition: () => void;
   removeCondition: (index: number) => void;
 }
 
@@ -16,6 +17,7 @@ export function WeightConditionsSectionForm({
   newCondition,
   setNewCondition,
   weightConditions,
+  addCondition,
   removeCondition,
 }: WeightConditionsSectionFormProps) {
   return (
@@ -36,6 +38,15 @@ export function WeightConditionsSectionForm({
           placeholder="Write here..."
         />
       </div>
+
+      <button
+        type="button"
+        onClick={addCondition}
+        className="inline-flex w-fit items-center gap-1.5 pt-4 text-sm font-medium text-[#2563eb] transition hover:text-[#1d4ed8]"
+      >
+        <Plus className="h-4 w-4" />
+        Add Condition
+      </button>
 
       <div className="mt-2.5 flex flex-wrap gap-2">
         {weightConditions.map((condition, index) => (
