@@ -1,23 +1,23 @@
 import { useState } from "react";
 import { Link, useLocation } from "@tanstack/react-router";
 import {
-  ChevronDown,
-  FileText,
-  AlertTriangle,
-  Map,
-  Pill,
-  BarChart2,
-  Folder,
   Activity,
+  AlertTriangle,
   BadgeDollarSign,
+  BarChart2,
   BookOpen,
+  ChevronDown,
   ClipboardList,
+  FileText,
+  Folder,
   Folders,
   Globe,
   LayoutGrid,
   LogOut,
+  Map,
   MessageSquare,
   Package,
+  Pill,
   ScrollText,
   ShieldCheck,
   ShoppingBag,
@@ -315,11 +315,28 @@ export function DashboardMobileSidebar({
                           Home
                         </Link>
                         <Link
-                          to="/dashboard/pages/about-us"
+                          to="/dashboard/pages/eligibility"
                           onClick={() => setMobileSidebarOpen(false)}
+                          activeOptions={{ exact: true }}
                           className="flex items-center gap-3 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold"
                         >
-                          About Us
+                          Eligibility
+                        </Link>
+                           <Link
+                          to="/dashboard/pages/coverage"
+                          onClick={() => setMobileSidebarOpen(false)}
+                          activeOptions={{ exact: true }}
+                          className="flex items-center gap-3 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold"
+                        >
+                          Coverage
+                        </Link>
+                           <Link
+                          to="/dashboard/pages/faq"
+                          onClick={() => setMobileSidebarOpen(false)}
+                          activeOptions={{ exact: true }}
+                          className="flex items-center gap-3 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold"
+                        >
+                          Faq
                         </Link>
                         <Link
                           to="/dashboard/pages/contact"
@@ -402,7 +419,6 @@ export function DashboardMobileSidebar({
               )}
             </div>
           )}
-
           {hasComplianceAccess && <hr className="my-2 border-slate-100" />}
 
           {hasComplianceAccess && (
