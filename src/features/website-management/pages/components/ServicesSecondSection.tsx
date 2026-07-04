@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { Upload, X, FileVideo, FileImage } from 'lucide-react';
 import { toast } from 'sonner';
-import { uploadAttachment } from '@/api/endpoints/attachments.api';
+import { uploadAttachment, deleteAttachment } from '@/api/endpoints/attachments.api';
 
 export interface SecondData {
   sectionTitle: string;
@@ -34,7 +34,7 @@ export default function ServicesSecondSection({ data, onChange }: Props) {
     try {
       setIsUploading(true);
       const isVideo = file.type.startsWith('video/');
-      const context = isVideo ? 'SECOND_SECTION_VIDEO' : 'SECOND_SECTION_IMAGE';
+      const context = 'PUBLIC';
       
       const uploadedFile = await uploadAttachment(file, context);
       
@@ -56,7 +56,16 @@ export default function ServicesSecondSection({ data, onChange }: Props) {
     }
   };
 
-  const clearMedia = () => {
+  const clearMedia = async () => {
+    if (data.featuredMediaId) {
+      try {
+        await deleteAttachment(data.featuredMediaId);
+      } catch (error) {
+        console.error('Failed to delete media:', error);
+        toast.error('Failed to delete media from server.');
+      }
+    }
+
     onChange({
       featuredMediaId: '',
       featuredMediaName: null,

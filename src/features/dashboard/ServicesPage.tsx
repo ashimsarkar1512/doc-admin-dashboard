@@ -55,37 +55,37 @@ export default function ServicesPage() {
 
         const [servicePageRes, ctaRes] = await Promise.all([
           getServicePage(matchedCategory.id).catch(() => null),
-          getCtaSections("ServiceCategory").catch(() => null)
+          getCtaSections("ServiceCategory", matchedCategory.id).catch(() => null)
         ]);
 
         if (servicePageRes?.data) {
           const sp = servicePageRes.data;
-          if (sp.heroSection) {
-            setHeroData({
-              pageTitle: sp.heroSection.pageTitle || '',
-              bannerImageId: sp.heroSection.bannerImageId || '',
-              mediaUrl: sp.heroSection.bannerImage?.fileUrl || null,
-              mediaType: sp.heroSection.bannerImage?.fileType?.startsWith('video/') ? 'video' : (sp.heroSection.bannerImage ? 'image' : null)
-            });
-          }
-          if (sp.secondSection) {
-            setSecondData({
-              sectionTitle: sp.secondSection.sectionTitle || '',
-              sectionDescription: sp.secondSection.sectionDescription || '',
-              ctaButtonText: sp.secondSection.ctaButtonText || '',
-              url: sp.secondSection.url || '',
-              buttonTarget: !!sp.secondSection.buttonTarget,
-              featuredMediaId: sp.secondSection.featuredMediaId || '',
-              featuredMediaName: sp.secondSection.featuredMedia?.fileName || null,
-              featuredMediaType: sp.secondSection.featuredMedia?.fileType?.startsWith('video/') ? 'video' : (sp.secondSection.featuredMedia ? 'image' : null)
-            });
-          }
-          if (sp.faqSection) {
-            setFaqData({
-              sectionTitle: sp.faqSection.sectionTitle || '',
-              faqs: sp.faqSection.faqs?.map((f: any) => ({ ...f, id: f.id || crypto.randomUUID() })) || []
-            });
-          }
+          setHeroData(sp.heroSection ? {
+            pageTitle: sp.heroSection.pageTitle || '',
+            bannerImageId: sp.heroSection.bannerImageId || '',
+            mediaUrl: sp.heroSection.bannerImage?.fileUrl || null,
+            mediaType: sp.heroSection.bannerImage?.fileType?.startsWith('video/') ? 'video' : (sp.heroSection.bannerImage ? 'image' : null)
+          } : defaultHero);
+
+          setSecondData(sp.secondSection ? {
+            sectionTitle: sp.secondSection.sectionTitle || '',
+            sectionDescription: sp.secondSection.sectionDescription || '',
+            ctaButtonText: sp.secondSection.ctaButtonText || '',
+            url: sp.secondSection.url || '',
+            buttonTarget: !!sp.secondSection.buttonTarget,
+            featuredMediaId: sp.secondSection.featuredMediaId || '',
+            featuredMediaName: sp.secondSection.featuredMedia?.fileName || null,
+            featuredMediaType: sp.secondSection.featuredMedia?.fileType?.startsWith('video/') ? 'video' : (sp.secondSection.featuredMedia ? 'image' : null)
+          } : defaultSecond);
+
+          setFaqData(sp.faqSection ? {
+            sectionTitle: sp.faqSection.sectionTitle || '',
+            faqs: sp.faqSection.faqs?.map((f: any) => ({ ...f, id: f.id || crypto.randomUUID() })) || []
+          } : defaultFaq);
+        } else {
+          setHeroData(defaultHero);
+          setSecondData(defaultSecond);
+          setFaqData(defaultFaq);
         }
 
         if (ctaRes?.data && ctaRes.data.length > 0) {
@@ -97,6 +97,8 @@ export default function ServicesPage() {
             url: cta.url || '',
             openInNewTab: !!cta.openInNewTab
           });
+        } else {
+          setCtaData(defaultCta);
         }
 
       } catch (error) {
@@ -142,7 +144,8 @@ export default function ServicesPage() {
           sectionTitle: ctaData.sectionTitle,
           ctaButtonText: ctaData.ctaButtonText,
           url: ctaData.url,
-          openInNewTab: ctaData.openInNewTab
+          openInNewTab: ctaData.openInNewTab,
+          categoryId: categoryId
         }));
       }
 
