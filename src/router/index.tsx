@@ -246,6 +246,27 @@ const faqRoute = createRoute({
   component: FaqPage,
 });
 
+import ContactPageEditor from "@/features/website-management/pages/ContactPageEditor";
+const contactRoute = createRoute({
+  getParentRoute: () => dashboardLayoutRoute,
+  path: "/pages/contact",
+  component: ContactPageEditor,
+});
+
+import MedicalTeamPageEditor from "@/features/website-management/pages/MedicalTeamPageEditor";
+const medicalTeamRoute = createRoute({
+  getParentRoute: () => dashboardLayoutRoute,
+  path: "/pages/medical-team",
+  component: MedicalTeamPageEditor,
+});
+
+import HowItWorksPageEditor from "@/features/website-management/pages/HowItWorksPageEditor";
+const howItWorksRoute = createRoute({
+  getParentRoute: () => dashboardLayoutRoute,
+  path: "/pages/how-it-works",
+  component: HowItWorksPageEditor,
+});
+
 import ServicesPage from "@/features/dashboard/ServicesPage";
 const servicesRoute = createRoute({
   getParentRoute: () => dashboardLayoutRoute,
@@ -376,6 +397,9 @@ const routeTree = rootRoute.addChildren([
     eligibilityRoute,
     coverageRoute,
     faqRoute,
+    contactRoute,
+    medicalTeamRoute,
+    howItWorksRoute,
     servicesRoute,
     siteSettingsRoute,
     complianceCenterRoute,

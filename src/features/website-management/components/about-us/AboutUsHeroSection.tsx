@@ -1,14 +1,14 @@
-import { useState } from 'react';
-import { SectionCard } from '../shared/SectionCard';
-import { FormInput } from '../shared/FormInput';
-import { FormTextarea } from '../shared/FormTextarea';
-import { SaveLocalSectionButton } from './AboutUsSaveButton';
+import { useState } from "react";
+import { SectionCard } from "../shared/SectionCard";
+import { FormInput } from "../shared/FormInput";
+import { FormTextarea } from "../shared/FormTextarea";
+import { SaveLocalSectionButton } from "./AboutUsSaveButton";
 
 export function AboutUsHeroSection() {
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [buttonText, setButtonText] = useState('');
-  const [buttonLink, setButtonLink] = useState('');
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [buttonText, setButtonText] = useState("");
+  const [buttonLink, setButtonLink] = useState("");
   const [newTab, setNewTab] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -53,7 +53,9 @@ export function AboutUsHeroSection() {
             />
           </div>
           <div className="flex flex-col gap-1.5 shrink-0">
-            <label className="block text-sm font-medium text-slate-700">Button target:</label>
+            <label className="block text-sm font-medium text-slate-700">
+              Button target:
+            </label>
             <label className="flex items-center gap-2 pb-1.5 cursor-pointer">
               <input
                 type="checkbox"
