@@ -218,6 +218,13 @@ const pagesRoute = createRoute({
   component: HomePageEditor,
 });
 
+import AboutUsPageEditor from "@/features/website-management/pages/AboutUsPageEditor";
+const aboutUsRoute = createRoute({
+  getParentRoute: () => dashboardLayoutRoute,
+  path: "/pages/about-us",
+  component: AboutUsPageEditor,
+});
+
 import ServicesPage from "@/features/dashboard/ServicesPage";
 const servicesRoute = createRoute({
   getParentRoute: () => dashboardLayoutRoute,
@@ -344,6 +351,7 @@ const routeTree = rootRoute.addChildren([
     employeePermissionsIdRoute,
     websiteManagementRoute,
     pagesRoute,
+    aboutUsRoute,
     servicesRoute,
     siteSettingsRoute,
     complianceCenterRoute,
