@@ -197,6 +197,26 @@ export function DashboardMobileSidebar({
               <span>Website Management</span>
             </Link>
           )}
+          {can("view:website_management") && (
+            <Link
+              to="/dashboard/pages"
+              activeOptions={{ exact: true }}
+              onClick={() => setMobileSidebarOpen(false)}
+              className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-500 text-[#272628] hover:bg-slate-100 transition-all [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-600"
+            >
+              <span>Home</span>
+            </Link>
+          )}
+          {can("view:website_management") && (
+            <Link
+              to="/dashboard/pages/eligibility"
+              activeOptions={{ exact: true }}
+              onClick={() => setMobileSidebarOpen(false)}
+              className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-500 text-[#272628] hover:bg-slate-100 transition-all [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-600"
+            >
+              <span>Eligibility</span>
+            </Link>
+          )}
           <Link
             to="/dashboard/account-settings"
             onClick={() => setMobileSidebarOpen(false)}
