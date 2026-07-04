@@ -1,6 +1,6 @@
-import { axiosInstance } from '@/api/axiosInstance';
+﻿import { axiosInstance } from '@/api/axiosInstance';
 
-export interface HeroSectionResponse {
+export interface HeroSection {
   id: string;
   title: string;
   description: string;
@@ -9,18 +9,46 @@ export interface HeroSectionResponse {
   updatedAt: string;
 }
 
-export interface UpdateHeroSectionDto {
+export interface GetHeroSectionsResponse {
+  success: boolean;
+  message: string;
+  data: HeroSection[];
+}
+
+export interface UpdateHeroSectionResponse {
+  success: boolean;
+  message: string;
+  data: HeroSection;
+}
+
+export interface UpdateHeroSectionRequest {
   page: string;
   title: string;
   description: string;
 }
 
-export const getHeroSections = async (pageType: string): Promise<{ data: HeroSectionResponse[] }> => {
-  const { data } = await axiosInstance.get(`/hero-section?pageType=${pageType}`);
-  return data;
-};
+/**
+ * Get hero sections filtered by pageType
+ * GET /api/v1/hero-section?pageType={pageType}
+ */
+export async function getHeroSectionByPage(pageType: string): Promise<HeroSection[]> {
+  const { data } = await axiosInstance.get<GetHeroSectionsResponse>('/hero-section', {
+    params: { pageType },
+  });
+  return data.data;
+}
 
-export const updateHeroSection = async (id: string, payload: UpdateHeroSectionDto): Promise<{ data: HeroSectionResponse }> => {
-  const { data } = await axiosInstance.patch(`/hero-section/${id}`, payload);
-  return data;
-};
+/**
+ * Update a hero section by ID
+ * PATCH /api/v1/hero-section/{id}
+ */
+export async function updateHeroSection(
+  id: string,
+  params: UpdateHeroSectionRequest
+): Promise<HeroSection> {
+  const { data } = await axiosInstance.patch<UpdateHeroSectionResponse>(
+    /hero-section/,
+    params
+  );
+  return data.data;
+}

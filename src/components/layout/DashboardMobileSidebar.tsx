@@ -359,6 +359,34 @@ export function DashboardMobileSidebar({
                         >
                           How It Works
                         </Link>
+                        <Link
+                          to="/dashboard/pages/lab-testing"
+                          onClick={() => setMobileSidebarOpen(false)}
+                          className="flex items-center gap-3 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold"
+                        >
+                          Lab Testing
+                        </Link>
+                        <Link
+                          to="/dashboard/pages/privacy-policy"
+                          onClick={() => setMobileSidebarOpen(false)}
+                          className="flex items-center gap-3 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold"
+                        >
+                          Privacy Policy
+                        </Link>
+                        <Link
+                          to="/dashboard/pages/terms-of-service"
+                          onClick={() => setMobileSidebarOpen(false)}
+                          className="flex items-center gap-3 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold"
+                        >
+                          Terms of Service
+                        </Link>
+                        <Link
+                          to="/dashboard/pages/hipaa-notice"
+                          onClick={() => setMobileSidebarOpen(false)}
+                          className="flex items-center gap-3 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold"
+                        >
+                          HIPAA Notice
+                        </Link>
 
                         <div>
                           <button
@@ -383,13 +411,15 @@ export function DashboardMobileSidebar({
                                   .toLowerCase()
                                   .replace(/\s*&\s*/g, "-")
                                   .replace(/\s+/g, "-");
-                                const isActive = location.href.includes(
-                                  `/dashboard/services?${slug}`,
-                                );
+                                if (slug === 'lab-testing') return null;
+                                  
+                                const linkTo = `/dashboard/services?${slug}`;
+                                  
+                                const isActive = location.href.includes(linkTo);
                                 return (
                                   <Link
                                     key={category.id}
-                                    to={`/dashboard/services?${slug}` as any}
+                                    to={linkTo as any}
                                     onClick={() => setMobileSidebarOpen(false)}
                                     className={`flex items-center gap-3 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
                                       isActive
