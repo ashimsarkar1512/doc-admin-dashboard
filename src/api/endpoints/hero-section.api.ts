@@ -38,6 +38,8 @@ export async function getHeroSectionByPage(pageType: string): Promise<HeroSectio
   return data.data;
 }
 
+export const getHeroSections = getHeroSectionByPage;
+
 /**
  * Update a hero section by ID
  * PATCH /api/v1/hero-section/{id}

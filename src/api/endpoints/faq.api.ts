@@ -34,3 +34,28 @@ export const updateFaq = async (
   const { data } = await axiosInstance.patch(`/faq`, payload);
   return data;
 };
+
+export interface UpdateFaqItemDto {
+  question: string;
+  answer: string;
+}
+
+export interface UpdateFaqSectionDto {
+  pageType: string;
+  sectionTitle: string;
+  faqs: UpdateFaqItemDto[];
+}
+
+export const getFaqSection = async (
+  pageType: string
+): Promise<{ success: boolean; message: string; data: FaqSectionResponse }> => {
+  const { data } = await axiosInstance.get(`/faq?pageType=${pageType}`);
+  return data;
+};
+
+export const updateFaqSection = async (
+  payload: UpdateFaqSectionDto
+): Promise<{ success: boolean; message: string; data: FaqSectionResponse }> => {
+  const { data } = await axiosInstance.patch("/faq", payload);
+  return data;
+};

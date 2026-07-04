@@ -20,8 +20,8 @@ export default function ShippingInformationPageEditor() {
     const fetchHero = async () => {
       try {
         const response = await getHeroSections("ShippingInfo");
-        if (response.data && response.data.length > 0) {
-          const hero = response.data[0];
+        if (response && response.length > 0) {
+          const hero = response[0];
           setHeroId(hero.id);
           setHeroTitle(hero.title);
           setHeroDescription(hero.description);
@@ -83,7 +83,7 @@ export default function ShippingInformationPageEditor() {
         const response = await getFaqByPageType("ShippingInfo");
         const data = response.data;
         if (data) {
-          setFaqId(data.id);
+
           setFaqTitle(data.sectionTitle || "");
           if (data.faqs) {
             setFaqs(data.faqs.map(f => ({
@@ -123,7 +123,7 @@ export default function ShippingInformationPageEditor() {
   // Partner Pharmacy Section State
   const [partnerTitle, setPartnerTitle] = useState("");
   const [partnerDescription, setPartnerDescription] = useState("");
-  const [pharmacies, setPharmacies] = useState<{ id: string; name: string; address: string; logoUrl: string; logoId?: string | null }>([
+  const [pharmacies, setPharmacies] = useState<{ id: string; name: string; address: string; logoUrl: string; logoId?: string | null }[]>([
     { id: "1", name: "", address: "", logoUrl: "", logoId: null },
     { id: "2", name: "", address: "", logoUrl: "", logoId: null },
     { id: "3", name: "", address: "", logoUrl: "", logoId: null },
@@ -159,7 +159,8 @@ export default function ShippingInformationPageEditor() {
   const [disclaimerDescription, setDisclaimerDescription] = useState("");
 
   // FAQs Section State
-  const [faqId, setFaqId] = useState<string | null>(null);
+
+
   const [faqTitle, setFaqTitle] = useState("");
   const [faqs, setFaqs] = useState([
     { id: "1", question: "", answer: "" },

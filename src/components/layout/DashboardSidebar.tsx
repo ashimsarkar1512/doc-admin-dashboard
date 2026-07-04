@@ -399,6 +399,30 @@ export function DashboardSidebar({
                         >
                           Shipping Information
                         </Link>
+                        <Link
+                          to="/dashboard/pages/lab-testing"
+                          className="flex items-center gap-3 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold"
+                        >
+                          Lab Testing
+                        </Link>
+                        <Link
+                          to="/dashboard/pages/privacy-policy"
+                          className="flex items-center gap-3 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold"
+                        >
+                          Privacy Policy
+                        </Link>
+                        <Link
+                          to="/dashboard/pages/terms-of-service"
+                          className="flex items-center gap-3 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold"
+                        >
+                          Terms of Service
+                        </Link>
+                        <Link
+                          to="/dashboard/pages/hipaa-notice"
+                          className="flex items-center gap-3 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold"
+                        >
+                          HIPAA Notice
+                        </Link>
 
                         <div>
                           <button

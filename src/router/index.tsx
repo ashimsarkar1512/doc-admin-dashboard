@@ -274,6 +274,34 @@ const shippingInformationRoute = createRoute({
   component: ShippingInformationPageEditor,
 });
 
+import LabTestingPageEditor from "@/features/website-management/pages/LabTestingPageEditor";
+const labTestingRoute = createRoute({
+  getParentRoute: () => dashboardLayoutRoute,
+  path: "/pages/lab-testing",
+  component: LabTestingPageEditor,
+});
+
+import PrivacyPolicyPageEditor from "@/features/website-management/pages/PrivacyPolicyPageEditor";
+const privacyPolicyRoute = createRoute({
+  getParentRoute: () => dashboardLayoutRoute,
+  path: "/pages/privacy-policy",
+  component: PrivacyPolicyPageEditor,
+});
+
+import TermsOfServicePageEditor from "@/features/website-management/pages/TermsOfServicePageEditor";
+const termsOfServiceRoute = createRoute({
+  getParentRoute: () => dashboardLayoutRoute,
+  path: "/pages/terms-of-service",
+  component: TermsOfServicePageEditor,
+});
+
+import HipaaNoticePageEditor from "@/features/website-management/pages/HipaaNoticePageEditor";
+const hipaaNoticeRoute = createRoute({
+  getParentRoute: () => dashboardLayoutRoute,
+  path: "/pages/hipaa-notice",
+  component: HipaaNoticePageEditor,
+});
+
 import ServicesPage from "@/features/dashboard/ServicesPage";
 const servicesRoute = createRoute({
   getParentRoute: () => dashboardLayoutRoute,
@@ -408,6 +436,10 @@ const routeTree = rootRoute.addChildren([
     reportSideEffectRoute,
     requestRecordRoute,
     shippingInformationRoute,
+    labTestingRoute,
+    privacyPolicyRoute,
+    termsOfServiceRoute,
+    hipaaNoticeRoute,
     servicesRoute,
     siteSettingsRoute,
     complianceCenterRoute,
