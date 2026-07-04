@@ -246,6 +246,34 @@ const howItWorksRoute = createRoute({
   component: HowItWorksPageEditor,
 });
 
+import BillingCancellationPageEditor from "@/features/website-management/pages/BillingCancellationPageEditor";
+const billingCancellationRoute = createRoute({
+  getParentRoute: () => dashboardLayoutRoute,
+  path: "/pages/billing-and-cancellation",
+  component: BillingCancellationPageEditor,
+});
+
+import ReportSideEffectPageEditor from "@/features/website-management/pages/ReportSideEffectPageEditor";
+const reportSideEffectRoute = createRoute({
+  getParentRoute: () => dashboardLayoutRoute,
+  path: "/pages/report-side-effect",
+  component: ReportSideEffectPageEditor,
+});
+
+import RequestRecordPageEditor from "@/features/website-management/pages/RequestRecordPageEditor";
+const requestRecordRoute = createRoute({
+  getParentRoute: () => dashboardLayoutRoute,
+  path: "/pages/request-record",
+  component: RequestRecordPageEditor,
+});
+
+import ShippingInformationPageEditor from "@/features/website-management/pages/ShippingInformationPageEditor";
+const shippingInformationRoute = createRoute({
+  getParentRoute: () => dashboardLayoutRoute,
+  path: "/pages/shipping-information",
+  component: ShippingInformationPageEditor,
+});
+
 import ServicesPage from "@/features/dashboard/ServicesPage";
 const servicesRoute = createRoute({
   getParentRoute: () => dashboardLayoutRoute,
@@ -376,6 +404,10 @@ const routeTree = rootRoute.addChildren([
     contactRoute,
     medicalTeamRoute,
     howItWorksRoute,
+    billingCancellationRoute,
+    reportSideEffectRoute,
+    requestRecordRoute,
+    shippingInformationRoute,
     servicesRoute,
     siteSettingsRoute,
     complianceCenterRoute,

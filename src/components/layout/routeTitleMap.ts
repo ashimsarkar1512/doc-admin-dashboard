@@ -68,6 +68,38 @@ export const routeTitleMap: Record<string, { title: string; subtitle: string }> 
     title: "Website Management",
     subtitle: "Manage your website",
   },
+  "/dashboard/pages/about-us": {
+    title: "Website Management",
+    subtitle: "Manage your website",
+  },
+  "/dashboard/pages/contact": {
+    title: "Website Management",
+    subtitle: "Manage your website",
+  },
+  "/dashboard/pages/medical-team": {
+    title: "Website Management",
+    subtitle: "Manage your website",
+  },
+  "/dashboard/pages/how-it-works": {
+    title: "Website Management",
+    subtitle: "Manage your website",
+  },
+  "/dashboard/pages/billing-and-cancellation": {
+    title: "Website Management",
+    subtitle: "Manage your website",
+  },
+  "/dashboard/pages/report-side-effect": {
+    title: "Website Management",
+    subtitle: "Manage your website",
+  },
+  "/dashboard/pages/request-record": {
+    title: "Website Management",
+    subtitle: "Manage your website",
+  },
+  "/dashboard/pages/shipping-information": {
+    title: "Website Management",
+    subtitle: "Manage your website",
+  },
   "/dashboard/services": {
     title: "Website Management",
     subtitle: "Manage your website",
