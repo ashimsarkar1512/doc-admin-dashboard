@@ -92,6 +92,14 @@ export const routeTitleMap: Record<string, { title: string; subtitle: string }> 
     title: "Eligibility Page",
     subtitle: "Manage the Eligibility page content",
   },
+  "/dashboard/pages/coverage": {
+    title: "Coverage Page",
+    subtitle: "Manage the Coverage page content",
+  },
+  "/dashboard/pages/faq": {
+    title: "FAQ Page",
+    subtitle: "Manage the FAQ page content",
+  },
 
   "/dashboard/pages/billing-and-cancellation": {
     title: "Website Management",

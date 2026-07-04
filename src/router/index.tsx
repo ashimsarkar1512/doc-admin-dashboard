@@ -232,6 +232,20 @@ const eligibilityRoute = createRoute({
   component: EligibilityPage,
 });
 
+import CoveragePage from "@/features/website-management/pages/CoveragePage";
+const coverageRoute = createRoute({
+  getParentRoute: () => dashboardLayoutRoute,
+  path: "/pages/coverage",
+  component: CoveragePage,
+});
+
+import FaqPage from "@/features/website-management/pages/FaqPage";
+const faqRoute = createRoute({
+  getParentRoute: () => dashboardLayoutRoute,
+  path: "/pages/faq",
+  component: FaqPage,
+});
+
 import ContactPageEditor from "@/features/website-management/pages/ContactPageEditor";
 const contactRoute = createRoute({
   getParentRoute: () => dashboardLayoutRoute,
@@ -437,6 +451,8 @@ const routeTree = rootRoute.addChildren([
     pagesRoute,
     aboutUsRoute,
     eligibilityRoute,
+    coverageRoute,
+    faqRoute,
     contactRoute,
     medicalTeamRoute,
     howItWorksRoute,
