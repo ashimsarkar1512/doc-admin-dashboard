@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import { getHeroSections, updateHeroSection } from "@/api/endpoints/hero-section.api";
 import { getShippingInfoPage, updateShippingInfoPage } from "@/api/endpoints/shipping-info.api";
 import { uploadAttachment } from "@/api/endpoints/attachments.api";
-import { getFaqByPageType, updateFaq } from "@/api/endpoints/faq.api";
+import { getFaqSection, updateFaqSection } from "@/api/endpoints/faq.api";
 import { getCtaSections, updateCtaSection } from "@/api/endpoints/cta-section.api";
 
 export default function ShippingInformationPageEditor() {
@@ -80,7 +80,7 @@ export default function ShippingInformationPageEditor() {
 
     const fetchFaq = async () => {
       try {
-        const response = await getFaqByPageType("ShippingInfo");
+        const response = await getFaqSection("ShippingInfo");
         const data = response.data;
         if (data) {
           setFaqId(data.id);
@@ -189,11 +189,16 @@ export default function ShippingInformationPageEditor() {
         partnerPharmacySection: {
           title: partnerTitle,
           description: partnerDescription,
-          partners: pharmacies.map(p => ({
-            name: p.name,
-            address: p.address,
-            logoId: p.logoUrl || null
-          }))
+          partners: pharmacies.map(p => {
+            const partner: any = {
+              name: p.name,
+              address: p.address
+            };
+            if (p.logoId) {
+              partner.logoId = p.logoId;
+            }
+            return partner;
+          })
         },
         shippingTimelineSection: {
           title: timelineTitle,
@@ -214,7 +219,7 @@ export default function ShippingInformationPageEditor() {
         }
       });
       
-      await updateFaq({
+      await updateFaqSection({
         pageType: "ShippingInfo",
         sectionTitle: faqTitle,
         faqs: faqs.map(f => ({
