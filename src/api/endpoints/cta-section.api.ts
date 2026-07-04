@@ -18,11 +18,12 @@ export interface UpdateCtaSectionDto {
   ctaButtonText?: string;
   url?: string;
   openInNewTab?: boolean;
-  categoryId?: string | null;
+  categoryId?: string;
 }
 
-export const getCtaSections = async (pageType: string): Promise<{ data: CtaSectionResponse[] }> => {
-  const { data } = await axiosInstance.get(`/cta-section?pageType=${pageType}`);
+export const getCtaSections = async (pageType: string, categoryId?: string) => {
+  const url = categoryId ? `/cta-section?pageType=${pageType}&categoryId=${categoryId}` : `/cta-section?pageType=${pageType}`;
+  const { data } = await axiosInstance.get(url);
   return data;
 };
 
