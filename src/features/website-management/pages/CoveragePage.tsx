@@ -226,8 +226,8 @@ export default function CoveragePage() {
     };
 
     return (
-        <div className="w-full bg-[#f8fafc] p-4 md:p-6">
-            <div className="mx-auto">
+        <div className="w-full bg-[#f8fafc] p-4 md:p-6 min-h-full font-sans pb-20">
+            <div className="max-w-7xl mx-auto">
                 <div className="min-w-0 space-y-3">
                     <div className="flex flex-col gap-y-3 sm:flex-row sm:items-center sm:justify-between">
                         <h1 className="font-['Quicksand'] text-[18px] font-semibold leading-[28px] tracking-[0px] text-[#101828] md:text-[20px] md:leading-[30px]">
