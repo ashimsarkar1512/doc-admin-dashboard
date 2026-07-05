@@ -185,7 +185,7 @@ export function HowItWorksProvider({ children }: { children: React.ReactNode }) 
             ctaButtonText: form.ctaButtonText,
             url: form.ctaUrl,
             openInNewTab: form.ctaNewTab,
-            categoryId: null,
+            categoryId: undefined,
           })
         );
       }
