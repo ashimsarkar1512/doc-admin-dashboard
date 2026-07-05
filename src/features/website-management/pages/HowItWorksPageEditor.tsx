@@ -11,7 +11,7 @@ function HowItWorksPageEditorContent() {
   const { isSaving, isDirty, save } = useHowItWorksContext();
 
   return (
-    <div className="p-4 sm:p-7 w-full space-y-8 min-h-full font-sans pb-20 bg-slate-50">
+    <div className="p-4 sm:p-7 max-w-7xl mx-auto space-y-8 min-h-full font-sans pb-20 bg-slate-50">
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
         <div>
