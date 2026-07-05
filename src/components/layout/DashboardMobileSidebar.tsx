@@ -322,6 +322,27 @@ export function DashboardMobileSidebar({
                           About Us
                         </Link>
                         <Link
+                          to="/dashboard/pages/eligibility"
+                          onClick={() => setMobileSidebarOpen(false)}
+                          className="flex items-center gap-3 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold"
+                        >
+                          Eligibility
+                        </Link>
+                        <Link
+                          to="/dashboard/pages/coverage"
+                          onClick={() => setMobileSidebarOpen(false)}
+                          className="flex items-center gap-3 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold"
+                        >
+                          Coverage
+                        </Link>
+                        <Link
+                          to="/dashboard/pages/faq"
+                          onClick={() => setMobileSidebarOpen(false)}
+                          className="flex items-center gap-3 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold"
+                        >
+                          FAQ
+                        </Link>
+                        <Link
                           to="/dashboard/pages/contact"
                           onClick={() => setMobileSidebarOpen(false)}
                           className="flex items-center gap-3 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold"
@@ -341,6 +362,34 @@ export function DashboardMobileSidebar({
                           className="flex items-center gap-3 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold"
                         >
                           How It Works
+                        </Link>
+                        <Link
+                          to="/dashboard/pages/billing-and-cancellation"
+                          onClick={() => setMobileSidebarOpen(false)}
+                          className="flex items-center gap-3 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold"
+                        >
+                          Billing & Cancellation
+                        </Link>
+                        <Link
+                          to="/dashboard/pages/report-side-effect"
+                          onClick={() => setMobileSidebarOpen(false)}
+                          className="flex items-center gap-3 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold"
+                        >
+                          Report Side Effect
+                        </Link>
+                        <Link
+                          to="/dashboard/pages/request-record"
+                          onClick={() => setMobileSidebarOpen(false)}
+                          className="flex items-center gap-3 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold"
+                        >
+                          Request Record
+                        </Link>
+                        <Link
+                          to="/dashboard/pages/shipping-information"
+                          onClick={() => setMobileSidebarOpen(false)}
+                          className="flex items-center gap-3 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold"
+                        >
+                          Shipping Information
                         </Link>
 
                         <div>

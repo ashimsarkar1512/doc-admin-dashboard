@@ -154,8 +154,8 @@ const handleExport = async () => {
             />
 
             {!isLoading && data?.meta && data.meta.totalPages > 1 && (
-              <div className="flex items-center justify-between px-6 py-4 border-t border-slate-200 bg-slate-50">
-                <span className="text-sm text-slate-500">
+              <div className="flex flex-col sm:flex-row items-center justify-between px-6 py-4 border-t border-slate-200 bg-slate-50 gap-4">
+                <span className="text-sm text-slate-500 text-center sm:text-left">
                   Showing {((data.meta.page - 1) * data.meta.limit) + 1} to {Math.min(data.meta.page * data.meta.limit, data.meta.total)} of {data.meta.total} results
                 </span>
                 <div className="flex items-center gap-2">

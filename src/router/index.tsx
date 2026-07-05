@@ -225,6 +225,27 @@ const aboutUsRoute = createRoute({
   component: AboutUsPageEditor,
 });
 
+import EligibilityPage from "@/features/website-management/pages/EligibilityPage";
+const eligibilityRoute = createRoute({
+  getParentRoute: () => dashboardLayoutRoute,
+  path: "/pages/eligibility",
+  component: EligibilityPage,
+});
+
+import CoveragePage from "@/features/website-management/pages/CoveragePage";
+const coverageRoute = createRoute({
+  getParentRoute: () => dashboardLayoutRoute,
+  path: "/pages/coverage",
+  component: CoveragePage,
+});
+
+import FaqPage from "@/features/website-management/pages/FaqPage";
+const faqRoute = createRoute({
+  getParentRoute: () => dashboardLayoutRoute,
+  path: "/pages/faq",
+  component: FaqPage,
+});
+
 import ContactPageEditor from "@/features/website-management/pages/ContactPageEditor";
 const contactRoute = createRoute({
   getParentRoute: () => dashboardLayoutRoute,
@@ -244,6 +265,62 @@ const howItWorksRoute = createRoute({
   getParentRoute: () => dashboardLayoutRoute,
   path: "/pages/how-it-works",
   component: HowItWorksPageEditor,
+});
+
+import BillingCancellationPageEditor from "@/features/website-management/pages/BillingCancellationPageEditor";
+const billingCancellationRoute = createRoute({
+  getParentRoute: () => dashboardLayoutRoute,
+  path: "/pages/billing-and-cancellation",
+  component: BillingCancellationPageEditor,
+});
+
+import ReportSideEffectPageEditor from "@/features/website-management/pages/ReportSideEffectPageEditor";
+const reportSideEffectRoute = createRoute({
+  getParentRoute: () => dashboardLayoutRoute,
+  path: "/pages/report-side-effect",
+  component: ReportSideEffectPageEditor,
+});
+
+import RequestRecordPageEditor from "@/features/website-management/pages/RequestRecordPageEditor";
+const requestRecordRoute = createRoute({
+  getParentRoute: () => dashboardLayoutRoute,
+  path: "/pages/request-record",
+  component: RequestRecordPageEditor,
+});
+
+import ShippingInformationPageEditor from "@/features/website-management/pages/ShippingInformationPageEditor";
+const shippingInformationRoute = createRoute({
+  getParentRoute: () => dashboardLayoutRoute,
+  path: "/pages/shipping-information",
+  component: ShippingInformationPageEditor,
+});
+
+import LabTestingPageEditor from "@/features/website-management/pages/LabTestingPageEditor";
+const labTestingRoute = createRoute({
+  getParentRoute: () => dashboardLayoutRoute,
+  path: "/pages/lab-testing",
+  component: LabTestingPageEditor,
+});
+
+import PrivacyPolicyPageEditor from "@/features/website-management/pages/PrivacyPolicyPageEditor";
+const privacyPolicyRoute = createRoute({
+  getParentRoute: () => dashboardLayoutRoute,
+  path: "/pages/privacy-policy",
+  component: PrivacyPolicyPageEditor,
+});
+
+import TermsOfServicePageEditor from "@/features/website-management/pages/TermsOfServicePageEditor";
+const termsOfServiceRoute = createRoute({
+  getParentRoute: () => dashboardLayoutRoute,
+  path: "/pages/terms-of-service",
+  component: TermsOfServicePageEditor,
+});
+
+import HipaaNoticePageEditor from "@/features/website-management/pages/HipaaNoticePageEditor";
+const hipaaNoticeRoute = createRoute({
+  getParentRoute: () => dashboardLayoutRoute,
+  path: "/pages/hipaa-notice",
+  component: HipaaNoticePageEditor,
 });
 
 import ServicesPage from "@/features/dashboard/ServicesPage";
@@ -373,9 +450,20 @@ const routeTree = rootRoute.addChildren([
     websiteManagementRoute,
     pagesRoute,
     aboutUsRoute,
+    eligibilityRoute,
+    coverageRoute,
+    faqRoute,
     contactRoute,
     medicalTeamRoute,
     howItWorksRoute,
+    billingCancellationRoute,
+    reportSideEffectRoute,
+    requestRecordRoute,
+    shippingInformationRoute,
+    labTestingRoute,
+    privacyPolicyRoute,
+    termsOfServiceRoute,
+    hipaaNoticeRoute,
     servicesRoute,
     siteSettingsRoute,
     complianceCenterRoute,

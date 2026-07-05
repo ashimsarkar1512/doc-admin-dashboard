@@ -37,6 +37,7 @@ export default function ServicesPage() {
   const [faqData, setFaqData] = useState<FaqData>(defaultFaq);
   const [ctaData, setCtaData] = useState<CtaData>(defaultCta);
 
+
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
@@ -172,9 +173,9 @@ export default function ServicesPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div className="text-[15px] text-slate-800 font-medium flex items-center gap-2">
-          <span className="text-slate-700 font-semibold">Pages</span>
+          <span className="text-slate-700 font-semibold">Website Management</span>
           <span className="text-slate-500 font-normal">&gt;</span>
-          <span className="text-slate-700 font-semibold">Services</span>
+          <span className="text-slate-700 font-semibold">Pages</span>
           <span className="text-slate-500 font-normal">&gt;</span>
           <span className="text-slate-900 font-bold">{serviceTitle}</span>
         </div>
@@ -189,22 +190,24 @@ export default function ServicesPage() {
       </div>
 
       {/* Sections */}
-      <ServicesHeroSection
-        data={heroData}
-        onChange={(data) => setHeroData(prev => ({ ...prev, ...data }))}
-      />
-      <ServicesSecondSection
-        data={secondData}
-        onChange={(data) => setSecondData(prev => ({ ...prev, ...data }))}
-      />
-      <ServicesFAQSection
-        data={faqData}
-        onChange={(data) => setFaqData(prev => ({ ...prev, ...data }))}
-      />
-      <ServicesBottomCTASection
-        data={ctaData}
-        onChange={(data) => setCtaData(prev => ({ ...prev, ...data }))}
-      />
+      <div className="space-y-6">
+        <ServicesHeroSection
+          data={heroData}
+          onChange={(data) => setHeroData(prev => ({ ...prev, ...data }))}
+        />
+        <ServicesSecondSection
+          data={secondData}
+          onChange={(data) => setSecondData(prev => ({ ...prev, ...data }))}
+        />
+        <ServicesFAQSection
+          data={faqData}
+          onChange={(data) => setFaqData(prev => ({ ...prev, ...data }))}
+        />
+        <ServicesBottomCTASection
+          data={ctaData}
+          onChange={(data) => setCtaData(prev => ({ ...prev, ...data }))}
+        />
+      </div>
 
       {/* Bottom Save Button */}
       <div className="pt-2 flex justify-start">

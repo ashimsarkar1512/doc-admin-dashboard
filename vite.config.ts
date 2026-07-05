@@ -5,6 +5,14 @@ import babel from '@rolldown/plugin-babel'
 
 // https://vite.dev/config/
 export default defineConfig({
+  server: {
+    watch: process.env.CHOKIDAR_USEPOLLING === "1"
+      ? {
+          usePolling: true,
+          interval: 300,
+        }
+      : undefined,
+  },
   plugins: [
     react(),
     babel({ presets: [reactCompilerPreset()] })

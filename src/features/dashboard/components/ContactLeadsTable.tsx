@@ -40,29 +40,29 @@ export default function ContactLeadsTable({
       <table className="w-full text-left text-sm text-slate-600">
         <thead className="bg-slate-50 border-b border-slate-200 text-slate-700 font-semibold">
           <tr>
-            <th className="px-6 py-4 whitespace-nowrap">Full Name</th>
-            <th className="px-6 py-4 whitespace-nowrap">Email</th>
-            <th className="px-6 py-4 whitespace-nowrap">Phone Number</th>
-            <th className="px-6 py-4 whitespace-nowrap">Service</th>
-            <th className="px-6 py-4 whitespace-nowrap">Comments</th>
-            <th className="px-6 py-4 whitespace-nowrap">Date</th>
-            <th className="px-6 py-4 whitespace-nowrap text-center">Actions</th>
+            <th className="px-3 py-3 md:px-4 md:py-4 whitespace-nowrap">Full Name</th>
+            <th className="px-3 py-3 md:px-4 md:py-4 whitespace-nowrap">Email</th>
+            <th className="px-3 py-3 md:px-4 md:py-4 whitespace-nowrap">Phone Number</th>
+            <th className="px-3 py-3 md:px-4 md:py-4 whitespace-nowrap">Service</th>
+            <th className="px-3 py-3 md:px-4 md:py-4 whitespace-nowrap">Comments</th>
+            <th className="px-3 py-3 md:px-4 md:py-4 whitespace-nowrap">Date</th>
+            <th className="px-3 py-3 md:px-4 md:py-4 whitespace-nowrap text-center">Actions</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-slate-100">
           {leads.map((item) => (
             <tr key={item.id} className="hover:bg-slate-50 transition-colors">
-              <td className="px-6 py-4 font-medium whitespace-nowrap">{item.fullName}</td>
-              <td className="px-6 py-4 whitespace-nowrap">{item.email}</td>
-              <td className="px-6 py-4 whitespace-nowrap">{item.phone}</td>
-              <td className="px-6 py-4 whitespace-nowrap">{item.service}</td>
-              <td className="px-6 py-4 max-w-xs truncate" title={item.message}>
+              <td className="px-3 py-3 md:px-4 md:py-4 font-medium whitespace-nowrap">{item.fullName}</td>
+              <td className="px-3 py-3 md:px-4 md:py-4 max-w-[140px] sm:max-w-[180px] md:max-w-[220px] truncate" title={item.email}>{item.email}</td>
+              <td className="px-3 py-3 md:px-4 md:py-4 whitespace-nowrap">{item.phone}</td>
+              <td className="px-3 py-3 md:px-4 md:py-4 max-w-[120px] sm:max-w-[150px] md:max-w-[200px] truncate" title={item.service}>{item.service}</td>
+              <td className="px-3 py-3 md:px-4 md:py-4 max-w-[120px] sm:max-w-[160px] md:max-w-[200px] lg:max-w-xs truncate" title={item.message}>
                 {item.message}
               </td>
-              <td className="px-6 py-4 whitespace-nowrap">
+              <td className="px-3 py-3 md:px-4 md:py-4 whitespace-nowrap">
                 {new Date(item.createdAt).toLocaleDateString()}
               </td>
-              <td className="px-6 py-4">
+              <td className="px-3 py-3 md:px-4 md:py-4">
                 <div className="flex items-center justify-center gap-3">
                   <button
                     onClick={() => onView(item)}

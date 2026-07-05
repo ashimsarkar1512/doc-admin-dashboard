@@ -498,7 +498,7 @@ function SmallUploadBox({
 
         <label
           htmlFor={inputId}
-          className="inline-flex items-center gap-2 mt-3 px-3 py-1.5 text-xs font-medium text-white bg-[#D1D5DC] border border-slate-200 rounded-md shadow-sm hover:bg-slate-200 transition cursor-pointer"
+          className="inline-flex items-center gap-2 mt-3 px-3 py-1.5 text-xs font-medium text-white bg-blue-600 rounded-md shadow-sm hover:bg-blue-700 transition cursor-pointer"
         >
           <Upload size={16} /> Upload
         </label>

@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useState, useCallback } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { getHeroSections, updateHeroSection } from "@/api/endpoints/hero-section.api";
+import { getHeroSectionByPage, updateHeroSection } from "@/api/endpoints/hero-section.api";
 import { getCtaSections, updateCtaSection } from "@/api/endpoints/cta-section.api";
 import { getHowItWorksSection, updateHowItWorksSection } from "@/api/endpoints/how-it-works.api";
 import type { HowItWorksStep, HowItWorksFaq } from "@/api/endpoints/how-it-works.api";
@@ -86,7 +86,7 @@ export function HowItWorksProvider({ children }: { children: React.ReactNode }) 
   // Fetch Hero
   const { data: heroData, isLoading: isLoadingHero } = useQuery({
     queryKey: HOW_IT_WORKS_HERO_QUERY_KEY,
-    queryFn: () => getHeroSections("HowItWorks"),
+    queryFn: () => getHeroSectionByPage("HowItWorks"),
     staleTime: 5 * 60 * 1000,
   });
 
@@ -107,9 +107,9 @@ export function HowItWorksProvider({ children }: { children: React.ReactNode }) 
   const isLoading = isLoadingHero || isLoadingContent || isLoadingCta;
 
   const initForm = useCallback(() => {
-    if (!heroData?.data || !contentData?.data || !ctaData?.data) return;
+    if (!heroData || !contentData?.data || !ctaData?.data) return;
 
-    const hero = Array.isArray(heroData.data) ? heroData.data[0] : heroData.data;
+    const hero = Array.isArray(heroData) ? heroData[0] : heroData;
     const content = contentData.data;
     const cta = Array.isArray(ctaData.data) ? ctaData.data[0] : ctaData.data;
 
@@ -141,7 +141,7 @@ export function HowItWorksProvider({ children }: { children: React.ReactNode }) 
 
   // Seed form state when data arrives
   useEffect(() => {
-    if (heroData?.data && contentData?.data && ctaData?.data && !isInitialized) {
+    if (heroData && contentData?.data && ctaData?.data && !isInitialized) {
       setTimeout(initForm, 0);
     }
   }, [heroData, contentData, ctaData, isInitialized, initForm]);
@@ -205,12 +205,12 @@ export function HowItWorksProvider({ children }: { children: React.ReactNode }) 
       
       // Fetch fresh data
       const [newHeroRes, newContentRes, newCtaRes] = await Promise.all([
-        queryClient.fetchQuery({ queryKey: HOW_IT_WORKS_HERO_QUERY_KEY, queryFn: () => getHeroSections("HowItWorks") }),
+        queryClient.fetchQuery({ queryKey: HOW_IT_WORKS_HERO_QUERY_KEY, queryFn: () => getHeroSectionByPage("HowItWorks") }),
         queryClient.fetchQuery({ queryKey: HOW_IT_WORKS_CONTENT_QUERY_KEY, queryFn: getHowItWorksSection }),
         queryClient.fetchQuery({ queryKey: HOW_IT_WORKS_CTA_QUERY_KEY, queryFn: () => getCtaSections("HowItWorks") })
       ]);
       
-      const hero = Array.isArray(newHeroRes.data) ? newHeroRes.data[0] : newHeroRes.data;
+      const hero = Array.isArray(newHeroRes) ? newHeroRes[0] : newHeroRes;
       const content = newContentRes.data;
       const cta = Array.isArray(newCtaRes.data) ? newCtaRes.data[0] : newCtaRes.data;
       
