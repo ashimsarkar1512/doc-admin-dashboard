@@ -225,6 +225,27 @@ const aboutUsRoute = createRoute({
   component: AboutUsPageEditor,
 });
 
+import EligibilityPage from "@/features/website-management/pages/EligibilityPage";
+const eligibilityRoute = createRoute({
+  getParentRoute: () => dashboardLayoutRoute,
+  path: "/pages/eligibility",
+  component: EligibilityPage,
+});
+
+import CoveragePage from "@/features/website-management/pages/CoveragePage";
+const coverageRoute = createRoute({
+  getParentRoute: () => dashboardLayoutRoute,
+  path: "/pages/coverage",
+  component: CoveragePage,
+});
+
+import FaqPage from "@/features/website-management/pages/FaqPage";
+const faqRoute = createRoute({
+  getParentRoute: () => dashboardLayoutRoute,
+  path: "/pages/faq",
+  component: FaqPage,
+});
+
 import ContactPageEditor from "@/features/website-management/pages/ContactPageEditor";
 const contactRoute = createRoute({
   getParentRoute: () => dashboardLayoutRoute,
@@ -272,201 +293,202 @@ const shippingInformationRoute = createRoute({
   getParentRoute: () => dashboardLayoutRoute,
   path: "/pages/shipping-information",
   component: ShippingInformationPageEditor,
-});
+  import LabTestingPageEditor from "@/features/website-management/pages/LabTestingPageEditor";
+  const labTestingRoute = createRoute({
+    getParentRoute: () => dashboardLayoutRoute,
+    path: "/pages/lab-testing",
+    component: LabTestingPageEditor,
+  });
 
-import LabTestingPageEditor from "@/features/website-management/pages/LabTestingPageEditor";
-const labTestingRoute = createRoute({
-  getParentRoute: () => dashboardLayoutRoute,
-  path: "/pages/lab-testing",
-  component: LabTestingPageEditor,
-});
+  import PrivacyPolicyPageEditor from "@/features/website-management/pages/PrivacyPolicyPageEditor";
+  const privacyPolicyRoute = createRoute({
+    getParentRoute: () => dashboardLayoutRoute,
+    path: "/pages/privacy-policy",
+    component: PrivacyPolicyPageEditor,
+  });
 
-import PrivacyPolicyPageEditor from "@/features/website-management/pages/PrivacyPolicyPageEditor";
-const privacyPolicyRoute = createRoute({
-  getParentRoute: () => dashboardLayoutRoute,
-  path: "/pages/privacy-policy",
-  component: PrivacyPolicyPageEditor,
-});
+  import TermsOfServicePageEditor from "@/features/website-management/pages/TermsOfServicePageEditor";
+  const termsOfServiceRoute = createRoute({
+    getParentRoute: () => dashboardLayoutRoute,
+    path: "/pages/terms-of-service",
+    component: TermsOfServicePageEditor,
+  });
 
-import TermsOfServicePageEditor from "@/features/website-management/pages/TermsOfServicePageEditor";
-const termsOfServiceRoute = createRoute({
-  getParentRoute: () => dashboardLayoutRoute,
-  path: "/pages/terms-of-service",
-  component: TermsOfServicePageEditor,
-});
+  import HipaaNoticePageEditor from "@/features/website-management/pages/HipaaNoticePageEditor";
+  const hipaaNoticeRoute = createRoute({
+    getParentRoute: () => dashboardLayoutRoute,
+    path: "/pages/hipaa-notice",
+    component: HipaaNoticePageEditor,
+  });
 
-import HipaaNoticePageEditor from "@/features/website-management/pages/HipaaNoticePageEditor";
-const hipaaNoticeRoute = createRoute({
-  getParentRoute: () => dashboardLayoutRoute,
-  path: "/pages/hipaa-notice",
-  component: HipaaNoticePageEditor,
-});
+  import ServicesPage from "@/features/dashboard/ServicesPage";
+  const servicesRoute = createRoute({
+    getParentRoute: () => dashboardLayoutRoute,
+    path: "/services",
+    component: ServicesPage,
+  });
 
-import ServicesPage from "@/features/dashboard/ServicesPage";
-const servicesRoute = createRoute({
-  getParentRoute: () => dashboardLayoutRoute,
-  path: "/services",
-  component: ServicesPage,
-});
+  import SiteSettingsPage from "@/features/website-management/pages/SiteSettingsPage";
+  const siteSettingsRoute = createRoute({
+    getParentRoute: () => dashboardLayoutRoute,
+    path: "/site-settings",
+    component: SiteSettingsPage,
+  });
 
-import SiteSettingsPage from "@/features/website-management/pages/SiteSettingsPage";
-const siteSettingsRoute = createRoute({
-  getParentRoute: () => dashboardLayoutRoute,
-  path: "/site-settings",
-  component: SiteSettingsPage,
-});
+  import ComplianceCenterPage from "@/features/dashboard/ComplianceCenterPage";
+  const complianceCenterRoute = createRoute({
+    getParentRoute: () => dashboardLayoutRoute,
+    path: "/compliance-center",
+    component: ComplianceCenterPage,
+  });
 
-import ComplianceCenterPage from "@/features/dashboard/ComplianceCenterPage";
-const complianceCenterRoute = createRoute({
-  getParentRoute: () => dashboardLayoutRoute,
-  path: "/compliance-center",
-  component: ComplianceCenterPage,
-});
+  import AuditLogsPage from "@/features/dashboard/AuditLogsPage";
+  const auditLogsRoute = createRoute({
+    getParentRoute: () => dashboardLayoutRoute,
+    path: "/audit-logs",
+    component: AuditLogsPage,
+  });
 
-import AuditLogsPage from "@/features/dashboard/AuditLogsPage";
-const auditLogsRoute = createRoute({
-  getParentRoute: () => dashboardLayoutRoute,
-  path: "/audit-logs",
-  component: AuditLogsPage,
-});
+  import ConsentManagementPage from "@/features/dashboard/ConsentManagementPage";
+  const consentManagementRoute = createRoute({
+    getParentRoute: () => dashboardLayoutRoute,
+    path: "/consent-management",
+    component: ConsentManagementPage,
+  });
 
-import ConsentManagementPage from "@/features/dashboard/ConsentManagementPage";
-const consentManagementRoute = createRoute({
-  getParentRoute: () => dashboardLayoutRoute,
-  path: "/consent-management",
-  component: ConsentManagementPage,
-});
+  import IncidentManagementPage from "@/features/dashboard/IncidentManagementPage";
+  const incidentManagementRoute = createRoute({
+    getParentRoute: () => dashboardLayoutRoute,
+    path: "/incident-management",
+    component: IncidentManagementPage,
+  });
 
-import IncidentManagementPage from "@/features/dashboard/IncidentManagementPage";
-const incidentManagementRoute = createRoute({
-  getParentRoute: () => dashboardLayoutRoute,
-  path: "/incident-management",
-  component: IncidentManagementPage,
-});
+  import StateCoveragePage from "@/features/dashboard/StateCoveragePage";
+  const stateCoverageRoute = createRoute({
+    getParentRoute: () => dashboardLayoutRoute,
+    path: "/state-coverage",
+    component: StateCoveragePage,
+  });
 
-import StateCoveragePage from "@/features/dashboard/StateCoveragePage";
-const stateCoverageRoute = createRoute({
-  getParentRoute: () => dashboardLayoutRoute,
-  path: "/state-coverage",
-  component: StateCoveragePage,
-});
+  import SideEffectReportPage from "@/features/dashboard/SideEffectReportPage";
+  const prescriptionOversightRoute = createRoute({
+    getParentRoute: () => dashboardLayoutRoute,
+    path: "/prescription-oversight",
+    component: SideEffectReportPage,
+  });
 
-import SideEffectReportPage from "@/features/dashboard/SideEffectReportPage";
-const prescriptionOversightRoute = createRoute({
-  getParentRoute: () => dashboardLayoutRoute,
-  path: "/prescription-oversight",
-  component: SideEffectReportPage,
-});
+  import BusinessIntelligencePage from "@/features/dashboard/BusinessIntelligencePage";
+  const businessIntelligenceRoute = createRoute({
+    getParentRoute: () => dashboardLayoutRoute,
+    path: "/business-intelligence",
+    component: BusinessIntelligencePage,
+  });
 
-import BusinessIntelligencePage from "@/features/dashboard/BusinessIntelligencePage";
-const businessIntelligenceRoute = createRoute({
-  getParentRoute: () => dashboardLayoutRoute,
-  path: "/business-intelligence",
-  component: BusinessIntelligencePage,
-});
+  import CommunicationCenterPage from "@/features/communication-center/pages/CommunicationCenterPage";
+  const communicationCenterRoute = createRoute({
+    getParentRoute: () => dashboardLayoutRoute,
+    path: "/communication-center",
+    component: CommunicationCenterPage,
+  });
 
-import CommunicationCenterPage from "@/features/communication-center/pages/CommunicationCenterPage";
-const communicationCenterRoute = createRoute({
-  getParentRoute: () => dashboardLayoutRoute,
-  path: "/communication-center",
-  component: CommunicationCenterPage,
-});
+  import DocumentCenterPage from "@/features/dashboard/DocumentCenterPage";
+  const documentCenterRoute = createRoute({
+    getParentRoute: () => dashboardLayoutRoute,
+    path: "/document-center",
+    component: DocumentCenterPage,
+  });
 
-import DocumentCenterPage from "@/features/dashboard/DocumentCenterPage";
-const documentCenterRoute = createRoute({
-  getParentRoute: () => dashboardLayoutRoute,
-  path: "/document-center",
-  component: DocumentCenterPage,
-});
+  import SystemHealthPage from "@/features/dashboard/SystemHealthPage";
+  const systemHealthRoute = createRoute({
+    getParentRoute: () => dashboardLayoutRoute,
+    path: "/system-health",
+    component: SystemHealthPage,
+  });
 
-import SystemHealthPage from "@/features/dashboard/SystemHealthPage";
-const systemHealthRoute = createRoute({
-  getParentRoute: () => dashboardLayoutRoute,
-  path: "/system-health",
-  component: SystemHealthPage,
-});
+  import AccountSettingsPage from "@/features/account-settings/pages/AccountSettingsPage";
+  const accountSettingsRoute = createRoute({
+    getParentRoute: () => dashboardLayoutRoute,
+    path: "/account-settings",
+    component: AccountSettingsPage,
+  });
 
-import AccountSettingsPage from "@/features/account-settings/pages/AccountSettingsPage";
-const accountSettingsRoute = createRoute({
-  getParentRoute: () => dashboardLayoutRoute,
-  path: "/account-settings",
-  component: AccountSettingsPage,
-});
+  // const profileRoute = createRoute({
+  //   getParentRoute: () => dashboardLayoutRoute,
+  //   path: '/profile',
+  //   component: () => <DummyPage title="Profile" />,
+  // });
 
-// const profileRoute = createRoute({
-//   getParentRoute: () => dashboardLayoutRoute,
-//   path: '/profile',
-//   component: () => <DummyPage title="Profile" />,
-// });
+  // Build the route tree
+  const routeTree = rootRoute.addChildren([
+    indexRoute,
+    forgotPasswordRoute,
+    receiveOtpRoute,
+    verifyOtpRoute,
+    resetPasswordRoute,
+    dashboardLayoutRoute.addChildren([
+      dashboardIndexRoute,
+      categoriesRoute,
+      assessmentsRoute,
+      assessmentTableRoute,
+      previewDetailsRoute,
+      patientDetailsRoute,
+      checkoutRoute,
+      productsRoute,
+      blogsRoute,
+      providersRoute,
+      patientsRoute,
+      ordersRoute,
+      contactLeadsRoute,
+      paymentsRoute,
+      testimonialsRoute,
+      discountsRoute,
+      employeePermissionsRoute,
+      employeePermissionsActionRoute,
+      employeePermissionsIdRoute,
+      websiteManagementRoute,
+      pagesRoute,
+      aboutUsRoute,
+      eligibilityRoute,
+      coverageRoute,
+      faqRoute,
+      contactRoute,
+      medicalTeamRoute,
+      howItWorksRoute,
+      billingCancellationRoute,
+      reportSideEffectRoute,
+      requestRecordRoute,
+      shippingInformationRoute,
+      labTestingRoute,
+      privacyPolicyRoute,
+      termsOfServiceRoute,
+      hipaaNoticeRoute,
+      servicesRoute,
+      siteSettingsRoute,
+      complianceCenterRoute,
+      auditLogsRoute,
+      consentManagementRoute,
+      incidentManagementRoute,
+      stateCoverageRoute,
+      prescriptionOversightRoute,
+      businessIntelligenceRoute,
+      communicationCenterRoute,
+      documentCenterRoute,
+      systemHealthRoute,
+      accountSettingsRoute,
+    ]),
+  ]);
 
-// Build the route tree
-const routeTree = rootRoute.addChildren([
-  indexRoute,
-  forgotPasswordRoute,
-  receiveOtpRoute,
-  verifyOtpRoute,
-  resetPasswordRoute,
-  dashboardLayoutRoute.addChildren([
-    dashboardIndexRoute,
-    categoriesRoute,
-    assessmentsRoute,
-    assessmentTableRoute,
-    previewDetailsRoute,
-    patientDetailsRoute,
-    checkoutRoute,
-    productsRoute,
-    blogsRoute,
-    providersRoute,
-    patientsRoute,
-    ordersRoute,
-    contactLeadsRoute,
-    paymentsRoute,
-    testimonialsRoute,
-    discountsRoute,
-    employeePermissionsRoute,
-    employeePermissionsActionRoute,
-    employeePermissionsIdRoute,
-    websiteManagementRoute,
-    pagesRoute,
-    aboutUsRoute,
-    contactRoute,
-    medicalTeamRoute,
-    howItWorksRoute,
-    billingCancellationRoute,
-    reportSideEffectRoute,
-    requestRecordRoute,
-    shippingInformationRoute,
-    labTestingRoute,
-    privacyPolicyRoute,
-    termsOfServiceRoute,
-    hipaaNoticeRoute,
-    servicesRoute,
-    siteSettingsRoute,
-    complianceCenterRoute,
-    auditLogsRoute,
-    consentManagementRoute,
-    incidentManagementRoute,
-    stateCoverageRoute,
-    prescriptionOversightRoute,
-    businessIntelligenceRoute,
-    communicationCenterRoute,
-    documentCenterRoute,
-    systemHealthRoute,
-    accountSettingsRoute,
-  ]),
-]);
+  import NotFoundPage from "@/components/NotFoundPage";
 
-import NotFoundPage from "@/components/NotFoundPage";
+  // Initialize the router
+  export const router = createRouter({
+    routeTree,
+    defaultNotFoundComponent: NotFoundPage,
+  });
 
-// Initialize the router
-export const router = createRouter({
-  routeTree,
-  defaultNotFoundComponent: NotFoundPage,
-});
-
-// Register it with TypeScript for type safety
-declare module "@tanstack/react-router" {
-  interface Register {
-    router: typeof router;
-  }
+  // Register it with TypeScript for type safety
+  declare module "@tanstack/react-router" {
+    interface Register {
+  router: typeof router;
+}
 }
