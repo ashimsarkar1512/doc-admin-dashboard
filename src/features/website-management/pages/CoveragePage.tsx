@@ -15,6 +15,37 @@ import {
     updateCoverageSection,
 } from "@/api/endpoints/coverage.api";
 
+function buildCoverageSnapshot({
+    heroTitle,
+    heroDescription,
+    disclaimerTitle,
+    disclaimerDescription,
+    bottomCtaTitle,
+    bottomCtaButtonText,
+    bottomCtaUrl,
+    bottomCtaNewTab,
+}: {
+    heroTitle: string;
+    heroDescription: string;
+    disclaimerTitle: string;
+    disclaimerDescription: string;
+    bottomCtaTitle: string;
+    bottomCtaButtonText: string;
+    bottomCtaUrl: string;
+    bottomCtaNewTab: boolean;
+}) {
+    return JSON.stringify({
+        heroTitle,
+        heroDescription,
+        disclaimerTitle,
+        disclaimerDescription,
+        bottomCtaTitle,
+        bottomCtaButtonText,
+        bottomCtaUrl,
+        bottomCtaNewTab,
+    });
+}
+
 function SectionCard({
     title,
     children,
@@ -87,19 +118,25 @@ function TextAreaInput({
 function SaveButton({
     onClick,
     isSaving,
+    isDisabled,
 }: {
     onClick: () => void;
     isSaving: boolean;
+    isDisabled: boolean;
 }) {
     return (
         <button
             type="button"
             onClick={onClick}
-            disabled={isSaving}
-            className="flex w-fit items-center gap-2 rounded-lg bg-[#1447E6] px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+            disabled={isDisabled}
+            className="flex items-center gap-2 px-4 py-2 bg-[#1447E6] text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
         >
-            {isSaving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
-            Save Changes
+            {isSaving ? (
+                <Loader2 size={16} className="animate-spin" />
+            ) : (
+                <Save size={16} />
+            )}
+            {isSaving ? "Saving..." : "Save Changes"}
         </button>
     );
 }
@@ -129,6 +166,7 @@ export default function CoveragePage() {
     const [heroId, setHeroId] = useState("");
     const [ctaId, setCtaId] = useState("");
     const [isInitialized, setIsInitialized] = useState(false);
+    const [initialSnapshot, setInitialSnapshot] = useState<string | null>(null);
 
     const COVERAGE_HERO_QUERY_KEY = ["coverage-hero-section"];
     const COVERAGE_CTA_QUERY_KEY = ["coverage-cta-section"];
@@ -169,46 +207,115 @@ export default function CoveragePage() {
         setBottomCtaButtonText(cta?.ctaButtonText || "");
         setBottomCtaUrl(cta?.url || "");
         setBottomCtaNewTab(cta?.openInNewTab ?? true);
+        setInitialSnapshot(
+            buildCoverageSnapshot({
+                heroTitle: hero?.title || "",
+                heroDescription: hero?.description || "",
+                disclaimerTitle: coverageSection?.title || "",
+                disclaimerDescription: coverageSection?.description || "",
+                bottomCtaTitle: cta?.sectionTitle || "",
+                bottomCtaButtonText: cta?.ctaButtonText || "",
+                bottomCtaUrl: cta?.url || "",
+                bottomCtaNewTab: cta?.openInNewTab ?? true,
+            })
+        );
         setIsInitialized(true);
     }, [heroData, ctaData, coverageSectionData, isInitialized]);
 
+    const currentSnapshot = buildCoverageSnapshot({
+        heroTitle,
+        heroDescription,
+        disclaimerTitle,
+        disclaimerDescription,
+        bottomCtaTitle,
+        bottomCtaButtonText,
+        bottomCtaUrl,
+        bottomCtaNewTab,
+    });
+    const isDirty = initialSnapshot !== null && currentSnapshot !== initialSnapshot;
+
     const saveMutation = useMutation({
         mutationFn: async () => {
-            const promises: Promise<unknown>[] = [];
+            const heroPromise = heroId
+                ? updateHeroSection(heroId, {
+                    page: "Coverage",
+                    title: heroTitle,
+                    description: heroDescription,
+                })
+                : Promise.resolve(null);
 
-            if (heroId) {
-                promises.push(
-                    updateHeroSection(heroId, {
-                        page: "Coverage",
-                        title: heroTitle,
-                        description: heroDescription,
-                    })
-                );
-            }
+            const ctaPromise = ctaId
+                ? updateCtaSection(ctaId, {
+                    page: "Coverage",
+                    sectionTitle: bottomCtaTitle,
+                    ctaButtonText: bottomCtaButtonText,
+                    url: bottomCtaUrl,
+                    openInNewTab: bottomCtaNewTab,
+                    categoryId: null,
+                })
+                : Promise.resolve(null);
 
-            if (ctaId) {
-                promises.push(
-                    updateCtaSection(ctaId, {
-                        page: "Coverage",
-                        sectionTitle: bottomCtaTitle,
-                        ctaButtonText: bottomCtaButtonText,
-                        url: bottomCtaUrl,
-                        openInNewTab: bottomCtaNewTab,
-                        categoryId: null,
-                    })
-                );
-            }
-
-            promises.push(
-                updateCoverageSection({
+            const coveragePromise = updateCoverageSection({
                     title: disclaimerTitle,
                     description: disclaimerDescription,
+                });
+
+            const [updatedHero, updatedCta, updatedCoverage] = await Promise.all([
+                heroPromise,
+                ctaPromise,
+                coveragePromise,
+            ]);
+
+            return {
+                updatedHero,
+                updatedCta,
+                updatedCoverage,
+            };
+        },
+        onSuccess: async ({ updatedHero, updatedCta, updatedCoverage }) => {
+            if (updatedHero) {
+                setHeroId(updatedHero.id || "");
+                setHeroTitle(updatedHero.title || "");
+                setHeroDescription(updatedHero.description || "");
+                queryClient.setQueryData(COVERAGE_HERO_QUERY_KEY, [updatedHero]);
+            }
+
+            if (updatedCta?.data) {
+                const cta = updatedCta.data;
+                setCtaId(cta.id || "");
+                setBottomCtaTitle(cta.sectionTitle || "");
+                setBottomCtaButtonText(cta.ctaButtonText || "");
+                setBottomCtaUrl(cta.url || "");
+                setBottomCtaNewTab(cta.openInNewTab ?? true);
+                queryClient.setQueryData(COVERAGE_CTA_QUERY_KEY, { data: [cta] });
+            }
+
+            if (updatedCoverage?.data) {
+                const coverage = updatedCoverage.data;
+                setDisclaimerTitle(coverage.title || "");
+                setDisclaimerDescription(coverage.description || "");
+                queryClient.setQueryData(COVERAGE_SECTION_QUERY_KEY, {
+                    success: true,
+                    message: updatedCoverage.message,
+                    data: coverage,
+                });
+            }
+
+            setInitialSnapshot(
+                buildCoverageSnapshot({
+                    heroTitle: updatedHero?.title || heroTitle,
+                    heroDescription: updatedHero?.description || heroDescription,
+                    disclaimerTitle: updatedCoverage?.data?.title || disclaimerTitle,
+                    disclaimerDescription:
+                        updatedCoverage?.data?.description || disclaimerDescription,
+                    bottomCtaTitle: updatedCta?.data?.sectionTitle || bottomCtaTitle,
+                    bottomCtaButtonText:
+                        updatedCta?.data?.ctaButtonText || bottomCtaButtonText,
+                    bottomCtaUrl: updatedCta?.data?.url || bottomCtaUrl,
+                    bottomCtaNewTab:
+                        updatedCta?.data?.openInNewTab ?? bottomCtaNewTab,
                 })
             );
-
-            await Promise.all(promises);
-        },
-        onSuccess: async () => {
             toast.success("Coverage page updated successfully");
             await Promise.all([
                 queryClient.invalidateQueries({ queryKey: COVERAGE_HERO_QUERY_KEY }),
@@ -230,10 +337,16 @@ export default function CoveragePage() {
             <div className="mx-auto">
                 <div className="min-w-0 space-y-3">
                     <div className="flex flex-col gap-y-3 sm:flex-row sm:items-center sm:justify-between">
-                        <h1 className="font-['Quicksand'] text-[18px] font-semibold leading-[28px] tracking-[0px] text-[#101828] md:text-[20px] md:leading-[30px]">
-                            Page: Coverage
-                        </h1>
-                        <SaveButton onClick={handleSave} isSaving={saveMutation.isPending} />
+                        <div className="text-[15px] text-slate-800 font-medium flex items-center gap-2">
+                            <span className="text-slate-700 font-semibold">Pages</span>
+                            <span className="text-slate-500 font-normal">&gt;</span>
+                            <span className="text-slate-900 font-bold">Coverage</span>
+                        </div>
+                        <SaveButton
+                            onClick={handleSave}
+                            isSaving={saveMutation.isPending}
+                            isDisabled={saveMutation.isPending || !isDirty}
+                        />
                     </div>
 
                     <div className="flex flex-col gap-y-5 lg:gap-y-6.5">
@@ -311,7 +424,11 @@ export default function CoveragePage() {
                         </SectionCard>
 
                         <div className="pt-1">
-                            <SaveButton onClick={handleSave} isSaving={saveMutation.isPending} />
+                            <SaveButton
+                                onClick={handleSave}
+                                isSaving={saveMutation.isPending}
+                                isDisabled={saveMutation.isPending || !isDirty}
+                            />
                         </div>
                     </div>
                 </div>
