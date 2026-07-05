@@ -65,7 +65,7 @@ export function HowItWorksFaqSection() {
                   />
                 </div>
                 {/* Spacer to perfectly align top input with bottom textarea */}
-                <div className="w-10 shrink-0"></div>
+                <div className="hidden sm:block w-10 shrink-0"></div>
               </div>
 
               <div className="flex items-end gap-4">
