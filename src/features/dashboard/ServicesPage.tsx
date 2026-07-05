@@ -169,13 +169,15 @@ export default function ServicesPage() {
   }
 
   return (
-    <div className="p-6 mx-auto space-y-6 bg-slate-50 min-h-full">
+    <div className="p-4 sm:p-6 mx-auto space-y-6 bg-slate-50 min-h-full">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-        <div className="text-[15px] text-slate-800 font-medium flex items-center gap-2">
+        <div className="text-[15px] text-slate-800 font-medium flex flex-wrap items-center gap-2">
           <span className="text-slate-700 font-semibold">Website Management</span>
           <span className="text-slate-500 font-normal">&gt;</span>
           <span className="text-slate-700 font-semibold">Pages</span>
+          <span className="text-slate-500 font-normal">&gt;</span>
+          <span className="text-slate-700 font-semibold">Services</span>
           <span className="text-slate-500 font-normal">&gt;</span>
           <span className="text-slate-900 font-bold">{serviceTitle}</span>
         </div>
