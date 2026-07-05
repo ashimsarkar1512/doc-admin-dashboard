@@ -409,8 +409,8 @@ export default function EligibilityPage() {
   };
 
   return (
-    <div className="w-full bg-[#f8fafc] p-4 md:p-6 min-h-full font-sans pb-20">
-      <div className="max-w-7xl mx-auto flex flex-col gap-4 lg:flex-row">
+    <div className="w-full bg-[#f8fafc] p-4 md:p-6">
+      <div className="mx-auto flex flex-col gap-4 lg:flex-row">
         <div className="min-w-0 flex-1 space-y-3">
           <div className="flex flex-col gap-y-3 sm:flex-row sm:items-center sm:justify-between">
             <h1 className="font-['Quicksand'] text-[18px] leading-[28px] font-semibold text-[#101828] tracking-[0px] md:text-[20px] md:leading-[30px]">
