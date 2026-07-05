@@ -99,7 +99,113 @@ export function PatientTable() {
 
   return (
     <>
-      <div className="w-full overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+      {/* ── Mobile card view (< md) ─────────────────────────────── */}
+      <div className="md:hidden space-y-3">
+        {isLoading && (
+          <div className="text-center py-10 text-slate-400 text-sm">Loading...</div>
+        )}
+        {!isLoading && (!data || data.length === 0) && (
+          <div className="text-center py-10 text-slate-400 text-sm">No recent activity</div>
+        )}
+        {data?.map((row: any) => {
+          const showAssign = shouldShowAssignButton(row);
+          return (
+            <div
+              key={row.submissionId}
+              className="bg-white rounded-xl border border-slate-200 shadow-sm p-4 space-y-3"
+            >
+              {/* Top row: patient + status */}
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <Avatar image={row.patientImage} name={row.patientName} />
+                  <span className="font-semibold text-slate-800 text-sm truncate">
+                    {row.patientName ?? "—"}
+                  </span>
+                </div>
+                <StatusBadge status={row.status} />
+              </div>
+
+              {/* Details grid */}
+              <div className="grid grid-cols-2 gap-2 text-xs">
+                <div>
+                  <p className="text-slate-400 font-medium mb-0.5">Assessment</p>
+                  <p className="text-slate-700 font-medium">{row.categoryName ?? "—"}</p>
+                </div>
+                <div>
+                  <p className="text-slate-400 font-medium mb-0.5">Patient Type</p>
+                  <div>
+                    {row.patientType === "New Patient" ? (
+                      <span className="inline-flex items-center gap-1 rounded-md bg-[#DBEAFE] px-2 py-0.5 text-xs font-medium text-[#2563EB]">
+                        New
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1 rounded-md bg-[#F3E8FF] px-2 py-0.5 text-xs font-medium text-[#6E11B0]">
+                        <Repeat size={10} /> Repeat
+                      </span>
+                    )}
+                  </div>
+                </div>
+                <div>
+                  <p className="text-slate-400 font-medium mb-0.5">Provider</p>
+                  <p className="text-slate-700 font-medium">{row.provider ?? "—"}</p>
+                </div>
+                <div>
+                  <p className="text-slate-400 font-medium mb-0.5">Payment</p>
+                  <p className="text-slate-700 font-medium flex items-center gap-0.5">
+                    <DollarSign className="w-3 h-3" />{row.payment}
+                  </p>
+                </div>
+                <div className="col-span-2">
+                  <p className="text-slate-400 font-medium mb-0.5">Date</p>
+                  <p className="text-slate-500">
+                    {new Date(row.date).toLocaleDateString("en-US", {
+                      year: "numeric",
+                      month: "short",
+                      day: "numeric",
+                    })}
+                  </p>
+                </div>
+              </div>
+
+              {/* Actions */}
+              <div className="flex items-center gap-2 pt-1 border-t border-slate-100">
+                <button
+                  type="button"
+                  className="flex items-center justify-center gap-1.5 flex-1 py-2 rounded-lg bg-slate-100 text-slate-700 text-xs font-medium hover:bg-slate-200 transition-colors"
+                  onClick={() => setSelected(row)}
+                >
+                  <Eye size={13} /> View
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (showAssign) {
+                      setAssigningAssessment(row);
+                    } else {
+                      sessionStorage.setItem("currentPatientName", row.patientName || "");
+                      sessionStorage.setItem("currentPatientImage", row.patientImage || "");
+                      navigate({
+                        to: "/dashboard/patient-management/$assessmentId/preview",
+                        params: { assessmentId: row.submissionId },
+                      });
+                    }
+                  }}
+                  className={
+                    showAssign
+                      ? "flex-1 py-2 rounded-lg bg-[#1447E6] text-white text-xs font-medium hover:bg-[#1338C3] transition-colors"
+                      : "flex-1 py-2 rounded-lg bg-slate-100 text-slate-700 text-xs font-medium hover:bg-slate-200 transition-colors"
+                  }
+                >
+                  {showAssign ? "Assign" : "View Details"}
+                </button>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* ── Desktop table (md+) ──────────────────────────────────── */}
+      <div className="hidden md:block w-full overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
         <div className="w-full overflow-x-auto">
           <table className="w-full text-left text-sm">
             <thead>

@@ -18,10 +18,10 @@ export function DashboardHeader({
   user,
 }: Props) {
   return (
-    <header className="border-b border-slate-100 bg-white flex items-center justify-between px-4 md:px-6 z-10 shrink-0 h-20">
-      {/* Hamburger for mobile */}
+    <header className="border-b border-slate-100 bg-white flex items-center justify-between px-3 sm:px-4 md:px-6 z-10 shrink-0 h-16 sm:h-20">
+      {/* Hamburger for mobile/tablet */}
       <button
-        className="xl:hidden flex items-center justify-center w-9 h-9 rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-50 hover:text-slate-800 transition-all duration-150 mr-3 shrink-0"
+        className="lg:hidden flex items-center justify-center w-9 h-9 rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-50 hover:text-slate-800 transition-all duration-150 mr-3 shrink-0"
         onClick={() => setMobileSidebarOpen(true)}
       >
         <Menu size={18} strokeWidth={2} />

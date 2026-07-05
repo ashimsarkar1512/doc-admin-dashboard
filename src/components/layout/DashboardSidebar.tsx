@@ -61,8 +61,8 @@ export function DashboardSidebar({
 
   return (
     <aside
-      className={`hidden xl:flex ${
-        collapsed ? "xl:w-16" : "xl:w-64"
+      className={`hidden lg:flex ${
+        collapsed ? "lg:w-16" : "lg:w-64"
       } h-full border-r border-slate-200 bg-white flex-col shrink-0 transition-all duration-300 relative z-20`}
     >
       {/* Floating collapse toggle */}
