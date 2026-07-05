@@ -30,6 +30,7 @@ import {
   Folder,
   Activity,
   LogOut,
+  Mail,
 } from "lucide-react";
 
 interface Props {
@@ -643,6 +644,15 @@ export function DashboardSidebar({
                     >
                       <Folder size={18} className="text-slate-500 shrink-0" />
                       <span>Document Center</span>
+                    </Link>
+                  )}
+                  {can("view:compliance_center") && (
+                    <Link
+                      to="/dashboard/newsletter"
+                      className="flex items-center gap-3 px-3 py-2 rounded-md text-xs font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold [&.active_svg]:text-[#1447E6]"
+                    >
+                      <Mail size={18} className="text-slate-500 shrink-0" />
+                      <span>Newsletter</span>
                     </Link>
                   )}
                   {can("view:system_health") && (
