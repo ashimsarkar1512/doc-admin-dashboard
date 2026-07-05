@@ -379,6 +379,13 @@ const prescriptionOversightRoute = createRoute({
   component: SideEffectReportPage,
 });
 
+import RequestRecordsPage from "@/features/dashboard/RequestRecordsPage";
+const requestRecordsRoute = createRoute({
+  getParentRoute: () => dashboardLayoutRoute,
+  path: "/request-records",
+  component: RequestRecordsPage,
+});
+
 import BusinessIntelligencePage from "@/features/dashboard/BusinessIntelligencePage";
 const businessIntelligenceRoute = createRoute({
   getParentRoute: () => dashboardLayoutRoute,
@@ -472,6 +479,7 @@ const routeTree = rootRoute.addChildren([
     incidentManagementRoute,
     stateCoverageRoute,
     prescriptionOversightRoute,
+    requestRecordsRoute,
     businessIntelligenceRoute,
     communicationCenterRoute,
     documentCenterRoute,

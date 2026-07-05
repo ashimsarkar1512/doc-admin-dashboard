@@ -603,6 +603,15 @@ export function DashboardSidebar({
                       <span>Side effect report</span>
                     </Link>
                   )}
+                  {can("view:compliance_center") && (
+                    <Link
+                      to="/dashboard/request-records"
+                      className="flex items-center gap-3 px-3 py-2 rounded-md text-xs font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold [&.active_svg]:text-[#1447E6]"
+                    >
+                      <ClipboardList size={18} className="text-slate-500 shrink-0" />
+                      <span>Request Records</span>
+                    </Link>
+                  )}
                   {can("view:business_intelligence") && (
                     <Link
                       to="/dashboard/business-intelligence"
