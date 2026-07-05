@@ -24,6 +24,91 @@ import { SimpleListSectionForm } from "./components/eligibility/SimpleListSectio
 import type { EligibilityFaqItem } from "./components/eligibility/types";
 import { WeightConditionsSectionForm } from "./components/eligibility/WeightConditionsSectionForm";
 
+function buildEligibilitySnapshot({
+  heroTitle,
+  heroDescription,
+  sectionTitle,
+  points,
+  reminder,
+  bmiSectionTitle,
+  bmi27Title,
+  bmi27Description,
+  bmi30Title,
+  bmi30Description,
+  weightConditionsTitle,
+  weightConditions,
+  contraindicationsTitle,
+  contraindications,
+  requiredLabWorkTitle,
+  requiredLabWorkItems,
+  ongoingMonitoringTitle,
+  ongoingMonitoringItems,
+  disclaimerTitle,
+  disclaimerDescription,
+  faqSectionTitle,
+  faqs,
+  bottomCtaTitle,
+  bottomCtaButtonText,
+  bottomCtaUrl,
+  bottomCtaNewTab,
+}: {
+  heroTitle: string;
+  heroDescription: string;
+  sectionTitle: string;
+  points: string[];
+  reminder: string;
+  bmiSectionTitle: string;
+  bmi27Title: string;
+  bmi27Description: string;
+  bmi30Title: string;
+  bmi30Description: string;
+  weightConditionsTitle: string;
+  weightConditions: string[];
+  contraindicationsTitle: string;
+  contraindications: string[];
+  requiredLabWorkTitle: string;
+  requiredLabWorkItems: string[];
+  ongoingMonitoringTitle: string;
+  ongoingMonitoringItems: string[];
+  disclaimerTitle: string;
+  disclaimerDescription: string;
+  faqSectionTitle: string;
+  faqs: EligibilityFaqItem[];
+  bottomCtaTitle: string;
+  bottomCtaButtonText: string;
+  bottomCtaUrl: string;
+  bottomCtaNewTab: boolean;
+}) {
+  return JSON.stringify({
+    heroTitle,
+    heroDescription,
+    sectionTitle,
+    points,
+    reminder,
+    bmiSectionTitle,
+    bmi27Title,
+    bmi27Description,
+    bmi30Title,
+    bmi30Description,
+    weightConditionsTitle,
+    weightConditions,
+    contraindicationsTitle,
+    contraindications,
+    requiredLabWorkTitle,
+    requiredLabWorkItems,
+    ongoingMonitoringTitle,
+    ongoingMonitoringItems,
+    disclaimerTitle,
+    disclaimerDescription,
+    faqSectionTitle,
+    faqs,
+    bottomCtaTitle,
+    bottomCtaButtonText,
+    bottomCtaUrl,
+    bottomCtaNewTab,
+  });
+}
+
 export default function EligibilityPage() {
   const PAGE_TYPE = "Eligiblity";
   const queryClient = useQueryClient();
@@ -64,24 +149,25 @@ export default function EligibilityPage() {
   const [isHeroInitialized, setIsHeroInitialized] = useState(false);
   const [isCtaInitialized, setIsCtaInitialized] = useState(false);
   const [isEligibilityInitialized, setIsEligibilityInitialized] = useState(false);
+  const [initialSnapshot, setInitialSnapshot] = useState<string | null>(null);
 
   const ELIGIBILITY_HERO_QUERY_KEY = ["eligibility-hero-section"];
   const ELIGIBILITY_CTA_QUERY_KEY = ["eligibility-cta-section"];
   const ELIGIBILITY_CONTENT_QUERY_KEY = ["eligibility-content"];
 
-  const { data: heroData, refetch: refetchHeroData } = useQuery({
+  const { data: heroData } = useQuery({
     queryKey: ELIGIBILITY_HERO_QUERY_KEY,
     queryFn: () => getHeroSectionByPage(PAGE_TYPE),
     staleTime: 5 * 60 * 1000,
   });
 
-  const { data: ctaData, refetch: refetchCtaData } = useQuery({
+  const { data: ctaData } = useQuery({
     queryKey: ELIGIBILITY_CTA_QUERY_KEY,
     queryFn: () => getCtaSections(PAGE_TYPE),
     staleTime: 5 * 60 * 1000,
   });
 
-  const { data: eligibilityContentData, refetch: refetchEligibilityContent } =
+  const { data: eligibilityContentData } =
     useQuery({
       queryKey: ELIGIBILITY_CONTENT_QUERY_KEY,
       queryFn: getEligibilityContent,
@@ -149,6 +235,71 @@ export default function EligibilityPage() {
     setFaqs(eligibility.faqs || []);
     setIsEligibilityInitialized(true);
   }, [eligibilityContentData, isEligibilityInitialized]);
+
+  useEffect(() => {
+    if (!isHeroInitialized || !isCtaInitialized || !isEligibilityInitialized) return;
+
+    setInitialSnapshot(
+      buildEligibilitySnapshot({
+        heroTitle,
+        heroDescription,
+        sectionTitle,
+        points,
+        reminder,
+        bmiSectionTitle,
+        bmi27Title,
+        bmi27Description,
+        bmi30Title,
+        bmi30Description,
+        weightConditionsTitle,
+        weightConditions,
+        contraindicationsTitle,
+        contraindications,
+        requiredLabWorkTitle,
+        requiredLabWorkItems,
+        ongoingMonitoringTitle,
+        ongoingMonitoringItems,
+        disclaimerTitle,
+        disclaimerDescription,
+        faqSectionTitle,
+        faqs,
+        bottomCtaTitle,
+        bottomCtaButtonText,
+        bottomCtaUrl,
+        bottomCtaNewTab,
+      })
+    );
+  }, [isHeroInitialized, isCtaInitialized, isEligibilityInitialized]);
+
+  const currentSnapshot = buildEligibilitySnapshot({
+    heroTitle,
+    heroDescription,
+    sectionTitle,
+    points,
+    reminder,
+    bmiSectionTitle,
+    bmi27Title,
+    bmi27Description,
+    bmi30Title,
+    bmi30Description,
+    weightConditionsTitle,
+    weightConditions,
+    contraindicationsTitle,
+    contraindications,
+    requiredLabWorkTitle,
+    requiredLabWorkItems,
+    ongoingMonitoringTitle,
+    ongoingMonitoringItems,
+    disclaimerTitle,
+    disclaimerDescription,
+    faqSectionTitle,
+    faqs,
+    bottomCtaTitle,
+    bottomCtaButtonText,
+    bottomCtaUrl,
+    bottomCtaNewTab,
+  });
+  const isDirty = initialSnapshot !== null && currentSnapshot !== initialSnapshot;
 
   const updatePoint = (index: number, value: string) => {
     setPoints((current) =>
@@ -249,21 +400,16 @@ export default function EligibilityPage() {
 
   const saveMutation = useMutation({
     mutationFn: async () => {
-      const promises: Promise<unknown>[] = [];
-
-      if (heroId) {
-        promises.push(
-          updateHeroSection(heroId, {
+      const heroPromise = heroId
+        ? updateHeroSection(heroId, {
             page: PAGE_TYPE,
             title: heroTitle,
             description: heroDescription,
           })
-        );
-      }
+        : Promise.resolve(null);
 
-      if (ctaId) {
-        promises.push(
-          updateCtaSection(ctaId, {
+      const ctaPromise = ctaId
+        ? updateCtaSection(ctaId, {
             page: PAGE_TYPE,
             sectionTitle: bottomCtaTitle,
             ctaButtonText: bottomCtaButtonText,
@@ -271,11 +417,9 @@ export default function EligibilityPage() {
             openInNewTab: bottomCtaNewTab,
             categoryId: null,
           })
-        );
-      }
+        : Promise.resolve(null);
 
-      promises.push(
-        updateEligibilityContent({
+      const eligibilityPromise = updateEligibilityContent({
           generalTitle: sectionTitle,
           generalPoints: points.map((point) => ({
             point,
@@ -299,25 +443,139 @@ export default function EligibilityPage() {
           disclaimerSectionDes: disclaimerDescription,
           faqTitle: faqSectionTitle,
           faqs,
+        });
+
+      const [updatedHero, updatedCta, updatedEligibility] = await Promise.all([
+        heroPromise,
+        ctaPromise,
+        eligibilityPromise,
+      ]);
+
+      return {
+        updatedHero,
+        updatedCta,
+        updatedEligibility,
+      };
+    },
+    onSuccess: async ({ updatedHero, updatedCta, updatedEligibility }) => {
+      if (updatedHero) {
+        setHeroId(updatedHero.id || "");
+        setHeroTitle(updatedHero.title || "");
+        setHeroDescription(updatedHero.description || "");
+        queryClient.setQueryData(ELIGIBILITY_HERO_QUERY_KEY, [updatedHero]);
+      }
+
+      if (updatedCta?.data) {
+        const cta = updatedCta.data;
+        setCtaId(cta.id || "");
+        setBottomCtaTitle(cta.sectionTitle || "");
+        setBottomCtaButtonText(cta.ctaButtonText || "");
+        setBottomCtaUrl(cta.url || "");
+        setBottomCtaNewTab(cta.openInNewTab ?? true);
+        queryClient.setQueryData(ELIGIBILITY_CTA_QUERY_KEY, { data: [cta] });
+      }
+
+      if (updatedEligibility?.data) {
+        const eligibility = updatedEligibility.data;
+        const normalizedPoints = eligibility.generalPoints?.length
+          ? eligibility.generalPoints.map((item) => item.point || "")
+          : [""];
+        const normalizedFaqs = eligibility.faqs || [];
+
+        setSectionTitle(eligibility.generalTitle || "");
+        setPoints(normalizedPoints);
+        setReminder(eligibility.generalBottomDesc || "");
+        setBmiSectionTitle(eligibility.qualificationTitle || "");
+        setBmi27Title(eligibility.qualificationbmi27Text || "");
+        setBmi27Description(eligibility.qualification27Description || "");
+        setBmi30Title(eligibility.qualificationbmi30Text || "");
+        setBmi30Description(eligibility.qualification30Description || "");
+        setWeightConditionsTitle(eligibility.weightConditionSecTitle || "");
+        setWeightConditions(eligibility.weightConditions || []);
+        setContraindicationsTitle(eligibility.contraindicationsSectionTitle || "");
+        setContraindications(eligibility.contraindicationsSectionWrite || []);
+        setRequiredLabWorkTitle(eligibility.requiredlabWorkSectionTitle || "");
+        setRequiredLabWorkItems(
+          eligibility.requiredlabWorkSectionContraindications || []
+        );
+        setOngoingMonitoringTitle(eligibility.ongoingMonitoringSectionTitle || "");
+        setOngoingMonitoringItems(
+          eligibility.ongoingMonitoringSectionContraindication || []
+        );
+        setDisclaimerTitle(eligibility.disclaimerSectionTitle || "");
+        setDisclaimerDescription(eligibility.disclaimerSectionDes || "");
+        setFaqSectionTitle(eligibility.faqTitle || "");
+        setFaqs(normalizedFaqs);
+        queryClient.setQueryData(ELIGIBILITY_CONTENT_QUERY_KEY, {
+          success: true,
+          message: updatedEligibility.message,
+          data: eligibility,
+        });
+      }
+
+      setInitialSnapshot(
+        buildEligibilitySnapshot({
+          heroTitle: updatedHero?.title || heroTitle,
+          heroDescription: updatedHero?.description || heroDescription,
+          sectionTitle: updatedEligibility?.data?.generalTitle || sectionTitle,
+          points:
+            updatedEligibility?.data?.generalPoints?.length
+              ? updatedEligibility.data.generalPoints.map((item) => item.point || "")
+              : points,
+          reminder: updatedEligibility?.data?.generalBottomDesc || reminder,
+          bmiSectionTitle:
+            updatedEligibility?.data?.qualificationTitle || bmiSectionTitle,
+          bmi27Title:
+            updatedEligibility?.data?.qualificationbmi27Text || bmi27Title,
+          bmi27Description:
+            updatedEligibility?.data?.qualification27Description || bmi27Description,
+          bmi30Title:
+            updatedEligibility?.data?.qualificationbmi30Text || bmi30Title,
+          bmi30Description:
+            updatedEligibility?.data?.qualification30Description || bmi30Description,
+          weightConditionsTitle:
+            updatedEligibility?.data?.weightConditionSecTitle || weightConditionsTitle,
+          weightConditions:
+            updatedEligibility?.data?.weightConditions || weightConditions,
+          contraindicationsTitle:
+            updatedEligibility?.data?.contraindicationsSectionTitle ||
+            contraindicationsTitle,
+          contraindications:
+            updatedEligibility?.data?.contraindicationsSectionWrite ||
+            contraindications,
+          requiredLabWorkTitle:
+            updatedEligibility?.data?.requiredlabWorkSectionTitle ||
+            requiredLabWorkTitle,
+          requiredLabWorkItems:
+            updatedEligibility?.data?.requiredlabWorkSectionContraindications ||
+            requiredLabWorkItems,
+          ongoingMonitoringTitle:
+            updatedEligibility?.data?.ongoingMonitoringSectionTitle ||
+            ongoingMonitoringTitle,
+          ongoingMonitoringItems:
+            updatedEligibility?.data?.ongoingMonitoringSectionContraindication ||
+            ongoingMonitoringItems,
+          disclaimerTitle:
+            updatedEligibility?.data?.disclaimerSectionTitle || disclaimerTitle,
+          disclaimerDescription:
+            updatedEligibility?.data?.disclaimerSectionDes || disclaimerDescription,
+          faqSectionTitle: updatedEligibility?.data?.faqTitle || faqSectionTitle,
+          faqs: updatedEligibility?.data?.faqs || faqs,
+          bottomCtaTitle: updatedCta?.data?.sectionTitle || bottomCtaTitle,
+          bottomCtaButtonText:
+            updatedCta?.data?.ctaButtonText || bottomCtaButtonText,
+          bottomCtaUrl: updatedCta?.data?.url || bottomCtaUrl,
+          bottomCtaNewTab: updatedCta?.data?.openInNewTab ?? bottomCtaNewTab,
         })
       );
 
-      await Promise.all(promises);
-    },
-    onSuccess: async () => {
       toast.success("Eligibility page updated successfully");
-      setIsHeroInitialized(false);
-      setIsCtaInitialized(false);
-      setIsEligibilityInitialized(false);
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: ELIGIBILITY_HERO_QUERY_KEY }),
         queryClient.invalidateQueries({ queryKey: ELIGIBILITY_CTA_QUERY_KEY }),
         queryClient.invalidateQueries({
           queryKey: ELIGIBILITY_CONTENT_QUERY_KEY,
         }),
-        refetchHeroData(),
-        refetchCtaData(),
-        refetchEligibilityContent(),
       ]);
     },
     onError: () => {
@@ -334,15 +592,17 @@ export default function EligibilityPage() {
       <div className="mx-auto flex flex-col gap-4 lg:flex-row">
         <div className="min-w-0 flex-1 space-y-3">
           <div className="flex flex-col gap-y-3 sm:flex-row sm:items-center sm:justify-between">
-            <h1 className="font-['Quicksand'] text-[18px] leading-[28px] font-semibold text-[#101828] tracking-[0px] md:text-[20px] md:leading-[30px]">
-              Page: Eligibility
-            </h1>
+             <div className="text-[15px] text-slate-800 font-medium flex items-center gap-2">
+            <span className="text-slate-700 font-semibold">Pages</span>
+            <span className="text-slate-500 font-normal">&gt;</span>
+            <span className="text-slate-900 font-bold">Eligiblity</span>
+          </div>
             <div className="">
               <button
                 type="button"
                 onClick={handleSave}
-                disabled={saveMutation.isPending}
-                className="flex items-center gap-2 px-6 py-2 bg-[#1447E6] text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors shadow-sm disabled:opacity-50"
+                disabled={saveMutation.isPending || !isDirty}
+                className="flex items-center gap-2 px-4 py-2 bg-[#1447E6] text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {saveMutation.isPending ? (
                   <Loader2 className="animate-spin" size={16} />
@@ -457,8 +717,8 @@ export default function EligibilityPage() {
             <button
                 type="button"
                 onClick={handleSave}
-                disabled={saveMutation.isPending}
-                className="flex items-center gap-2 px-6 py-2 bg-[#1447E6] w-fit text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors shadow-sm disabled:opacity-50"
+                disabled={saveMutation.isPending || !isDirty}
+                className="flex items-center gap-2 px-6 py-2 bg-[#1447E6] w-fit text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {saveMutation.isPending ? (
                   <Loader2 className="animate-spin" size={16} />
