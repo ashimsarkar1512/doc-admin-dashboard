@@ -49,59 +49,59 @@ export default function ResponseQuoteModal({
 
   return (
     <Dialog isOpen={isOpen} onClose={onClose} title="Response Quote" maxWidthClass="max-w-3xl">
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
         <div>
-          <label className="text-sm font-semibold text-slate-900 block mb-1">To:</label>
+          <label className="text-xs sm:text-sm font-semibold text-slate-900 block mb-1">To:</label>
           <input
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full px-4 py-2.5 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all disabled:bg-slate-50 disabled:text-slate-500 disabled:cursor-not-allowed"
+            className="w-full px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all disabled:bg-slate-50 disabled:text-slate-500 disabled:cursor-not-allowed text-sm"
             required
             disabled
           />
         </div>
 
         <div>
-          <label className="text-sm font-semibold text-slate-900 block mb-1">Full Name:</label>
+          <label className="text-xs sm:text-sm font-semibold text-slate-900 block mb-1">Full Name:</label>
           <input
             type="text"
             value={fullName}
             onChange={(e) => setFullName(e.target.value)}
-            className="w-full px-4 py-2.5 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all disabled:bg-slate-50 disabled:text-slate-500 disabled:cursor-not-allowed"
+            className="w-full px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all disabled:bg-slate-50 disabled:text-slate-500 disabled:cursor-not-allowed text-sm"
             required
             disabled
           />
         </div>
 
         <div>
-          <label className="text-sm font-semibold text-slate-900 block mb-1">Subject:</label>
+          <label className="text-xs sm:text-sm font-semibold text-slate-900 block mb-1">Subject:</label>
           <input
             type="text"
             value={subject}
             onChange={(e) => setSubject(e.target.value)}
-            className="w-full px-4 py-2.5 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all disabled:bg-slate-50 disabled:text-slate-500 disabled:cursor-not-allowed"
+            className="w-full px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all disabled:bg-slate-50 disabled:text-slate-500 disabled:cursor-not-allowed text-sm"
             required
             disabled
           />
         </div>
 
         <div>
-          <label className="text-sm font-semibold text-slate-900 block mb-1">Message:</label>
+          <label className="text-xs sm:text-sm font-semibold text-slate-900 block mb-1">Message:</label>
           <textarea
             value={message}
             onChange={(e) => setMessage(e.target.value)}
-            rows={5}
-            className="w-full px-4 py-2.5 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all resize-none"
+            rows={4}
+            className="w-full px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all resize-none text-sm"
             required
           />
         </div>
 
         <div>
-          <label className="text-sm font-semibold text-slate-900 block mb-1">Attachments:</label>
-          <div className="flex items-center gap-4">
-            <label className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg cursor-pointer hover:bg-blue-700 transition-colors font-medium text-sm">
-              <Upload className="w-4 h-4" />
+          <label className="text-xs sm:text-sm font-semibold text-slate-900 block mb-1">Attachments:</label>
+          <div className="flex flex-wrap items-center gap-2 sm:gap-4">
+            <label className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-blue-600 text-white rounded-lg cursor-pointer hover:bg-blue-700 transition-colors font-medium text-xs sm:text-sm shrink-0">
+              <Upload className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               Choose a File
               <input
                 type="file"
@@ -113,11 +113,11 @@ export default function ResponseQuoteModal({
                 }}
               />
             </label>
-            {file && <span className="text-sm text-slate-600 truncate max-w-xs">{file.name}</span>}
+            {file && <span className="text-xs sm:text-sm text-slate-600 truncate max-w-[160px] sm:max-w-xs">{file.name}</span>}
           </div>
         </div>
 
-        <div className="flex justify-between gap-4 pt-4 mt-2 border-t border-slate-100">
+        <div className="flex flex-col-reverse sm:flex-row justify-between gap-2 sm:gap-4 pt-3 sm:pt-4 mt-1 sm:mt-2 border-t border-slate-100">
           <button
             type="button"
             onClick={onClose}

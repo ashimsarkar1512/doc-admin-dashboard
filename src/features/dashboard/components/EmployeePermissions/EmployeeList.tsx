@@ -442,9 +442,10 @@ export const EmployeeList: React.FC<EmployeeListProps> = ({
   return (
     <>
       {/* Tab Bar + Actions */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-        {/* Tabs */}
-        <div className="flex items-center bg-slate-100 rounded-lg p-1 gap-1">
+      <div className="flex flex-col gap-3 mb-6">
+        <div className="flex items-center justify-between gap-3 flex-wrap">
+          {/* Tabs */}
+          <div className="flex items-center bg-slate-100 rounded-lg p-1 gap-1">
           <button
             onClick={() => setActiveTab("employees")}
             className={`flex items-center gap-2 px-4 py-2 rounded-md text-[13px] font-medium transition-all ${activeTab === "employees" ? "bg-white text-slate-800 shadow-sm" : "text-slate-500 hover:text-slate-700"}`}
@@ -467,13 +468,14 @@ export const EmployeeList: React.FC<EmployeeListProps> = ({
               {roles.length}
             </span>
           </button>
+          </div>
         </div>
 
         {/* Right Actions */}
-        <div className="flex items-center gap-2">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
           {activeTab === "employees" && (
-            <>
-              <div className="relative">
+            <div className="grid grid-cols-2 sm:flex items-center gap-2 w-full">
+              <div className="relative col-span-2 sm:col-auto">
                 <Search
                   className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
                   size={15}
@@ -481,11 +483,11 @@ export const EmployeeList: React.FC<EmployeeListProps> = ({
                 <input
                   type="text"
                   placeholder="Search user"
-                  className="pl-9 pr-4 py-2 border border-slate-200 rounded-lg text-[13px] w-[220px] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 placeholder-slate-400 bg-white"
+                  className="pl-9 pr-4 py-2 border border-slate-200 rounded-lg text-[13px] w-full sm:w-[220px] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 placeholder-slate-400 bg-white"
                 />
               </div>
-              <div className="relative">
-                <select className="appearance-none pl-4 pr-9 py-2 border border-slate-200 rounded-lg text-[13px] text-slate-600 focus:outline-none focus:border-blue-500 bg-white cursor-pointer">
+              <div className="relative col-span-1 sm:col-auto">
+                <select className="w-full appearance-none pl-4 pr-9 py-2 border border-slate-200 rounded-lg text-[13px] text-slate-600 focus:outline-none focus:border-blue-500 bg-white cursor-pointer">
                   <option>All Roles</option>
                   {roles.map((r) => (
                     <option key={r.id}>{r.displayName}</option>
@@ -499,17 +501,17 @@ export const EmployeeList: React.FC<EmployeeListProps> = ({
               {canManageEmployees && (
                 <button
                   onClick={onCreate}
-                  className="flex items-center gap-2 px-4 py-2 bg-[#1447E6] text-white rounded-lg text-[13px] font-medium hover:bg-blue-700 transition-colors shadow-sm"
+                  className="col-span-1 flex items-center justify-center gap-2 px-3 sm:px-4 py-2 bg-[#1447E6] text-white rounded-lg text-[13px] font-medium hover:bg-blue-700 transition-colors shadow-sm w-full sm:w-auto whitespace-nowrap"
                 >
                   <Plus size={15} /> Add Employee
                 </button>
               )}
-            </>
+            </div>
           )}
           {activeTab === "roles" && canManageEmployees && (
             <button
               onClick={() => setShowCreateRoleModal(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-[#1447E6] text-white rounded-lg text-[13px] font-medium hover:bg-blue-700 transition-colors shadow-sm"
+              className="flex items-center justify-center gap-2 px-4 py-2 bg-[#1447E6] text-white rounded-lg text-[13px] font-medium hover:bg-blue-700 transition-colors shadow-sm w-full sm:w-auto"
             >
               <Plus size={15} /> Create Role
             </button>
@@ -519,214 +521,278 @@ export const EmployeeList: React.FC<EmployeeListProps> = ({
 
       {/* ── Employees Tab ── */}
       {activeTab === "employees" && (
-        <div className="border border-slate-200 rounded-xl overflow-hidden bg-white shadow-sm">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm whitespace-nowrap">
-              <thead className="bg-[#F1F5F9] text-slate-700 font-semibold text-[12px] border-b border-slate-200">
-                <tr>
-                  <th className="px-6 py-4 uppercase font-bold tracking-wider">
-                    USER
-                  </th>
-                  <th className="px-6 py-4 font-semibold">Email</th>
-                  <th className="px-6 py-4 font-semibold">Status</th>
-                  <th className="px-6 py-4 font-semibold">Permissions</th>
-                  <th className="px-6 py-4 font-semibold">Last Login</th>
-                  <th className="px-6 py-4 font-semibold text-center">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100 text-slate-600">
-                {employees.map((emp) => {
-                  const roleName =
-                    emp.userRoles[0]?.role?.displayName || "No Role";
-                  let allPermissions: string[] = [];
-                  if (emp.userPermissions && emp.userPermissions.length > 0) {
-                    allPermissions = emp.userPermissions
-                      .map((up) => up.permission?.name)
-                      .filter(Boolean) as string[];
-                  } else {
-                    allPermissions = Array.from(
-                      new Set(
-                        emp.userRoles.flatMap(
-                          (ur) =>
-                            ur.role?.permissions?.map(
-                              (p) => p.permission?.name,
-                            ) || [],
-                        ),
-                      ),
-                    );
-                  }
-                  allPermissions = Array.from(new Set(allPermissions));
-                  const visiblePermissions = allPermissions.slice(0, 2);
-                  const extraCount =
-                    allPermissions.length > 2 ? allPermissions.length - 2 : 0;
-                  const isActive = emp.status === "ACTIVE";
-                  const isSuspended = emp.status === "SUSPENDED";
-
-                  return (
-                    <tr
-                      key={emp.id}
-                      className="hover:bg-slate-50/60 transition-colors"
-                    >
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-3">
-                          <div className="w-9 h-9 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-sm shrink-0">
-                            {(emp.name || emp.email || "U")
-                              .charAt(0)
-                              .toUpperCase()}
-                          </div>
-                          <div>
-                            <div className="font-medium text-slate-800">
-                              {emp.name || "Unknown User"}
-                            </div>
-                            <div className="text-[12px] text-slate-500 mt-0.5">
-                              {roleName}
-                            </div>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 text-[13px]">{emp.email}</td>
-                      <td className="px-6 py-4">
-                        <span
-                          className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold ${isActive ? "bg-green-50 text-green-700" : isSuspended ? "bg-amber-50 text-amber-700" : "bg-slate-100 text-slate-500"}`}
-                        >
-                          <span
-                            className={`w-1.5 h-1.5 rounded-full ${isActive ? "bg-green-500" : isSuspended ? "bg-amber-500" : "bg-slate-400"}`}
-                          />
-                          {emp.status}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-2">
-                          {visiblePermissions.length > 0 ? (
-                            visiblePermissions.map((p, i) => (
-                              <span
-                                key={i}
-                                className="px-2.5 py-1 bg-[#EFF3FF] text-[#1447E6] rounded text-[12px] font-medium max-w-[150px] truncate"
-                                title={p}
-                              >
-                                {p}
-                              </span>
-                            ))
-                          ) : (
-                            <span className="text-slate-400 text-[12px] font-medium">
-                              None
-                            </span>
-                          )}
-                          {extraCount > 0 && (
-                            <span className="text-slate-400 text-[12px] ml-1 font-medium">
-                              +{extraCount}
-                            </span>
-                          )}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 text-[13px] text-slate-500">
-                        {emp.lastLoginAt
-                          ? new Date(emp.lastLoginAt).toLocaleString()
-                          : "Never"}
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center justify-center">
-                          <ActionDropdown
-                            employee={emp}
-                            onView={() => onView(emp)}
-                            onEdit={() => onEdit(emp)}
-                            onToggleStatus={() => onToggleStatus(emp)}
-                            onDelete={() => onDelete(emp)}
-                            canManage={canManageEmployees}
-                          />
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+        <>
+          {/* Mobile card view */}
+          <div className="md:hidden space-y-3">
+            {employees.length === 0 && (
+              <div className="text-center py-10 text-slate-400 text-sm">No employees found</div>
+            )}
+            {employees.map((emp) => {
+              const roleName = emp.userRoles[0]?.role?.displayName || "No Role";
+              let allPermissions: string[] = [];
+              if (emp.userPermissions && emp.userPermissions.length > 0) {
+                allPermissions = emp.userPermissions.map((up) => up.permission?.name).filter(Boolean) as string[];
+              } else {
+                allPermissions = Array.from(new Set(emp.userRoles.flatMap((ur) => ur.role?.permissions?.map((p) => p.permission?.name) || [])));
+              }
+              allPermissions = Array.from(new Set(allPermissions));
+              const isActive = emp.status === "ACTIVE";
+              const isSuspended = emp.status === "SUSPENDED";
+              return (
+                <div key={emp.id} className="bg-white rounded-xl border border-slate-200 shadow-sm p-4">
+                  <div className="flex items-center justify-between gap-2 mb-3">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className="w-9 h-9 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-sm shrink-0">
+                        {(emp.name || emp.email || "U").charAt(0).toUpperCase()}
+                      </div>
+                      <div className="min-w-0">
+                        <div className="font-semibold text-slate-800 text-sm truncate">{emp.name || "Unknown User"}</div>
+                        <div className="text-[12px] text-slate-500">{roleName}</div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold ${isActive ? "bg-green-50 text-green-700" : isSuspended ? "bg-amber-50 text-amber-700" : "bg-slate-100 text-slate-500"}`}>
+                        <span className={`w-1.5 h-1.5 rounded-full ${isActive ? "bg-green-500" : isSuspended ? "bg-amber-500" : "bg-slate-400"}`} />
+                        {emp.status}
+                      </span>
+                      <ActionDropdown
+                        employee={emp}
+                        onView={() => onView(emp)}
+                        onEdit={() => onEdit(emp)}
+                        onToggleStatus={() => onToggleStatus(emp)}
+                        onDelete={() => onDelete(emp)}
+                        canManage={canManageEmployees}
+                      />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2 text-xs border-t border-slate-100 pt-3">
+                    <div>
+                      <p className="text-slate-400 font-medium mb-0.5">Email</p>
+                      <p className="text-slate-700 font-medium truncate">{emp.email}</p>
+                    </div>
+                    <div>
+                      <p className="text-slate-400 font-medium mb-0.5">Last Login</p>
+                      <p className="text-slate-600">{emp.lastLoginAt ? new Date(emp.lastLoginAt).toLocaleDateString() : "Never"}</p>
+                    </div>
+                    <div className="col-span-2">
+                      <p className="text-slate-400 font-medium mb-1">Permissions</p>
+                      <div className="flex flex-wrap gap-1">
+                        {allPermissions.slice(0, 3).map((p, i) => (
+                          <span key={i} className="px-2 py-0.5 bg-[#EFF3FF] text-[#1447E6] rounded text-[11px] font-medium">{p}</span>
+                        ))}
+                        {allPermissions.length > 3 && (
+                          <span className="text-slate-400 text-[11px] font-medium">+{allPermissions.length - 3} more</span>
+                        )}
+                        {allPermissions.length === 0 && <span className="text-slate-400 text-[12px]">None</span>}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
           </div>
-        </div>
+
+          {/* Desktop table */}
+          <div className="hidden md:block border border-slate-200 rounded-xl overflow-hidden bg-white shadow-sm">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-sm whitespace-nowrap">
+                <thead className="bg-[#F1F5F9] text-slate-700 font-semibold text-[12px] border-b border-slate-200">
+                  <tr>
+                    <th className="px-6 py-4 uppercase font-bold tracking-wider">USER</th>
+                    <th className="px-6 py-4 font-semibold">Email</th>
+                    <th className="px-6 py-4 font-semibold">Status</th>
+                    <th className="px-6 py-4 font-semibold">Permissions</th>
+                    <th className="px-6 py-4 font-semibold">Last Login</th>
+                    <th className="px-6 py-4 font-semibold text-center">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 text-slate-600">
+                  {employees.map((emp) => {
+                    const roleName = emp.userRoles[0]?.role?.displayName || "No Role";
+                    let allPermissions: string[] = [];
+                    if (emp.userPermissions && emp.userPermissions.length > 0) {
+                      allPermissions = emp.userPermissions.map((up) => up.permission?.name).filter(Boolean) as string[];
+                    } else {
+                      allPermissions = Array.from(new Set(emp.userRoles.flatMap((ur) => ur.role?.permissions?.map((p) => p.permission?.name) || [])));
+                    }
+                    allPermissions = Array.from(new Set(allPermissions));
+                    const visiblePermissions = allPermissions.slice(0, 2);
+                    const extraCount = allPermissions.length > 2 ? allPermissions.length - 2 : 0;
+                    const isActive = emp.status === "ACTIVE";
+                    const isSuspended = emp.status === "SUSPENDED";
+                    return (
+                      <tr key={emp.id} className="hover:bg-slate-50/60 transition-colors">
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-3">
+                            <div className="w-9 h-9 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-sm shrink-0">
+                              {(emp.name || emp.email || "U").charAt(0).toUpperCase()}
+                            </div>
+                            <div>
+                              <div className="font-medium text-slate-800">{emp.name || "Unknown User"}</div>
+                              <div className="text-[12px] text-slate-500 mt-0.5">{roleName}</div>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 text-[13px]">{emp.email}</td>
+                        <td className="px-6 py-4">
+                          <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold ${isActive ? "bg-green-50 text-green-700" : isSuspended ? "bg-amber-50 text-amber-700" : "bg-slate-100 text-slate-500"}`}>
+                            <span className={`w-1.5 h-1.5 rounded-full ${isActive ? "bg-green-500" : isSuspended ? "bg-amber-500" : "bg-slate-400"}`} />
+                            {emp.status}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-2">
+                            {visiblePermissions.length > 0 ? (
+                              visiblePermissions.map((p, i) => (
+                                <span key={i} className="px-2.5 py-1 bg-[#EFF3FF] text-[#1447E6] rounded text-[12px] font-medium max-w-[150px] truncate" title={p}>{p}</span>
+                              ))
+                            ) : (
+                              <span className="text-slate-400 text-[12px] font-medium">None</span>
+                            )}
+                            {extraCount > 0 && (
+                              <span className="text-slate-400 text-[12px] ml-1 font-medium">+{extraCount}</span>
+                            )}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 text-[13px] text-slate-500">
+                          {emp.lastLoginAt ? new Date(emp.lastLoginAt).toLocaleString() : "Never"}
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="flex items-center justify-center">
+                            <ActionDropdown
+                              employee={emp}
+                              onView={() => onView(emp)}
+                              onEdit={() => onEdit(emp)}
+                              onToggleStatus={() => onToggleStatus(emp)}
+                              onDelete={() => onDelete(emp)}
+                              canManage={canManageEmployees}
+                            />
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </>
       )}
 
       {/* ── Roles Tab ── */}
       {activeTab === "roles" && (
-        <div className="border border-slate-200 rounded-xl overflow-hidden bg-white shadow-sm">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm whitespace-nowrap">
-              <thead className="bg-[#F1F5F9] text-slate-700 font-semibold text-[12px] border-b border-slate-200">
-                <tr>
-                  <th className="px-6 py-4 uppercase font-bold tracking-wider">
-                    Role
-                  </th>
-                  <th className="px-6 py-4 font-semibold">Key</th>
-                  <th className="px-6 py-4 font-semibold">Type</th>
-                  <th className="px-6 py-4 font-semibold">Status</th>
-                  <th className="px-6 py-4 font-semibold">Permissions</th>
-                  <th className="px-6 py-4 font-semibold text-center">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100 text-slate-600">
-                {roles.map((role) => (
-                  <tr
-                    key={role.id}
-                    className="hover:bg-slate-50/60 transition-colors"
-                  >
-                    <td className="px-6 py-4">
-                      <div className="font-medium text-slate-800">
-                        {role.displayName}
-                      </div>
-                      {role.description && (
-                        <div className="text-[12px] text-slate-500 mt-0.5 max-w-[200px] truncate">
-                          {role.description}
-                        </div>
-                      )}
-                    </td>
-                    <td className="px-6 py-4">
-                      <code className="px-2 py-0.5 bg-slate-100 text-slate-600 rounded text-[12px] font-mono">
-                        {role.name}
-                      </code>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span
-                        className={`inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold ${role.isSystem ? "bg-purple-50 text-purple-700" : "bg-blue-50 text-blue-700"}`}
-                      >
-                        {role.isSystem ? "System" : "Custom"}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span
-                        className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold ${role.isActive ? "bg-green-50 text-green-700" : "bg-slate-100 text-slate-500"}`}
-                      >
-                        <span
-                          className={`w-1.5 h-1.5 rounded-full ${role.isActive ? "bg-green-500" : "bg-slate-400"}`}
-                        />
-                        {role.isActive ? "Active" : "Inactive"}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className="text-[13px] text-slate-600">
-                        {role.permissions.length} permissions
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 text-center">
-                      {canManageEmployees ? (
-                        <button
-                          onClick={() => setEditingRole(role)}
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 border border-slate-200 rounded-lg text-[12px] text-slate-600 hover:bg-slate-50 hover:border-slate-300 transition-colors"
-                        >
-                          <Settings size={13} /> Edit
-                        </button>
-                      ) : (
-                        <span className="text-slate-300">—</span>
-                      )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+        <>
+          {/* Mobile card view */}
+          <div className="md:hidden space-y-3">
+            {roles.length === 0 && (
+              <div className="text-center py-10 text-slate-400 text-sm">No roles found</div>
+            )}
+            {roles.map((role) => (
+              <div key={role.id} className="bg-white rounded-xl border border-slate-200 shadow-sm p-4">
+                <div className="flex items-start justify-between gap-2 mb-3">
+                  <div className="min-w-0">
+                    <div className="font-semibold text-slate-800 text-sm">{role.displayName}</div>
+                    {role.description && (
+                      <div className="text-[12px] text-slate-500 mt-0.5 truncate">{role.description}</div>
+                    )}
+                  </div>
+                  {canManageEmployees ? (
+                    <button
+                      onClick={() => setEditingRole(role)}
+                      className="flex items-center gap-1.5 px-3 py-1.5 border border-slate-200 rounded-lg text-[12px] text-slate-600 hover:bg-slate-50 hover:border-slate-300 transition-colors shrink-0"
+                    >
+                      <Settings size={13} /> Edit
+                    </button>
+                  ) : (
+                    <span className="text-slate-300">—</span>
+                  )}
+                </div>
+                <div className="grid grid-cols-3 gap-2 text-xs border-t border-slate-100 pt-3">
+                  <div>
+                    <p className="text-slate-400 font-medium mb-0.5">Key</p>
+                    <code className="px-1.5 py-0.5 bg-slate-100 text-slate-600 rounded text-[11px] font-mono">{role.name}</code>
+                  </div>
+                  <div>
+                    <p className="text-slate-400 font-medium mb-1">Type</p>
+                    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold ${role.isSystem ? "bg-purple-50 text-purple-700" : "bg-blue-50 text-blue-700"}`}>
+                      {role.isSystem ? "System" : "Custom"}
+                    </span>
+                  </div>
+                  <div>
+                    <p className="text-slate-400 font-medium mb-1">Status</p>
+                    <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold ${role.isActive ? "bg-green-50 text-green-700" : "bg-slate-100 text-slate-500"}`}>
+                      <span className={`w-1.5 h-1.5 rounded-full ${role.isActive ? "bg-green-500" : "bg-slate-400"}`} />
+                      {role.isActive ? "Active" : "Inactive"}
+                    </span>
+                  </div>
+                  <div className="col-span-3">
+                    <p className="text-slate-400 font-medium mb-0.5">Permissions</p>
+                    <p className="text-slate-700 font-medium">{role.permissions.length} permissions assigned</p>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
-        </div>
+
+          {/* Desktop table */}
+          <div className="hidden md:block border border-slate-200 rounded-xl overflow-hidden bg-white shadow-sm">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-sm whitespace-nowrap">
+                <thead className="bg-[#F1F5F9] text-slate-700 font-semibold text-[12px] border-b border-slate-200">
+                  <tr>
+                    <th className="px-6 py-4 uppercase font-bold tracking-wider">Role</th>
+                    <th className="px-6 py-4 font-semibold">Key</th>
+                    <th className="px-6 py-4 font-semibold">Type</th>
+                    <th className="px-6 py-4 font-semibold">Status</th>
+                    <th className="px-6 py-4 font-semibold">Permissions</th>
+                    <th className="px-6 py-4 font-semibold text-center">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 text-slate-600">
+                  {roles.map((role) => (
+                    <tr key={role.id} className="hover:bg-slate-50/60 transition-colors">
+                      <td className="px-6 py-4">
+                        <div className="font-medium text-slate-800">{role.displayName}</div>
+                        {role.description && (
+                          <div className="text-[12px] text-slate-500 mt-0.5 max-w-[200px] truncate">{role.description}</div>
+                        )}
+                      </td>
+                      <td className="px-6 py-4">
+                        <code className="px-2 py-0.5 bg-slate-100 text-slate-600 rounded text-[12px] font-mono">{role.name}</code>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold ${role.isSystem ? "bg-purple-50 text-purple-700" : "bg-blue-50 text-blue-700"}`}>
+                          {role.isSystem ? "System" : "Custom"}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold ${role.isActive ? "bg-green-50 text-green-700" : "bg-slate-100 text-slate-500"}`}>
+                          <span className={`w-1.5 h-1.5 rounded-full ${role.isActive ? "bg-green-500" : "bg-slate-400"}`} />
+                          {role.isActive ? "Active" : "Inactive"}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className="text-[13px] text-slate-600">{role.permissions.length} permissions</span>
+                      </td>
+                      <td className="px-6 py-4 text-center">
+                        {canManageEmployees ? (
+                          <button
+                            onClick={() => setEditingRole(role)}
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 border border-slate-200 rounded-lg text-[12px] text-slate-600 hover:bg-slate-50 hover:border-slate-300 transition-colors"
+                          >
+                            <Settings size={13} /> Edit
+                          </button>
+                        ) : (
+                          <span className="text-slate-300">—</span>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </>
       )}
 
       {/* Modals */}
