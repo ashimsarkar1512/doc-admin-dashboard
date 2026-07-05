@@ -35,15 +35,15 @@ export default function ServicesSecondSection({ data, onChange }: Props) {
       setIsUploading(true);
       const isVideo = file.type.startsWith('video/');
       const context = 'PUBLIC';
-      
+
       const uploadedFile = await uploadAttachment(file, context);
-      
+
       onChange({
         featuredMediaId: uploadedFile.id,
         featuredMediaName: uploadedFile.fileName,
         featuredMediaType: isVideo ? 'video' : 'image',
       });
-      
+
       toast.success(`${isVideo ? 'Video' : 'Image'} uploaded successfully.`);
     } catch (error) {
       toast.error('Failed to upload file.');
@@ -74,7 +74,7 @@ export default function ServicesSecondSection({ data, onChange }: Props) {
   };
 
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+    <div className="rounded-xl border border-slate-200 bg-white p-4 sm:p-6 shadow-sm">
       <h2 className="text-lg font-semibold text-slate-800 mb-4">Second Section</h2>
 
       <div className="mb-5">
@@ -124,12 +124,12 @@ export default function ServicesSecondSection({ data, onChange }: Props) {
           <label className="block text-sm font-medium text-slate-700 mb-2 md:hidden">Button target:</label>
           <span className="hidden md:block text-sm font-medium text-slate-700 mb-2">Button target:</span>
           <div className="flex items-center gap-2">
-            <input 
-              type="checkbox" 
-              id="blank-target-second" 
+            <input
+              type="checkbox"
+              id="blank-target-second"
               checked={data.buttonTarget}
               onChange={(e) => onChange({ buttonTarget: e.target.checked })}
-              className="w-4 h-4 text-[#1447E6] rounded border-slate-300 focus:ring-[#1447E6] focus:ring-offset-0 cursor-pointer" 
+              className="w-4 h-4 text-[#1447E6] rounded border-slate-300 focus:ring-[#1447E6] focus:ring-offset-0 cursor-pointer"
             />
             <label htmlFor="blank-target-second" className="text-sm text-slate-700 cursor-pointer select-none">Blank (open in new tab)</label>
           </div>
@@ -139,13 +139,13 @@ export default function ServicesSecondSection({ data, onChange }: Props) {
       <div>
         <label className="block text-sm font-medium text-slate-700 mb-2">Featured Media:</label>
         <div className="flex items-center gap-4 mb-4">
-          <input 
-            type="file" 
-            ref={fileInputRef} 
-            onChange={handleFileChange} 
-            className="hidden" 
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleFileChange}
+            className="hidden"
           />
-          <button 
+          <button
             onClick={handleUploadClick}
             disabled={isUploading}
             className="flex items-center gap-2 bg-[#1447E6] text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
@@ -155,7 +155,7 @@ export default function ServicesSecondSection({ data, onChange }: Props) {
           </button>
           <span className="text-xs text-slate-500">Recommended: JPG, PNG, MP4, 1200 x 630 pixels</span>
         </div>
-        
+
         {data.featuredMediaName && (
           <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 w-max">
             {data.featuredMediaType === 'video' ? (
@@ -164,9 +164,9 @@ export default function ServicesSecondSection({ data, onChange }: Props) {
               <FileImage size={16} className="text-[#1447E6]" />
             )}
             <span className="text-sm text-slate-700 font-medium">{data.featuredMediaName}</span>
-            <button 
+            <button
               onClick={clearMedia}
-              className="text-red-500 hover:text-red-600 transition-colors ml-2" 
+              className="text-red-500 hover:text-red-600 transition-colors ml-2"
               title="Remove file"
             >
               <X size={16} />

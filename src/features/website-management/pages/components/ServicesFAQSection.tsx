@@ -45,7 +45,7 @@ export default function ServicesFAQSection({ data, onChange }: Props) {
   };
 
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+    <div className="rounded-xl border border-slate-200 bg-white p-4 sm:p-6 shadow-sm">
       <h2 className="text-lg font-semibold text-slate-800 mb-4">FAQ Section:</h2>
 
       <div className="mb-6">
