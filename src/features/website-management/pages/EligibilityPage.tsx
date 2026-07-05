@@ -24,120 +24,41 @@ import { SimpleListSectionForm } from "./components/eligibility/SimpleListSectio
 import type { EligibilityFaqItem } from "./components/eligibility/types";
 import { WeightConditionsSectionForm } from "./components/eligibility/WeightConditionsSectionForm";
 
-const DEFAULT_POINTS = [
-  "No history of MTC or MEN2 syndrome (for GLP-1 medications)",
-  "BMI Ã¢â€°Â¥ 27 with at least one weight-related condition, or BMI Ã¢â€°Â¥ 30",
-  "No active eating disorders",
-  "Not pregnant, breastfeeding, or planning pregnancy",
-  "Age 18 or older",
-  "Willing to complete required monitoring",
-];
-
 export default function EligibilityPage() {
   const PAGE_TYPE = "Eligiblity";
   const queryClient = useQueryClient();
-  const [heroTitle, setHeroTitle] = useState("Am I Eligible?");
-  const [heroDescription, setHeroDescription] = useState(
-    "Learn the medical criteria our licensed providers use to evaluate candidacy for GLP-1 weight loss treatment."
-  );
-  const [sectionTitle, setSectionTitle] = useState("General Eligibility Criteria");
-  const [points, setPoints] = useState(DEFAULT_POINTS);
-  const [reminder, setReminder] = useState(
-    "Final eligibility is determined solely by your licensed provider after reviewing your complete health history. Meeting these general criteria does not guarantee approval."
-  );
-  const [bmiSectionTitle, setBmiSectionTitle] = useState("BMI Qualification");
-  const [bmi27Title, setBmi27Title] = useState("BMI 27-29.9");
-  const [bmi27Description, setBmi27Description] = useState(
-    "Eligible if accompanied by at least one weight-related health condition such as hypertension, type 2 diabetes, dyslipidemia, or sleep apnea."
-  );
-  const [bmi30Title, setBmi30Title] = useState("BMI 30+");
-  const [bmi30Description, setBmi30Description] = useState(
-    "Eligible for treatment regardless of presence of comorbid conditions. GLP-1 medications are FDA-approved for this BMI category."
-  );
-  const [weightConditionsTitle, setWeightConditionsTitle] = useState(
-    "Weight-Related Conditions Considered"
-  );
+  const [heroTitle, setHeroTitle] = useState("");
+  const [heroDescription, setHeroDescription] = useState("");
+  const [sectionTitle, setSectionTitle] = useState("");
+  const [points, setPoints] = useState<string[]>([]);
+  const [reminder, setReminder] = useState("");
+  const [bmiSectionTitle, setBmiSectionTitle] = useState("");
+  const [bmi27Title, setBmi27Title] = useState("");
+  const [bmi27Description, setBmi27Description] = useState("");
+  const [bmi30Title, setBmi30Title] = useState("");
+  const [bmi30Description, setBmi30Description] = useState("");
+  const [weightConditionsTitle, setWeightConditionsTitle] = useState("");
   const [newCondition, setNewCondition] = useState("");
-  const [weightConditions, setWeightConditions] = useState([
-    "Type 2 Diabetes",
-    "Prediabetes",
-    "Hypertension",
-    "High Cholesterol",
-    "Sleep Apnea",
-    "Non-alcoholic Fatty Liver Disease",
-    "Osteoarthritis",
-    "Cardiovascular Disease",
-    "Polycystic Ovary Syndrome (PCOS)",
-  ]);
-  const [contraindicationsTitle, setContraindicationsTitle] = useState(
-    "Contraindications"
-  );
+  const [weightConditions, setWeightConditions] = useState<string[]>([]);
+  const [contraindicationsTitle, setContraindicationsTitle] = useState("");
   const [newContraindication, setNewContraindication] = useState("");
-  const [contraindications, setContraindications] = useState([
-    "Prior serious hypersensitivity to GLP-1/GIP receptor agonists",
-    "Personal or family history of medullary thyroid carcinoma (MTC)",
-    "Active pancreatitis or history of chronic pancreatitis",
-    "Multiple Endocrine Neoplasia syndrome type 2 (MEN2)",
-    "Severe renal impairment (eGFR < 30 mL/min/1.73 mÃ‚Â²)",
-    "Current use of insulin (in some cases)",
-    "Current or recent pregnancy",
-    "Current use of insulin (in some cases)",
-  ]);
-  const [requiredLabWorkTitle, setRequiredLabWorkTitle] = useState(
-    "Required Lab Work"
-  );
+  const [contraindications, setContraindications] = useState<string[]>([]);
+  const [requiredLabWorkTitle, setRequiredLabWorkTitle] = useState("");
   const [newLabWork, setNewLabWork] = useState("");
-  const [requiredLabWorkItems, setRequiredLabWorkItems] = useState([
-    "Comprehensive Metabolic Panel (CMP)",
-    "Hemoglobin A1c (HbA1c)",
-    "Thyroid Stimulating Hormone (TSH)",
-    "Lipid Panel",
-    "Complete Blood Count (CBC)",
-  ]);
-  const [ongoingMonitoringTitle, setOngoingMonitoringTitle] = useState(
-    "Ongoing Monitoring"
-  );
+  const [requiredLabWorkItems, setRequiredLabWorkItems] = useState<string[]>([]);
+  const [ongoingMonitoringTitle, setOngoingMonitoringTitle] = useState("");
   const [newOngoingMonitoring, setNewOngoingMonitoring] = useState("");
-  const [ongoingMonitoringItems, setOngoingMonitoringItems] = useState([
-    "Quarterly metabolic panel (Comprehensive plan)",
-    "HbA1c monitoring for diabetic patients",
-    "Pancreatic enzyme monitoring if indicated",
-    "Renal function for at-risk patients",
-  ]);
-  const [disclaimerTitle, setDisclaimerTitle] = useState(
-    "Provider Review Disclaimer:"
+  const [ongoingMonitoringItems, setOngoingMonitoringItems] = useState<string[]>(
+    []
   );
-  const [disclaimerDescription, setDisclaimerDescription] = useState(
-    "Eligibility criteria presented here are general guidelines. All final treatment decisions are made exclusively by licensed healthcare providers. Meeting criteria on this page does not guarantee prescription approval."
-  );
-  const [faqSectionTitle, setFaqSectionTitle] = useState(
-    "Eligibility Questions"
-  );
-  const [faqs, setFaqs] = useState<EligibilityFaqItem[]>([
-    {
-      question: "How is BMI calculated?",
-      answer:
-        "BMI is weight (kg) ÃƒÂ· height (mÃ‚Â²). You can use our free BMI calculator during your assessment. Providers may also consider waist circumference and body composition.",
-    },
-    {
-      question: "Do I need labs before starting?",
-      answer: "",
-    },
-    {
-      question: "What if I have a contraindication?",
-      answer: "",
-    },
-  ]);
-  const [bottomCtaTitle, setBottomCtaTitle] = useState(
-    "Contact Us at Weight Loss MD Today"
-  );
-  const [bottomCtaButtonText, setBottomCtaButtonText] = useState(
-    "Book a consultation"
-  );
-  const [bottomCtaUrl, setBottomCtaUrl] = useState(
-    "https://weightlossmd.com/contact"
-  );
-  const [bottomCtaNewTab, setBottomCtaNewTab] = useState(true);
+  const [disclaimerTitle, setDisclaimerTitle] = useState("");
+  const [disclaimerDescription, setDisclaimerDescription] = useState("");
+  const [faqSectionTitle, setFaqSectionTitle] = useState("");
+  const [faqs, setFaqs] = useState<EligibilityFaqItem[]>([]);
+  const [bottomCtaTitle, setBottomCtaTitle] = useState("");
+  const [bottomCtaButtonText, setBottomCtaButtonText] = useState("");
+  const [bottomCtaUrl, setBottomCtaUrl] = useState("");
+  const [bottomCtaNewTab, setBottomCtaNewTab] = useState(false);
   const [heroId, setHeroId] = useState("");
   const [ctaId, setCtaId] = useState("");
   const [isHeroInitialized, setIsHeroInitialized] = useState(false);

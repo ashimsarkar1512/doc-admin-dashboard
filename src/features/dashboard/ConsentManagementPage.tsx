@@ -3,7 +3,6 @@ import { useQuery } from "@tanstack/react-query";
 import {
   getConsents,
   getConsentStats,
-
 } from "@/api/endpoints/consentManagement.api";
 import type {
   ConsentLog,
@@ -23,13 +22,12 @@ import {
   Globe,
   Smartphone,
   CheckCircle2,
-  XCircle
+  XCircle,
 } from "lucide-react";
 import DatePicker from "@/components/shared/DatePicker";
 import ConsentDetailsModal from "./components/ConsentDetailsModal";
 import { deleteConsent } from "@/api/endpoints/consentManagement.api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-
 
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
@@ -51,7 +49,7 @@ interface StatCardProps {
   icon?: ReactNode;
   className?: string;
 }
-function StatCard({ label, value,  }: StatCardProps) {
+function StatCard({ label, value }: StatCardProps) {
   return (
     <div className="bg-slate-900 text-white rounded-xl px-6 py-5 flex flex-col gap-2">
       <div className="flex justify-between">
@@ -122,7 +120,9 @@ export default function ConsentManagementPage() {
 
   const queryClient = useQueryClient();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedConsentId, setSelectedConsentId] = useState<string | null>(null);
+  const [selectedConsentId, setSelectedConsentId] = useState<string | null>(
+    null,
+  );
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => deleteConsent(id),
@@ -178,14 +178,14 @@ export default function ConsentManagementPage() {
     queryKey: ["consents-stats"],
     queryFn: getConsentStats,
   });
-  console.log(statsData)
+  console.log(statsData);
 
   const { data, isLoading, isError, refetch, isFetching } = useQuery({
     queryKey: ["consents", queryParams],
     queryFn: () => getConsents(queryParams),
     placeholderData: (prev) => prev,
   });
-  console.log(data)
+  console.log(data);
 
   // ── Handlers ──────────────────────────────────────────────────────────────
 
@@ -201,116 +201,122 @@ export default function ConsentManagementPage() {
     refetchStats();
   };
 
- const handleExport = async () => {
-  setIsExporting(true);
-  try {
-    const doc = new jsPDF({ orientation: "landscape", unit: "pt", format: "a4" });
-
-    // ── Header ────────────────────────────────────────────────
-    doc.setFontSize(18);
-    doc.setFont("helvetica", "bold");
-    doc.setTextColor(15, 23, 42); // slate-900
-    doc.text("Consent Management Report", 40, 40);
-
-    doc.setFontSize(10);
-    doc.setFont("helvetica", "normal");
-    doc.setTextColor(100, 116, 139); // slate-500
-    doc.text(`Generated on: ${new Date().toLocaleString()}`, 40, 58);
-    doc.text(`Total records: ${meta?.total ?? consentLogs.length}`, 40, 72);
-
-    // ── Stat summary (optional, custom box) ──────────────────
-    if (stats) {
-      const statY = 95;
-      const statBoxes = [
-        { label: "Total", value: stats.total },
-        { label: "Granted", value: stats.granted },
-        { label: "Pending", value: stats.pending },
-        { label: "Revoked", value: stats.revoked },
-      ];
-      statBoxes.forEach((box, i) => {
-        const x = 40 + i * 140;
-        doc.setFillColor(241, 245, 249); // slate-100
-        doc.roundedRect(x, statY, 120, 50, 6, 6, "F");
-        doc.setFontSize(9);
-        doc.setTextColor(100, 116, 139);
-        doc.text(box.label.toUpperCase(), x + 12, statY + 18);
-        doc.setFontSize(16);
-        doc.setFont("helvetica", "bold");
-        doc.setTextColor(15, 23, 42);
-        doc.text(String(box.value ?? "—"), x + 12, statY + 38);
-        doc.setFont("helvetica", "normal");
+  const handleExport = async () => {
+    setIsExporting(true);
+    try {
+      const doc = new jsPDF({
+        orientation: "landscape",
+        unit: "pt",
+        format: "a4",
       });
-    }
 
-    // ── Table ─────────────────────────────────────────────────
-    autoTable(doc, {
-      startY: stats ? 165 : 90,
-      head: [["User Name", "Email", "Type", "Status", "Source", "Consent Date"]],
-      body: consentLogs.map((item) => [
-        item.userName,
-        item.email,
-        item.type,
-        item.status,
-        item.source,
-        item.consentDate ? new Date(item.consentDate).toLocaleDateString() : "—",
-      ]),
-      styles: {
-        fontSize: 9,
-        cellPadding: 6,
-        textColor: [71, 85, 105], // slate-600
-      },
-      headStyles: {
-        fillColor: [15, 23, 42], // slate-900
-        textColor: [255, 255, 255],
-        fontStyle: "bold",
-      },
-      alternateRowStyles: {
-        fillColor: [248, 250, 252], // slate-50
-      },
-      // Color-coded status column (custom cell styling)
-      didParseCell: (data) => {
-        if (data.section === "body" && data.column.index === 3) {
-          const status = String(data.cell.raw).toUpperCase();
-          const colorMap: Record<string, [number, number, number]> = {
-            ACCEPTED: [22, 163, 74],
-            PENDING: [202, 138, 4],
-            REJECTED: [220, 38, 38],
-            REVOKED: [220, 38, 38],
-          };
-          if (colorMap[status]) {
-            data.cell.styles.textColor = colorMap[status];
-            data.cell.styles.fontStyle = "bold";
+      // ── Header ────────────────────────────────────────────────
+      doc.setFontSize(18);
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(15, 23, 42); // slate-900
+      doc.text("Consent Management Report", 40, 40);
+
+      doc.setFontSize(10);
+      doc.setFont("helvetica", "normal");
+      doc.setTextColor(100, 116, 139); // slate-500
+      doc.text(`Generated on: ${new Date().toLocaleString()}`, 40, 58);
+      doc.text(`Total records: ${meta?.total ?? consentLogs.length}`, 40, 72);
+
+      // ── Stat summary (optional, custom box) ──────────────────
+      if (stats) {
+        const statY = 95;
+        const statBoxes = [
+          { label: "Total", value: stats.total },
+          { label: "Granted", value: stats.granted },
+          { label: "Pending", value: stats.pending },
+          { label: "Revoked", value: stats.revoked },
+        ];
+        statBoxes.forEach((box, i) => {
+          const x = 40 + i * 140;
+          doc.setFillColor(241, 245, 249); // slate-100
+          doc.roundedRect(x, statY, 120, 50, 6, 6, "F");
+          doc.setFontSize(9);
+          doc.setTextColor(100, 116, 139);
+          doc.text(box.label.toUpperCase(), x + 12, statY + 18);
+          doc.setFontSize(16);
+          doc.setFont("helvetica", "bold");
+          doc.setTextColor(15, 23, 42);
+          doc.text(String(box.value ?? "—"), x + 12, statY + 38);
+          doc.setFont("helvetica", "normal");
+        });
+      }
+
+      // ── Table ─────────────────────────────────────────────────
+      autoTable(doc, {
+        startY: stats ? 165 : 90,
+        head: [
+          ["User Name", "Email", "Type", "Status", "Source", "Consent Date"],
+        ],
+        body: consentLogs.map((item) => [
+          item.userName,
+          item.email,
+          item.type,
+          item.status,
+          item.source,
+          item.consentDate
+            ? new Date(item.consentDate).toLocaleDateString()
+            : "—",
+        ]),
+        styles: {
+          fontSize: 9,
+          cellPadding: 6,
+          textColor: [71, 85, 105], // slate-600
+        },
+        headStyles: {
+          fillColor: [15, 23, 42], // slate-900
+          textColor: [255, 255, 255],
+          fontStyle: "bold",
+        },
+        alternateRowStyles: {
+          fillColor: [248, 250, 252], // slate-50
+        },
+        // Color-coded status column (custom cell styling)
+        didParseCell: (data) => {
+          if (data.section === "body" && data.column.index === 3) {
+            const status = String(data.cell.raw).toUpperCase();
+            const colorMap: Record<string, [number, number, number]> = {
+              ACCEPTED: [22, 163, 74],
+              PENDING: [202, 138, 4],
+              REJECTED: [220, 38, 38],
+              REVOKED: [220, 38, 38],
+            };
+            if (colorMap[status]) {
+              data.cell.styles.textColor = colorMap[status];
+              data.cell.styles.fontStyle = "bold";
+            }
           }
-        }
-      },
-    });
+        },
+      });
 
+      const pageCount = doc.getNumberOfPages();
+      for (let i = 1; i <= pageCount; i++) {
+        doc.setPage(i);
+        doc.setFontSize(8);
+        doc.setTextColor(148, 163, 184);
+        doc.text(
+          `Page ${i} of ${pageCount}`,
+          doc.internal.pageSize.getWidth() - 80,
+          doc.internal.pageSize.getHeight() - 20,
+        );
+      }
 
-     const pageCount = doc.getNumberOfPages();
-    for (let i = 1; i <= pageCount; i++) {
-      doc.setPage(i);
-      doc.setFontSize(8);
-      doc.setTextColor(148, 163, 184);
-      doc.text(
-        `Page ${i} of ${pageCount}`,
-        doc.internal.pageSize.getWidth() - 80,
-        doc.internal.pageSize.getHeight() - 20
-      );
+      doc.save(`consents-${new Date().toISOString().slice(0, 10)}.pdf`);
+    } catch (err) {
+      console.error(err);
+      Swal.fire({
+        icon: "error",
+        title: "Export failed",
+        text: "Could not export consents. Please try again.",
+      });
+    } finally {
+      setIsExporting(false);
     }
-
-    doc.save(`consents-${new Date().toISOString().slice(0, 10)}.pdf`);
-  } catch (err) {
-    console.error(err);
-    Swal.fire({
-      icon: "error",
-      title: "Export failed",
-      text: "Could not export consents. Please try again.",
-    });
-  } finally {
-    setIsExporting(false);
-  }
-};
-
+  };
 
   // ── Derived values ─────────────────────────────────────────────────────────
 
@@ -349,7 +355,7 @@ export default function ConsentManagementPage() {
       {/* ── Section Header ───────────────────────────────────────────────── */}
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-base font-semibold text-slate-800">
-          Consent Management 
+          Consent Management
         </h2>
         <div className="flex items-center gap-2">
           <button
@@ -533,7 +539,7 @@ export default function ConsentManagementPage() {
                         className="hover:bg-slate-50 transition-colors"
                       >
                         <td className="px-5 py-4 w-12 text-center text-slate-300">
-                           <div className="w-4 h-4 rounded border border-slate-300 mx-auto" />
+                          <div className="w-4 h-4 rounded border border-slate-300 mx-auto" />
                         </td>
                         {/* User Name */}
                         <td className="px-5 py-4 whitespace-nowrap">
@@ -552,15 +558,25 @@ export default function ConsentManagementPage() {
 
                         {/* Type */}
                         <td className="px-5 py-4 whitespace-nowrap">
-                          <span className={`inline-flex px-3 py-1 rounded-full text-[11px] font-semibold ${
-                            {
-                              DATA_PROCESSING: "bg-blue-50 text-blue-600",
-                              MARKETING: "bg-purple-50 text-purple-600",
-                              ANALYTICS: "bg-teal-50 text-teal-600",
-                              AI_TRAINING: "bg-green-50 text-green-600",
-                            }[item.type?.toUpperCase()] ?? "bg-slate-100 text-slate-600"
-                          }`}>
-                            {item.type?.replace(/_/g, " ").replace(/\w\S*/g, (txt) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase())}
+                          <span
+                            className={`inline-flex px-3 py-1 rounded-full text-[11px] font-semibold ${
+                              {
+                                DATA_PROCESSING: "bg-blue-50 text-blue-600",
+                                MARKETING: "bg-purple-50 text-purple-600",
+                                ANALYTICS: "bg-teal-50 text-teal-600",
+                                AI_TRAINING: "bg-green-50 text-green-600",
+                              }[item.type?.toUpperCase()] ??
+                              "bg-slate-100 text-slate-600"
+                            }`}
+                          >
+                            {item.type
+                              ?.replace(/_/g, " ")
+                              .replace(
+                                /\w\S*/g,
+                                (txt) =>
+                                  txt.charAt(0).toUpperCase() +
+                                  txt.substr(1).toLowerCase(),
+                              )}
                           </span>
                         </td>
 
@@ -571,9 +587,12 @@ export default function ConsentManagementPage() {
                               <CheckCircle2 className="w-3.5 h-3.5" /> Accepted
                             </span>
                           )}
-                          {(item.status?.toUpperCase() === "REVOKED" || item.status?.toUpperCase() === "REJECTED") && (
+                          {(item.status?.toUpperCase() === "REVOKED" ||
+                            item.status?.toUpperCase() === "REJECTED") && (
                             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-semibold bg-red-50 text-red-600">
-                              <XCircle className="w-3.5 h-3.5" /> {item.status.charAt(0).toUpperCase() + item.status.slice(1).toLowerCase()}
+                              <XCircle className="w-3.5 h-3.5" />{" "}
+                              {item.status.charAt(0).toUpperCase() +
+                                item.status.slice(1).toLowerCase()}
                             </span>
                           )}
                           {item.status?.toUpperCase() === "PENDING" && (
@@ -591,7 +610,9 @@ export default function ConsentManagementPage() {
                             ) : (
                               <Smartphone className="w-4 h-4 text-purple-500" />
                             )}
-                            <span className="capitalize">{item.source?.toLowerCase()}</span>
+                            <span className="capitalize">
+                              {item.source?.toLowerCase()}
+                            </span>
                           </div>
                         </td>
 
@@ -599,9 +620,23 @@ export default function ConsentManagementPage() {
                         <td className="px-5 py-4 whitespace-nowrap text-slate-500">
                           {item.consentDate ? (
                             <>
-                              {new Date(item.consentDate).toLocaleDateString("en-CA")} <span className="text-slate-400">{new Date(item.consentDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })}</span>
+                              {new Date(item.consentDate).toLocaleDateString(
+                                "en-CA",
+                              )}{" "}
+                              <span className="text-slate-400">
+                                {new Date(item.consentDate).toLocaleTimeString(
+                                  [],
+                                  {
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                    hour12: false,
+                                  },
+                                )}
+                              </span>
                             </>
-                          ) : "—"}
+                          ) : (
+                            "—"
+                          )}
                         </td>
 
                         {/* Action */}
@@ -685,7 +720,6 @@ export default function ConsentManagementPage() {
         }}
         consentId={selectedConsentId}
       />
-   
     </div>
   );
 }

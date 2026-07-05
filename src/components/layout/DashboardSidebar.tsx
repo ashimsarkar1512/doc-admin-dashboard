@@ -61,8 +61,8 @@ export function DashboardSidebar({
 
   return (
     <aside
-      className={`hidden xl:flex ${
-        collapsed ? "xl:w-16" : "xl:w-64"
+      className={`hidden lg:flex ${
+        collapsed ? "lg:w-16" : "lg:w-64"
       } h-full border-r border-slate-200 bg-white flex-col shrink-0 transition-all duration-300 relative z-20`}
     >
       {/* Floating collapse toggle */}
@@ -601,6 +601,15 @@ export function DashboardSidebar({
                     >
                       <Pill size={18} className="text-slate-500 shrink-0" />
                       <span>Side effect report</span>
+                    </Link>
+                  )}
+                  {can("view:compliance_center") && (
+                    <Link
+                      to="/dashboard/request-records"
+                      className="flex items-center gap-3 px-3 py-2 rounded-md text-xs font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold [&.active_svg]:text-[#1447E6]"
+                    >
+                      <ClipboardList size={18} className="text-slate-500 shrink-0" />
+                      <span>Request Records</span>
                     </Link>
                   )}
                   {can("view:business_intelligence") && (

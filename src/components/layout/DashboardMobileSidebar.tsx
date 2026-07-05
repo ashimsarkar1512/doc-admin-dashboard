@@ -64,13 +64,13 @@ export function DashboardMobileSidebar({
     <>
       {/* Mobile sidebar overlay backdrop */}
       <div
-        className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm xl:hidden"
+        className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm lg:hidden"
         onClick={() => setMobileSidebarOpen(false)}
       />
 
       {/* Mobile Sidebar - fixed overlay, never affects layout */}
       <div
-        className={`fixed inset-y-0 left-0 z-50 w-72 bg-white shadow-2xl flex flex-col transform transition-transform duration-300 ease-in-out xl:hidden ${
+        className={`fixed inset-y-0 left-0 z-50 w-72 bg-white shadow-2xl flex flex-col transform transition-transform duration-300 ease-in-out lg:hidden ${
           mobileSidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >

@@ -54,7 +54,7 @@ function HomePageEditorInner() {
   }
 
   return (
-    <div className="p-4 sm:p-7 max-w-7xl mx-auto space-y-8 min-h-full font-sans pb-20">
+    <div className="p-4 sm:p-7  space-y-8 min-h-full font-sans pb-20">
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
         <div>

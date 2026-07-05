@@ -56,18 +56,18 @@ export function CommunicationPreferences() {
         </div>
       </div>
 
-      <div className="p-6 space-y-4">
+      <div className="p-3 sm:p-6 space-y-3 sm:space-y-4">
         {/* Email */}
-        <div className="flex items-center justify-between border border-slate-100 rounded-xl p-5 bg-slate-50/50">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center text-blue-500">
-              <Mail size={20} />
+        <div className="flex items-center justify-between border border-slate-100 rounded-xl p-3 sm:p-5 bg-slate-50/50 gap-2">
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-blue-50 flex items-center justify-center text-blue-500 shrink-0">
+              <Mail size={18} />
             </div>
-            <div>
-              <h4 className="text-[15px] font-bold text-slate-800 leading-tight">
+            <div className="min-w-0">
+              <h4 className="text-sm sm:text-[15px] font-bold text-slate-800 leading-tight">
                 Email Notifications
               </h4>
-              <p className="text-sm text-slate-500 mt-1">
+              <p className="text-xs sm:text-sm text-slate-500 mt-0.5 sm:mt-1">
                 Receive notifications via email
               </p>
             </div>
@@ -80,16 +80,16 @@ export function CommunicationPreferences() {
         </div>
 
         {/* SMS */}
-        <div className="flex items-center justify-between border border-slate-100 rounded-xl p-5 bg-slate-50/50">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-purple-50 flex items-center justify-center text-purple-500">
-              <Smartphone size={20} />
+        <div className="flex items-center justify-between border border-slate-100 rounded-xl p-3 sm:p-5 bg-slate-50/50 gap-2">
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-purple-50 flex items-center justify-center text-purple-500 shrink-0">
+              <Smartphone size={18} />
             </div>
-            <div>
-              <h4 className="text-[15px] font-bold text-slate-800 leading-tight">
+            <div className="min-w-0">
+              <h4 className="text-sm sm:text-[15px] font-bold text-slate-800 leading-tight">
                 SMS Notifications
               </h4>
-              <p className="text-sm text-slate-500 mt-1">
+              <p className="text-xs sm:text-sm text-slate-500 mt-0.5 sm:mt-1">
                 Receive notifications via SMS
               </p>
             </div>
@@ -102,16 +102,16 @@ export function CommunicationPreferences() {
         </div>
 
         {/* Push */}
-        <div className="flex items-center justify-between border border-slate-100 rounded-xl p-5 bg-slate-50/50">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-orange-50 flex items-center justify-center text-orange-500">
-              <MessageSquare size={20} />
+        <div className="flex items-center justify-between border border-slate-100 rounded-xl p-3 sm:p-5 bg-slate-50/50 gap-2">
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-orange-50 flex items-center justify-center text-orange-500 shrink-0">
+              <MessageSquare size={18} />
             </div>
-            <div>
-              <h4 className="text-[15px] font-bold text-slate-800 leading-tight">
+            <div className="min-w-0">
+              <h4 className="text-sm sm:text-[15px] font-bold text-slate-800 leading-tight">
                 Push Notifications
               </h4>
-              <p className="text-sm text-slate-500 mt-1">
+              <p className="text-xs sm:text-sm text-slate-500 mt-0.5 sm:mt-1">
                 Receive via push notification
               </p>
             </div>

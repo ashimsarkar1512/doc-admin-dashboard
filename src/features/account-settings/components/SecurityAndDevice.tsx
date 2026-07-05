@@ -53,10 +53,10 @@ export function SecurityAndDevice() {
             <MonitorSmartphone size={18} />
           </div>
           <div>
-            <h3 className="text-sm font-semibold text-slate-800 leading-tight">
+            <h3 className="text-base sm:text-lg font-semibold text-[#272628] leading-tight">
               Security &amp; Device
             </h3>
-            <p className="text-[12px] text-slate-400 leading-tight mt-0.5">
+            <p className="text-xs sm:text-sm text-[#272628] leading-tight mt-0.5">
               The security checkup of your account
             </p>
           </div>
@@ -76,23 +76,23 @@ export function SecurityAndDevice() {
           <MonitorSmartphone size={18} />
         </div>
         <div>
-          <h3 className="text-sm font-semibold text-slate-800 leading-tight">
+          <h3 className="text-base sm:text-lg font-bold text-[#272628] leading-tight">
             Security &amp; Device
           </h3>
-          <p className="text-[12px] text-slate-400 leading-tight mt-0.5">
+          <p className="text-xs sm:text-sm text-[#272628] leading-tight mt-0.5">
             The security checkup of your account
           </p>
         </div>
       </div>
 
-      <div className="p-5 space-y-4">
+      <div className="p-3 sm:p-5 space-y-4">
         {/* 2 Step Verification — Figma style: plain row, no icon box */}
-        <div className="flex items-center justify-between py-1">
-          <div>
-            <h4 className="text-sm font-semibold text-slate-800 leading-tight">
+        <div className="flex items-center justify-between py-1 gap-3">
+          <div className="min-w-0">
+            <h4 className="text-sm sm:text-base font-semibold text-[#272628] leading-tight">
               2 Step Verification
             </h4>
-            <p className="text-[12px] text-slate-400 mt-0.5">
+            <p className="text-xs sm:text-sm text-[#272628] mt-0.5 break-words">
               {profile?.mfaEnabled
                 ? `Activated on phone ${profile?.profile?.phone?.replace(/(\d{3})\d+(\d{2})/, "$1*********$2") ?? "***"} since 20 May, 2026`
                 : "2FA is currently disabled"}
@@ -108,7 +108,7 @@ export function SecurityAndDevice() {
         {/* Device & Active Sessions — warm cream box */}
         <div className="border border-amber-200 rounded-xl overflow-hidden">
           <div className="bg-amber-50 px-4 pt-4 pb-2">
-            <h4 className="text-[13px] font-semibold text-amber-800 mb-3">
+            <h4 className="text-sm sm:text-base font-semibold text-amber-800 mb-3">
               Your Device &amp; active sessions
             </h4>
 
@@ -127,32 +127,31 @@ export function SecurityAndDevice() {
                     >
                       {/* Device row header */}
                       <div
-                        className="flex items-center justify-between px-4 py-3 cursor-pointer"
+                        className="flex items-center justify-between px-3 sm:px-4 py-2.5 sm:py-3 cursor-pointer gap-2"
                         onClick={() => toggleDeviceExpand(device.deviceName)}
                       >
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
                           {isMobile ? (
-                            <Smartphone size={16} className="text-amber-700" />
+                            <Smartphone size={14} className="text-amber-700 shrink-0" />
                           ) : (
-                            <Laptop size={16} className="text-amber-700" />
+                            <Laptop size={14} className="text-amber-700 shrink-0" />
                           )}
-                          <span className="text-[13px] font-semibold text-amber-900">
+                          <span className="text-xs sm:text-sm font-semibold text-amber-900 truncate">
                             {device.deviceName}
                             {device.isActiveNow && (
                               <span className="font-normal"> - Active now</span>
                             )}
                           </span>
                         </div>
-                        <div className="flex items-center gap-2 text-[12px] text-amber-700 font-medium">
+                        <div className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-amber-700 font-medium shrink-0">
                           <span>
                             {device.sessions.length} session
-                            {device.sessions.length !== 1 ? "s" : ""} on{" "}
-                            {isMobile ? "iOS iPhone(s)" : "Windows computer(s)"}
+                            {device.sessions.length !== 1 ? "s" : ""}
                           </span>
                           {isExpanded ? (
-                            <ChevronDown size={14} />
+                            <ChevronDown size={13} />
                           ) : (
-                            <ChevronRight size={14} />
+                            <ChevronRight size={13} />
                           )}
                         </div>
                       </div>
@@ -163,32 +162,32 @@ export function SecurityAndDevice() {
                           {device.sessions.map((session) => (
                             <div
                               key={session.sessionId}
-                              className="grid grid-cols-3 gap-2 px-4 py-2.5 border-b border-amber-100/60 last:border-0"
+                              className="grid grid-cols-1 sm:grid-cols-3 gap-2 px-3 sm:px-4 py-2.5 border-b border-amber-100/60 last:border-0"
                             >
                               {/* Last login */}
                               <div className="flex flex-col gap-0.5">
-                                <span className="text-[11px] text-amber-600 font-medium">
+                                <span className="text-[11px] sm:text-xs text-amber-600 font-medium">
                                   Last login:
                                 </span>
-                                <span className="text-[11px] text-amber-800">
+                                <span className="text-xs sm:text-sm text-amber-800">
                                   {formatLastLogin(session.lastLogin)}
                                 </span>
                               </div>
                               {/* IP Address */}
                               <div className="flex flex-col gap-0.5">
-                                <span className="text-[11px] text-amber-600 font-medium">
+                                <span className="text-[11px] sm:text-xs text-amber-600 font-medium">
                                   IP Address:
                                 </span>
-                                <span className="text-[11px] text-amber-800">
+                                <span className="text-xs sm:text-sm text-amber-800">
                                   {session.ipAddress}
                                 </span>
                               </div>
                               {/* Session Due */}
-                              <div className="flex flex-col gap-0.5 items-end">
-                                <span className="text-[11px] text-amber-600 font-medium">
+                              <div className="flex flex-col gap-0.5 sm:items-end">
+                                <span className="text-[11px] sm:text-xs text-amber-600 font-medium">
                                   Session Due:
                                 </span>
-                                <span className="text-[11px] font-semibold text-amber-700">
+                                <span className="text-xs sm:text-sm font-semibold text-amber-700">
                                   {session.sessionDue}
                                 </span>
                               </div>

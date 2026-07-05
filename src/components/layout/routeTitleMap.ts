@@ -1,4 +1,7 @@
-export const routeTitleMap: Record<string, { title: string; subtitle: string }> = {
+export const routeTitleMap: Record<
+  string,
+  { title: string; subtitle: string }
+> = {
   "/dashboard": {
     title: "Dashboard",
     subtitle: "Overview of your medical practice metrics",
@@ -136,6 +139,10 @@ export const routeTitleMap: Record<string, { title: string; subtitle: string }> 
   "/dashboard/audit-logs": {
     title: "Audit Logs",
     subtitle: "Track all system activity and user actions for compliance",
+  },
+  "/dashboard/request-records": {
+    title: "Request Records",
+    subtitle: "Manage patient requests for medical records, billing history, and data",
   },
   "/dashboard/consent-management": {
     title: "Consent Management",
