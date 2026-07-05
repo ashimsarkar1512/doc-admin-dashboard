@@ -5,8 +5,6 @@ import {
   Eye,
   Trash2,
   Search,
-  ChevronLeft,
-  ChevronRight,
   AlertCircle,
   Loader2,
 } from 'lucide-react';

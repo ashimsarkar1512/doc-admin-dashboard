@@ -1,5 +1,4 @@
 import React from 'react';
-import { ExternalLink } from 'lucide-react';
 import type { SecurityAlert } from './types';
 
 interface SecurityAlertsProps {
