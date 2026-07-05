@@ -1,4 +1,7 @@
-export const routeTitleMap: Record<string, { title: string; subtitle: string }> = {
+export const routeTitleMap: Record<
+  string,
+  { title: string; subtitle: string }
+> = {
   "/dashboard": {
     title: "Dashboard",
     subtitle: "Overview of your medical practice metrics",
