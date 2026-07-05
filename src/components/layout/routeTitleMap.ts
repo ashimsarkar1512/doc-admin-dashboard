@@ -140,6 +140,10 @@ export const routeTitleMap: Record<
     title: "Audit Logs",
     subtitle: "Track all system activity and user actions for compliance",
   },
+  "/dashboard/request-records": {
+    title: "Request Records",
+    subtitle: "Manage patient requests for medical records, billing history, and data",
+  },
   "/dashboard/consent-management": {
     title: "Consent Management",
     subtitle: "Manage and track patient consent forms and authorizations",
