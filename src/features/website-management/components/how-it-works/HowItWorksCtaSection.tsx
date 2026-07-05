@@ -15,7 +15,7 @@ export function HowItWorksCtaSection() {
           placeholder="Contact Us at Weight Loss MD Today"
         />
 
-        <div className="flex flex-wrap items-end gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-end gap-4">
           <div className="flex-1 min-w-[160px]">
             <FormInput
               label="CTA Button Text:"

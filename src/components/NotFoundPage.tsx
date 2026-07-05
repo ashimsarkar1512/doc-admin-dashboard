@@ -18,7 +18,7 @@ export default function NotFoundPage() {
       
       <div className="mt-10">
         <Link to="/">
-          <Button className="h-12 px-6 bg-brand hover:bg-brand-hover text-white font-bold text-base transition-all duration-300 shadow-lg shadow-brand/20 cursor-pointer flex items-center gap-2 rounded-xl">
+          <Button className="h-12 px-6 bg-blue-500 hover:bg-brand-hover text-white font-bold text-base transition-all duration-300 shadow-lg shadow-brand/20 cursor-pointer flex items-center gap-2 rounded-xl">
             <Home className="h-5 w-5" />
             Back to Home
           </Button>

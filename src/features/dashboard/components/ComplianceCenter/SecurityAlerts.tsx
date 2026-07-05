@@ -1,5 +1,4 @@
 import React from 'react';
-import { ExternalLink } from 'lucide-react';
 import type { SecurityAlert } from './types';
 
 interface SecurityAlertsProps {
@@ -24,9 +23,9 @@ export const SecurityAlerts: React.FC<SecurityAlertsProps> = ({ alerts }) => {
     <div className="flex flex-col h-full">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-[16px] font-semibold text-slate-800">Security & Risk Alerts</h3>
-        <a href="#" className="flex items-center gap-1 text-[13px] text-[#1447E6] font-medium hover:underline">
+        {/* <a href="#" className="flex items-center gap-1 text-[13px] text-[#1447E6] font-medium hover:underline">
           View All <ExternalLink size={14} />
-        </a>
+        </a> */}
       </div>
       <div className="bg-white border border-slate-200 rounded-xl flex-1 shadow-sm overflow-hidden">
         <div className="divide-y divide-slate-100">

@@ -2,7 +2,7 @@ import React, { createContext, useContext, useEffect, useState, useRef, useCallb
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
-import { getHeroSections, updateHeroSection } from "@/api/endpoints/hero-section.api";
+import { getHeroSectionByPage, updateHeroSection } from "@/api/endpoints/hero-section.api";
 import { getContactSideWidget, updateContactSideWidget, getContactPartnerSection, updateContactPartnerSection } from "@/api/endpoints/contact-page.api";
 import { uploadAttachment, uploadMultipleAttachments, deleteAttachment } from "@/api/endpoints/attachments.api";
 
@@ -84,7 +84,7 @@ export function ContactPageProvider({ children }: { children: React.ReactNode })
   // Fetch Hero
   const { data: heroData, isLoading: isLoadingHero } = useQuery({
     queryKey: CONTACT_HERO_QUERY_KEY,
-    queryFn: () => getHeroSections("ContactUs"),
+    queryFn: () => getHeroSectionByPage("ContactUs"),
     staleTime: 5 * 60 * 1000,
   });
 
@@ -105,9 +105,9 @@ export function ContactPageProvider({ children }: { children: React.ReactNode })
   const isLoading = isLoadingHero || isLoadingWidget || isLoadingPartners;
 
   const initForm = useCallback(() => {
-    if (!heroData?.data || !widgetData?.data || !partnersData?.data) return;
+    if (!heroData || !widgetData?.data || !partnersData?.data) return;
 
-    const hero = Array.isArray(heroData.data) ? heroData.data[0] : heroData.data;
+    const hero = Array.isArray(heroData) ? heroData[0] : heroData;
     const widget = widgetData.data;
     const partnersSection = partnersData.data;
 
@@ -126,7 +126,10 @@ export function ContactPageProvider({ children }: { children: React.ReactNode })
       widgetImageName: widget?.image?.fileName || "Uploaded Image",
       partnersSectionId: partnersSection?.id || "",
       partnersSectionTitle: partnersSection?.sectionTitle || "",
-      partners: (partnersSection?.partners || []).map(p => ({
+      partners: (Array.isArray(partnersSection?.partners) 
+        ? partnersSection.partners 
+        : (partnersSection?.partners ? [partnersSection.partners] : [])
+      ).map((p: any) => ({
         id: crypto.randomUUID(),
         imageId: p.imageId,
         imageUrl: p.image?.fileUrl || "",
@@ -140,7 +143,7 @@ export function ContactPageProvider({ children }: { children: React.ReactNode })
 
   // Seed form state when all data arrives
   useEffect(() => {
-    if (heroData?.data && widgetData?.data && partnersData?.data && !isInitialized) {
+    if (heroData && widgetData?.data && partnersData?.data && !isInitialized) {
       setTimeout(initForm, 0);
     }
   }, [heroData, widgetData, partnersData, isInitialized, initForm]);
@@ -225,12 +228,12 @@ export function ContactPageProvider({ children }: { children: React.ReactNode })
       
       // Fetch fresh data (now that cache is stale, this will wait for the network request to finish)
       const [newHeroRes, newWidgetRes, newPartnersRes] = await Promise.all([
-        queryClient.fetchQuery({ queryKey: CONTACT_HERO_QUERY_KEY, queryFn: () => getHeroSections("ContactUs") }),
+        queryClient.fetchQuery({ queryKey: CONTACT_HERO_QUERY_KEY, queryFn: () => getHeroSectionByPage("ContactUs") }),
         queryClient.fetchQuery({ queryKey: CONTACT_WIDGET_QUERY_KEY, queryFn: getContactSideWidget }),
         queryClient.fetchQuery({ queryKey: CONTACT_PARTNERS_QUERY_KEY, queryFn: getContactPartnerSection })
       ]);
       
-      const hero = Array.isArray(newHeroRes.data) ? newHeroRes.data[0] : newHeroRes.data;
+      const hero = Array.isArray(newHeroRes) ? newHeroRes[0] : newHeroRes;
       const widget = newWidgetRes.data;
       const partnersSection = newPartnersRes.data;
       
@@ -249,7 +252,10 @@ export function ContactPageProvider({ children }: { children: React.ReactNode })
         widgetImageName: widget?.image?.fileName || "Uploaded Image",
         partnersSectionId: partnersSection?.id || "",
         partnersSectionTitle: partnersSection?.sectionTitle || "",
-        partners: (partnersSection?.partners || []).map(p => ({
+        partners: (Array.isArray(partnersSection?.partners) 
+          ? partnersSection.partners 
+          : (partnersSection?.partners ? [partnersSection.partners] : [])
+        ).map((p: any) => ({
           id: crypto.randomUUID(),
           imageId: p.imageId,
           imageUrl: p.image?.fileUrl || "",

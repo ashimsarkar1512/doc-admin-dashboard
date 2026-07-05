@@ -388,7 +388,7 @@ function LogoUploadBox({
 
   return (
     <div>
-      <p className="text-sm font-medium text-slate-700 mb-2">{label}</p>
+      <p className="text-sm font-bold text-slate-700 mb-2">{label}</p>
 
       {/* single colored box holding the logo preview + sublabel + upload button */}
       <div
@@ -480,7 +480,7 @@ function SmallUploadBox({
 
       <div className="flex items-center justify-between mt-2">
         {bottomLabel ? (
-          <p className="text-xs text-slate-500">{bottomLabel}</p>
+          <p className="text-xs font-bold text-slate-800">{bottomLabel}</p>
         ) : (
           <span />
         )}
@@ -498,7 +498,7 @@ function SmallUploadBox({
 
         <label
           htmlFor={inputId}
-          className="inline-flex items-center gap-2 mt-3 px-3 py-1.5 text-xs font-medium text-white bg-[#D1D5DC] border border-slate-200 rounded-md shadow-sm hover:bg-slate-200 transition cursor-pointer"
+          className="inline-flex items-center gap-2 mt-3 px-3 py-1.5 text-xs font-medium text-white bg-blue-600 rounded-md shadow-sm hover:bg-blue-700 transition cursor-pointer"
         >
           <Upload size={16} /> Upload
         </label>
@@ -622,9 +622,9 @@ export default function SiteSettingsGeneral({ infoData }: Props) {
       <div className="mb-4">
         <label
           htmlFor="site-title"
-          className="block text-sm font-medium text-slate-700 mb-1.5"
+          className="block text-sm font-bold text-slate-700 mb-1.5"
         >
-          Site Title:
+          Site Title: 
         </label>
         <input
           id="site-title"
@@ -639,7 +639,7 @@ export default function SiteSettingsGeneral({ infoData }: Props) {
         <div>
           <label
             htmlFor="meta-desc"
-            className="block text-sm font-medium text-slate-700 mb-1.5"
+            className="block text-sm font-bold text-slate-700 mb-1.5"
           >
             Meta Description:
           </label>
@@ -654,7 +654,7 @@ export default function SiteSettingsGeneral({ infoData }: Props) {
 
         {/* SERP Preview */}
         <div>
-          <p className="text-sm font-medium text-slate-700 mb-1.5 ">Preview</p>
+          <p className="text-sm font-bold text-slate-700 mb-1.5 ">Preview</p>
 
           <div className="border border-slate-200 rounded-lg p-4 bg-white">
             <div className="flex items-center gap-2 mb-1">
@@ -712,8 +712,8 @@ export default function SiteSettingsGeneral({ infoData }: Props) {
       {/* Favicon / Social Preview */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div>
-          <p className="text-sm font-medium text-slate-700 mb-1">Favicon</p>
-          <p className="text-xs text-slate-400 mb-2">64 × 64 pixels</p>
+          <p className="text-sm font-bold text-slate-700 mb-1">Favicon</p>
+          <p className="text-xs text-slate-600 mb-2">64 × 64 pixels</p>
 
           <div className="grid grid-cols-2 gap-3 ">
             <SmallUploadBox
@@ -745,7 +745,7 @@ export default function SiteSettingsGeneral({ infoData }: Props) {
         </div>
 
         <div>
-          <p className="text-sm font-medium text-slate-700 mb-1">
+          <p className="text-sm font-bold text-slate-700 mb-1">
             Social Preview
           </p>
           <p className="text-xs text-slate-400 mb-2">1280 × 630 pixels</p>

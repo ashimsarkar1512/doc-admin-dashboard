@@ -47,8 +47,8 @@ export default function BillingCancellationPageEditor() {
     const fetchHero = async () => {
       try {
         const response = await getHeroSections("BillingCancellation");
-        if (response.data && response.data.length > 0) {
-          const hero = response.data[0];
+        if (response && response.length > 0) {
+          const hero = response[0];
           setHeroId(hero.id);
           setHeroTitle(hero.title);
           setHeroDescription(hero.description);

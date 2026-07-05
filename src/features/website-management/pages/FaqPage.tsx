@@ -3,7 +3,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Loader2, Plus, Save, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import {
-  getHeroSections,
+  getHeroSectionByPage,
   updateHeroSection,
 } from "@/api/endpoints/hero-section.api";
 import {
@@ -19,6 +19,37 @@ interface FaqFormItem {
   id: string;
   question: string;
   answer: string;
+}
+
+function buildFaqSnapshot({
+  heroTitle,
+  heroDescription,
+  searchPlaceholder,
+  faqs,
+  bottomCtaTitle,
+  bottomCtaButtonText,
+  bottomCtaUrl,
+  bottomCtaNewTab,
+}: {
+  heroTitle: string;
+  heroDescription: string;
+  searchPlaceholder: string;
+  faqs: FaqFormItem[];
+  bottomCtaTitle: string;
+  bottomCtaButtonText: string;
+  bottomCtaUrl: string;
+  bottomCtaNewTab: boolean;
+}) {
+  return JSON.stringify({
+    heroTitle,
+    heroDescription,
+    searchPlaceholder,
+    faqs,
+    bottomCtaTitle,
+    bottomCtaButtonText,
+    bottomCtaUrl,
+    bottomCtaNewTab,
+  });
 }
 
 function SectionCard({
@@ -93,15 +124,17 @@ function TextAreaInput({
 function SaveButton({
   onClick,
   isSaving,
+  isDisabled,
 }: {
   onClick: () => void;
   isSaving: boolean;
+  isDisabled: boolean;
 }) {
   return (
     <button
       type="button"
       onClick={onClick}
-      disabled={isSaving}
+      disabled={isDisabled}
       className="flex w-fit items-center gap-2 rounded-lg bg-[#1447E6] px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
     >
       {isSaving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
@@ -136,33 +169,34 @@ export default function FaqPage() {
   const [isHeroInitialized, setIsHeroInitialized] = useState(false);
   const [isCtaInitialized, setIsCtaInitialized] = useState(false);
   const [isFaqInitialized, setIsFaqInitialized] = useState(false);
+  const [initialSnapshot, setInitialSnapshot] = useState<string | null>(null);
 
   const FAQ_HERO_QUERY_KEY = ["faq-hero-section"];
   const FAQ_CTA_QUERY_KEY = ["cta-section", PAGE_TYPE];
   const FAQ_SECTION_QUERY_KEY = ["faq-section", PAGE_TYPE];
 
-  const { data: heroData, refetch: refetchHeroData } = useQuery({
+  const { data: heroData } = useQuery({
     queryKey: FAQ_HERO_QUERY_KEY,
-    queryFn: () => getHeroSections(PAGE_TYPE),
+    queryFn: () => getHeroSectionByPage(PAGE_TYPE),
     staleTime: 5 * 60 * 1000,
   });
 
-  const { data: ctaData, refetch: refetchCtaData } = useQuery({
+  const { data: ctaData } = useQuery({
     queryKey: FAQ_CTA_QUERY_KEY,
     queryFn: () => getCtaSections(PAGE_TYPE),
     staleTime: 5 * 60 * 1000,
   });
 
-  const { data: faqSectionData, refetch: refetchFaqSectionData } = useQuery({
+  const { data: faqSectionData } = useQuery({
     queryKey: FAQ_SECTION_QUERY_KEY,
     queryFn: () => getFaqSection(PAGE_TYPE),
     staleTime: 5 * 60 * 1000,
   });
 
   useEffect(() => {
-    if (!heroData?.data || isHeroInitialized) return;
+    if (!heroData || isHeroInitialized) return;
 
-    const hero = Array.isArray(heroData.data) ? heroData.data[0] : heroData.data;
+    const hero = Array.isArray(heroData) ? heroData[0] : heroData;
     if (!hero) return;
 
     setHeroId(hero?.id || "");
@@ -195,8 +229,8 @@ export default function FaqPage() {
       faqSection?.faqs?.length
         ? faqSection.faqs
             .slice()
-            .sort((a, b) => a.order - b.order)
-            .map((faq) => ({
+            .sort((a: any, b: any) => a.order - b.order)
+            .map((faq: any) => ({
               id: faq.id,
               question: faq.question || "",
               answer: faq.answer || "",
@@ -205,6 +239,35 @@ export default function FaqPage() {
     );
     setIsFaqInitialized(true);
   }, [faqSectionData, isFaqInitialized]);
+
+  useEffect(() => {
+    if (!isHeroInitialized || !isCtaInitialized || !isFaqInitialized) return;
+
+    setInitialSnapshot(
+      buildFaqSnapshot({
+        heroTitle,
+        heroDescription,
+        searchPlaceholder,
+        faqs,
+        bottomCtaTitle,
+        bottomCtaButtonText,
+        bottomCtaUrl,
+        bottomCtaNewTab,
+      })
+    );
+  }, [isHeroInitialized, isCtaInitialized, isFaqInitialized]);
+
+  const currentSnapshot = buildFaqSnapshot({
+    heroTitle,
+    heroDescription,
+    searchPlaceholder,
+    faqs,
+    bottomCtaTitle,
+    bottomCtaButtonText,
+    bottomCtaUrl,
+    bottomCtaNewTab,
+  });
+  const isDirty = initialSnapshot !== null && currentSnapshot !== initialSnapshot;
 
   const updateFaq = (
     index: number,
@@ -231,21 +294,16 @@ export default function FaqPage() {
 
   const saveMutation = useMutation({
     mutationFn: async () => {
-      const promises: Promise<unknown>[] = [];
-
-      if (heroId) {
-        promises.push(
-          updateHeroSection(heroId, {
+      const heroPromise = heroId
+        ? updateHeroSection(heroId, {
             page: PAGE_TYPE,
             title: heroTitle,
             description: heroDescription,
           })
-        );
-      }
+        : Promise.resolve(null);
 
-      if (ctaId) {
-        promises.push(
-          updateCtaSection(ctaId, {
+      const ctaPromise = ctaId
+        ? updateCtaSection(ctaId, {
             page: PAGE_TYPE,
             sectionTitle: bottomCtaTitle,
             ctaButtonText: bottomCtaButtonText,
@@ -253,34 +311,97 @@ export default function FaqPage() {
             openInNewTab: bottomCtaNewTab,
             categoryId: null,
           })
-        );
-      }
+        : Promise.resolve(null);
 
-      promises.push(
-        updateFaqSection({
+      const faqPromise = updateFaqSection({
           pageType: PAGE_TYPE,
           sectionTitle: searchPlaceholder,
           faqs: faqs.map((faq) => ({
             question: faq.question,
             answer: faq.answer,
           })),
+        });
+
+      const [updatedHero, updatedCta, updatedFaq] = await Promise.all([
+        heroPromise,
+        ctaPromise,
+        faqPromise,
+      ]);
+
+      return {
+        updatedHero,
+        updatedCta,
+        updatedFaq,
+      };
+    },
+    onSuccess: async ({ updatedHero, updatedCta, updatedFaq }) => {
+      if (updatedHero) {
+        setHeroId(updatedHero.id || "");
+        setHeroTitle(updatedHero.title || "");
+        setHeroDescription(updatedHero.description || "");
+        queryClient.setQueryData(FAQ_HERO_QUERY_KEY, [updatedHero]);
+      }
+
+      if (updatedCta?.data) {
+        const cta = updatedCta.data;
+        setCtaId(cta.id || "");
+        setBottomCtaTitle(cta.sectionTitle || "");
+        setBottomCtaButtonText(cta.ctaButtonText || "");
+        setBottomCtaUrl(cta.url || "");
+        setBottomCtaNewTab(cta.openInNewTab ?? true);
+        queryClient.setQueryData(FAQ_CTA_QUERY_KEY, { data: [cta] });
+      }
+
+      if (updatedFaq?.data) {
+        const faqSection = updatedFaq.data;
+        const normalizedFaqs = faqSection.faqs?.length
+          ? faqSection.faqs
+              .slice()
+              .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+              .map((faq) => ({
+                id: faq.id || faq.faqId || crypto.randomUUID(),
+                question: faq.question || "",
+                answer: faq.answer || "",
+              }))
+          : [];
+
+        setSearchPlaceholder(faqSection.sectionTitle || "");
+        setFaqs(normalizedFaqs);
+        queryClient.setQueryData(FAQ_SECTION_QUERY_KEY, {
+          success: true,
+          message: updatedFaq.message,
+          data: faqSection,
+        });
+      }
+
+      setInitialSnapshot(
+        buildFaqSnapshot({
+          heroTitle: updatedHero?.title || heroTitle,
+          heroDescription: updatedHero?.description || heroDescription,
+          searchPlaceholder: updatedFaq?.data?.sectionTitle || searchPlaceholder,
+          faqs:
+            updatedFaq?.data?.faqs?.length
+              ? updatedFaq.data.faqs
+                  .slice()
+                  .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+                  .map((faq) => ({
+                    id: faq.id || faq.faqId || crypto.randomUUID(),
+                    question: faq.question || "",
+                    answer: faq.answer || "",
+                  }))
+              : faqs,
+          bottomCtaTitle: updatedCta?.data?.sectionTitle || bottomCtaTitle,
+          bottomCtaButtonText:
+            updatedCta?.data?.ctaButtonText || bottomCtaButtonText,
+          bottomCtaUrl: updatedCta?.data?.url || bottomCtaUrl,
+          bottomCtaNewTab: updatedCta?.data?.openInNewTab ?? bottomCtaNewTab,
         })
       );
-
-      await Promise.all(promises);
-    },
-    onSuccess: async () => {
       toast.success("FAQ page updated successfully");
-      setIsHeroInitialized(false);
-      setIsCtaInitialized(false);
-      setIsFaqInitialized(false);
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: FAQ_HERO_QUERY_KEY }),
         queryClient.invalidateQueries({ queryKey: FAQ_CTA_QUERY_KEY }),
         queryClient.invalidateQueries({ queryKey: FAQ_SECTION_QUERY_KEY }),
-        refetchHeroData(),
-        refetchCtaData(),
-        refetchFaqSectionData(),
       ]);
     },
     onError: () => {
@@ -295,12 +416,18 @@ export default function FaqPage() {
   return (
     <div className="w-full bg-[#f8fafc] p-4 md:p-6">
       <div className="mx-auto">
-        <div className="min-w-0 space-y-3">
+        <div className="min-w-0 space-y-5 lg:space-y-8">
           <div className="flex flex-col gap-y-3 sm:flex-row sm:items-center sm:justify-between">
-            <h1 className="font-['Quicksand'] text-[18px] font-semibold leading-[28px] tracking-[0px] text-[#101828] md:text-[20px] md:leading-[30px]">
-              Page: FAQ
-            </h1>
-            <SaveButton onClick={handleSave} isSaving={saveMutation.isPending} />
+             <div className="text-[15px] text-slate-800 font-medium flex items-center gap-2">
+            <span className="text-slate-700 font-semibold">Pages</span>
+            <span className="text-slate-500 font-normal">&gt;</span>
+            <span className="text-slate-900 font-bold">Faq</span>
+          </div>
+            <SaveButton
+              onClick={handleSave}
+              isSaving={saveMutation.isPending}
+              isDisabled={saveMutation.isPending || !isDirty}
+            />
           </div>
 
           <div className="flex flex-col gap-y-5 lg:gap-y-6.5">
@@ -416,7 +543,11 @@ export default function FaqPage() {
             </SectionCard>
 
             <div className="pt-1">
-              <SaveButton onClick={handleSave} isSaving={saveMutation.isPending} />
+              <SaveButton
+                onClick={handleSave}
+                isSaving={saveMutation.isPending}
+                isDisabled={saveMutation.isPending || !isDirty}
+              />
             </div>
           </div>
         </div>

@@ -41,7 +41,7 @@ export default function ViewMessageModal({
       ) : (
         <div className="space-y-6">
           {/* Contact Details Card */}
-          <div className="bg-slate-50 border border-slate-100 rounded-xl p-5 space-y-4">
+          <div className="bg-slate-50 border border-slate-100 rounded-xl p-3 sm:p-5 space-y-3 sm:space-y-4">
             <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Contact Information</h4>
 
 
@@ -70,8 +70,8 @@ export default function ViewMessageModal({
             </div>
             
             
-<div className="flex items-start gap-3">
-                <div className="mt-0.5 bg-white p-2 rounded-lg shadow-sm border border-slate-100 text-green-500">
+           <div className="flex items-start gap-3">
+                <div className="mt-0.5 bg-white p-2 rounded-lg shadow-sm border border-slate-100 text-green-500 shrink-0">
                   <Phone className="w-4 h-4" />
                 </div>
                 <div>
@@ -83,7 +83,7 @@ export default function ViewMessageModal({
           </div>
 
           {/* Inquiry Details Card */}
-          <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm space-y-5">
+          <div className="bg-white border border-slate-200 rounded-xl p-3 sm:p-5 shadow-sm space-y-4 sm:space-y-5">
             <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Inquiry Details</h4>
             
             <div className="flex items-start gap-3">
@@ -109,7 +109,7 @@ export default function ViewMessageModal({
             </div>
           </div>
 
-          <div className="flex gap-4 pt-2">
+          <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 pt-2">
             <button
               onClick={() => {
                 onDelete(lead.id);

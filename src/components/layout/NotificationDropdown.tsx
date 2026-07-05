@@ -2,10 +2,10 @@ import { useEffect, useRef, useState } from "react";
 import { Bell, CheckCheck, Loader2 } from "lucide-react";
 import { useNavigate } from "@tanstack/react-router";
 import { formatDistanceToNow } from "date-fns";
-import { 
-  useGetNotifications, 
-  useMarkAllNotificationsAsRead, 
-  useMarkNotificationAsRead 
+import {
+  useGetNotifications,
+  useMarkAllNotificationsAsRead,
+  useMarkNotificationAsRead,
 } from "@/features/notifications/hooks/useNotifications";
 
 export function NotificationDropdown() {
@@ -15,14 +15,18 @@ export function NotificationDropdown() {
 
   const { data, isLoading } = useGetNotifications();
   const { mutate: markAsRead } = useMarkNotificationAsRead();
-  const { mutate: markAllAsRead, isPending: isMarkingAll } = useMarkAllNotificationsAsRead();
+  const { mutate: markAllAsRead, isPending: isMarkingAll } =
+    useMarkAllNotificationsAsRead();
 
   const notifications = data?.data?.notifications || [];
   const unreadCount = data?.data?.unreadCount || 0;
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setIsOpen(false);
       }
     }
@@ -40,7 +44,7 @@ export function NotificationDropdown() {
         return `/dashboard/assessment-table`;
       case "PROPOSAL_ACCEPTED":
       case "PROPOSAL_REJECTED":
-        return `/dashboard/assessments`; 
+        return `/dashboard/assessments`;
       case "ORDER_STATUS_UPDATED":
         return `/dashboard/orders`;
       case "SUBSCRIPTION_CANCELLED":
@@ -50,7 +54,12 @@ export function NotificationDropdown() {
     }
   };
 
-  const handleNotificationClick = (id: string, isRead: boolean, actionType: string, referenceId: string) => {
+  const handleNotificationClick = (
+    id: string,
+    isRead: boolean,
+    actionType: string,
+    referenceId: string,
+  ) => {
     if (!isRead) {
       markAsRead(id);
     }
@@ -74,19 +83,27 @@ export function NotificationDropdown() {
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-slate-100 z-50 overflow-hidden flex flex-col max-h-[85vh]">
+        <div className="fixed left-4 right-4 top-[72px] sm:absolute sm:inset-auto sm:right-0 sm:top-auto sm:mt-2 sm:w-96 bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-slate-100 z-50 overflow-hidden flex flex-col max-h-[calc(100vh-100px)] sm:max-h-[85vh]">
           <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-white shrink-0">
             <div>
-              <h3 className="text-sm font-semibold text-slate-900">Notifications</h3>
-              <p className="text-xs text-slate-500">You have {unreadCount} unread messages</p>
+              <h3 className="text-base sm:text-sm font-semibold text-slate-900">
+                Notifications
+              </h3>
+              <p className="text-[13px] sm:text-xs text-slate-500">
+                You have {unreadCount} unread messages
+              </p>
             </div>
             {unreadCount > 0 && (
               <button
                 onClick={() => markAllAsRead()}
                 disabled={isMarkingAll}
-                className="text-xs font-medium text-[#1447E6] hover:text-blue-800 transition-colors flex items-center gap-1 disabled:opacity-50"
+                className="text-[13px] sm:text-xs font-medium text-[#1447E6] hover:text-blue-800 transition-colors flex items-center gap-1 disabled:opacity-50"
               >
-                {isMarkingAll ? <Loader2 size={14} className="animate-spin" /> : <CheckCheck size={14} />}
+                {isMarkingAll ? (
+                  <Loader2 size={14} className="animate-spin" />
+                ) : (
+                  <CheckCheck size={14} />
+                )}
                 Mark all read
               </button>
             )}
@@ -112,28 +129,32 @@ export function NotificationDropdown() {
                         notification.id,
                         notification.isRead,
                         notification.actionType,
-                        notification.referenceId
+                        notification.referenceId,
                       )
                     }
                     className={`text-left p-3 rounded-xl transition-all duration-200 flex flex-col gap-1 cursor-pointer ${
-                      notification.isRead 
-                        ? 'bg-transparent hover:bg-slate-50 opacity-75' 
-                        : 'bg-blue-50/50 hover:bg-blue-50 border border-blue-100/50'
+                      notification.isRead
+                        ? "bg-transparent hover:bg-slate-50 opacity-75"
+                        : "bg-blue-50/50 hover:bg-blue-50 border border-blue-100/50"
                     }`}
                   >
                     <div className="flex justify-between items-start gap-2">
-                      <span className={`text-sm font-semibold ${notification.isRead ? 'text-slate-700' : 'text-slate-900'}`}>
+                      <span
+                        className={`text-[15px] sm:text-sm font-semibold ${notification.isRead ? "text-slate-700" : "text-slate-900"}`}
+                      >
                         {notification.title}
                       </span>
                       {!notification.isRead && (
                         <span className="w-2 h-2 rounded-full bg-[#1447E6] shrink-0 mt-1.5" />
                       )}
                     </div>
-                    <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed">
+                    <p className="text-[13px] sm:text-xs text-slate-500 line-clamp-2 leading-relaxed">
                       {notification.message}
                     </p>
-                    <span className="text-[10px] font-medium text-slate-400 mt-1">
-                      {formatDistanceToNow(new Date(notification.createdAt), { addSuffix: true })}
+                    <span className="text-[11px] sm:text-[10px] font-medium text-slate-400 mt-1">
+                      {formatDistanceToNow(new Date(notification.createdAt), {
+                        addSuffix: true,
+                      })}
                     </span>
                   </button>
                 ))}

@@ -89,10 +89,10 @@ export function AccountInformation() {
   return (
     <div className="border border-slate-200 rounded-2xl bg-white shadow-sm overflow-hidden">
       <div className="p-5 border-b border-slate-100">
-        <h3 className="text-sm font-semibold text-slate-800">Account Information</h3>
+        <h3 className="text-lg font-semibold text-[#272628]">Account Information</h3>
       </div>
       
-      <div className="p-6 space-y-6">
+      <div className="p-3 sm:p-6 space-y-4 sm:space-y-6">
         {/* Avatar Upload */}
         <div className="relative w-16 h-16 rounded-full overflow-hidden border-2 border-white shadow-md bg-slate-100 flex items-center justify-center">
           {avatarPreview ? (
@@ -152,13 +152,13 @@ export function AccountInformation() {
             render={({ field }) => <FormInput label="Address" {...field} />}
           />
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <Controller
               name="city"
               control={control}
               render={({ field }) => <FormInput label="City" {...field} />}
             />
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-3 sm:gap-4">
               <Controller
                 name="state"
                 control={control}

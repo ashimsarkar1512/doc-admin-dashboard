@@ -63,7 +63,7 @@ export function HowItWorksJourneySection() {
               className="p-5 border border-slate-200 rounded-xl space-y-4 bg-white"
             >
               <div className="flex items-start gap-4">
-                <div className="flex gap-6 flex-1">
+                <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 flex-1">
                   <div className="flex-1">
                     <FormInput
                       label={`Step ${index + 1}:`}
@@ -86,7 +86,7 @@ export function HowItWorksJourneySection() {
                   </div>
                 </div>
                 {/* Spacer to perfectly align top inputs with bottom textarea */}
-                <div className="w-10 shrink-0"></div>
+                <div className="hidden sm:block w-10 shrink-0"></div>
               </div>
 
               <div className="flex items-end gap-4">

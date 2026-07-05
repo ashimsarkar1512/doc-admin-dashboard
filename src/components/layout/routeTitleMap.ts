@@ -1,4 +1,7 @@
-export const routeTitleMap: Record<string, { title: string; subtitle: string }> = {
+export const routeTitleMap: Record<
+  string,
+  { title: string; subtitle: string }
+> = {
   "/dashboard": {
     title: "Dashboard",
     subtitle: "Overview of your medical practice metrics",
@@ -89,29 +92,18 @@ export const routeTitleMap: Record<string, { title: string; subtitle: string }> 
     subtitle: "Manage the About Us page content",
   },
   "/dashboard/pages/eligibility": {
-    title: "Website Management",
-    subtitle: "Manage your website",
+    title: "Eligibility Page",
+    subtitle: "Manage the Eligibility page content",
   },
   "/dashboard/pages/coverage": {
-    title: "Website Management",
-    subtitle: "Manage your website",
+    title: "Coverage Page",
+    subtitle: "Manage the Coverage page content",
   },
-  "/dashboard/pages/about-us": {
-    title: "Website Management",
-    subtitle: "Manage your website",
+  "/dashboard/pages/faq": {
+    title: "FAQ Page",
+    subtitle: "Manage the FAQ page content",
   },
-  "/dashboard/pages/contact": {
-    title: "Website Management",
-    subtitle: "Manage your website",
-  },
-  "/dashboard/pages/medical-team": {
-    title: "Website Management",
-    subtitle: "Manage your website",
-  },
-  "/dashboard/pages/how-it-works": {
-    title: "Website Management",
-    subtitle: "Manage your website",
-  },
+
   "/dashboard/pages/billing-and-cancellation": {
     title: "Website Management",
     subtitle: "Manage your website",
@@ -147,6 +139,10 @@ export const routeTitleMap: Record<string, { title: string; subtitle: string }> 
   "/dashboard/audit-logs": {
     title: "Audit Logs",
     subtitle: "Track all system activity and user actions for compliance",
+  },
+  "/dashboard/request-records": {
+    title: "Request Records",
+    subtitle: "Manage patient requests for medical records, billing history, and data",
   },
   "/dashboard/consent-management": {
     title: "Consent Management",

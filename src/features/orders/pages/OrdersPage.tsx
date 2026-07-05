@@ -89,15 +89,15 @@ export default function OrdersPage() {
 
   return (
     <div className="w-full px-4 py-5 md:px-6 md:py-6">
-      {/* Tabs */}
-      <div className="flex gap-4 mb-6 overflow-x-auto pb-2">
+      {/* Tabs — wrapped so all statuses are visible on smaller screens */}
+      <div className="flex flex-wrap gap-2 mb-6">
         {statusTabs.map((tab) => {
           const Icon = tab.icon;
           return (
             <button
               key={tab.id}
               onClick={() => handleTabChange(tab.id)}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all whitespace-nowrap ${
+              className={`flex-shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all whitespace-nowrap ${
                 activeTab === tab.id
                   ? "bg-blue-600 text-white shadow-sm"
                   : "text-slate-600 hover:bg-slate-100"
@@ -111,9 +111,9 @@ export default function OrdersPage() {
       </div>
 
       {/* Search & Filter */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
-        <div className="flex gap-4 flex-1">
-          <div className="relative flex-1 max-w-md">
+      <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 mb-6">
+        <div className="flex flex-col sm:flex-row gap-4 flex-1 w-full">
+          <div className="relative flex-1 w-full max-w-none md:max-w-md">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
             <input
               type="text"
@@ -123,7 +123,7 @@ export default function OrdersPage() {
               className="w-full pl-11 pr-4 py-2.5 rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-sm text-slate-800 placeholder-slate-400"
             />
           </div>
-          <div className="relative flex-1 max-w-md">
+          <div className="relative flex-1 w-full max-w-none md:max-w-md">
             <User className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
             <input
               type="text"
@@ -175,7 +175,7 @@ export default function OrdersPage() {
           Failed to load orders. Please try again.
         </div>
       ) : orders.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-5 mb-6">
           {orders.map((order) => (
             <OrderCard
               key={order.id}
