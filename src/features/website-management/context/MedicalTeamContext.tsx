@@ -169,7 +169,7 @@ export function MedicalTeamProvider({
             ctaButtonText: form.ctaButtonText,
             url: form.ctaUrl,
             openInNewTab: form.ctaNewTab,
-            categoryId: null,
+            categoryId: undefined,
           }),
         );
       }

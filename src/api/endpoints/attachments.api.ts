@@ -82,7 +82,7 @@ export async function uploadMultipleAttachments(
     }
   );
 
-  return data.data;
+  return Array.isArray(data.data) ? data.data : [data.data as unknown as AttachmentResponse];
 }
 
 /**

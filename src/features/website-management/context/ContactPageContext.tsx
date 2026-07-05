@@ -126,7 +126,10 @@ export function ContactPageProvider({ children }: { children: React.ReactNode })
       widgetImageName: widget?.image?.fileName || "Uploaded Image",
       partnersSectionId: partnersSection?.id || "",
       partnersSectionTitle: partnersSection?.sectionTitle || "",
-      partners: (partnersSection?.partners || []).map(p => ({
+      partners: (Array.isArray(partnersSection?.partners) 
+        ? partnersSection.partners 
+        : (partnersSection?.partners ? [partnersSection.partners] : [])
+      ).map((p: any) => ({
         id: crypto.randomUUID(),
         imageId: p.imageId,
         imageUrl: p.image?.fileUrl || "",
@@ -249,7 +252,10 @@ export function ContactPageProvider({ children }: { children: React.ReactNode })
         widgetImageName: widget?.image?.fileName || "Uploaded Image",
         partnersSectionId: partnersSection?.id || "",
         partnersSectionTitle: partnersSection?.sectionTitle || "",
-        partners: (partnersSection?.partners || []).map(p => ({
+        partners: (Array.isArray(partnersSection?.partners) 
+          ? partnersSection.partners 
+          : (partnersSection?.partners ? [partnersSection.partners] : [])
+        ).map((p: any) => ({
           id: crypto.randomUUID(),
           imageId: p.imageId,
           imageUrl: p.image?.fileUrl || "",
