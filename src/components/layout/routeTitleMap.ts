@@ -180,6 +180,10 @@ export const routeTitleMap: Record<
     subtitle:
       "Real-time status and performance monitoring for all platform services",
   },
+  "/dashboard/newsletter": {
+    title: "Newsletter",
+    subtitle: "Manage your newsletter subscribers and statistics",
+  },
   "/dashboard/profile": {
     title: "Profile",
     subtitle: "Manage your profile and settings",

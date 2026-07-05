@@ -414,6 +414,13 @@ const systemHealthRoute = createRoute({
   component: SystemHealthPage,
 });
 
+import NewsletterPage from "@/features/dashboard/NewsletterPage";
+const newsletterRoute = createRoute({
+  getParentRoute: () => dashboardLayoutRoute,
+  path: "/newsletter",
+  component: NewsletterPage,
+});
+
 import AccountSettingsPage from "@/features/account-settings/pages/AccountSettingsPage";
 const accountSettingsRoute = createRoute({
   getParentRoute: () => dashboardLayoutRoute,
@@ -484,6 +491,7 @@ const routeTree = rootRoute.addChildren([
     communicationCenterRoute,
     documentCenterRoute,
     systemHealthRoute,
+    newsletterRoute,
     accountSettingsRoute,
   ]),
 ]);
