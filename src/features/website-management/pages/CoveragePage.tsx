@@ -335,7 +335,7 @@ export default function CoveragePage() {
     return (
         <div className="w-full bg-[#f8fafc] p-4 md:p-6">
             <div className="mx-auto">
-                <div className="min-w-0 space-y-3">
+                <div className="min-w-0 space-y-5 lg:space-y-8">
                     <div className="flex flex-col gap-y-3 sm:flex-row sm:items-center sm:justify-between">
                         <div className="text-[15px] text-slate-800 font-medium flex items-center gap-2">
                             <span className="text-slate-700 font-semibold">Pages</span>

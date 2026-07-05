@@ -402,48 +402,48 @@ export default function EligibilityPage() {
     mutationFn: async () => {
       const heroPromise = heroId
         ? updateHeroSection(heroId, {
-            page: PAGE_TYPE,
-            title: heroTitle,
-            description: heroDescription,
-          })
+          page: PAGE_TYPE,
+          title: heroTitle,
+          description: heroDescription,
+        })
         : Promise.resolve(null);
 
       const ctaPromise = ctaId
         ? updateCtaSection(ctaId, {
-            page: PAGE_TYPE,
-            sectionTitle: bottomCtaTitle,
-            ctaButtonText: bottomCtaButtonText,
-            url: bottomCtaUrl,
-            openInNewTab: bottomCtaNewTab,
-            categoryId: null,
-          })
+          page: PAGE_TYPE,
+          sectionTitle: bottomCtaTitle,
+          ctaButtonText: bottomCtaButtonText,
+          url: bottomCtaUrl,
+          openInNewTab: bottomCtaNewTab,
+          categoryId: null,
+        })
         : Promise.resolve(null);
 
       const eligibilityPromise = updateEligibilityContent({
-          generalTitle: sectionTitle,
-          generalPoints: points.map((point) => ({
-            point,
-            status: true,
-          })),
-          generalBottomDesc: reminder,
-          qualificationTitle: bmiSectionTitle,
-          qualificationbmi27Text: bmi27Title,
-          qualification27Description: bmi27Description,
-          qualificationbmi30Text: bmi30Title,
-          qualification30Description: bmi30Description,
-          weightConditionSecTitle: weightConditionsTitle,
-          weightConditions,
-          contraindicationsSectionTitle: contraindicationsTitle,
-          contraindicationsSectionWrite: contraindications,
-          requiredlabWorkSectionTitle: requiredLabWorkTitle,
-          requiredlabWorkSectionContraindications: requiredLabWorkItems,
-          ongoingMonitoringSectionTitle: ongoingMonitoringTitle,
-          ongoingMonitoringSectionContraindication: ongoingMonitoringItems,
-          disclaimerSectionTitle: disclaimerTitle,
-          disclaimerSectionDes: disclaimerDescription,
-          faqTitle: faqSectionTitle,
-          faqs,
-        });
+        generalTitle: sectionTitle,
+        generalPoints: points.map((point) => ({
+          point,
+          status: true,
+        })),
+        generalBottomDesc: reminder,
+        qualificationTitle: bmiSectionTitle,
+        qualificationbmi27Text: bmi27Title,
+        qualification27Description: bmi27Description,
+        qualificationbmi30Text: bmi30Title,
+        qualification30Description: bmi30Description,
+        weightConditionSecTitle: weightConditionsTitle,
+        weightConditions,
+        contraindicationsSectionTitle: contraindicationsTitle,
+        contraindicationsSectionWrite: contraindications,
+        requiredlabWorkSectionTitle: requiredLabWorkTitle,
+        requiredlabWorkSectionContraindications: requiredLabWorkItems,
+        ongoingMonitoringSectionTitle: ongoingMonitoringTitle,
+        ongoingMonitoringSectionContraindication: ongoingMonitoringItems,
+        disclaimerSectionTitle: disclaimerTitle,
+        disclaimerSectionDes: disclaimerDescription,
+        faqTitle: faqSectionTitle,
+        faqs,
+      });
 
       const [updatedHero, updatedCta, updatedEligibility] = await Promise.all([
         heroPromise,
@@ -590,13 +590,13 @@ export default function EligibilityPage() {
   return (
     <div className="w-full bg-[#f8fafc] p-4 md:p-6">
       <div className="mx-auto flex flex-col gap-4 lg:flex-row">
-        <div className="min-w-0 flex-1 space-y-3">
+        <div className="min-w-0 flex-1 space-y-5 lg:space-y-8">
           <div className="flex flex-col gap-y-3 sm:flex-row sm:items-center sm:justify-between">
-             <div className="text-[15px] text-slate-800 font-medium flex items-center gap-2">
-            <span className="text-slate-700 font-semibold">Pages</span>
-            <span className="text-slate-500 font-normal">&gt;</span>
-            <span className="text-slate-900 font-bold">Eligiblity</span>
-          </div>
+            <div className="text-[15px] text-slate-800 font-medium flex items-center gap-2">
+              <span className="text-slate-700 font-semibold">Pages</span>
+              <span className="text-slate-500 font-normal">&gt;</span>
+              <span className="text-slate-900 font-bold">Eligiblity</span>
+            </div>
             <div className="">
               <button
                 type="button"
@@ -715,18 +715,18 @@ export default function EligibilityPage() {
               setBottomCtaNewTab={setBottomCtaNewTab}
             />
             <button
-                type="button"
-                onClick={handleSave}
-                disabled={saveMutation.isPending || !isDirty}
-                className="flex items-center gap-2 px-6 py-2 bg-[#1447E6] w-fit text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {saveMutation.isPending ? (
-                  <Loader2 className="animate-spin" size={16} />
-                ) : (
-                  <Save size={16} />
-                )}
-                Save Changes
-              </button>
+              type="button"
+              onClick={handleSave}
+              disabled={saveMutation.isPending || !isDirty}
+              className="flex items-center gap-2 px-6 py-2 bg-[#1447E6] w-fit text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {saveMutation.isPending ? (
+                <Loader2 className="animate-spin" size={16} />
+              ) : (
+                <Save size={16} />
+              )}
+              Save Changes
+            </button>
           </div>
         </div>
       </div>
