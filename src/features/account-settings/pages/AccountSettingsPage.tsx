@@ -20,13 +20,13 @@ export default function AccountSettingsPage() {
   };
 
   return (
-    <div className="p-6 max-w-9xl space-y-6 bg-[#FAFAFA] min-h-full font-sans pb-20">
+    <div className="p-3 sm:p-4 md:p-6 max-w-9xl space-y-4 sm:space-y-6 bg-[#FAFAFA] min-h-full font-sans pb-20">
       {/* Page Header */}
-      <div className="mb-8">
-        <h2 className="text-2xl font-bold text-slate-800 tracking-tight">
+      <div className="mb-4 sm:mb-8">
+        <h2 className="text-xl sm:text-2xl font-bold text-slate-800 tracking-tight">
           Account Settings
         </h2>
-        <p className="text-sm font-medium text-slate-500">
+        <p className="text-xs sm:text-sm font-medium text-slate-500">
           Manage your account preferences and security
         </p>
       </div>

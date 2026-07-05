@@ -77,16 +77,16 @@ export function PasswordManagement() {
           <Lock size={16} />
         </div>
         <div>
-          <h3 className="text-sm font-semibold text-slate-800 leading-tight">
+          <h3 className="text-base sm:text-lg font-semibold text-[#272628] leading-tight">
             Password Management
           </h3>
-          <p className="text-[12px] text-slate-400 leading-tight mt-0.5">
+          <p className="text-xs sm:text-sm text-[#272628] leading-tight mt-0.5">
             Update passwords for admin and other roles
           </p>
         </div>
       </div>
 
-      <div className="p-6">
+      <div className="p-3 sm:p-6">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
           {/* Current Password */}
           <div>
@@ -219,10 +219,10 @@ export function PasswordManagement() {
           </div>
 
           {/* Password Requirements — live validation checklist */}
-          <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
+          <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 sm:p-4">
             <div className="flex items-center gap-2 mb-2">
-              <AlertCircle size={16} className="text-amber-500" />
-              <span className="text-sm font-semibold text-amber-700">
+              <AlertCircle size={15} className="text-[#E17100] shrink-0" />
+              <span className="text-sm sm:text-base font-semibold text-[#973C00]">
                 Password Requirements:
               </span>
             </div>
@@ -234,7 +234,7 @@ export function PasswordManagement() {
                   <li
                     key={rule.key}
                     className={`flex items-center gap-2 text-[13px] transition-colors ${
-                      passed ? "text-green-600" : "text-amber-600"
+                      passed ? "text-green-600" : "text-[#973C00]"
                     }`}
                   >
                     {passed ? (
