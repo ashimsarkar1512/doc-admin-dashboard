@@ -49,9 +49,8 @@ function StatCard({
 }) {
   return (
     <div
-      className={`rounded-xl px-6 py-5 flex flex-col gap-2 ${
-        isDark ? 'bg-slate-900 text-white' : 'bg-slate-800 text-white'
-      }`}
+      className={`rounded-xl px-6 py-5 flex flex-col gap-2 ${isDark ? 'bg-slate-900 text-white' : 'bg-slate-800 text-white'
+        }`}
     >
       <p className="text-xs font-medium text-slate-400 uppercase tracking-wider">{label}</p>
       <p className="text-3xl font-bold">
@@ -453,11 +452,10 @@ export default function RequestRecordsPage() {
                         <button
                           key={item}
                           onClick={() => setPage(item as number)}
-                          className={`w-8 h-8 rounded-lg border text-xs font-semibold transition-colors ${
-                            meta.page === item
-                              ? 'bg-blue-600 border-blue-600 text-white shadow-sm shadow-blue-600/20'
-                              : 'border-slate-200 text-slate-600 hover:bg-slate-100'
-                          }`}
+                          className={`w-8 h-8 rounded-lg border text-xs font-semibold transition-colors ${meta.page === item
+                            ? 'bg-blue-600 border-blue-600 text-white shadow-sm shadow-blue-600/20'
+                            : 'border-slate-200 text-slate-600 hover:bg-slate-100'
+                            }`}
                         >
                           {item}
                         </button>

@@ -15,7 +15,6 @@ import {
   BadgeDollarSign,
   Folders,
   ShoppingBag,
-  BookOpen,
   Star,
   Tag,
   Globe,
@@ -81,15 +80,15 @@ export function DashboardSidebar({
 
       {/* Logo at top of sidebar */}
       <div
-        className={`flex items-center border-b border-slate-100 h-20 shrink-0 ${
-          collapsed ? "justify-center px-2" : "px-5"
-        } transition-all duration-200`}
+        className={`flex items-center border-b border-slate-100 shrink-0 transition-all duration-200 ${
+          collapsed ? "h-20 justify-center px-2" : "p-[24px]"
+        }`}
       >
         <img
           src="/images/AdminLogo.png"
           alt="WeightLoss MD Logo"
           className={`object-contain transition-all duration-300 ${
-            collapsed ? "w-10 h-10" : "w-32 h-14"
+            collapsed ? "w-10 h-10" : "w-full max-w-[150px] h-auto"
           }`}
         />
       </div>
@@ -103,7 +102,7 @@ export function DashboardSidebar({
         <Link
           to="/dashboard"
           activeOptions={{ exact: true }}
-          className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-500 text-[#272628] hover:bg-slate-100 hover:text-slate-900 transition-all duration-150 [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-600 [&.active]:shadow-sm [&.active_svg]:text-[#1447E6] group"
+          className="flex items-center gap-3 px-[12px] h-[44px] rounded-[10px] text-sm font-500 text-[#272628] hover:bg-slate-100 hover:text-slate-900 transition-all duration-150 [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-600 [&.active]:shadow-sm [&.active_svg]:text-[#1447E6] group"
         >
           <LayoutGrid
             size={20}
@@ -115,7 +114,7 @@ export function DashboardSidebar({
         {can("view:doctor_management") && (
           <Link
             to="/dashboard/providers"
-            className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-500 text-[#272628] hover:bg-slate-100 hover:text-slate-900 transition-all duration-150 [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-600 [&.active]:shadow-sm [&.active_svg]:text-[#1447E6] group"
+            className="flex items-center gap-3 px-[12px] h-[44px] rounded-[10px] text-sm font-500 text-[#272628] hover:bg-slate-100 hover:text-slate-900 transition-all duration-150 [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-600 [&.active]:shadow-sm [&.active_svg]:text-[#1447E6] group"
           >
             <Stethoscope
               size={20}
@@ -143,7 +142,7 @@ export function DashboardSidebar({
             <div>
               <button
                 onClick={() => setPatientMenuOpen(!patientMenuOpen)}
-                className="w-full flex items-center justify-between px-3 py-2.5 rounded-md text-sm font-500 text-[#272628] hover:bg-slate-100 transition-colors group"
+                className="w-full flex items-center justify-between px-[12px] h-[44px] rounded-[10px] text-sm font-500 text-[#272628] hover:bg-slate-100 transition-colors group"
               >
                 <div className="flex items-center gap-3">
                   <Users
@@ -182,7 +181,7 @@ export function DashboardSidebar({
         {can("view:assessments") && (
           <Link
             to="/dashboard/assessments"
-            className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-500 text-[#272628] hover:bg-slate-100 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-600 [&.active_svg]:text-[#1447E6]"
+            className="flex items-center gap-3 px-[12px] h-[44px] rounded-[10px] text-sm font-500 text-[#272628] hover:bg-slate-100 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-600 [&.active_svg]:text-[#1447E6]"
           >
             <ClipboardList size={20} className="text-[#272628] shrink-0" />
             {!collapsed && <span className="tracking-wide">Assessments</span>}
@@ -192,7 +191,7 @@ export function DashboardSidebar({
         {can("view:orders") && (
           <Link
             to="/dashboard/orders"
-            className="flex items-center justify-between px-3 py-2.5 rounded-md text-sm font-500 text-[#272628] hover:bg-slate-100 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-600 [&.active_svg]:text-[#1447E6]"
+            className="flex items-center justify-between px-[12px] h-[44px] rounded-[10px] text-sm font-500 text-[#272628] hover:bg-slate-100 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-600 [&.active_svg]:text-[#1447E6]"
           >
             <div className="flex items-center gap-3">
               <Package size={20} className="text-[#272628] shrink-0" />
@@ -209,7 +208,7 @@ export function DashboardSidebar({
         {can("view:contact_leads") && (
           <Link
             to="/dashboard/contact-leads"
-            className="flex items-center justify-between px-3 py-2.5 rounded-md text-sm font-500 text-[#272628] hover:bg-slate-100 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-600 [&.active_svg]:text-[#1447E6]"
+            className="flex items-center justify-between px-[12px] h-[44px] rounded-[10px] text-sm font-500 text-[#272628] hover:bg-slate-100 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-600 [&.active_svg]:text-[#1447E6]"
           >
             <div className="flex items-center gap-3">
               <MessageSquare size={20} className="text-[#272628] shrink-0" />
@@ -228,7 +227,7 @@ export function DashboardSidebar({
         {can("view:payments") && (
           <Link
             to="/dashboard/payments"
-            className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-500 text-[#272628] hover:bg-slate-100 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-600 [&.active_svg]:text-[#1447E6]"
+            className="flex items-center gap-3 px-[12px] h-[44px] rounded-[10px] text-sm font-500 text-[#272628] hover:bg-slate-100 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-600 [&.active_svg]:text-[#1447E6]"
           >
             <BadgeDollarSign size={20} className="text-[#272628] shrink-0" />
             {!collapsed && <span className="tracking-wide">Payments</span>}
@@ -238,7 +237,7 @@ export function DashboardSidebar({
         {can("view:service_categories_and_plans") && (
           <Link
             to="/dashboard/categories"
-            className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-500 text-[#272628] hover:bg-slate-100 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-600 [&.active_svg]:text-[#1447E6]"
+            className="flex items-center gap-3 px-[12px] h-[44px] rounded-[10px] text-sm font-500 text-[#272628] hover:bg-slate-100 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-600 [&.active_svg]:text-[#1447E6]"
           >
             <Folders size={20} className="text-[#272628] shrink-0" />
             {!collapsed && (
@@ -250,25 +249,18 @@ export function DashboardSidebar({
         {can("view:products") && (
           <Link
             to="/dashboard/products"
-            className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-500 text-[#272628] hover:bg-slate-100 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-600 [&.active_svg]:text-[#1447E6]"
+            className="flex items-center gap-3 px-[12px] h-[44px] rounded-[10px] text-sm font-500 text-[#272628] hover:bg-slate-100 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-600 [&.active_svg]:text-[#1447E6]"
           >
             <ShoppingBag size={20} className="text-[#272628] shrink-0" />
             {!collapsed && <span className="tracking-wide">Products</span>}
           </Link>
         )}
 
-        <Link
-          to="/dashboard/blogs"
-          className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-500 text-[#272628] hover:bg-slate-100 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-600 [&.active_svg]:text-[#1447E6]"
-        >
-          <BookOpen size={20} className="text-[#272628] shrink-0" />
-          {!collapsed && <span className="tracking-wide">Blogs</span>}
-        </Link>
 
         {can("view:testimonials") && (
           <Link
             to="/dashboard/testimonials"
-            className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-500 text-[#272628] hover:bg-slate-100 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-600 [&.active_svg]:text-[#1447E6]"
+            className="flex items-center gap-3 px-[12px] h-[44px] rounded-[10px] text-sm font-500 text-[#272628] hover:bg-slate-100 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-600 [&.active_svg]:text-[#1447E6]"
           >
             <Star size={20} className="text-[#272628] shrink-0" />
             {!collapsed && <span className="tracking-wide">Testimonials</span>}
@@ -278,7 +270,7 @@ export function DashboardSidebar({
         {can("view:discounts_and_marketing") && (
           <Link
             to="/dashboard/discounts"
-            className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-500 text-[#272628] hover:bg-slate-100 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-600 [&.active_svg]:text-[#1447E6]"
+            className="flex items-center gap-3 px-[12px] h-[44px] rounded-[10px] text-sm font-500 text-[#272628] hover:bg-slate-100 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-600 [&.active_svg]:text-[#1447E6]"
           >
             <Tag size={20} className="text-[#272628] shrink-0" />
             {!collapsed && (
@@ -303,7 +295,7 @@ export function DashboardSidebar({
             <div>
               <button
                 onClick={() => setWebsiteMenuOpen(!websiteMenuOpen)}
-                className="w-full flex items-center justify-between px-3 py-2.5 rounded-md text-sm font-500 text-[#272628] hover:bg-slate-100 transition-colors group"
+                className="w-full flex items-center justify-between px-[12px] h-[44px] rounded-[10px] text-sm font-500 text-[#272628] hover:bg-slate-100 transition-colors group"
               >
                 <div className="flex items-center gap-3">
                   <Globe
@@ -357,6 +349,12 @@ export function DashboardSidebar({
                           className="flex items-center gap-3 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold"
                         >
                           About Us
+                        </Link>
+                        <Link
+                          to="/dashboard/blogs"
+                          className="flex items-center gap-3 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold"
+                        >
+                          Blogs
                         </Link>
                         <Link
                           to="/dashboard/pages/eligibility"
@@ -519,7 +517,7 @@ export function DashboardSidebar({
             <div>
               <button
                 onClick={() => setComplianceMenuOpen(!complianceMenuOpen)}
-                className="w-full flex items-center justify-between px-3 py-2.5 rounded-md text-sm font-500 text-[#272628] hover:bg-slate-100 transition-colors group"
+                className="w-full flex items-center justify-between px-[12px] h-[44px] rounded-[10px] text-sm font-500 text-[#272628] hover:bg-slate-100 transition-colors group"
               >
                 <span>Compliance & Access</span>
                 <ChevronDown

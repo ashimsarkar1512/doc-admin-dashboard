@@ -46,8 +46,8 @@ const formatCategoryName = (name: string) => {
 };
 
 const STATUS_STYLES: Record<string, { label: string; className: string }> = {
-  COMPLIANT:    { label: 'Compliant',   className: 'bg-green-100 text-green-700' },
-  RESTRICTED:   { label: 'Restricted',  className: 'bg-red-100 text-red-700' },
+  COMPLIANT: { label: 'Compliant', className: 'bg-green-100 text-green-700' },
+  RESTRICTED: { label: 'Restricted', className: 'bg-red-100 text-red-700' },
   COMMING_SOON: { label: 'Coming soon', className: 'bg-orange-100 text-orange-700' },
 };
 
@@ -63,11 +63,11 @@ export default function StateCoveragePage() {
   const canManageCoverage = canManage('state_coverage');
   const [fromDate, setFromDate] = useState('');
   const [toDate, setToDate] = useState('');
-  const [page, setPage]     = useState(1);
+  const [page, setPage] = useState(1);
   const limit = 10;
 
   // Modal state
-  const [selectedId, setSelectedId]   = useState<string | null>(null);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Build query params
@@ -111,15 +111,15 @@ export default function StateCoveragePage() {
   // ── Derived values ─────────────────────────────────────────────────────────
 
   const coverages = data?.data ?? [];
-  const meta      = data?.meta;
+  const meta = data?.meta;
   // const overview  = overviewData?.counts;
 
   // ── Render ─────────────────────────────────────────────────────────────────
 
   return (
     <div className="w-full p-4 md:p-8">
-  
-   
+
+
 
       {/* ── Overview Stat Cards ───────────────────────────────────────────── */}
       {/* <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-8">
@@ -142,7 +142,7 @@ export default function StateCoveragePage() {
           />
         </div>
 
-      
+
 
         <select
           value={status}

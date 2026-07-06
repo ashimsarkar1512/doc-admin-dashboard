@@ -192,6 +192,15 @@ code {
   html {
     @apply font-sans;
   }
+
+  th {
+    color: #272628 !important;
+    font-family: 'Quicksand', sans-serif !important;
+    font-size: 14px !important;
+    font-style: normal !important;
+    font-weight: 600 !important;
+    line-height: 100% !important;
+  }
 }
 
 /* Global scrollbar hide for all pages */

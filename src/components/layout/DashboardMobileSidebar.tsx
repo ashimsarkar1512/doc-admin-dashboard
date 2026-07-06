@@ -10,7 +10,7 @@ import {
   Folder,
   Activity,
   BadgeDollarSign,
-  BookOpen,
+  
   ClipboardList,
   Folders,
   Globe,
@@ -76,15 +76,15 @@ export function DashboardMobileSidebar({
         }`}
       >
         {/* Mobile sidebar header */}
-        <div className="flex items-center justify-between px-5 h-20 border-b border-slate-100 shrink-0">
+        <div className="flex items-center justify-between p-[24px] border-b border-slate-100 shrink-0">
           <img
             src="/images/AdminLogo.png"
             alt="WeightLoss MD Logo"
-            className="w-32 h-14 object-contain"
+            className="w-full max-w-[150px] h-auto object-contain"
           />
           <button
             onClick={() => setMobileSidebarOpen(false)}
-            className="flex items-center justify-center w-8 h-8 rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-700 transition-all"
+            className="flex items-center justify-center w-8 h-8 rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-700 transition-all shrink-0 ml-2"
           >
             <X size={18} />
           </button>
@@ -96,7 +96,7 @@ export function DashboardMobileSidebar({
             to="/dashboard"
             activeOptions={{ exact: true }}
             onClick={() => setMobileSidebarOpen(false)}
-            className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-500 text-[#272628] hover:bg-slate-100 transition-all [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-600 [&.active_svg]:text-[#1447E6]"
+            className="flex items-center gap-3 px-[12px] h-[44px] rounded-[10px] text-sm font-500 text-[#272628] hover:bg-slate-100 transition-all [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-600 [&.active_svg]:text-[#1447E6]"
           >
             <LayoutGrid size={20} className="shrink-0" />
             <span>Dashboard</span>
@@ -106,7 +106,7 @@ export function DashboardMobileSidebar({
             <Link
               to="/dashboard/providers"
               onClick={() => setMobileSidebarOpen(false)}
-              className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-500 text-[#272628] hover:bg-slate-100 transition-all [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-600 [&.active_svg]:text-[#1447E6]"
+              className="flex items-center gap-3 px-[12px] h-[44px] rounded-[10px] text-sm font-500 text-[#272628] hover:bg-slate-100 transition-all [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-600 [&.active_svg]:text-[#1447E6]"
             >
               <Stethoscope size={20} className="shrink-0" />
               <span>Doctor Management</span>
@@ -117,7 +117,7 @@ export function DashboardMobileSidebar({
             <div>
               <button
                 onClick={() => setPatientMenuOpen(!patientMenuOpen)}
-                className="w-full flex items-center justify-between px-3 py-2.5 rounded-md text-sm font-500 text-[#272628] hover:bg-slate-100 transition-colors group"
+                className="w-full flex items-center justify-between px-[12px] h-[44px] rounded-[10px] text-sm font-500 text-[#272628] hover:bg-slate-100 transition-colors group"
               >
                 <div className="flex items-center gap-3">
                   <Users size={20} className="shrink-0" />
@@ -156,7 +156,7 @@ export function DashboardMobileSidebar({
             <Link
               to="/dashboard/assessments"
               onClick={() => setMobileSidebarOpen(false)}
-              className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-500 text-[#272628] hover:bg-slate-100 transition-all [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-600 [&.active_svg]:text-[#1447E6]"
+              className="flex items-center gap-3 px-[12px] h-[44px] rounded-[10px] text-sm font-500 text-[#272628] hover:bg-slate-100 transition-all [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-600 [&.active_svg]:text-[#1447E6]"
             >
               <ClipboardList size={20} className="shrink-0" />
               <span>Assessments</span>
@@ -167,7 +167,7 @@ export function DashboardMobileSidebar({
             <Link
               to="/dashboard/orders"
               onClick={() => setMobileSidebarOpen(false)}
-              className="flex items-center justify-between px-3 py-2.5 rounded-md text-sm font-500 text-[#272628] hover:bg-slate-100 transition-all [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-600 [&.active_svg]:text-[#1447E6]"
+              className="flex items-center justify-between px-[12px] h-[44px] rounded-[10px] text-sm font-500 text-[#272628] hover:bg-slate-100 transition-all [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-600 [&.active_svg]:text-[#1447E6]"
             >
               <div className="flex items-center gap-3">
                 <Package size={20} className="shrink-0" />
@@ -185,7 +185,7 @@ export function DashboardMobileSidebar({
             <Link
               to="/dashboard/contact-leads"
               onClick={() => setMobileSidebarOpen(false)}
-              className="flex items-center justify-between px-3 py-2.5 rounded-md text-sm font-500 text-[#272628] hover:bg-slate-100 transition-all [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-600 [&.active_svg]:text-[#1447E6]"
+              className="flex items-center justify-between px-[12px] h-[44px] rounded-[10px] text-sm font-500 text-[#272628] hover:bg-slate-100 transition-all [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-600 [&.active_svg]:text-[#1447E6]"
             >
               <div className="flex items-center gap-3">
                 <MessageSquare size={20} className="shrink-0" />
@@ -203,7 +203,7 @@ export function DashboardMobileSidebar({
             <Link
               to="/dashboard/payments"
               onClick={() => setMobileSidebarOpen(false)}
-              className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-500 text-[#272628] hover:bg-slate-100 transition-all [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-600 [&.active_svg]:text-[#1447E6]"
+              className="flex items-center gap-3 px-[12px] h-[44px] rounded-[10px] text-sm font-500 text-[#272628] hover:bg-slate-100 transition-all [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-600 [&.active_svg]:text-[#1447E6]"
             >
               <BadgeDollarSign size={20} className="shrink-0" />
               <span>Payments</span>
@@ -214,7 +214,7 @@ export function DashboardMobileSidebar({
             <Link
               to="/dashboard/categories"
               onClick={() => setMobileSidebarOpen(false)}
-              className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-500 text-[#272628] hover:bg-slate-100 transition-all [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-600 [&.active_svg]:text-[#1447E6]"
+              className="flex items-center gap-3 px-[12px] h-[44px] rounded-[10px] text-sm font-500 text-[#272628] hover:bg-slate-100 transition-all [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-600 [&.active_svg]:text-[#1447E6]"
             >
               <Folders size={20} className="shrink-0" />
               <span>Service Category & Plan</span>
@@ -225,27 +225,20 @@ export function DashboardMobileSidebar({
             <Link
               to="/dashboard/products"
               onClick={() => setMobileSidebarOpen(false)}
-              className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-500 text-[#272628] hover:bg-slate-100 transition-all [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-600 [&.active_svg]:text-[#1447E6]"
+              className="flex items-center gap-3 px-[12px] h-[44px] rounded-[10px] text-sm font-500 text-[#272628] hover:bg-slate-100 transition-all [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-600 [&.active_svg]:text-[#1447E6]"
             >
               <ShoppingBag size={20} className="shrink-0" />
               <span>Products</span>
             </Link>
           )}
 
-          <Link
-            to="/dashboard/blogs"
-            onClick={() => setMobileSidebarOpen(false)}
-            className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-500 text-[#272628] hover:bg-slate-100 transition-all [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-600 [&.active_svg]:text-[#1447E6]"
-          >
-            <BookOpen size={20} className="shrink-0" />
-            <span>Blogs</span>
-          </Link>
+
 
           {can("view:testimonials") && (
             <Link
               to="/dashboard/testimonials"
               onClick={() => setMobileSidebarOpen(false)}
-              className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-500 text-[#272628] hover:bg-slate-100 transition-all [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-600 [&.active_svg]:text-[#1447E6]"
+              className="flex items-center gap-3 px-[12px] h-[44px] rounded-[10px] text-sm font-500 text-[#272628] hover:bg-slate-100 transition-all [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-600 [&.active_svg]:text-[#1447E6]"
             >
               <Star size={20} className="shrink-0" />
               <span>Testimonials</span>
@@ -256,7 +249,7 @@ export function DashboardMobileSidebar({
             <Link
               to="/dashboard/discounts"
               onClick={() => setMobileSidebarOpen(false)}
-              className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-500 text-[#272628] hover:bg-slate-100 transition-all [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-600 [&.active_svg]:text-[#1447E6]"
+              className="flex items-center gap-3 px-[12px] h-[44px] rounded-[10px] text-sm font-500 text-[#272628] hover:bg-slate-100 transition-all [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-600 [&.active_svg]:text-[#1447E6]"
             >
               <Tag size={20} className="shrink-0" />
               <span>Discounts & Marketing</span>
@@ -267,7 +260,7 @@ export function DashboardMobileSidebar({
             <div>
               <button
                 onClick={() => setWebsiteMenuOpen(!websiteMenuOpen)}
-                className="w-full flex items-center justify-between px-3 py-2.5 rounded-md text-sm font-500 text-[#272628] hover:bg-slate-100 transition-colors group"
+                className="w-full flex items-center justify-between px-[12px] h-[44px] rounded-[10px] text-sm font-500 text-[#272628] hover:bg-slate-100 transition-colors group"
               >
                 <div className="flex items-center gap-3">
                   <Globe size={20} className="shrink-0" />
@@ -321,6 +314,13 @@ export function DashboardMobileSidebar({
                           className="flex items-center gap-3 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold"
                         >
                           About Us
+                        </Link>
+                        <Link
+                          to="/dashboard/blogs"
+                          onClick={() => setMobileSidebarOpen(false)}
+                          className="flex items-center gap-3 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold"
+                        >
+                          Blogs
                         </Link>
                         <Link
                           to="/dashboard/pages/eligibility"
@@ -459,7 +459,7 @@ export function DashboardMobileSidebar({
             <div>
               <button
                 onClick={() => setComplianceMenuOpen(!complianceMenuOpen)}
-                className="w-full flex items-center justify-between px-3 py-2.5 rounded-md text-sm font-500 text-[#272628] hover:bg-slate-100 transition-colors group"
+                className="w-full flex items-center justify-between px-[12px] h-[44px] rounded-[10px] text-sm font-500 text-[#272628] hover:bg-slate-100 transition-colors group"
               >
                 <span>Compliance & Access</span>
                 <ChevronDown

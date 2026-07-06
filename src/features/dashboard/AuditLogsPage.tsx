@@ -102,7 +102,7 @@ export default function AuditLogsPage() {
   const [startDate, setStartDate] = useState<string>("");
   const [endDate, setEndDate] = useState<string>("");
   const [page, setPage] = useState(1);
-  const [isExporting, ] = useState(false);
+  const [isExporting,] = useState(false);
   const [selectedLog, setSelectedLog] = useState<AuditLog | null>(null);
   const limit = 10;
 
@@ -157,35 +157,35 @@ export default function AuditLogsPage() {
     refetchStats();
   };
 
-const handleExport = async () => {
-  try {
-    const blob = await exportAuditLogs({
-      search,
-      role,
-      activityType,
-      status,
-      startDate,
-      endDate,
-    });
+  const handleExport = async () => {
+    try {
+      const blob = await exportAuditLogs({
+        search,
+        role,
+        activityType,
+        status,
+        startDate,
+        endDate,
+      });
 
-    // 👇 file download trigger
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
+      // 👇 file download trigger
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
 
-    // filename (optional - backend থেকেও parse করতে পারো)
-    link.download = 'audit-logs.csv';
+      // filename (optional - backend থেকেও parse করতে পারো)
+      link.download = 'audit-logs.csv';
 
-    document.body.appendChild(link);
-    link.click();
+      document.body.appendChild(link);
+      link.click();
 
-    link.remove();
-    window.URL.revokeObjectURL(url);
-    refetchStats();
-  } catch (error) {
-    console.error('Export failed', error);
-  }
-};
+      link.remove();
+      window.URL.revokeObjectURL(url);
+      refetchStats();
+    } catch (error) {
+      console.error('Export failed', error);
+    }
+  };
 
   // ── Derived values ─────────────────────────────────────────────────────────
 
@@ -227,7 +227,7 @@ const handleExport = async () => {
           All Activity Logs
         </h2>
         <div className="flex items-center gap-2">
-         
+
           <button
             type="button"
             onClick={handleRefresh}
@@ -399,15 +399,14 @@ const handleExport = async () => {
                         {/* Role */}
                         <td className="px-5 py-4 whitespace-nowrap">
                           <span
-                            className={`inline-flex px-2.5 py-1 rounded-full text-xs font-semibold uppercase ${
-                              {
-                                PATIENT: "bg-blue-50 text-blue-600",
-                                DOCTOR: "bg-purple-50 text-purple-600",
-                                EMPLOYEE: "bg-amber-50 text-amber-600",
-                                ADMIN: "bg-sky-100 text-sky-700",
-                              }[item.userRole?.toUpperCase()] ??
+                            className={`inline-flex px-2.5 py-1 rounded-full text-xs font-semibold uppercase ${{
+                              PATIENT: "bg-blue-50 text-blue-600",
+                              DOCTOR: "bg-purple-50 text-purple-600",
+                              EMPLOYEE: "bg-amber-50 text-amber-600",
+                              ADMIN: "bg-sky-100 text-sky-700",
+                            }[item.userRole?.toUpperCase()] ??
                               "bg-slate-100 text-slate-600"
-                            }`}
+                              }`}
                           >
                             {item.userRole}
                           </span>
@@ -455,9 +454,9 @@ const handleExport = async () => {
               <span className="text-sm text-slate-500">
                 {meta
                   ? `Showing ${(meta.page - 1) * meta.limit + 1}–${Math.min(
-                      meta.page * meta.limit,
-                      meta.total,
-                    )} of ${meta.total} logs`
+                    meta.page * meta.limit,
+                    meta.total,
+                  )} of ${meta.total} logs`
                   : "Showing 0 of 0 logs"}
               </span>
               <div className="flex items-center gap-2">

@@ -29,10 +29,10 @@ export function DashboardHeader({
 
       {/* Page Title */}
       <div className="flex flex-col justify-center h-20 flex-1 min-w-0">
-        <h1 className="m-0 text-[#101828] font-['Quicksand'] text-[16px] md:text-[20px] font-[600] leading-[30px] tracking-[-0.2px] truncate">
+        <h1 className="m-0 text-[#101828] font-['Quicksand'] text-[20px] font-[600] leading-[30px] truncate">
           {pageTitle}
         </h1>
-        <p className="m-0 mt-0.5 text-[#6A7282] font-['Quicksand'] text-[12px] md:text-[14px] font-[400] leading-[20px] truncate">
+        <p className="m-0 mt-0.5 text-[#6A7282] font-['Quicksand'] text-[14px] font-[400] leading-[20px] truncate">
           {pageSubtitle}
         </p>
       </div>
