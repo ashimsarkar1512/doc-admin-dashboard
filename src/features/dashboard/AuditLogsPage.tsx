@@ -322,7 +322,7 @@ export default function AuditLogsPage() {
             handleFilterChange();
           }}
           placeholder="2026-06-01"
-          wrapperClassName="min-w-[160px]"
+          wrapperClassName="w-[160px]"
         />
 
         <DatePicker
@@ -332,7 +332,7 @@ export default function AuditLogsPage() {
             handleFilterChange();
           }}
           placeholder="//-//-//"
-          wrapperClassName="min-w-[160px]"
+          wrapperClassName="w-[160px]"
         />
       </form>
 

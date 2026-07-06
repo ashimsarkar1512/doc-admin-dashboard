@@ -510,9 +510,6 @@ export default function ConsentManagementPage() {
               <table className="w-full text-left text-sm text-slate-600 whitespace-nowrap">
                 <thead className="bg-slate-50 border-b border-slate-200">
                   <tr>
-                    <th className="px-5 py-4 w-12 text-center text-slate-300">
-                      <div className="w-4 h-4 rounded border border-slate-300 mx-auto" />
-                    </th>
                     {[
                       "User Name",
                       "Email",
@@ -538,9 +535,6 @@ export default function ConsentManagementPage() {
                         key={item.id}
                         className="hover:bg-slate-50 transition-colors"
                       >
-                        <td className="px-5 py-4 w-12 text-center text-slate-300">
-                          <div className="w-4 h-4 rounded border border-slate-300 mx-auto" />
-                        </td>
                         {/* User Name */}
                         <td className="px-5 py-4 whitespace-nowrap">
                           <div className="flex items-center gap-2.5">
