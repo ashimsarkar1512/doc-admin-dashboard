@@ -2,12 +2,21 @@ import { useParams, useNavigate } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { getAssessmentDetails } from "@/api/endpoints/dashboard/assessments";
+import type { ReactNode } from "react";
 
 // --- Sub-components ---
 
-function SectionCard({ children }: { children: React.ReactNode }) {
+function SectionCard({
+  children,
+  className = "",
+}: {
+  children: ReactNode;
+  className?: string;
+}) {
   return (
-    <div className="bg-white border border-[#E5E7EB] rounded-xl p-5 space-y-3">
+    <div
+      className={`bg-[#FFFFFF] border border-[#E5E7EB] rounded-xl p-4 sm:p-6 md:p-[30px] ${className}`}
+    >
       {children}
     </div>
   );
@@ -15,7 +24,7 @@ function SectionCard({ children }: { children: React.ReactNode }) {
 
 function Question({ text }: { text?: string | null }) {
   if (!text) return null;
-  return <p className="text-sm font-semibold text-slate-800">{text}</p>;
+  return <p className="text-[18px] md:text-[24px] font-[700] text-[#272628] font-['Quicksand'] leading-snug sm:leading-none">{text}</p>;
 }
 
 function RadioAnswer({ label }: { label: string }) {
@@ -63,6 +72,105 @@ function GrayCheckbox({ text }: { text: string }) {
         </svg>
       </div>
       <span className="text-sm text-slate-600">{text}</span>
+    </div>
+  );
+}
+
+// --- Health Vitals Parser ---
+function HealthVitalsDisplay({ text }: { text: string }) {
+  const parts = text.split(",").map((s) => s.trim());
+  let age = parts[0] || "N/A";
+  let height = parts[1] || "N/A";
+  let weight = parts[2] || "N/A";
+
+  let bmiStr = "";
+  let bmiCategory = "";
+  let isOverweight = false;
+
+  try {
+    let w = parseFloat(weight.replace(/[^0-9.]/g, ""));
+    let hInches = 0;
+    
+    // Parse height (e.g. "5'8", "6 feet", "68")
+    if (height.includes("'")) {
+      const hParts = height.split("'");
+      const feet = parseFloat(hParts[0] || "0");
+      const inches = parseFloat(hParts[1]?.replace(/[^0-9.]/g, "") || "0");
+      hInches = feet * 12 + inches;
+    } else if (
+      height.toLowerCase().includes("feet") ||
+      height.toLowerCase().includes("ft")
+    ) {
+      const feet = parseFloat(height.replace(/[^0-9.]/g, ""));
+      hInches = feet * 12;
+    } else {
+      const num = parseFloat(height.replace(/[^0-9.]/g, ""));
+      if (num < 10) hInches = num * 12; // e.g. "6"
+      else hInches = num; // e.g. "72"
+    }
+
+    if (w > 0 && hInches > 0) {
+      const bmi = (w * 703) / (hInches * hInches);
+      bmiStr = bmi.toFixed(1);
+      if (bmi < 18.5) {
+        bmiCategory = "Underweight";
+      } else if (bmi < 25) {
+        bmiCategory = "Normal weight";
+      } else if (bmi < 30) {
+        bmiCategory = "Overweight";
+        isOverweight = true;
+      } else {
+        bmiCategory = "Obese";
+        isOverweight = true;
+      }
+    }
+  } catch (e) {
+    // Ignore parse errors
+  }
+
+  const formatUnit = (val: string, unit: string) => {
+    if (val === "N/A") return val;
+    if (val.toLowerCase().includes(unit.toLowerCase().substring(0, 2))) return val;
+    return `${val} ${unit}`;
+  };
+
+  return (
+    <div className="w-full">
+      <table className="w-full text-sm text-slate-700 mb-4">
+        <tbody>
+          <tr>
+            <td className="py-2 w-24 text-slate-500">Age:</td>
+            <td className="py-2 font-medium">{formatUnit(age, "years")}</td>
+          </tr>
+          <tr>
+            <td className="py-2 text-slate-500">Height:</td>
+            <td className="py-2 font-medium">{height}</td>
+          </tr>
+          <tr>
+            <td className="py-2 text-slate-500">Weight:</td>
+            <td className="py-2 font-medium">{formatUnit(weight, "lbs")}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      {bmiStr && (
+        <div
+          className={`p-4 rounded-lg ${
+            isOverweight ? "bg-[#FDE8E8]" : "bg-[#E6F4EA]"
+          }`}
+        >
+          <p className="text-xs font-semibold text-slate-800 mb-1">
+            Health Snapshot:
+          </p>
+          <p
+            className={`text-sm font-medium ${
+              isOverweight ? "text-[#E02424]" : "text-[#137333]"
+            }`}
+          >
+            BMI: {bmiStr} ({bmiCategory})
+          </p>
+        </div>
+      )}
     </div>
   );
 }
@@ -160,11 +268,16 @@ function RenderQuestion({
 
       <div className="space-y-2 mt-4">
         {/* Text Response */}
-        {hasTextResponse && (
-          <div className="text-sm text-slate-600 bg-slate-50 p-3 rounded-lg border border-slate-100 whitespace-pre-wrap">
-            {question.patientAnswer?.textResponse}
-          </div>
-        )}
+        {hasTextResponse &&
+          (question.questionText
+            ?.toLowerCase()
+            .includes("age, current weight & height") ? (
+            <HealthVitalsDisplay text={question.patientAnswer?.textResponse} />
+          ) : (
+            <div className="text-sm text-slate-600 bg-slate-50 p-3 rounded-lg border border-slate-100 whitespace-pre-wrap">
+              {question.patientAnswer?.textResponse}
+            </div>
+          ))}
         {/* File Attachment - Show if present */}
         {fileUrl && (
           <div className="mt-3">
@@ -361,8 +474,26 @@ export default function PatientDetailsPage() {
       .join("")
       .toUpperCase() || "??";
 
+  // Extract any INFORMATION_ONLY questions that might be intended for the header
+  const headerInfoQuestions: any[] = [];
+  const remainingQuestions: any[] = [];
+  let foundSubtitleInApi = false;
+
+  (details.questions || []).forEach((q: any) => {
+    if (
+      q.type === "INFORMATION_ONLY" &&
+      (q.questionText?.includes("Weight loss is about") ||
+        q.description?.includes("Weight loss is about"))
+    ) {
+      headerInfoQuestions.push(q);
+      foundSubtitleInApi = true;
+    } else {
+      remainingQuestions.push(q);
+    }
+  });
+
   return (
-    <div className="w-full max-w-3xl mx-auto px-4 py-8">
+    <div className="w-full mx-auto px-4 py-8 bg-[#FFFFFF] min-h-screen">
       {/* Back button */}
       <button
         onClick={() => navigate({ to: "/dashboard" })}
@@ -372,13 +503,13 @@ export default function PatientDetailsPage() {
         Back to Dashboard
       </button>
 
-      <div className="space-y-4">
+      <div className="space-y-[20px]">
         {/* Patient Header Card */}
         <SectionCard>
           <div className="flex items-start justify-between flex-wrap gap-3 mb-4">
             <div className="flex items-center gap-3">
               {/* Avatar */}
-              <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center shrink-0 overflow-hidden">
+              <div className="w-10 h-10 sm:w-[50px] sm:h-[50px] rounded-full bg-blue-100 flex items-center justify-center shrink-0 overflow-hidden">
                 {pImage ? (
                   <img
                     src={pImage}
@@ -386,20 +517,34 @@ export default function PatientDetailsPage() {
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                  <span className="text-sm font-medium text-blue-700">
+                  <span className="text-sm sm:text-base font-medium text-blue-700">
                     {pInitials}
                   </span>
                 )}
               </div>
               <div>
-                <p className="font-semibold text-slate-800 text-sm">
+                <p className="text-[20px] sm:text-[24px] font-semibold text-[#272628] font-['Quicksand'] leading-tight mb-2">
                   Patient: {pName}
                 </p>
-                <p className="text-xs text-slate-500">
-                  Consultation id: {details.submissionCode}
-                </p>
+                <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-6 text-[15px] sm:text-[20px] font-normal text-[#272628] font-['Quicksand'] leading-tight">
+                  <p>Consultation id: {details.submissionCode}</p>
+                  <p>
+                    Submitted:{" "}
+                    {(details as any).submittedAt || (details as any).createdAt
+                      ? new Date(
+                          (details as any).submittedAt || (details as any).createdAt
+                        )
+                          .toLocaleDateString("en-GB", {
+                            day: "2-digit",
+                            month: "short",
+                            year: "numeric",
+                          })
+                          .replace(/ (\d{4})$/, ", $1")
+                      : "18 May, 2026"}
+                  </p>
+                </div>
                 {details.reviewedBy && (
-                  <p className="text-xs text-slate-500 mt-1">
+                  <p className="text-[14px] sm:text-[16px] text-slate-500 mt-2 font-['Quicksand']">
                     Reviewed by: {details.reviewedBy.name}
                   </p>
                 )}
@@ -426,29 +571,66 @@ export default function PatientDetailsPage() {
 
           {/* Hero Image */}
           {details.assessment.thumbnail && (
-            <div className="w-full h-48 rounded-xl overflow-hidden bg-slate-50 border border-slate-100 p-2 mt-4 flex items-center justify-center">
+            <div className="w-full mt-[28px] mb-[28px] rounded-xl overflow-hidden border border-slate-100">
               <img
                 src={details.assessment.thumbnail.replace(/`/g, "")}
                 alt={details.assessment.title}
-                className="w-full h-full object-contain drop-shadow-sm"
+                className="w-full h-auto object-cover max-h-[600px]"
                 onError={(e) => {
                   (e.target as HTMLImageElement).style.display = "none";
                 }}
               />
             </div>
           )}
-          <p className="text-xs text-slate-500 mt-2">
+          <p className="text-sm text-slate-500">
             {details.assessment.title}
           </p>
+          {(details.assessment as any).description && (
+            <p className="text-[16px] sm:text-[20px] font-normal text-[#2B2922] font-['Quicksand'] leading-snug sm:leading-[30px] mt-3 sm:mt-[20px]">
+              {(details.assessment as any).description}
+            </p>
+          )}
+          {(details.assessment as any).subtitle && (
+            <p className="text-[16px] sm:text-[20px] font-normal text-[#2B2922] font-['Quicksand'] leading-snug sm:leading-[30px] mt-3 sm:mt-[20px]">
+              {(details.assessment as any).subtitle}
+            </p>
+          )}
+          
+          {/* Fallback hardcoded subtitle if API doesn't provide it */}
+          {!foundSubtitleInApi && details.assessment.title?.includes("Weight Loss") && (
+            <p className="text-[16px] sm:text-[20px] font-normal text-[#2B2922] font-['Quicksand'] leading-snug sm:leading-[30px] mt-3 sm:mt-[20px]">
+              Weight loss is about more than diet and exercise alone. Weight Loss MD provides medical support to help you overcome these challenges.
+            </p>
+          )}
+
+          {headerInfoQuestions.map((q) => (
+            <div key={q.id} className="mt-3 sm:mt-[20px]">
+              {q.heading && (
+                <p className="text-[18px] sm:text-[20px] font-semibold text-[#2B2922] font-['Quicksand'] leading-snug sm:leading-[30px] mb-2">
+                  {q.heading}
+                </p>
+              )}
+              {q.questionText && (
+                <p className="text-[16px] sm:text-[20px] font-normal text-[#2B2922] font-['Quicksand'] leading-snug sm:leading-[30px]">
+                  {q.questionText}
+                </p>
+              )}
+              {q.description && (
+                <p className="text-[16px] sm:text-[20px] font-normal text-[#2B2922] font-['Quicksand'] leading-snug sm:leading-[30px] mt-2">
+                  {q.description}
+                </p>
+              )}
+            </div>
+          ))}
         </SectionCard>
 
         {/* Render all dynamic questions */}
-        {details.questions.map((q) => (
+        {remainingQuestions.map((q) => (
           <RenderQuestion key={q.id} question={q} />
         ))}
 
         {/* Compliance Confirmation */}
-        <div className="bg-white border border-[#E5E7EB] rounded-xl p-5 space-y-3">
+        <div className="bg-[#FFFFFF] border border-[#E5E7EB] rounded-xl p-4 sm:p-6 md:p-[30px] space-y-3">
           <div className="flex items-center gap-2 mb-1">
             <p className="text-sm font-semibold text-slate-800">
               Compliance Confirmation
@@ -460,7 +642,7 @@ export default function PatientDetailsPage() {
         </div>
 
         {/* Payment Summary */}
-        <div className="bg-white border border-[#E5E7EB] rounded-xl p-5">
+        <div className="bg-[#FFFFFF] border border-[#E5E7EB] rounded-xl p-4 sm:p-6 md:p-[30px] space-y-4">
           <p className="font-semibold text-slate-800 mb-1">Payment Summary</p>
           <p className="text-xs text-slate-500 mb-4">
             Patient selected{" "}
@@ -548,16 +730,25 @@ export default function PatientDetailsPage() {
 
         {/* Decline Reason (if doctorNotes exist) */}
         {details.doctorNotes && (
-          <div className="bg-amber-50 border border-amber-200 rounded-xl p-5">
-            <p className="font-semibold text-slate-800 text-sm">
-              Assessment Notes
+          <div className="bg-[#FFF8EB] border border-[#FEE685] rounded-[10px] p-[14px] flex flex-col gap-[14px]">
+            <p className="font-semibold text-[#D97706] text-base">
+              Assessment Decline Reason:
             </p>
-            {details.reviewedBy && (
-              <p className="text-xs text-slate-500 mt-1">
-                By: {details.reviewedBy.name}
-              </p>
-            )}
-            <p className="text-sm text-slate-600 mt-4">{details.doctorNotes}</p>
+            <div className="flex justify-between items-center text-sm text-[#B45309]">
+              {details.reviewedBy ? (
+                <span>Reviewed by: {details.reviewedBy.name}</span>
+              ) : (
+                <span />
+              )}
+              {(details as any).updatedAt && (
+                <span>
+                  Decline Date: {new Date((details as any).updatedAt).toLocaleDateString()}
+                </span>
+              )}
+            </div>
+            <p className="text-sm text-[#92400E] whitespace-pre-wrap">
+              {details.doctorNotes}
+            </p>
           </div>
         )}
       </div>

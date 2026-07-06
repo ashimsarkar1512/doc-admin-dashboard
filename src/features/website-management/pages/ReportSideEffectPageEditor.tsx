@@ -142,7 +142,9 @@ export default function ReportSideEffectPageEditor() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
         <div>
-          <h2 className="text-xl font-bold text-[#101828]">Report a Side Effect</h2>
+          <h2 className="text-xl font-bold text-[#101828]">
+            <span className="font-normal">Page &gt; </span>Report a Side Effect
+          </h2>
         </div>
         <button
           type="button"

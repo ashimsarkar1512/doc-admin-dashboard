@@ -4,12 +4,13 @@ import {
   Search,
   AlertCircle,
   Loader2,
-  Download,
+  FileDown,
 } from 'lucide-react';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 import {
   getNewsletterSubscribers,
   getNewsletterStats,
-  exportNewsletterSubscribers,
 } from '@/api/endpoints/newsletters.api';
 import { toast } from 'sonner';
 
@@ -68,26 +69,154 @@ export default function NewsletterPage() {
     setPage(1);
   };
 
-  const handleExport = async () => {
+  const handleExport = () => {
     setIsExporting(true);
-    const toastId = toast.loading('Exporting subscribers...');
-    try {
-      const blob = await exportNewsletterSubscribers();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'newsletter_subscribers.csv';
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
-      toast.success('Export successful', { id: toastId });
-    } catch (error) {
-      console.error('Failed to export newsletter subscribers', error);
-      toast.error('Failed to export subscribers', { id: toastId });
-    } finally {
-      setIsExporting(false);
-    }
+
+    getNewsletterSubscribers({
+      limit: 1000,
+      search: search.trim() || undefined,
+    })
+      .then((allData) => {
+        const exportSubscribers = allData.data ?? [];
+
+        if (exportSubscribers.length === 0) {
+          toast.error('No subscribers to export');
+          setIsExporting(false);
+          return;
+        }
+
+        const doc = new jsPDF({
+          orientation: "portrait",
+          unit: "mm",
+          format: "a4",
+        });
+
+        // Add background header gradient (simulated)
+        const startColor = [44, 97, 91]; // #2c615b
+        const midColor = [93, 142, 135]; // #5d8e87
+        const endColor = [24, 49, 44]; // #18312c
+
+        const steps = 40;
+
+        for (let i = 0; i < steps; i++) {
+          let r, g, b;
+
+          if (i < steps / 2) {
+            const t = i / (steps / 2);
+            r = startColor[0] + (midColor[0] - startColor[0]) * t;
+            g = startColor[1] + (midColor[1] - startColor[1]) * t;
+            b = startColor[2] + (midColor[2] - startColor[2]) * t;
+          } else {
+            const t = (i - steps / 2) / (steps / 2);
+            r = midColor[0] + (endColor[0] - midColor[0]) * t;
+            g = midColor[1] + (endColor[1] - midColor[1]) * t;
+            b = midColor[2] + (endColor[2] - midColor[2]) * t;
+          }
+
+          doc.setFillColor(r, g, b);
+          doc.rect(0, i, 210, 1, "F");
+        }
+
+        // Add Title
+        doc.setFontSize(24);
+        doc.setTextColor(255, 255, 255);
+        doc.text("Newsletter Subscribers Report", 14, 20);
+
+        // Add Subtitle/Info in Header
+        doc.setFontSize(10);
+        doc.setTextColor(203, 213, 225); // slate-300
+        const generatedDate = new Date().toLocaleString();
+        doc.text(`Generated on: ${generatedDate}`, 14, 28);
+        doc.text(`Total Subscribers Found: ${exportSubscribers.length}`, 14, 33);
+
+        // Filters badge area
+        if (search.trim()) {
+          doc.setFontSize(9);
+          let filterStr = "Filters Applied: ";
+          filterStr += `Search: "${search.trim()}"`;
+          doc.text(filterStr, 14, 37);
+        }
+
+        const tableColumn = [
+          "#",
+          "Email Address",
+          "Subscribed Date",
+        ];
+        const tableRows = exportSubscribers.map((s, index: number) => [
+          index + 1,
+          s.email,
+          new Date(s.createdAt).toLocaleString('en-US', {
+            year: 'numeric',
+            month: 'short',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+          }),
+        ]);
+
+        autoTable(doc, {
+          head: [tableColumn],
+          body: tableRows,
+          startY: 45,
+          theme: "striped",
+          styles: {
+            fontSize: 10,
+            cellPadding: 3,
+            valign: "middle",
+            font: "helvetica",
+            textColor: [51, 65, 85], // slate-700
+          },
+          headStyles: {
+            fillColor: [241, 245, 249], // slate-100
+            textColor: [71, 85, 105], // slate-600
+            fontStyle: "bold",
+            halign: "left",
+            lineWidth: 0.1,
+            lineColor: [226, 232, 240], // slate-200
+          },
+          columnStyles: {
+            0: { halign: "center", cellWidth: 15 },
+            1: { fontStyle: "bold", textColor: [30, 41, 59] },
+            2: { halign: "center", cellWidth: 50 },
+          },
+          alternateRowStyles: {
+            fillColor: [250, 251, 252],
+          },
+          margin: { top: 45, bottom: 20 },
+          didDrawPage: (data) => {
+            const pageSize = doc.internal.pageSize;
+            const pageHeight = pageSize.height
+              ? pageSize.height
+              : pageSize.getHeight();
+            const pageWidth = pageSize.width
+              ? pageSize.width
+              : pageSize.getWidth();
+
+            doc.setFontSize(9);
+            doc.setTextColor(148, 163, 184);
+
+            const str = `Page ${data.pageNumber} of ${doc.internal.pages.length - 1}`;
+            doc.text(str, data.settings.margin.left, pageHeight - 10);
+
+            doc.text(
+              "Confidential Document - DocDashboard",
+              pageWidth - 14,
+              pageHeight - 10,
+              { align: "right" },
+            );
+          },
+        });
+
+        doc.save(
+          `newsletter_subscribers_${new Date().toISOString().split("T")[0]}.pdf`,
+        );
+        setIsExporting(false);
+      })
+      .catch((error) => {
+        console.error("Export error:", error);
+        setIsExporting(false);
+        toast.error("Failed to export subscribers data");
+      });
   };
 
   const stats = statsData?.data?.subscribers;
@@ -133,14 +262,19 @@ export default function NewsletterPage() {
         <button
           onClick={handleExport}
           disabled={isExporting}
-          className="flex items-center gap-2 px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+          className="flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-[#1447E6] rounded-lg hover:bg-blue-800 transition-colors whitespace-nowrap disabled:opacity-70 disabled:cursor-not-allowed min-w-[130px] justify-center"
         >
           {isExporting ? (
-            <Loader2 className="w-4 h-4 animate-spin" />
+            <>
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white" />
+              <span>Exporting...</span>
+            </>
           ) : (
-            <Download className="w-4 h-4" />
+            <>
+              <FileDown className="w-4 h-4" />
+              <span>Export PDF</span>
+            </>
           )}
-          {isExporting ? 'Exporting...' : 'Export CSV'}
         </button>
       </div>
 
