@@ -166,9 +166,13 @@ export default function PrivacyPolicyPageEditor() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div className="text-[15px] text-slate-800 font-medium flex items-center gap-2">
-          <span className="text-slate-900 text-xl font-bold">
-            Page: Privacy Policy
-          </span>
+          <div className="text-[15px] text-slate-800 font-medium flex items-center gap-2">
+            <span className="text-slate-700 font-semibold">Pages</span>
+            <span className="text-slate-500 font-normal">&gt;</span>
+            <span className="text-slate-900 font-bold">
+              Privacy Policy
+            </span>
+          </div>
         </div>
         <button
           onClick={() => handleSave()}

@@ -266,13 +266,17 @@ export default function LabTestingPageEditor() {
   }
 
   return (
-    <div className="p-4 sm:p-7 max-w-7xl mx-auto space-y-8 min-h-full font-sans pb-20 bg-slate-50">
+    <div className="p-4 sm:p-7  space-y-8 min-h-full font-sans pb-20 bg-slate-50">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div className="text-[15px] text-slate-800 font-medium flex items-center gap-2">
-          <span className="text-slate-900 text-xl font-bold">
-            Pages : Lab Testing
-          </span>
+          <div className="text-[15px] text-slate-800 font-medium flex items-center gap-2">
+            <span className="text-slate-700 font-semibold">Pages</span>
+            <span className="text-slate-500 font-normal">&gt;</span>
+            <span className="text-slate-900 font-bold">
+              Lab Testing
+            </span>
+          </div>
         </div>
         <button
           onClick={() => handleSave()}
