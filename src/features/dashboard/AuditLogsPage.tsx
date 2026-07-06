@@ -322,7 +322,7 @@ const handleExport = async () => {
             handleFilterChange();
           }}
           placeholder="2026-06-01"
-          wrapperClassName="w-[140px]"
+          wrapperClassName="min-w-[160px]"
         />
 
         <DatePicker
@@ -332,7 +332,7 @@ const handleExport = async () => {
             handleFilterChange();
           }}
           placeholder="//-//-//"
-          wrapperClassName="w-[140px]"
+          wrapperClassName="min-w-[160px]"
         />
       </form>
 

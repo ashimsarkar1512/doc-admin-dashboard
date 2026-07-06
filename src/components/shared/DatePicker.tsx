@@ -41,7 +41,8 @@ export default function DatePicker({
         ref={inputRef}
         type="date"
         className={twMerge(
-          "w-full pl-3 pr-10 py-2.5 bg-white border border-slate-200 rounded-lg text-sm text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition cursor-pointer",
+          "w-full pl-3 pr-8 py-2.5 bg-white border border-slate-200 rounded-lg text-sm text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition cursor-pointer",
+          "[&::-webkit-calendar-picker-indicator]:hidden",
           className
         )}
         onClick={(e) => {
@@ -57,7 +58,7 @@ export default function DatePicker({
       />
       <Calendar
         className={twMerge(
-          "absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none",
+          "absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none",
           iconClassName
         )}
       />
