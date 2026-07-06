@@ -78,11 +78,10 @@ function StatCard({
 }) {
   return (
     <div
-      className={`rounded-xl px-6 py-5 flex flex-col gap-2 ${
-        isDark
+      className={`rounded-xl px-6 py-5 flex flex-col gap-2 ${isDark
           ? 'bg-slate-900 text-white'
           : 'bg-slate-800 text-white'
-      }`}
+        }`}
     >
       <p className="text-xs font-medium text-slate-400 uppercase tracking-wider">{label}</p>
       <p className="text-3xl font-bold">
@@ -151,41 +150,41 @@ export default function SideEffectReportPage() {
 
 
   const handleDelete = async (id: string) => {
-  const result = await Swal.fire({
-    title: "Delete Report?",
-    text: "This action cannot be undone.",
-    icon: "warning",
-    showCancelButton: true,
-    confirmButtonText: "Yes, Delete",
-    cancelButtonText: "Cancel",
-    reverseButtons: true,
-    confirmButtonColor: "#dc2626",
-  });
-
-  if (result.isConfirmed) {
-    deleteMutation.mutate(id, {
-      onSuccess: () => {
-        Swal.fire({
-          title: "Deleted!",
-          text: "The report has been deleted successfully.",
-          icon: "success",
-          timer: 2000,
-          showConfirmButton: false,
-        });
-      },
-
-      onError: (error: any) => {
-        Swal.fire({
-          title: "Error!",
-          text:
-            error?.response?.data?.message ||
-            "Failed to delete report.",
-          icon: "error",
-        });
-      },
+    const result = await Swal.fire({
+      title: "Delete Report?",
+      text: "This action cannot be undone.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, Delete",
+      cancelButtonText: "Cancel",
+      reverseButtons: true,
+      confirmButtonColor: "#dc2626",
     });
-  }
-};
+
+    if (result.isConfirmed) {
+      deleteMutation.mutate(id, {
+        onSuccess: () => {
+          Swal.fire({
+            title: "Deleted!",
+            text: "The report has been deleted successfully.",
+            icon: "success",
+            timer: 2000,
+            showConfirmButton: false,
+          });
+        },
+
+        onError: (error: any) => {
+          Swal.fire({
+            title: "Error!",
+            text:
+              error?.response?.data?.message ||
+              "Failed to delete report.",
+            icon: "error",
+          });
+        },
+      });
+    }
+  };
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     setPage(1);
@@ -239,7 +238,17 @@ export default function SideEffectReportPage() {
           />
         </div>
 
-     
+        <DatePicker
+          value={fromDate}
+          onChange={(e) => { setFromDate(e.target.value); handleFilterChange(); }}
+          wrapperClassName="w-[160px]"
+        />
+
+        <DatePicker
+          value={toDate}
+          onChange={(e) => { setToDate(e.target.value); handleFilterChange(); }}
+          wrapperClassName="w-[160px]"
+        />
 
         {/* Severity filter (mapped to All Type visually) */}
         <select
@@ -272,19 +281,6 @@ export default function SideEffectReportPage() {
           <option value="ESCALATED">Escalated</option>
           <option value="DISMISSED">Dismissed</option>
         </select>
-
-        {/* Dates */}
-        <DatePicker
-          value={fromDate}
-          onChange={(e) => { setFromDate(e.target.value); handleFilterChange(); }}
-          wrapperClassName="w-[160px]"
-        />
-
-        <DatePicker
-          value={toDate}
-          onChange={(e) => { setToDate(e.target.value); handleFilterChange(); }}
-          wrapperClassName="w-[160px]"
-        />
       </form>
 
       {/* ── Table ───────────────────────────────────────────── */}
