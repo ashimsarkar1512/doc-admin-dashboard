@@ -111,6 +111,7 @@ interface AssessmentInfo {
   title: string;
   thumbnail: string;
   category: string;
+  description?: string;
 }
 
 interface ReviewedBy {
