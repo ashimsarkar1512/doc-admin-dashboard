@@ -333,22 +333,22 @@ export default function ConsentManagementPage() {
         <StatCard
           label="Total Consents"
           value={statsLoading ? undefined : stats?.total}
-          // icon={<FileText className="w-4 h-4 text-gray-600" />}
+        // icon={<FileText className="w-4 h-4 text-gray-600" />}
         />
         <StatCard
           label="Granted"
           value={statsLoading ? undefined : stats?.granted}
-          // icon={<CheckCircle className="w-4 h-4 text-green-600" />}
+        // icon={<CheckCircle className="w-4 h-4 text-green-600" />}
         />
         <StatCard
           label="Pending"
           value={statsLoading ? undefined : stats?.pending}
-          // icon={<Clock className="w-4 h-4 text-yellow-600" />}
+        // icon={<Clock className="w-4 h-4 text-yellow-600" />}
         />
         <StatCard
           label="Revoked"
           value={statsLoading ? undefined : stats?.revoked}
-          // icon={<XCircle className="w-4 h-4 text-red-600" />}
+        // icon={<XCircle className="w-4 h-4 text-red-600" />}
         />
       </div>
 
@@ -559,15 +559,14 @@ export default function ConsentManagementPage() {
                         {/* Type */}
                         <td className="px-5 py-4 whitespace-nowrap">
                           <span
-                            className={`inline-flex px-3 py-1 rounded-full text-[11px] font-semibold ${
-                              {
-                                DATA_PROCESSING: "bg-blue-50 text-blue-600",
-                                MARKETING: "bg-purple-50 text-purple-600",
-                                ANALYTICS: "bg-teal-50 text-teal-600",
-                                AI_TRAINING: "bg-green-50 text-green-600",
-                              }[item.type?.toUpperCase()] ??
+                            className={`inline-flex px-3 py-1 rounded-full text-[11px] font-semibold ${{
+                              DATA_PROCESSING: "bg-blue-50 text-blue-600",
+                              MARKETING: "bg-purple-50 text-purple-600",
+                              ANALYTICS: "bg-teal-50 text-teal-600",
+                              AI_TRAINING: "bg-green-50 text-green-600",
+                            }[item.type?.toUpperCase()] ??
                               "bg-slate-100 text-slate-600"
-                            }`}
+                              }`}
                           >
                             {item.type
                               ?.replace(/_/g, " ")
@@ -589,12 +588,12 @@ export default function ConsentManagementPage() {
                           )}
                           {(item.status?.toUpperCase() === "REVOKED" ||
                             item.status?.toUpperCase() === "REJECTED") && (
-                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-semibold bg-red-50 text-red-600">
-                              <XCircle className="w-3.5 h-3.5" />{" "}
-                              {item.status.charAt(0).toUpperCase() +
-                                item.status.slice(1).toLowerCase()}
-                            </span>
-                          )}
+                              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-semibold bg-red-50 text-red-600">
+                                <XCircle className="w-3.5 h-3.5" />{" "}
+                                {item.status.charAt(0).toUpperCase() +
+                                  item.status.slice(1).toLowerCase()}
+                              </span>
+                            )}
                           {item.status?.toUpperCase() === "PENDING" && (
                             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-semibold bg-yellow-50 text-yellow-600">
                               <AlertCircle className="w-3.5 h-3.5" /> Pending
@@ -680,9 +679,9 @@ export default function ConsentManagementPage() {
               <span className="text-sm text-slate-500">
                 {meta
                   ? `Showing ${(meta.page - 1) * meta.limit + 1}–${Math.min(
-                      meta.page * meta.limit,
-                      meta.total,
-                    )} of ${meta.total} logs`
+                    meta.page * meta.limit,
+                    meta.total,
+                  )} of ${meta.total} logs`
                   : "Showing 0 of 0 logs"}
               </span>
               <div className="flex items-center gap-2">
