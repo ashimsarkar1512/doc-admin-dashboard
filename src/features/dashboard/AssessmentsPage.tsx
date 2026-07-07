@@ -7,21 +7,12 @@ import MetricCard from '@/components/shared/cards/MetricCard';
 import AssessmentCard from '@/components/shared/cards/AssessmentCard';
 import PageHeader from '@/components/shared/PageHeader';
 import AssessmentFormDialog from './components/AssessmentFormDialog';
-import { getAssessments, getAssessmentStats } from '@/api/endpoints/assessments.api';
+import { getAssessments, getAssessmentStats, deleteAssessment } from '@/api/endpoints/assessments.api';
 import { getCategories } from '@/api/endpoints/categories.api';
 import { API_BASE_URL } from '@/api/config';
 import Swal from 'sweetalert2';
 import { usePermissions } from '@/hooks/usePermissions';
 
-async function deleteAssessment(id: string): Promise<void> {
-  const response = await fetch(`${API_BASE_URL}/admin/assessments/${id}`, {
-    method: 'DELETE',
-  });
-  if (!response.ok) {
-    const err = await response.json().catch(() => ({}));
-    throw new Error((err as { message?: string }).message || 'Failed to delete assessment');
-  }
-}
 
 export default function AssessmentsPage() {
   const queryClient = useQueryClient();
