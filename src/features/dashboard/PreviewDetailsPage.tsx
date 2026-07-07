@@ -24,7 +24,7 @@ function SectionCard({
 
 function Question({ text }: { text?: string | null }) {
   if (!text) return null;
-  return <p className="text-[18px] md:text-[24px] font-[700] text-[#272628] font-['Quicksand'] leading-snug">{text}</p>;
+  return <p className="text-[18px] md:text-[24px] font-[700] text-[#272628] font-['Quicksand'] leading-snug sm:leading-none">{text}</p>;
 }
 
 function RadioAnswer({ label }: { label: string }) {
@@ -493,7 +493,7 @@ export default function PreviewDetailsPage() {
   });
 
   return (
-    <div className="w-full mx-auto px-4 py-8 bg-[#F9FAFB] min-h-screen">
+    <div className="w-full mx-auto px-4 py-8 bg-[#FFFFFF] min-h-screen">
       {/* Back button */}
       <button
         onClick={() => navigate({ to: "/dashboard/assessment-table" })}
@@ -503,10 +503,10 @@ export default function PreviewDetailsPage() {
         Back to Assessments
       </button>
 
-      <div className="max-w-4xl mx-auto space-y-[20px]">
+      <div className="space-y-[20px]">
         {/* Patient Header Card */}
         <SectionCard>
-          <div className="flex flex-col sm:flex-row items-start justify-between gap-3 mb-4">
+          <div className="flex items-start justify-between flex-wrap gap-3 mb-4">
             <div className="flex items-center gap-3">
               {/* Avatar */}
               <div className="w-10 h-10 sm:w-[50px] sm:h-[50px] rounded-full bg-blue-100 flex items-center justify-center shrink-0 overflow-hidden">
@@ -523,10 +523,10 @@ export default function PreviewDetailsPage() {
                 )}
               </div>
               <div>
-                <p className="text-[18px] sm:text-[24px] font-semibold text-[#272628] font-['Quicksand'] leading-tight mb-1">
+                <p className="text-[20px] sm:text-[24px] font-semibold text-[#272628] font-['Quicksand'] leading-tight mb-2">
                   Patient: {pName}
                 </p>
-                <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-6 text-[13px] sm:text-[15px] font-normal text-[#272628] font-['Quicksand']">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-6 text-[15px] sm:text-[20px] font-normal text-[#272628] font-['Quicksand'] leading-tight">
                   <p>Consultation id: {details.submissionCode}</p>
                   <p>
                     Submitted:{" "}
@@ -544,7 +544,7 @@ export default function PreviewDetailsPage() {
                   </p>
                 </div>
                 {details.reviewedBy && (
-                  <p className="text-[13px] sm:text-[14px] text-slate-500 mt-1 font-['Quicksand']">
+                  <p className="text-[14px] sm:text-[16px] text-slate-500 mt-2 font-['Quicksand']">
                     Reviewed by: {details.reviewedBy.name}
                   </p>
                 )}
@@ -571,11 +571,11 @@ export default function PreviewDetailsPage() {
 
           {/* Hero Image */}
           {details.assessment.thumbnail && (
-            <div className="w-full mt-4 mb-4 rounded-xl overflow-hidden border border-slate-100">
+            <div className="w-full mt-[28px] mb-[28px] rounded-xl overflow-hidden border border-slate-100">
               <img
                 src={details.assessment.thumbnail.replace(/`/g, "")}
                 alt={details.assessment.title}
-                className="w-full h-auto object-cover max-h-[300px] md:max-h-[600px]"
+                className="w-full h-auto object-cover max-h-[600px]"
                 onError={(e) => {
                   (e.target as HTMLImageElement).style.display = "none";
                 }}
@@ -586,37 +586,37 @@ export default function PreviewDetailsPage() {
             {details.assessment.title}
           </p>
           {(details.assessment as any).description && (
-            <p className="text-[16px] sm:text-[18px] font-normal text-[#2B2922] font-['Quicksand'] leading-snug mt-3">
+            <p className="text-[16px] sm:text-[20px] font-normal text-[#2B2922] font-['Quicksand'] leading-snug sm:leading-[30px] mt-3 sm:mt-[20px]">
               {(details.assessment as any).description}
             </p>
           )}
           {(details.assessment as any).subtitle && (
-            <p className="text-[16px] sm:text-[18px] font-normal text-[#2B2922] font-['Quicksand'] leading-snug mt-3">
+            <p className="text-[16px] sm:text-[20px] font-normal text-[#2B2922] font-['Quicksand'] leading-snug sm:leading-[30px] mt-3 sm:mt-[20px]">
               {(details.assessment as any).subtitle}
             </p>
           )}
           
           {/* Fallback hardcoded subtitle if API doesn't provide it */}
           {!foundSubtitleInApi && details.assessment.title?.includes("Weight Loss") && (
-            <p className="text-[16px] sm:text-[18px] font-normal text-[#2B2922] font-['Quicksand'] leading-snug mt-3">
+            <p className="text-[16px] sm:text-[20px] font-normal text-[#2B2922] font-['Quicksand'] leading-snug sm:leading-[30px] mt-3 sm:mt-[20px]">
               Weight loss is about more than diet and exercise alone. Weight Loss MD provides medical support to help you overcome these challenges.
             </p>
           )}
 
           {headerInfoQuestions.map((q) => (
-            <div key={q.id} className="mt-4">
+            <div key={q.id} className="mt-3 sm:mt-[20px]">
               {q.heading && (
-                <p className="text-[16px] sm:text-[18px] font-semibold text-[#2B2922] font-['Quicksand'] leading-snug mb-1">
+                <p className="text-[18px] sm:text-[20px] font-semibold text-[#2B2922] font-['Quicksand'] leading-snug sm:leading-[30px] mb-2">
                   {q.heading}
                 </p>
               )}
               {q.questionText && (
-                <p className="text-[15px] sm:text-[16px] font-normal text-[#2B2922] font-['Quicksand'] leading-snug">
+                <p className="text-[16px] sm:text-[20px] font-normal text-[#2B2922] font-['Quicksand'] leading-snug sm:leading-[30px]">
                   {q.questionText}
                 </p>
               )}
               {q.description && (
-                <p className="text-[14px] sm:text-[15px] font-normal text-[#2B2922] font-['Quicksand'] leading-snug mt-1">
+                <p className="text-[16px] sm:text-[20px] font-normal text-[#2B2922] font-['Quicksand'] leading-snug sm:leading-[30px] mt-2">
                   {q.description}
                 </p>
               )}
@@ -641,7 +641,7 @@ export default function PreviewDetailsPage() {
           ))}
         </div>
 
-        {/* Payment Details */}
+        {/* Payment Summary */}
         <div className="bg-[#FFFFFF] border border-[#E5E7EB] rounded-xl p-4 sm:p-6 md:p-[30px] space-y-4">
           <p className="font-semibold text-slate-800 mb-1">Payment Summary</p>
           <p className="text-xs text-slate-500 mb-4">

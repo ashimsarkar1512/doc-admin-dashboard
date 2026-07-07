@@ -557,7 +557,7 @@ export default function QuestionFormDialog({
                         <div className="flex items-center gap-3">
                           <div className="relative flex-1">
                             <input
-                              className={`w-full px-4 py-2.5 border border-gray-200 rounded-[10px] text-sm text-black bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/20 ${questionType === 'SINGLE_CHOICE' ? 'pr-28' : ''}`}
+                              className={`w-full px-4 py-2.5 border border-gray-200 rounded-[10px] text-sm text-black bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/20 ${questionType === 'SINGLE_CHOICE' ? 'pr-40' : ''}`}
                               placeholder="Option value"
                               value={opt.label}
                               onChange={e => handleUpdateOption(opt.originalIndex, { label: e.target.value })}
