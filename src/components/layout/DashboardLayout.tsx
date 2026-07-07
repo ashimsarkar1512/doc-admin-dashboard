@@ -87,6 +87,14 @@ export default function DashboardLayout() {
     dispatch(setPageHeader(routeInfo));
   }, [location.pathname, dispatch]);
 
+  // Ensure token exists on every route change within the dashboard
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token || !isAuthenticated) {
+      handleSignOut();
+    }
+  }, [location.pathname, isAuthenticated]);
+
   return (
     <div className="flex h-screen w-full overflow-hidden bg-primaryBg font-sans">
       {/* Mobile Sidebar */}
