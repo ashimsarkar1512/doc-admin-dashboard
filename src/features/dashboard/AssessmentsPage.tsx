@@ -19,9 +19,16 @@ export default function AssessmentsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingAssessment, setEditingAssessment] = useState<Assessment | null>(null);
   const [categoryNameFilter, setCategoryNameFilter] = useState<string>('');
+  const [page, setPage] = useState(1);
+  const limit = 8;
   const [modalKey, setModalKey] = useState(0);
   const { canManage } = usePermissions();
   const canManageAssessments = canManage('assessments');
+
+  const handleCategoryFilterChange = (catName: string) => {
+    setCategoryNameFilter(catName);
+    setPage(1);
+  };
 
   const { data: categoriesData } = useQuery({
     queryKey: ['categories'],
@@ -35,11 +42,12 @@ export default function AssessmentsPage() {
   });
 
   const { data, isLoading, isError } = useQuery({
-    queryKey: ['assessments', { categoryName: categoryNameFilter }],
-    queryFn: () => getAssessments({ categoryName: categoryNameFilter || undefined, limit: 50 }),
+    queryKey: ['assessments', { categoryName: categoryNameFilter, page, limit }],
+    queryFn: () => getAssessments({ categoryName: categoryNameFilter || undefined, limit, page }),
   });
 
   const assessments = data?.data ?? [];
+  const totalPages = data?.meta?.totalPages ?? 1;
 
   const deleteMutation = useMutation({
     mutationFn: deleteAssessment,
@@ -123,7 +131,7 @@ export default function AssessmentsPage() {
       {/* Category Filter */}
       <div className="flex flex-wrap items-center gap-2 bg-white p-5 rounded-2xl  shadow-sm overflow-x-auto whitespace-nowrap scrollbar-hide">
         <button
-          onClick={() => setCategoryNameFilter('')}
+          onClick={() => handleCategoryFilterChange('')}
           className={`px-4 py-2 rounded-full text-xs font-medium transition-all duration-150 cursor-pointer ${
             categoryNameFilter === ''
               ? 'bg-blue-600 text-white shadow-sm font-bold'
@@ -135,7 +143,7 @@ export default function AssessmentsPage() {
         {categories.map((c) => (
           <button
             key={c.id}
-            onClick={() => setCategoryNameFilter(c.name)}
+            onClick={() => handleCategoryFilterChange(c.name)}
             className={`px-4 py-2 rounded-full text-xs font-medium transition-all duration-150 cursor-pointer ${
               categoryNameFilter === c.name
                 ? 'bg-blue-600 text-white shadow-sm font-bold'
@@ -200,12 +208,85 @@ export default function AssessmentsPage() {
           </div>
           {categoryNameFilter && (
             <button
-              onClick={() => setCategoryNameFilter('')}
+              onClick={() => handleCategoryFilterChange('')}
               className="text-blue-600 hover:text-blue-700 font-semibold text-sm underline underline-offset-4"
             >
               Clear filter
             </button>
           )}
+        </div>
+      )}
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between pt-2">
+          <p className="text-sm text-gray-500">
+            Page <span className="font-medium text-gray-700">{page}</span> of{' '}
+            <span className="font-medium text-gray-700">{totalPages}</span>
+            {data?.meta?.total && (
+              <> &mdash; <span className="font-medium text-gray-700">{data.meta.total}</span> total</>
+            )}
+          </p>
+          <div className="flex items-center gap-1">
+            <button
+              onClick={() => setPage(1)}
+              disabled={page === 1}
+              className="px-2.5 py-1.5 rounded-lg border border-gray-200 text-xs font-medium text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            >
+              «
+            </button>
+            <button
+              onClick={() => setPage((p) => p - 1)}
+              disabled={page === 1}
+              className="px-3 py-1.5 rounded-lg border border-gray-200 text-xs font-medium text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            >
+              ‹ Prev
+            </button>
+
+            {Array.from({ length: totalPages }, (_, i) => i + 1)
+              .filter((p) => p === 1 || p === totalPages || Math.abs(p - page) <= 1)
+              .reduce<(number | '...')[]>((acc, p, idx, arr) => {
+                if (idx > 0 && typeof arr[idx - 1] === 'number' && (p as number) - (arr[idx - 1] as number) > 1) {
+                  acc.push('...');
+                }
+                acc.push(p);
+                return acc;
+              }, [])
+              .map((item, idx) =>
+                item === '...' ? (
+                  <span key={`ellipsis-${idx}`} className="px-2 py-1.5 text-xs text-gray-400">
+                    …
+                  </span>
+                ) : (
+                  <button
+                    key={item}
+                    onClick={() => setPage(item as number)}
+                    className={`w-8 h-8 rounded-lg border text-xs font-semibold transition-colors ${
+                      page === item
+                        ? 'bg-[#2563EB] border-[#2563EB] text-white shadow-sm shadow-blue-600/20'
+                        : 'border-gray-200 text-gray-600 hover:bg-gray-50'
+                    }`}
+                  >
+                    {item}
+                  </button>
+                )
+              )}
+
+            <button
+              onClick={() => setPage((p) => p + 1)}
+              disabled={page === totalPages}
+              className="px-3 py-1.5 rounded-lg border border-gray-200 text-xs font-medium text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            >
+              Next ›
+            </button>
+            <button
+              onClick={() => setPage(totalPages)}
+              disabled={page === totalPages}
+              className="px-2.5 py-1.5 rounded-lg border border-gray-200 text-xs font-medium text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            >
+              »
+            </button>
+          </div>
         </div>
       )}
 
