@@ -727,96 +727,103 @@ export default function AllPatientsPage() {
         </div>
 
         {totalPages > 1 && (
-          <div className="flex items-center justify-between px-6 py-4 border-t border-slate-100 bg-white">
-            <p className="text-sm text-gray-500">
-              Page{" "}
-              <span className="font-medium text-gray-700">{currentPage}</span>{" "}
-              of <span className="font-medium text-gray-700">{totalPages}</span>
-              {meta?.total && (
-                <>
-                  {" "}
-                  &mdash;{" "}
-                  <span className="font-medium text-gray-700">
-                    {meta.total}
-                  </span>{" "}
-                  total
-                </>
-              )}
-            </p>
-            <div className="flex items-center gap-1">
-              <button
-                onClick={() => handlePageChange(1)}
-                disabled={currentPage === 1}
-                className="px-2.5 py-1.5 rounded-lg border border-gray-200 text-xs font-medium text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-              >
-                «
-              </button>
-              <button
-                onClick={() => handlePageChange(currentPage - 1)}
-                disabled={currentPage === 1}
-                className="px-3 py-1.5 rounded-lg border border-gray-200 text-xs font-medium text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-              >
-                ‹ Prev
-              </button>
+  <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between px-4 md:px-6 py-4 border-t border-slate-100 bg-white">
+    
+    <p className="text-xs md:text-sm text-gray-500 text-center md:text-left">
+      Page{" "}
+      <span className="font-medium text-gray-700">{currentPage}</span>{" "}
+      of <span className="font-medium text-gray-700">{totalPages}</span>
+      {meta?.total && (
+        <>
+          {" "}
+          &mdash;{" "}
+          <span className="font-medium text-gray-700">
+            {meta.total}
+          </span>{" "}
+          total
+        </>
+      )}
+    </p>
 
-              {Array.from({ length: totalPages }, (_, i) => i + 1)
-                .filter(
-                  (p) =>
-                    p === 1 ||
-                    p === totalPages ||
-                    Math.abs(p - currentPage) <= 1,
-                )
-                .reduce<(number | "...")[]>((acc, p, idx, arr) => {
-                  if (
-                    idx > 0 &&
-                    typeof arr[idx - 1] === "number" &&
-                    (p as number) - (arr[idx - 1] as number) > 1
-                  ) {
-                    acc.push("...");
-                  }
-                  acc.push(p);
-                  return acc;
-                }, [])
-                .map((item, idx) =>
-                  item === "..." ? (
-                    <span
-                      key={`ellipsis-${idx}`}
-                      className="px-2 py-1.5 text-xs text-gray-400"
-                    >
-                      …
-                    </span>
-                  ) : (
-                    <button
-                      key={item}
-                      onClick={() => handlePageChange(item as number)}
-                      className={`w-8 h-8 rounded-lg border text-xs font-semibold transition-colors ${
-                        currentPage === item
-                          ? "bg-[#2563EB] border-[#2563EB] text-white shadow-sm shadow-blue-600/20"
-                          : "border-gray-200 text-gray-600 hover:bg-gray-50"
-                      }`}
-                    >
-                      {item}
-                    </button>
-                  ),
-                )}
+    <div className="flex items-center justify-center md:justify-end gap-1 flex-wrap">
+      
+      <button
+        onClick={() => handlePageChange(1)}
+        disabled={currentPage === 1}
+        className="px-2 py-1.5 md:px-2.5 rounded-lg border border-gray-200 text-xs font-medium text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+      >
+        «
+      </button>
 
-              <button
-                onClick={() => handlePageChange(currentPage + 1)}
-                disabled={currentPage === totalPages}
-                className="px-3 py-1.5 rounded-lg border border-gray-200 text-xs font-medium text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-              >
-                Next ›
-              </button>
-              <button
-                onClick={() => handlePageChange(totalPages)}
-                disabled={currentPage === totalPages}
-                className="px-2.5 py-1.5 rounded-lg border border-gray-200 text-xs font-medium text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-              >
-                »
-              </button>
-            </div>
-          </div>
+      <button
+        onClick={() => handlePageChange(currentPage - 1)}
+        disabled={currentPage === 1}
+        className="px-2 py-1.5 md:px-3 rounded-lg border border-gray-200 text-xs font-medium text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+      >
+        <span className="hidden sm:inline">‹ Prev</span>
+        <span className="sm:hidden">‹</span>
+      </button>
+
+      {Array.from({ length: totalPages }, (_, i) => i + 1)
+        .filter(
+          (p) =>
+            p === 1 ||
+            p === totalPages ||
+            Math.abs(p - currentPage) <= 1,
+        )
+        .reduce<(number | "...")[]>((acc, p, idx, arr) => {
+          if (
+            idx > 0 &&
+            typeof arr[idx - 1] === "number" &&
+            (p as number) - (arr[idx - 1] as number) > 1
+          ) {
+            acc.push("...");
+          }
+          acc.push(p);
+          return acc;
+        }, [])
+        .map((item, idx) =>
+          item === "..." ? (
+            <span
+              key={`ellipsis-${idx}`}
+              className="px-2 py-1.5 text-xs text-gray-400"
+            >
+              …
+            </span>
+          ) : (
+            <button
+              key={item}
+              onClick={() => handlePageChange(item as number)}
+              className={`w-7 h-7 md:w-8 md:h-8 rounded-lg border text-xs font-semibold transition-colors ${
+                currentPage === item
+                  ? "bg-[#2563EB] border-[#2563EB] text-white shadow-sm shadow-blue-600/20"
+                  : "border-gray-200 text-gray-600 hover:bg-gray-50"
+              }`}
+            >
+              {item}
+            </button>
+          ),
         )}
+
+      <button
+        onClick={() => handlePageChange(currentPage + 1)}
+        disabled={currentPage === totalPages}
+        className="px-2 py-1.5 md:px-3 rounded-lg border border-gray-200 text-xs font-medium text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+      >
+        <span className="hidden sm:inline">Next ›</span>
+        <span className="sm:hidden">›</span>
+      </button>
+
+      <button
+        onClick={() => handlePageChange(totalPages)}
+        disabled={currentPage === totalPages}
+        className="px-2 py-1.5 md:px-2.5 rounded-lg border border-gray-200 text-xs font-medium text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+      >
+        »
+      </button>
+    </div>
+  </div>
+)}
       </div>
 
       <ViewPatientModal

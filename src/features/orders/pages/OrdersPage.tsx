@@ -112,6 +112,7 @@ export default function OrdersPage() {
 
       {/* Search & Filter */}
       <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 mb-6">
+        
         <div className="flex flex-col sm:flex-row gap-4 flex-1 w-full">
           <div className="relative flex-1 w-full max-w-none md:max-w-md">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
@@ -200,38 +201,42 @@ export default function OrdersPage() {
         </div>
       )}
 
-      {/* Pagination */}
-      {meta && meta.totalPages > 1 && (
-        <div className="flex items-center justify-between border-t border-slate-200 pt-4">
-          <p className="text-sm text-slate-500">
-            Showing{" "}
-            <span className="font-medium">{(page - 1) * limit + 1}</span> to{" "}
-            <span className="font-medium">
-              {Math.min(page * limit, meta.total)}
-            </span>{" "}
-            of <span className="font-medium">{meta.total}</span> results
-          </p>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setPage((p) => Math.max(1, p - 1))}
-              disabled={page === 1}
-              className="p-2 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <ChevronLeft className="h-4 w-4" />
-            </button>
-            <span className="text-sm font-medium text-slate-700 px-4 py-2 bg-slate-50 rounded-lg">
-              Page {page} of {meta.totalPages}
-            </span>
-            <button
-              onClick={() => setPage((p) => Math.min(meta.totalPages, p + 1))}
-              disabled={page === meta.totalPages}
-              className="p-2 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <ChevronRight className="h-4 w-4" />
-            </button>
-          </div>
-        </div>
-      )}
+{/* Pagination */}
+{meta && meta.totalPages > 1 && (
+  <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between border-t border-slate-200 pt-4">
+    
+    <p className="text-xs md:text-sm text-slate-500 text-center md:text-left">
+      Showing{" "}
+      <span className="font-medium">{(page - 1) * limit + 1}</span> to{" "}
+      <span className="font-medium">
+        {Math.min(page * limit, meta.total)}
+      </span>{" "}
+      of <span className="font-medium">{meta.total}</span> results
+    </p>
+
+    <div className="flex items-center justify-center md:justify-end gap-2">
+      <button
+        onClick={() => setPage((p) => Math.max(1, p - 1))}
+        disabled={page === 1}
+        className="p-1.5 md:p-2 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        <ChevronLeft className="h-4 w-4" />
+      </button>
+
+      <span className="text-xs md:text-sm font-medium text-slate-700 px-3 md:px-4 py-1.5 md:py-2 bg-slate-50 rounded-lg">
+        Page {page} of {meta.totalPages}
+      </span>
+
+      <button
+        onClick={() => setPage((p) => Math.min(meta.totalPages, p + 1))}
+        disabled={page === meta.totalPages}
+        className="p-1.5 md:p-2 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        <ChevronRight className="h-4 w-4" />
+      </button>
+    </div>
+  </div>
+)}
 
       {/* Order Details Modal */}
       <OrderDetailsModal

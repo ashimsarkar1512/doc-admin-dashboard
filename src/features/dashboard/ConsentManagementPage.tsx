@@ -355,7 +355,7 @@ export default function ConsentManagementPage() {
       {/* ── Section Header ───────────────────────────────────────────────── */}
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-base font-semibold text-slate-800">
-          Consent Management
+          Consent Management 
         </h2>
         <div className="flex items-center gap-2">
           <button
@@ -669,37 +669,52 @@ export default function ConsentManagementPage() {
             </div>
 
             {/* Pagination — always visible; buttons disabled when not applicable */}
-            <div className="flex items-center justify-between px-6 py-4 border-t border-slate-200 bg-slate-50">
-              <span className="text-sm text-slate-500">
-                {meta
-                  ? `Showing ${(meta.page - 1) * meta.limit + 1}–${Math.min(
-                    meta.page * meta.limit,
-                    meta.total,
-                  )} of ${meta.total} logs`
-                  : "Showing 0 of 0 logs"}
-              </span>
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => setPage((p) => Math.max(1, p - 1))}
-                  disabled={!meta || page === 1}
-                  className="p-1.5 rounded-md border border-slate-200 text-slate-600 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-                >
-                  <ChevronLeft className="w-4 h-4" />
-                </button>
-                <span className="text-sm font-medium text-slate-700">
-                  Page {meta?.page ?? page} of {meta?.totalPages ?? 1}
-                </span>
-                <button
-                  onClick={() =>
-                    setPage((p) => Math.min(meta?.totalPages ?? p, p + 1))
-                  }
-                  disabled={!meta || page === meta.totalPages}
-                  className="p-1.5 rounded-md border border-slate-200 text-slate-600 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-                >
-                  <ChevronRight className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
+         <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between px-3 sm:px-6 py-3 sm:py-4 border-t border-slate-200 bg-slate-50">
+  
+  {/* Text */}
+  <span className="text-xs sm:text-sm text-slate-500 text-center sm:text-left">
+    {meta
+      ? (
+        <>
+          Page <span className="font-medium text-slate-700">{meta.page}</span> /{" "}
+          <span className="font-medium text-slate-700">{meta.totalPages}</span>
+          {" "}
+          <span className="hidden sm:inline">
+            — Showing {(meta.page - 1) * meta.limit + 1}–{Math.min(
+              meta.page * meta.limit,
+              meta.total,
+            )} of {meta.total} logs
+          </span>
+        </>
+      )
+      : "0 / 0"}
+  </span>
+
+  {/* Controls */}
+  <div className="flex items-center justify-center sm:justify-end gap-2">
+    <button
+      onClick={() => setPage((p) => Math.max(1, p - 1))}
+      disabled={!meta || page === 1}
+      className="p-2 sm:p-1.5 rounded-md border border-slate-200 text-slate-600 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+    >
+      <ChevronLeft className="w-4 h-4" />
+    </button>
+
+    <span className="text-xs sm:text-sm font-medium text-slate-700 px-2 py-1 bg-white rounded-md border border-slate-200">
+      {meta?.page ?? page} / {meta?.totalPages ?? 1}
+    </span>
+
+    <button
+      onClick={() =>
+        setPage((p) => Math.min(meta?.totalPages ?? p, p + 1))
+      }
+      disabled={!meta || page === meta?.totalPages}
+      className="p-2 sm:p-1.5 rounded-md border border-slate-200 text-slate-600 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+    >
+      <ChevronRight className="w-4 h-4" />
+    </button>
+  </div>
+</div>
           </>
         )}
       </div>

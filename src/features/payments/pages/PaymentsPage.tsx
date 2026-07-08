@@ -549,69 +549,98 @@ export default function PaymentsPage() {
       </div>
 
       {/* ── Pagination — outside the table card ── */}
-      {totalPages > 0 && (
-        <div className="flex items-center justify-between mt-4 px-1">
-          <p className="text-sm text-slate-500">
-            Showing{' '}
-            <span className="font-medium text-slate-700">{(currentPage - 1) * PAGE_SIZE + 1}</span>
-            {' – '}
-            <span className="font-medium text-slate-700">{Math.min(currentPage * PAGE_SIZE, meta?.total ?? 0)}</span>
-            {' of '}
-            <span className="font-medium text-slate-700">{meta?.total ?? 0}</span>
-            {' results'}
-          </p>
+    {/* ── Pagination — outside the table card ── */}
+{totalPages > 0 && (
+  <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between mt-4 px-1">
+    
+    <p className="text-xs md:text-sm text-slate-500 text-center md:text-left">
+      Showing{' '}
+      <span className="font-medium text-slate-700">
+        {(currentPage - 1) * PAGE_SIZE + 1}
+      </span>
+      {' – '}
+      <span className="font-medium text-slate-700">
+        {Math.min(currentPage * PAGE_SIZE, meta?.total ?? 0)}
+      </span>
+      {' of '}
+      <span className="font-medium text-slate-700">
+        {meta?.total ?? 0}
+      </span>
+      {' results'}
+    </p>
 
-          <div className="flex items-center gap-1">
-            <button
-              onClick={() => handlePageChange(1)}
-              disabled={currentPage === 1}
-              className="px-2.5 py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-medium text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-            >«</button>
-            <button
-              onClick={() => handlePageChange(currentPage - 1)}
-              disabled={currentPage === 1}
-              className="px-3 py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-medium text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-            >‹ Prev</button>
+    <div className="flex items-center justify-center md:justify-end gap-1 flex-wrap">
+      
+      <button
+        onClick={() => handlePageChange(1)}
+        disabled={currentPage === 1}
+        className="px-2 py-1.5 md:px-2.5 rounded-lg border border-slate-200 bg-white text-xs font-medium text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+      >
+        «
+      </button>
 
-            {Array.from({ length: totalPages }, (_, i) => i + 1)
-              .filter((p) => p === 1 || p === totalPages || Math.abs(p - currentPage) <= 1)
-              .reduce<(number | '...')[]>((acc, p, idx, arr) => {
-                if (idx > 0 && typeof arr[idx - 1] === 'number' && (p as number) - (arr[idx - 1] as number) > 1) {
-                  acc.push('...');
-                }
-                acc.push(p);
-                return acc;
-              }, [])
-              .map((item, idx) =>
-                item === '...' ? (
-                  <span key={`e-${idx}`} className="px-2 py-1.5 text-xs text-slate-400">…</span>
-                ) : (
-                  <button
-                    key={item}
-                    onClick={() => handlePageChange(item as number)}
-                    aria-current={currentPage === item ? 'page' : undefined}
-                    className={`w-8 h-8 rounded-lg border text-xs font-semibold transition-colors ${
-                      currentPage === item
-                        ? 'bg-[#1447E6] border-[#1447E6] text-white shadow-sm'
-                        : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
-                    }`}
-                  >{item}</button>
-                )
-              )}
+      <button
+        onClick={() => handlePageChange(currentPage - 1)}
+        disabled={currentPage === 1}
+        className="px-2 py-1.5 md:px-3 rounded-lg border border-slate-200 bg-white text-xs font-medium text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+      >
+        <span className="hidden sm:inline">‹ Prev</span>
+        <span className="sm:hidden">‹</span>
+      </button>
 
+      {Array.from({ length: totalPages }, (_, i) => i + 1)
+        .filter((p) => p === 1 || p === totalPages || Math.abs(p - currentPage) <= 1)
+        .reduce<(number | '...')[]>((acc, p, idx, arr) => {
+          if (
+            idx > 0 &&
+            typeof arr[idx - 1] === 'number' &&
+            (p as number) - (arr[idx - 1] as number) > 1
+          ) {
+            acc.push('...');
+          }
+          acc.push(p);
+          return acc;
+        }, [])
+        .map((item, idx) =>
+          item === '...' ? (
+            <span key={`e-${idx}`} className="px-2 py-1.5 text-xs text-slate-400">
+              …
+            </span>
+          ) : (
             <button
-              onClick={() => handlePageChange(currentPage + 1)}
-              disabled={currentPage === totalPages}
-              className="px-3 py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-medium text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-            >Next ›</button>
-            <button
-              onClick={() => handlePageChange(totalPages)}
-              disabled={currentPage === totalPages}
-              className="px-2.5 py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-medium text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-            >»</button>
-          </div>
-        </div>
-      )}
+              key={item}
+              onClick={() => handlePageChange(item as number)}
+              aria-current={currentPage === item ? 'page' : undefined}
+              className={`w-7 h-7 md:w-8 md:h-8 rounded-lg border text-xs font-semibold transition-colors ${
+                currentPage === item
+                  ? 'bg-[#1447E6] border-[#1447E6] text-white shadow-sm'
+                  : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
+              }`}
+            >
+              {item}
+            </button>
+          ),
+        )}
+
+      <button
+        onClick={() => handlePageChange(currentPage + 1)}
+        disabled={currentPage === totalPages}
+        className="px-2 py-1.5 md:px-3 rounded-lg border border-slate-200 bg-white text-xs font-medium text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+      >
+        <span className="hidden sm:inline">Next ›</span>
+        <span className="sm:hidden">›</span>
+      </button>
+
+      <button
+        onClick={() => handlePageChange(totalPages)}
+        disabled={currentPage === totalPages}
+        className="px-2 py-1.5 md:px-2.5 rounded-lg border border-slate-200 bg-white text-xs font-medium text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+      >
+        »
+      </button>
+    </div>
+  </div>
+)}
 
       <PaymentDetailModal
         isOpen={!!viewPaymentId}
