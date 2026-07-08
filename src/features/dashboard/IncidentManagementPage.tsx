@@ -484,36 +484,48 @@ export default function IncidentManagementPage() {
             </div>
 
             {/* Pagination */}
-            {meta && meta.totalPages > 1 && (
-              <div className="flex items-center justify-between px-6 py-4 border-t border-slate-200 bg-slate-50">
-                <span className="text-sm text-slate-500">
-                  Showing {(meta.page - 1) * meta.limit + 1}–
-                  {Math.min(meta.page * meta.limit, meta.total)} of {meta.total}{" "}
-                  results
-                </span>
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => setPage((p) => Math.max(1, p - 1))}
-                    disabled={page === 1}
-                    className="p-1.5 rounded-md border border-slate-200 text-slate-600 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-                  >
-                    <ChevronLeft className="w-4 h-4" />
-                  </button>
-                  <span className="text-sm font-medium text-slate-700">
-                    Page {page} of {meta.totalPages}
-                  </span>
-                  <button
-                    onClick={() =>
-                      setPage((p) => Math.min(meta.totalPages, p + 1))
-                    }
-                    disabled={page === meta.totalPages}
-                    className="p-1.5 rounded-md border border-slate-200 text-slate-600 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-                  >
-                    <ChevronRight className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
-            )}
+          {meta && meta.totalPages > 1 && (
+  <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between px-3 sm:px-6 py-3 sm:py-4 border-t border-slate-200 bg-slate-50">
+    
+    {/* Text */}
+    <span className="text-xs sm:text-sm text-slate-500 text-center sm:text-left">
+      <span className="sm:hidden">
+        Page <span className="font-medium text-slate-700">{page}</span> /{" "}
+        <span className="font-medium text-slate-700">{meta.totalPages}</span>
+      </span>
+
+      <span className="hidden sm:inline">
+        Showing {(meta.page - 1) * meta.limit + 1}–
+        {Math.min(meta.page * meta.limit, meta.total)} of {meta.total} results
+      </span>
+    </span>
+
+    {/* Controls */}
+    <div className="flex items-center justify-center sm:justify-end gap-2">
+      <button
+        onClick={() => setPage((p) => Math.max(1, p - 1))}
+        disabled={page === 1}
+        className="p-2 sm:p-1.5 rounded-md border border-slate-200 text-slate-600 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+      >
+        <ChevronLeft className="w-4 h-4" />
+      </button>
+
+      <span className="text-xs sm:text-sm font-medium text-slate-700 px-2 py-1 bg-white rounded-md border border-slate-200">
+        {page} / {meta.totalPages}
+      </span>
+
+      <button
+        onClick={() =>
+          setPage((p) => Math.min(meta.totalPages, p + 1))
+        }
+        disabled={page === meta.totalPages}
+        className="p-2 sm:p-1.5 rounded-md border border-slate-200 text-slate-600 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+      >
+        <ChevronRight className="w-4 h-4" />
+      </button>
+    </div>
+  </div>
+)}
           </>
         )}
       </div>

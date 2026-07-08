@@ -1,4 +1,3 @@
-
 // import {  useState,  } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState, type ReactNode } from "react";
@@ -20,7 +19,6 @@ import {
   ChevronRight,
   Loader2,
   AlertCircle,
-
   Download,
   RefreshCw,
   Eye,
@@ -32,8 +30,6 @@ import {
 import DatePicker from "@/components/shared/DatePicker";
 
 import Auditlogdetailmodal from "./components/auditLogPageComponent/Auditlogdetailmodal ";
-
-
 
 // Static dropdown options — swagger has no dedicated "options" endpoint,
 // so these are derived from the values seen in the audit log data.
@@ -102,7 +98,7 @@ export default function AuditLogsPage() {
   const [startDate, setStartDate] = useState<string>("");
   const [endDate, setEndDate] = useState<string>("");
   const [page, setPage] = useState(1);
-  const [isExporting,] = useState(false);
+  const [isExporting] = useState(false);
   const [selectedLog, setSelectedLog] = useState<AuditLog | null>(null);
   const limit = 10;
 
@@ -118,7 +114,7 @@ export default function AuditLogsPage() {
     ...(endDate && { endDate }),
   };
 
-  // this debunce for type search  
+  // this debunce for type search
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearch(search.trim());
@@ -170,11 +166,11 @@ export default function AuditLogsPage() {
 
       // 👇 file download trigger
       const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
+      const link = document.createElement("a");
       link.href = url;
 
       // filename (optional - backend থেকেও parse করতে পারো)
-      link.download = 'audit-logs.csv';
+      link.download = "audit-logs.csv";
 
       document.body.appendChild(link);
       link.click();
@@ -183,7 +179,7 @@ export default function AuditLogsPage() {
       window.URL.revokeObjectURL(url);
       refetchStats();
     } catch (error) {
-      console.error('Export failed', error);
+      console.error("Export failed", error);
     }
   };
 
@@ -222,37 +218,41 @@ export default function AuditLogsPage() {
       </div>
 
       {/* ── Section Header ───────────────────────────────────────────────── */}
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-base font-semibold text-slate-800">
-          All Activity Logs
-        </h2>
-        <div className="flex items-center gap-2">
+     <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between mb-4">
+  
+  <h2 className="text-base font-semibold text-slate-800 text-center md:text-left">
+    All Activity Logs
+  </h2>
 
-          <button
-            type="button"
-            onClick={handleRefresh}
-            className="flex items-center gap-2 px-4 py-2.5 bg-white border border-slate-200 text-slate-700 rounded-lg text-sm font-medium hover:bg-slate-50 transition-colors"
-          >
-            <RefreshCw
-              className={`w-4 h-4 ${isFetching ? "animate-spin" : ""}`}
-            />
-            {isFetching ? "Refreshing..." : "Refresh"}
-          </button>
-          <button
-            type="button"
-            onClick={handleExport}
-            disabled={isExporting}
-            className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
-          >
-            {isExporting ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
-            ) : (
-              <Download className="w-4 h-4" />
-            )}
-            Export CSV
-          </button>
-        </div>
-      </div>
+  <div className="flex items-center justify-center md:justify-end gap-2 flex-wrap">
+    <button
+      type="button"
+      onClick={handleRefresh}
+      className="flex items-center gap-2 px-3 md:px-4 py-2 md:py-2.5 bg-white border border-slate-200 text-slate-700 rounded-lg text-sm font-medium hover:bg-slate-50 transition-colors"
+    >
+      <RefreshCw
+        className={`w-4 h-4 ${isFetching ? "animate-spin" : ""}`}
+      />
+      <span className="hidden sm:inline">
+        {isFetching ? "Refreshing..." : "Refresh"}
+      </span>
+    </button>
+
+    <button
+      type="button"
+      onClick={handleExport}
+      disabled={isExporting}
+      className="flex items-center gap-2 px-3 md:px-4 py-2 md:py-2.5 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
+    >
+      {isExporting ? (
+        <Loader2 className="w-4 h-4 animate-spin" />
+      ) : (
+        <Download className="w-4 h-4" />
+      )}
+      <span className="hidden sm:inline">Export CSV</span>
+    </button>
+  </div>
+</div>
 
       {/* ── Filter Row ────────────────────────────────────────────────────── */}
       <form
@@ -399,14 +399,15 @@ export default function AuditLogsPage() {
                         {/* Role */}
                         <td className="px-5 py-4 whitespace-nowrap">
                           <span
-                            className={`inline-flex px-2.5 py-1 rounded-full text-xs font-semibold uppercase ${{
-                              PATIENT: "bg-blue-50 text-blue-600",
-                              DOCTOR: "bg-purple-50 text-purple-600",
-                              EMPLOYEE: "bg-amber-50 text-amber-600",
-                              ADMIN: "bg-sky-100 text-sky-700",
-                            }[item.userRole?.toUpperCase()] ??
+                            className={`inline-flex px-2.5 py-1 rounded-full text-xs font-semibold uppercase ${
+                              {
+                                PATIENT: "bg-blue-50 text-blue-600",
+                                DOCTOR: "bg-purple-50 text-purple-600",
+                                EMPLOYEE: "bg-amber-50 text-amber-600",
+                                ADMIN: "bg-sky-100 text-sky-700",
+                              }[item.userRole?.toUpperCase()] ??
                               "bg-slate-100 text-slate-600"
-                              }`}
+                            }`}
                           >
                             {item.userRole}
                           </span>
@@ -450,16 +451,17 @@ export default function AuditLogsPage() {
             </div>
 
             {/* Pagination — always visible; buttons disabled when not applicable */}
-            <div className="flex items-center justify-between px-6 py-4 border-t border-slate-200 bg-slate-50">
-              <span className="text-sm text-slate-500">
+            <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between px-4 md:px-6  py-4 border-t border-slate-200">
+              <span className="text-xs md:text-sm text-slate-500 text-center md:text-left">
                 {meta
                   ? `Showing ${(meta.page - 1) * meta.limit + 1}–${Math.min(
-                    meta.page * meta.limit,
-                    meta.total,
-                  )} of ${meta.total} logs`
+                      meta.page * meta.limit,
+                      meta.total,
+                    )} of ${meta.total} logs`
                   : "Showing 0 of 0 logs"}
               </span>
-              <div className="flex items-center gap-2">
+
+              <div className="flex items-center justify-center md:justify-end gap-2">
                 <button
                   onClick={() => setPage((p) => Math.max(1, p - 1))}
                   disabled={!meta || page === 1}
@@ -467,9 +469,11 @@ export default function AuditLogsPage() {
                 >
                   <ChevronLeft className="w-4 h-4" />
                 </button>
-                <span className="text-sm font-medium text-slate-700">
+
+                <span className="text-xs md:text-sm font-medium text-slate-700">
                   Page {meta?.page ?? page} of {meta?.totalPages ?? 1}
                 </span>
+
                 <button
                   onClick={() =>
                     setPage((p) => Math.min(meta?.totalPages ?? p, p + 1))

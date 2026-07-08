@@ -357,68 +357,77 @@ export default function BlogPage() {
       )}
 
       {/* Pagination */}
-      {!isLoading && !isError && blogsData?.meta && blogsData.meta.totalPages > 1 && (
-        <div className="flex items-center justify-between bg-white px-4 py-3 sm:px-6 rounded-xl border border-slate-200 shadow-sm mt-6">
-          <div className="flex flex-1 justify-between sm:hidden">
-            <button
-              onClick={() => setPage(p => Math.max(1, p - 1))}
-              disabled={page === 1}
-              className="relative inline-flex items-center rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              Previous
-            </button>
-            <button
-              onClick={() => setPage(p => Math.min(blogsData.meta.totalPages, p + 1))}
-              disabled={page === blogsData.meta.totalPages}
-              className="relative ml-3 inline-flex items-center rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              Next
-            </button>
-          </div>
-          <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
-            <div>
-              <p className="text-sm text-slate-700">
-                Showing <span className="font-semibold text-slate-900">{(page - 1) * 12 + 1}</span> to <span className="font-semibold text-slate-900">{Math.min(page * 12, blogsData.meta.total)}</span> of <span className="font-semibold text-slate-900">{blogsData.meta.total}</span> results
-              </p>
-            </div>
-            <div>
-              <nav className="isolate inline-flex -space-x-px rounded-lg shadow-sm" aria-label="Pagination">
-                <button
-                  onClick={() => setPage(p => Math.max(1, p - 1))}
-                  disabled={page === 1}
-                  className="relative inline-flex items-center rounded-l-lg px-2 py-2 text-slate-400 ring-1 ring-inset ring-slate-300 hover:bg-slate-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                >
-                  <span className="sr-only">Previous</span>
-                  <ChevronLeft size={20} aria-hidden="true" />
-                </button>
-                {/* Pages */}
-                {Array.from({ length: blogsData.meta.totalPages }).map((_, i) => (
-                  <button
-                    key={i}
-                    onClick={() => setPage(i + 1)}
-                    className={`relative inline-flex items-center px-4 py-2 text-sm font-semibold focus:z-20 focus:outline-offset-0 transition-colors ${
-                      page === i + 1
-                        ? "z-10 bg-[#1447E6] text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1447E6]"
-                        : "text-slate-900 ring-1 ring-inset ring-slate-300 hover:bg-slate-50"
-                    }`}
-                  >
-                    {i + 1}
-                  </button>
-                ))}
-                <button
-                  onClick={() => setPage(p => Math.min(blogsData.meta.totalPages, p + 1))}
-                  disabled={page === blogsData.meta.totalPages}
-                  className="relative inline-flex items-center rounded-r-lg px-2 py-2 text-slate-400 ring-1 ring-inset ring-slate-300 hover:bg-slate-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                >
-                  <span className="sr-only">Next</span>
-                  <ChevronRight size={20} aria-hidden="true" />
-                </button>
-              </nav>
-            </div>
-          </div>
-        </div>
-      )}
+    {!isLoading && !isError && blogsData?.meta && blogsData.meta.totalPages > 1 && (
+  <div className="flex items-center justify-between bg-white px-3 sm:px-4 py-3 sm:px-6 rounded-xl border border-slate-200 shadow-sm mt-6">
+    
+    {/* Mobile */}
+    <div className="flex flex-1 justify-between sm:hidden gap-2">
+      <button
+        onClick={() => setPage(p => Math.max(1, p - 1))}
+        disabled={page === 1}
+        className="relative inline-flex items-center justify-center rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed w-full"
+      >
+        Prev
+      </button>
 
+      <span className="flex items-center justify-center text-xs text-slate-600 px-2 whitespace-nowrap">
+        {page} / {blogsData.meta.totalPages}
+      </span>
+
+      <button
+        onClick={() => setPage(p => Math.min(blogsData.meta.totalPages, p + 1))}
+        disabled={page === blogsData.meta.totalPages}
+        className="relative inline-flex items-center justify-center rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed w-full"
+      >
+        Next
+      </button>
+    </div>
+
+    {/* Desktop (unchanged) */}
+    <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+      <div>
+        <p className="text-sm text-slate-700">
+          Showing <span className="font-semibold text-slate-900">{(page - 1) * 12 + 1}</span> to <span className="font-semibold text-slate-900">{Math.min(page * 12, blogsData.meta.total)}</span> of <span className="font-semibold text-slate-900">{blogsData.meta.total}</span> results
+        </p>
+      </div>
+      <div>
+        <nav className="isolate inline-flex -space-x-px rounded-lg shadow-sm" aria-label="Pagination">
+          <button
+            onClick={() => setPage(p => Math.max(1, p - 1))}
+            disabled={page === 1}
+            className="relative inline-flex items-center rounded-l-lg px-2 py-2 text-slate-400 ring-1 ring-inset ring-slate-300 hover:bg-slate-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          >
+            <span className="sr-only">Previous</span>
+            <ChevronLeft size={20} aria-hidden="true" />
+          </button>
+
+          {Array.from({ length: blogsData.meta.totalPages }).map((_, i) => (
+            <button
+              key={i}
+              onClick={() => setPage(i + 1)}
+              className={`relative inline-flex items-center px-4 py-2 text-sm font-semibold focus:z-20 focus:outline-offset-0 transition-colors ${
+                page === i + 1
+                  ? "z-10 bg-[#1447E6] text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1447E6]"
+                  : "text-slate-900 ring-1 ring-inset ring-slate-300 hover:bg-slate-50"
+              }`}
+            >
+              {i + 1}
+            </button>
+          ))}
+
+          <button
+            onClick={() => setPage(p => Math.min(blogsData.meta.totalPages, p + 1))}
+            disabled={page === blogsData.meta.totalPages}
+            className="relative inline-flex items-center rounded-r-lg px-2 py-2 text-slate-400 ring-1 ring-inset ring-slate-300 hover:bg-slate-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          >
+            <span className="sr-only">Next</span>
+            <ChevronRight size={20} aria-hidden="true" />
+          </button>
+        </nav>
+      </div>
+    </div>
+  </div>
+)}
       {/* Create/Edit Blog Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
