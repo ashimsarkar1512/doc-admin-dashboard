@@ -137,6 +137,27 @@ const blogsRoute = createRoute({
   component: BlogPage,
 });
 
+import BlogHeroPage from "@/features/dashboard/BlogHeroPage";
+const blogsHeroRoute = createRoute({
+  getParentRoute: () => dashboardLayoutRoute,
+  path: "/blogs/hero",
+  component: BlogHeroPage,
+});
+
+import BlogCtaPage from "@/features/dashboard/BlogCtaPage";
+const blogsCtaRoute = createRoute({
+  getParentRoute: () => dashboardLayoutRoute,
+  path: "/blogs/cta",
+  component: BlogCtaPage,
+});
+
+import BlogPageEditor from "@/features/dashboard/BlogPageEditor";
+const blogSettingsRoute = createRoute({
+  getParentRoute: () => dashboardLayoutRoute,
+  path: "/blogs/settings",
+  component: BlogPageEditor,
+});
+
 import ProvidersPage from "@/features/dashboard/ProvidersPage";
 const providersRoute = createRoute({
   getParentRoute: () => dashboardLayoutRoute,
@@ -451,6 +472,9 @@ const routeTree = rootRoute.addChildren([
     checkoutRoute,
     productsRoute,
     blogsRoute,
+    blogsHeroRoute,
+    blogsCtaRoute,
+    blogSettingsRoute,
     providersRoute,
     patientsRoute,
     ordersRoute,

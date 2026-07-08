@@ -9,7 +9,6 @@ import PageHeader from '@/components/shared/PageHeader';
 import AssessmentFormDialog from './components/AssessmentFormDialog';
 import { getAssessments, getAssessmentStats, deleteAssessment } from '@/api/endpoints/assessments.api';
 import { getCategories } from '@/api/endpoints/categories.api';
-import { API_BASE_URL } from '@/api/config';
 import Swal from 'sweetalert2';
 import { usePermissions } from '@/hooks/usePermissions';
 
@@ -99,29 +98,29 @@ export default function AssessmentsPage() {
       {/* Metric Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6">
         {[
-          { 
-            label: 'Active Assessments', 
-            value: isStatsLoading ? '...' : (statsData?.activeAssessments ?? 0).toString().padStart(2, '0') 
+          {
+            label: 'Active Assessments',
+            value: isStatsLoading ? '...' : (statsData?.activeAssessments ?? 0).toString().padStart(2, '0')
           },
-          { 
-            label: 'Draft Assessments', 
-            value: isStatsLoading ? '...' : (statsData?.draftAssessments ?? 0).toString().padStart(2, '0') 
+          {
+            label: 'Draft Assessments',
+            value: isStatsLoading ? '...' : (statsData?.draftAssessments ?? 0).toString().padStart(2, '0')
           },
-          { 
-            label: 'Disabled Assessments', 
-            value: isStatsLoading ? '...' : (statsData?.disabledAssessments ?? 0).toString().padStart(2, '0') 
+          {
+            label: 'Disabled Assessments',
+            value: isStatsLoading ? '...' : (statsData?.disabledAssessments ?? 0).toString().padStart(2, '0')
           },
-          { 
-            label: 'Assessments Taken', 
-            value: isStatsLoading ? '...' : (statsData?.assessmentTaken ?? 0).toLocaleString() 
+          {
+            label: 'Assessments Taken',
+            value: isStatsLoading ? '...' : (statsData?.assessmentTaken ?? 0).toLocaleString()
           },
-          { 
-            label: 'Approved Assessments', 
-            value: isStatsLoading ? '...' : (statsData?.approvedAssessments ?? 0).toString().padStart(2, '0') 
+          {
+            label: 'Approved Assessments',
+            value: isStatsLoading ? '...' : (statsData?.approvedAssessments ?? 0).toString().padStart(2, '0')
           },
-          { 
-            label: 'Declined Assessments', 
-            value: isStatsLoading ? '...' : (statsData?.declinedAssessments ?? 0).toString().padStart(2, '0') 
+          {
+            label: 'Declined Assessments',
+            value: isStatsLoading ? '...' : (statsData?.declinedAssessments ?? 0).toString().padStart(2, '0')
           },
         ].map((m, i) => (
           <MetricCard key={i} label={m.label} value={m.value} />
@@ -132,11 +131,10 @@ export default function AssessmentsPage() {
       <div className="flex flex-wrap items-center gap-2 bg-white p-5 rounded-2xl  shadow-sm overflow-x-auto whitespace-nowrap scrollbar-hide">
         <button
           onClick={() => handleCategoryFilterChange('')}
-          className={`px-4 py-2 rounded-full text-xs font-medium transition-all duration-150 cursor-pointer ${
-            categoryNameFilter === ''
+          className={`px-4 py-2 rounded-full text-xs font-medium transition-all duration-150 cursor-pointer ${categoryNameFilter === ''
               ? 'bg-blue-600 text-white shadow-sm font-bold'
               : 'bg-gray-100 text-gray-600 hover:bg-gray-200 hover:text-gray-900'
-          }`}
+            }`}
         >
           All
         </button>
@@ -144,11 +142,10 @@ export default function AssessmentsPage() {
           <button
             key={c.id}
             onClick={() => handleCategoryFilterChange(c.name)}
-            className={`px-4 py-2 rounded-full text-xs font-medium transition-all duration-150 cursor-pointer ${
-              categoryNameFilter === c.name
+            className={`px-4 py-2 rounded-full text-xs font-medium transition-all duration-150 cursor-pointer ${categoryNameFilter === c.name
                 ? 'bg-blue-600 text-white shadow-sm font-bold'
                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200 hover:text-gray-900'
-            }`}
+              }`}
           >
             {c.name}
           </button>
@@ -216,6 +213,7 @@ export default function AssessmentsPage() {
           )}
         </div>
       )}
+
 
       {/* Pagination */}
 {totalPages > 1 && (
@@ -310,7 +308,6 @@ export default function AssessmentsPage() {
     </div>
   </div>
 )}
-
       {/* Assessment Form Dialog */}
       <AssessmentFormDialog
         key={editingAssessment?.id ?? `create-${modalKey}`}

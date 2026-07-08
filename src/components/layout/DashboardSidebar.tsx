@@ -57,6 +57,7 @@ export function DashboardSidebar({
   const [websiteMenuOpen, setWebsiteMenuOpen] = useState(false);
   const [pagesMenuOpen, setPagesMenuOpen] = useState(false);
   const [servicesMenuOpen, setServicesMenuOpen] = useState(false);
+  const [blogsMenuOpen, setBlogsMenuOpen] = useState(false);
   const [complianceMenuOpen, setComplianceMenuOpen] = useState(true);
 
   return (
@@ -350,12 +351,38 @@ export function DashboardSidebar({
                         >
                           About Us
                         </Link>
-                        <Link
-                          to="/dashboard/blogs"
-                          className="flex items-center gap-3 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold"
-                        >
-                          Blogs
-                        </Link>
+                        <div>
+                          <button
+                            onClick={() => setBlogsMenuOpen(!blogsMenuOpen)}
+                            className="w-full flex items-center justify-between px-3 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors"
+                          >
+                            <span>Blogs</span>
+                            <ChevronDown
+                              size={14}
+                              className={`text-slate-400 transition-transform duration-200 ${
+                                blogsMenuOpen ? "rotate-180" : ""
+                              }`}
+                            />
+                          </button>
+
+                          {blogsMenuOpen && (
+                            <div className="pl-4 mt-1 space-y-1">
+                              <Link
+                                to="/dashboard/blogs"
+                                activeOptions={{ exact: true }}
+                                className="flex items-center gap-3 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold"
+                              >
+                                Blog Posts
+                              </Link>
+                              <Link
+                                to="/dashboard/blogs/settings"
+                                className="flex items-center gap-3 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold"
+                              >
+                                Page Settings
+                              </Link>
+                            </div>
+                          )}
+                        </div>
                         <Link
                           to="/dashboard/pages/eligibility"
                           className="flex items-center gap-3 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold"

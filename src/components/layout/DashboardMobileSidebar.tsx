@@ -10,7 +10,7 @@ import {
   Folder,
   Activity,
   BadgeDollarSign,
-  
+
   ClipboardList,
   Folders,
   Globe,
@@ -57,6 +57,7 @@ export function DashboardMobileSidebar({
   const [websiteMenuOpen, setWebsiteMenuOpen] = useState(false);
   const [pagesMenuOpen, setPagesMenuOpen] = useState(false);
   const [servicesMenuOpen, setServicesMenuOpen] = useState(false);
+  const [blogsMenuOpen, setBlogsMenuOpen] = useState(false);
   const [complianceMenuOpen, setComplianceMenuOpen] = useState(true);
 
   if (!mobileSidebarOpen) return null;
@@ -71,9 +72,8 @@ export function DashboardMobileSidebar({
 
       {/* Mobile Sidebar - fixed overlay, never affects layout */}
       <div
-        className={`fixed inset-y-0 left-0 z-50 w-72 bg-white shadow-2xl flex flex-col transform transition-transform duration-300 ease-in-out lg:hidden ${
-          mobileSidebarOpen ? "translate-x-0" : "-translate-x-full"
-        }`}
+        className={`fixed inset-y-0 left-0 z-50 w-72 bg-white shadow-2xl flex flex-col transform transition-transform duration-300 ease-in-out lg:hidden ${mobileSidebarOpen ? "translate-x-0" : "-translate-x-full"
+          }`}
       >
         {/* Mobile sidebar header */}
         <div className="flex items-center justify-between p-[24px] border-b border-slate-100 shrink-0">
@@ -125,9 +125,8 @@ export function DashboardMobileSidebar({
                 </div>
                 <ChevronDown
                   size={16}
-                  className={`text-slate-400 transition-transform duration-200 ${
-                    patientMenuOpen ? "rotate-180" : ""
-                  }`}
+                  className={`text-slate-400 transition-transform duration-200 ${patientMenuOpen ? "rotate-180" : ""
+                    }`}
                 />
               </button>
 
@@ -268,9 +267,8 @@ export function DashboardMobileSidebar({
                 </div>
                 <ChevronDown
                   size={16}
-                  className={`text-slate-400 transition-transform duration-200 ${
-                    websiteMenuOpen ? "rotate-180" : ""
-                  }`}
+                  className={`text-slate-400 transition-transform duration-200 ${websiteMenuOpen ? "rotate-180" : ""
+                    }`}
                 />
               </button>
 
@@ -292,9 +290,8 @@ export function DashboardMobileSidebar({
                       <span>Pages</span>
                       <ChevronDown
                         size={14}
-                        className={`text-slate-400 transition-transform duration-200 ${
-                          pagesMenuOpen ? "rotate-180" : ""
-                        }`}
+                        className={`text-slate-400 transition-transform duration-200 ${pagesMenuOpen ? "rotate-180" : ""
+                          }`}
                       />
                     </button>
 
@@ -315,13 +312,46 @@ export function DashboardMobileSidebar({
                         >
                           About Us
                         </Link>
-                        <Link
-                          to="/dashboard/blogs"
-                          onClick={() => setMobileSidebarOpen(false)}
-                          className="flex items-center gap-3 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold"
-                        >
-                          Blogs
-                        </Link>
+                        <div>
+                          <button
+                            onClick={() => setBlogsMenuOpen(!blogsMenuOpen)}
+                            className="w-full flex items-center justify-between px-3 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors"
+                          >
+                            <span>Blogs</span>
+                            <ChevronDown
+                              size={14}
+                              className={`text-slate-400 transition-transform duration-200 ${blogsMenuOpen ? "rotate-180" : ""
+                                }`}
+                            />
+                          </button>
+
+                          {blogsMenuOpen && (
+                            <div className="pl-4 mt-1 space-y-1">
+                              <Link
+                                to="/dashboard/blogs"
+                                activeOptions={{ exact: true }}
+                                onClick={() => setMobileSidebarOpen(false)}
+                                className="flex items-center gap-3 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold"
+                              >
+                                Blog Posts
+                              </Link>
+                              <Link
+                                to="/dashboard/blogs/hero"
+                                onClick={() => setMobileSidebarOpen(false)}
+                                className="flex items-center gap-3 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold"
+                              >
+                                Hero Section
+                              </Link>
+                              <Link
+                                to="/dashboard/blogs/cta"
+                                onClick={() => setMobileSidebarOpen(false)}
+                                className="flex items-center gap-3 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors [&.active]:bg-[#EFF6FF] [&.active]:text-[#1447E6] [&.active]:font-semibold"
+                              >
+                                Contact CTA
+                              </Link>
+                            </div>
+                          )}
+                        </div>
                         <Link
                           to="/dashboard/pages/eligibility"
                           onClick={() => setMobileSidebarOpen(false)}
@@ -403,9 +433,8 @@ export function DashboardMobileSidebar({
                             <span>Services</span>
                             <ChevronDown
                               size={14}
-                              className={`text-slate-400 transition-transform duration-200 ${
-                                servicesMenuOpen ? "rotate-180" : ""
-                              }`}
+                              className={`text-slate-400 transition-transform duration-200 ${servicesMenuOpen ? "rotate-180" : ""
+                                }`}
                             />
                           </button>
 
@@ -424,11 +453,10 @@ export function DashboardMobileSidebar({
                                     key={category.id}
                                     to={`/dashboard/services?${slug}` as any}
                                     onClick={() => setMobileSidebarOpen(false)}
-                                    className={`flex items-center gap-3 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                                      isActive
+                                    className={`flex items-center gap-3 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${isActive
                                         ? "bg-[#EFF6FF] text-[#1447E6] font-semibold"
                                         : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"
-                                    }`}
+                                      }`}
                                   >
                                     {category.name}
                                   </Link>
@@ -464,9 +492,8 @@ export function DashboardMobileSidebar({
                 <span>Compliance & Access</span>
                 <ChevronDown
                   size={16}
-                  className={`text-slate-400 transition-transform duration-200 ${
-                    complianceMenuOpen ? "rotate-180" : ""
-                  }`}
+                  className={`text-slate-400 transition-transform duration-200 ${complianceMenuOpen ? "rotate-180" : ""
+                    }`}
                 />
               </button>
 
