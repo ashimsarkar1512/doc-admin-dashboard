@@ -11,9 +11,6 @@ import {
   FileText,
   Trash2,
   Loader2,
-
-  ChevronLeft,
-  ChevronRight,
 } from "lucide-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import ReactQuill from "react-quill-new";
