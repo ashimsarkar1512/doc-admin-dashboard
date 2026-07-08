@@ -18,9 +18,16 @@ export default function AssessmentsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingAssessment, setEditingAssessment] = useState<Assessment | null>(null);
   const [categoryNameFilter, setCategoryNameFilter] = useState<string>('');
+  const [page, setPage] = useState(1);
+  const limit = 8;
   const [modalKey, setModalKey] = useState(0);
   const { canManage } = usePermissions();
   const canManageAssessments = canManage('assessments');
+
+  const handleCategoryFilterChange = (catName: string) => {
+    setCategoryNameFilter(catName);
+    setPage(1);
+  };
 
   const { data: categoriesData } = useQuery({
     queryKey: ['categories'],
@@ -34,11 +41,12 @@ export default function AssessmentsPage() {
   });
 
   const { data, isLoading, isError } = useQuery({
-    queryKey: ['assessments', { categoryName: categoryNameFilter }],
-    queryFn: () => getAssessments({ categoryName: categoryNameFilter || undefined, limit: 50 }),
+    queryKey: ['assessments', { categoryName: categoryNameFilter, page, limit }],
+    queryFn: () => getAssessments({ categoryName: categoryNameFilter || undefined, limit, page }),
   });
 
   const assessments = data?.data ?? [];
+  const totalPages = data?.meta?.totalPages ?? 1;
 
   const deleteMutation = useMutation({
     mutationFn: deleteAssessment,
@@ -122,7 +130,7 @@ export default function AssessmentsPage() {
       {/* Category Filter */}
       <div className="flex flex-wrap items-center gap-2 bg-white p-5 rounded-2xl  shadow-sm overflow-x-auto whitespace-nowrap scrollbar-hide">
         <button
-          onClick={() => setCategoryNameFilter('')}
+          onClick={() => handleCategoryFilterChange('')}
           className={`px-4 py-2 rounded-full text-xs font-medium transition-all duration-150 cursor-pointer ${categoryNameFilter === ''
               ? 'bg-blue-600 text-white shadow-sm font-bold'
               : 'bg-gray-100 text-gray-600 hover:bg-gray-200 hover:text-gray-900'
@@ -133,7 +141,7 @@ export default function AssessmentsPage() {
         {categories.map((c) => (
           <button
             key={c.id}
-            onClick={() => setCategoryNameFilter(c.name)}
+            onClick={() => handleCategoryFilterChange(c.name)}
             className={`px-4 py-2 rounded-full text-xs font-medium transition-all duration-150 cursor-pointer ${categoryNameFilter === c.name
                 ? 'bg-blue-600 text-white shadow-sm font-bold'
                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200 hover:text-gray-900'
@@ -197,7 +205,7 @@ export default function AssessmentsPage() {
           </div>
           {categoryNameFilter && (
             <button
-              onClick={() => setCategoryNameFilter('')}
+              onClick={() => handleCategoryFilterChange('')}
               className="text-blue-600 hover:text-blue-700 font-semibold text-sm underline underline-offset-4"
             >
               Clear filter
