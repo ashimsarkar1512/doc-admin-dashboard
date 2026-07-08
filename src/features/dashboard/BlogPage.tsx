@@ -11,7 +11,7 @@ import {
   FileText,
   Trash2,
   Loader2,
-  
+
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
@@ -282,11 +282,10 @@ export default function BlogPage() {
                 />
                 <div className="absolute top-3 right-3 z-20">
                   <span
-                    className={`px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider rounded-full shadow-sm backdrop-blur-sm ${
-                      blog.isPublished
+                    className={`px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider rounded-full shadow-sm backdrop-blur-sm ${blog.isPublished
                         ? "bg-green-100/90 text-green-700 border border-green-200"
                         : "bg-slate-100/90 text-slate-600 border border-slate-200"
-                    }`}
+                      }`}
                   >
                     {blog.isPublished ? "Published" : "Draft"}
                   </span>
@@ -298,9 +297,9 @@ export default function BlogPage() {
                 <div className="flex items-center justify-between text-[11px] text-slate-500 font-medium mb-2.5">
                   <div className="flex items-center gap-1.5 shrink-0">
                     {blog.provider?.avatar?.fileUrl ? (
-                      <img 
-                        src={blog.provider.avatar.fileUrl} 
-                        alt="Author" 
+                      <img
+                        src={blog.provider.avatar.fileUrl}
+                        alt="Author"
                         className="w-5 h-5 rounded-full object-cover shrink-0 border border-slate-200"
                       />
                     ) : (
@@ -312,7 +311,7 @@ export default function BlogPage() {
                       {blog.provider?.name || (blog.provider as any)?.fullName || blog.author?.name || "Unknown Author"}
                     </span>
                   </div>
-                  
+
                   <div className="flex items-center gap-1.5 shrink-0">
                     <Calendar size={12} className="text-slate-400" />
                     {new Date(blog.createdAt).toLocaleDateString("en-US", {
@@ -335,13 +334,13 @@ export default function BlogPage() {
                 {/* Edit and Delete Buttons exactly like the screenshot */}
                 {canManageBlogs && (
                   <div className="mt-auto pt-4 flex items-center gap-2">
-                    <button 
+                    <button
                       onClick={() => openEditModal(blog)}
                       className="flex-1 bg-slate-100 hover:bg-slate-200 text-[#1447E6] font-medium text-sm py-2 rounded-xl transition-colors text-center"
                     >
                       Edit
                     </button>
-                    <button 
+                    <button
                       onClick={() => handleDelete(blog.id)}
                       className="bg-[#FFF1F2] hover:bg-[#FFE4E6] text-red-500 p-2 rounded-xl transition-colors flex-shrink-0 flex items-center justify-center aspect-square"
                       aria-label="Delete blog"
@@ -396,11 +395,10 @@ export default function BlogPage() {
                   <button
                     key={i}
                     onClick={() => setPage(i + 1)}
-                    className={`relative inline-flex items-center px-4 py-2 text-sm font-semibold focus:z-20 focus:outline-offset-0 transition-colors ${
-                      page === i + 1
+                    className={`relative inline-flex items-center px-4 py-2 text-sm font-semibold focus:z-20 focus:outline-offset-0 transition-colors ${page === i + 1
                         ? "z-10 bg-[#1447E6] text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1447E6]"
                         : "text-slate-900 ring-1 ring-inset ring-slate-300 hover:bg-slate-50"
-                    }`}
+                      }`}
                   >
                     {i + 1}
                   </button>
