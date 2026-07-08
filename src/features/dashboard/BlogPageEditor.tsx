@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Save, Loader2, ImagePlus, Trash2, ExternalLink } from "lucide-react";
+import { Save, Loader2, ImagePlus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { getHeroSections, updateHeroSection } from "@/api/endpoints/hero-section.api";
 import { getCtaSections, updateCtaSection } from "@/api/endpoints/cta-section.api";
