@@ -1,8 +1,6 @@
 # =========================
 # Environment & Secrets
 # =========================
-.env
-.env.*
 *.env
 *.local
 
@@ -44,7 +42,6 @@ coverage
 # =========================
 # Editor & IDE
 # =========================
-.vscode/*
 !.vscode/extensions.json
 
 .idea
@@ -61,3 +58,7 @@ coverage
 # =========================
 Thumbs.db
 .vercel
+branch_structure.json
+temp_auto_push.bat
+temp_interactive_push.bat
+config.bat
